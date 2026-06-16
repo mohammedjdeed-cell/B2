@@ -118,6 +118,19 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-white dark:bg-slate-800">
                 <!-- Populated dynamically via JS -->
             </nav>
+
+            <!-- Sidebar Footer with Controls (Hamburger / Drawer Menu Options) -->
+            <div class="p-4 border-t border-[#E2E8F0] dark:border-slate-700 bg-[#F8FAFC] dark:bg-slate-900 space-y-2">
+                <!-- Edit Mode Toggle Button -->
+                <button id="edit-mode-toggle" class="w-full text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-300 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <span>Bearbeitungsmodus: AUS</span>
+                </button>
+                <!-- Reset Edits Button -->
+                <button id="reset-edits-btn" class="w-full text-[10px] text-red-600 dark:text-red-400 hover:underline font-bold transition-all text-center block hidden">
+                    Änderungen zurücksetzen
+                </button>
+            </div>
         </aside>
 
         <!-- MAIN INTERACTIVE CONTAINER -->
@@ -194,6 +207,7 @@
         let activeIdx = 0;
         let showHighlights = true;
         let activeView = "both";
+        let isEditMode = false;
         let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
 
         // Theme Toggle Elements
@@ -231,19 +245,55 @@
         // Fetch API Loader to fetch database asynchronously
         async function loadTopics() {
             try {
-                const response = await fetch('topics.json');
-                if (!response.ok) {
-                    throw new Error('Netzwerk-Antwort war nicht in Ordnung');
+                // Check if local modified database exists
+                const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                if (localEdits) {
+                    TOPICS_DATA = JSON.parse(localEdits);
+                    showResetButton();
+                    renderSidebar();
+                    renderActiveTopic();
+                } else {
+                    const response = await fetch('topics.json');
+                    if (!response.ok) {
+                        throw new Error('Netzwerk-Antwort war nicht in Ordnung');
+                    }
+                    TOPICS_DATA = await response.json();
+                    showResetButton();
+                    renderSidebar();
+                    renderActiveTopic();
                 }
-                TOPICS_DATA = await response.json();
-                renderSidebar();
-                renderActiveTopic();
             } catch (error) {
                 console.error("Fehler beim Laden der Themen:", error);
                 document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden von 'topics.json'.</span>";
                 document.getElementById('active-topic-title-en').textContent = "Please ensure 'topics.json' is in the same directory and hosted on a local or remote server.";
             }
         }
+
+        // Save modifications to LocalStorage
+        function saveEdits() {
+            localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            showResetButton();
+            // Re-render sidebar in case a title was changed
+            renderSidebar();
+        }
+
+        // Toggle visibility of the reset button
+        function showResetButton() {
+            const resetBtn = document.getElementById('reset-edits-btn');
+            if (localStorage.getItem('edited_topics_data_1_52')) {
+                resetBtn.classList.remove('hidden');
+            } else {
+                resetBtn.classList.add('hidden');
+            }
+        }
+
+        // Reset all modified data back to default topics.json
+        document.getElementById('reset-edits-btn').onclick = () => {
+            if (confirm("Möchten Sie alle Ihre vorgenommenen Änderungen verwerfen und die Originaldaten wiederherstellen?")) {
+                localStorage.removeItem('edited_topics_data_1_52');
+                loadTopics();
+            }
+        };
 
         // Helper function to strip HTML tags for Speech Synthesis
         function deClassTextOnly(htmlText) {
@@ -263,6 +313,26 @@
                 result = result.replace(regex, `<span class="highlight">$&</span>`);
             });
             return result;
+        }
+
+        // Helper function to programmatically bind editable inputs with auto-save triggers
+        function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
+            if (!element) return;
+            element.contentEditable = "true";
+            element.classList.add("border-b", "border-dashed", "border-indigo-400/50", "dark:border-indigo-500/50", "hover:bg-indigo-50/50", "dark:hover:bg-indigo-950/20", "transition-colors", "cursor-text", "focus:bg-transparent", "focus:outline-none");
+            element.addEventListener('blur', () => {
+                let newVal = element.innerText.trim();
+                if (isArray) {
+                    if (subKey) {
+                        TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
+                    } else {
+                        TOPICS_DATA[activeIdx][keyPath][index] = newVal;
+                    }
+                } else {
+                    TOPICS_DATA[activeIdx][keyPath] = newVal;
+                }
+                saveEdits();
+            });
         }
 
         // Initialize and update the sidebar
@@ -330,6 +400,17 @@
             document.getElementById('active-topic-title-de').textContent = topic.title_de;
             document.getElementById('active-topic-title-en').textContent = topic.title_en;
 
+            // Make titles editable if Edit Mode is active
+            if (isEditMode) {
+                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
+                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
+            } else {
+                document.getElementById('active-topic-title-de').contentEditable = "false";
+                document.getElementById('active-topic-title-en').contentEditable = "false";
+                document.getElementById('active-topic-title-de').className = "text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight";
+                document.getElementById('active-topic-title-en').className = "text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium";
+            }
+
             // Update learned button style
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
@@ -354,11 +435,17 @@
             einleitungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-indigo-500 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm transition-colors duration-200";
             einleitungCard.innerHTML = `
                 <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-3">1. Einleitung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Introduction</span></h4>
-                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-base leading-relaxed">${applyHighlights(topic.einleitung_de)}</p>
-                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-sm mt-2">${topic.einleitung_en}</p>
-                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-sm mt-2 text-right leading-relaxed" dir="rtl">${topic.einleitung_ar || ''}</p>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-base leading-relaxed einleitung-de">${isEditMode ? topic.einleitung_de : applyHighlights(topic.einleitung_de)}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-sm mt-2 einleitung-en">${topic.einleitung_en}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-sm mt-2 text-right leading-relaxed einleitung-ar" dir="rtl">${topic.einleitung_ar || ''}</p>
             `;
             container.appendChild(einleitungCard);
+
+            if (isEditMode) {
+                makeEditable(einleitungCard.querySelector('.einleitung-de'), 'einleitung_de');
+                makeEditable(einleitungCard.querySelector('.einleitung-en'), 'einleitung_en');
+                makeEditable(einleitungCard.querySelector('.einleitung-ar'), 'einleitung_ar');
+            }
 
             // 2. PRO & CONTRA CONTAINER (Grid system)
             const proContraGrid = document.createElement('div');
@@ -372,10 +459,10 @@
                 const enText = topic.pro_en ? topic.pro_en[index] : '';
                 const arText = topic.pro_ar ? topic.pro_ar[index] : '';
                 proItems += `
-                    <div class="mb-4 last:mb-0">
-                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed">${applyHighlights(deText)}</p>
-                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1">${enText}</p>
-                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right" dir="rtl">${arText}</p>
+                    <div class="mb-4 last:mb-0 pro-item-block" data-index="${index}">
+                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed pro-de">${isEditMode ? deText : applyHighlights(deText)}</p>
+                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 pro-en">${enText}</p>
+                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right pro-ar" dir="rtl">${arText}</p>
                     </div>
                 `;
             });
@@ -387,6 +474,15 @@
             `;
             proContraGrid.appendChild(proCard);
 
+            if (isEditMode) {
+                proCard.querySelectorAll('.pro-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.pro-de'), 'pro_de', true, idx);
+                    makeEditable(item.querySelector('.pro-en'), 'pro_en', true, idx);
+                    makeEditable(item.querySelector('.pro-ar'), 'pro_ar', true, idx);
+                });
+            }
+
             // CONTRA CARD
             const contraCard = document.createElement('div');
             contraCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-rose-500 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
@@ -395,10 +491,10 @@
                 const enText = topic.contra_en ? topic.contra_en[index] : '';
                 const arText = topic.contra_ar ? topic.contra_ar[index] : '';
                 contraItems += `
-                    <div class="mb-4 last:mb-0">
-                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed">${applyHighlights(deText)}</p>
-                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1">${enText}</p>
-                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right" dir="rtl">${arText}</p>
+                    <div class="mb-4 last:mb-0 contra-item-block" data-index="${index}">
+                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed contra-de">${isEditMode ? deText : applyHighlights(deText)}</p>
+                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 contra-en">${enText}</p>
+                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right contra-ar" dir="rtl">${arText}</p>
                     </div>
                 `;
             });
@@ -411,23 +507,38 @@
             proContraGrid.appendChild(contraCard);
             container.appendChild(proContraGrid);
 
+            if (isEditMode) {
+                contraCard.querySelectorAll('.contra-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.contra-de'), 'contra_de', true, idx);
+                    makeEditable(item.querySelector('.contra-en'), 'contra_en', true, idx);
+                    makeEditable(item.querySelector('.contra-ar'), 'contra_ar', true, idx);
+                });
+            }
+
             // 3. PERSÖNLICHE ERFAHRUNG CARD
             const erfahrungCard = document.createElement('div');
             erfahrungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-amber-500 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm transition-colors duration-200";
             erfahrungCard.innerHTML = `
                 <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">4. Persönliche Erfahrung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Personal Experience</span></h4>
-                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed">${applyHighlights(topic.pers_erfahrung_de)}</p>
-                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2">${topic.pers_erfahrung_en}</p>
-                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed erfahrung-de">${isEditMode ? topic.pers_erfahrung_de : applyHighlights(topic.pers_erfahrung_de)}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 erfahrung-en">${topic.pers_erfahrung_en}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed erfahrung-ar" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
             container.appendChild(erfahrungCard);
+
+            if (isEditMode) {
+                makeEditable(erfahrungCard.querySelector('.erfahrung-de'), 'pers_erfahrung_de');
+                makeEditable(erfahrungCard.querySelector('.erfahrung-en'), 'pers_erfahrung_en');
+                makeEditable(erfahrungCard.querySelector('.erfahrung-ar'), 'pers_erfahrung_ar');
+            }
 
             // 4. SIMULATION / DIALOG CARD
             const simulationCard = document.createElement('div');
             simulationCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-purple-500 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm space-y-4 transition-colors duration-200";
             
             let dialogHtml = "";
-            topic.dialog.forEach((chat) => {
+            topic.dialog.forEach((chat, index) => {
                 const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
                 const roleColor = isA 
                     ? "bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-300" 
@@ -435,11 +546,11 @@
                 const alignment = isA ? "text-left" : "text-left md:translate-x-4";
 
                 dialogHtml += `
-                    <div class="p-4 rounded-xl border ${roleColor} ${alignment} transition-all max-w-[95%]">
+                    <div class="p-4 rounded-xl border ${roleColor} ${alignment} transition-all max-w-[95%] dialog-item-block" data-index="${index}">
                         <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-1">${chat.role}</span>
-                        <p class="${deClass} text-sm font-semibold leading-relaxed">${applyHighlights(chat.de)}</p>
-                        <p class="${enClass} text-xs italic text-slate-400 dark:text-slate-400 mt-1">${chat.en}</p>
-                        <p class="${arClass} text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 text-right leading-relaxed" dir="rtl">${chat.ar || ''}</p>
+                        <p class="${deClass} text-sm font-semibold leading-relaxed dialog-de">${isEditMode ? chat.de : applyHighlights(chat.de)}</p>
+                        <p class="${enClass} text-xs italic text-slate-400 dark:text-slate-400 mt-1 dialog-en">${chat.en}</p>
+                        <p class="${arClass} text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 text-right leading-relaxed dialog-ar" dir="rtl">${chat.ar || ''}</p>
                     </div>
                 `;
             });
@@ -450,30 +561,51 @@
             `;
             container.appendChild(simulationCard);
 
+            if (isEditMode) {
+                simulationCard.querySelectorAll('.dialog-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.dialog-de'), 'dialog', true, idx, 'de');
+                    makeEditable(item.querySelector('.dialog-en'), 'dialog', true, idx, 'en');
+                    makeEditable(item.querySelector('.dialog-ar'), 'dialog', true, idx, 'ar');
+                });
+            }
+
             // 5. GEMEINSAME LÖSUNG CARD
             const schlussCard = document.createElement('div');
             schlussCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-yellow-500 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm transition-colors duration-200";
             schlussCard.innerHTML = `
                 <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-3">6. Gemeinsame Lösung / Schlussfolgerung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Conclusion</span></h4>
-                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed">${applyHighlights(topic.schluss_de)}</p>
-                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2">${topic.schluss_en}</p>
-                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed" dir="rtl">${topic.schluss_ar || ''}</p>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed schluss-de">${isEditMode ? topic.schluss_de : applyHighlights(topic.schluss_de)}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 schluss-en">${topic.schluss_en}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed schluss-ar" dir="rtl">${topic.schluss_ar || ''}</p>
             `;
             container.appendChild(schlussCard);
+
+            if (isEditMode) {
+                makeEditable(schlussCard.querySelector('.schluss-de'), 'schluss_de');
+                makeEditable(schlussCard.querySelector('.schluss-en'), 'schluss_en');
+                makeEditable(schlussCard.querySelector('.schluss-ar'), 'schluss_ar');
+            }
 
             // 6. SCHLÜSSELWÖRTER CARD
             const keywordsCard = document.createElement('div');
             keywordsCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-slate-400 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm transition-colors duration-200";
-            
-            const kwBadges = topic.keywords.split(', ').map(kw => {
-                return `<span class="inline-block bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg transition-transform hover:scale-105 select-none cursor-default">${kw}</span>`;
-            }).join(' ');
-
             keywordsCard.innerHTML = `
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">7. Schlüsselwörter / <span class="italic font-medium text-slate-400 dark:text-slate-500">Keywords</span></h4>
-                <div class="flex flex-wrap gap-2">${kwBadges}</div>
+                <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
+                <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
+                    <input type="text" class="w-full text-xs font-mono bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg p-2" value="${topic.keywords}" />
+                </div>
             `;
             container.appendChild(keywordsCard);
+
+            if (isEditMode) {
+                const kwInput = keywordsCard.querySelector('.keywords-edit input');
+                kwInput.addEventListener('blur', () => {
+                    TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
+                    saveEdits();
+                });
+            }
         }
 
         // German Text-To-Speech implementation
@@ -531,6 +663,22 @@
                 ? "text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors"
                 : "text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-300 dark:border-slate-600 transition-colors";
             renderActiveTopic();
+        };
+
+        // Toggle Edit Mode
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        editModeToggle.onclick = () => {
+            isEditMode = !isEditMode;
+            editModeToggle.classList.toggle('bg-indigo-600', isEditMode);
+            editModeToggle.classList.toggle('text-white', isEditMode);
+            editModeToggle.classList.toggle('hover:bg-indigo-700', isEditMode);
+            editModeToggle.classList.toggle('bg-slate-200', !isEditMode);
+            editModeToggle.classList.toggle('dark:bg-slate-700', !isEditMode);
+            editModeToggle.classList.toggle('text-slate-700', !isEditMode);
+            editModeToggle.classList.toggle('dark:text-slate-200', !isEditMode);
+            
+            editModeToggle.querySelector('span').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            renderActiveTopic(); // Re-render target elements to bind contenteditable properties
         };
 
         // Search trigger
