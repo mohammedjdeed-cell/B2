@@ -89,6 +89,10 @@
             background: #64748b;
         }
     </style>
+    <!-- Firebase SDK Compat libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="h-full flex flex-col text-[#1E293B] dark:text-slate-100 bg-[#F8FAFC] dark:bg-slate-900 transition-colors duration-200">
 
@@ -178,6 +182,51 @@
 
         <!-- MAIN INTERACTIVE CONTAINER -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
+
+            <!-- CLOUD SYNC & WORKSPACE STATUS PANEL -->
+            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-[#E2E8F0] dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200">
+                <!-- Logged Out View -->
+                <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            Cloud-Arbeitsbereich inaktiv
+                        </h3>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Wählen Sie Ihren Namen und geben Sie das Passwort ein, um Änderungen in der Cloud zu sichern.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <select id="user-select" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="mohammed">Mohammed Jdeed</option>
+                            <option value="mai">Mai Hasan</option>
+                        </select>
+                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36">
+                        <button id="btn-login" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                            Arbeitsbereich laden
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Logged In View -->
+                <div id="auth-logged-in" class="hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 p-2.5 rounded-xl text-emerald-600 dark:text-emerald-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Cloud-Synchronisierung aktiv
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="user-display-name">Geladen: --</p>
+                        </div>
+                    </div>
+                    <button id="btn-logout" class="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all">
+                        Abmelden
+                    </button>
+                </div>
+            </div>
 
             <!-- CONFIGURATION PANEL -->
             <div class="bg-white dark:bg-slate-800 border border-[#E2E8F0] dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-colors duration-200">
