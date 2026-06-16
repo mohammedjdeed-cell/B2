@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full bg-[#F8FAFC]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TELC B2 Diskussionstrainer (Themen 1 - 52)</title>
+    <!-- Tailwind CSS for sleek modern design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Neo Sans', 'Helvetica Neue', sans-serif;
+        }
+        /* Custom Newspaper Cutout Highlighting styling */
+        .highlight {
+            background-color: #FDE047;
+            color: #0F172A;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 2px;
+            border-bottom: 2px solid #EAB308;
+            display: inline-block;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-[#1E293B]">
+
+    <!-- APP HEADER -->
+    <header class="bg-white border-b border-[#E2E8F0] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-800">TELC B2 Mündliche Prüfung</h1>
+                <p class="text-xs text-slate-500 font-medium">Teil 2: Diskussion · Komplettes Lern-Dashboard (Themen 1 – 52)</p>
+            </div>
+        </div>
+
+        <!-- Progress displays -->
+        <div class="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2 rounded-xl border border-slate-200/80">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lernfortschritt:</span>
+            <div class="w-28 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="progress-text" class="text-xs font-bold text-slate-700">Lade Daten...</span>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- MOBILE NAV TRIGGER -->
+        <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-transform active:scale-95">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <!-- SIDEBAR / TABLE OF CONTENTS -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-white border-r border-[#E2E8F0] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
+            <div class="p-4 border-b border-[#E2E8F0] bg-[#F8FAFC]">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Inhaltsverzeichnis</h3>
+                <div class="relative">
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-inner" />
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <!-- List of Topics -->
+            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-white">
+                <!-- Populated dynamically via JS -->
+            </nav>
+        </aside>
+
+        <!-- MAIN INTERACTIVE CONTAINER -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
+
+            <!-- CONFIGURATION PANEL -->
+            <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <span id="active-topic-num" class="inline-flex items-center py-1 px-3 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 mb-2 uppercase tracking-wide">Thema --</span>
+                    <h2 id="active-topic-title-de" class="text-xl md:text-2xl font-black text-slate-800 leading-tight">Wähle ein Thema aus</h2>
+                    <h3 id="active-topic-title-en" class="text-sm italic text-slate-400 mt-1 font-medium">Select a topic from the sidebar</h3>
+                </div>
+
+                <!-- Control Station -->
+                <div class="flex flex-wrap items-center gap-3 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100">
+                    
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Ansichtsmodus</span>
+                        <select id="lang-view" class="text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                            <option value="both">Bilinguale Ansicht (DE & EN)</option>
+                            <option value="de">Nur Deutsch (Prüfungsmodus)</option>
+                            <option value="en">Nur Englisch (Translation)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Highlighting</span>
+                        <button id="toggle-highlights" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors">
+                            Hervorhebung: AN
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Audio</span>
+                        <button id="speech-btn" class="text-xs bg-white hover:bg-slate-100 text-slate-700 font-bold rounded-lg px-4 py-2 border border-slate-200 shadow-sm transition-colors flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            Anhören
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Lernstatus</span>
+                        <button id="learned-toggle" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-lg px-4 py-2 border border-emerald-200 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Gelernt
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- DYNAMIC CARD WRAPPER -->
+            <div id="active-topic-container" class="space-y-6">
+                <!-- Rendered dynamically -->
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MAIN APP JS ENGINE -->
+    <script>
+        const CONNECTORS = [
+            "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
+            "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
+            "Vielleicht können wir uns darauf einigen", "Zusammenfassend lässt sich sagen", 
+            "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
+        ];
+
+        // Global Variables
+        let TOPICS_DATA = [];
+        let activeIdx = 0;
+        let showHighlights = true;
+        let activeView = "both";
+        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+
+        // Fetch API Loader to fetch database asynchronously
+        async function loadTopics() {
+            try {
+                const response = await fetch('topics.json');
+                if (!response.ok) {
+                    throw new Error('Netzwerk-Antwort war nicht in Ordnung');
+                }
+                TOPICS_DATA = await response.json();
+                renderSidebar();
+                renderActiveTopic();
+            } catch (error) {
+                console.error("Fehler beim Laden der Themen:", error);
+                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500'>Fehler beim Laden von 'topics.json'.</span>";
+                document.getElementById('active-topic-title-en').textContent = "Please ensure 'topics.json' is in the same directory and hosted on a local or remote server.";
+            }
+        }
+
+        // Dynamic highlight engine
+        function applyHighlights(text) {
+            if (!showHighlights) return text;
+            let result = text;
+            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
+            sorted.forEach(word => {
+                const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
+                result = result.replace(regex, `<span class="highlight">$&</span>`);
+            });
+            return result;
+        }
+
+        // Initialize and update the sidebar
+        function renderSidebar() {
+            const listContainer = document.getElementById('topic-list');
+            listContainer.innerHTML = "";
+            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+
+            TOPICS_DATA.forEach((topic, index) => {
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
+                    return;
+                }
+
+                const isActive = index === activeIdx;
+                const isLearned = learnedList.includes(topic.id);
+
+                const tab = document.createElement('button');
+                tab.className = `w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 relative ${
+                    isActive 
+                    ? 'bg-indigo-50/50 border-indigo-200 ring-2 ring-indigo-500/10' 
+                    : 'bg-transparent border-transparent hover:bg-slate-50'
+                }`;
+
+                const icon = isLearned 
+                    ? `<span class="text-emerald-500 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></span>`
+                    : `<span class="text-slate-300 font-bold text-xs mt-1">${topic.id}</span>`;
+
+                tab.innerHTML = `
+                    ${icon}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold truncate ${isActive ? 'text-indigo-600' : 'text-slate-700'}">${topic.title_de}</p>
+                        <p class="text-xs truncate text-slate-400 mt-0.5 italic">${topic.title_en}</p>
+                    </div>
+                `;
+
+                tab.onclick = () => {
+                    activeIdx = index;
+                    renderSidebar();
+                    renderActiveTopic();
+                    document.getElementById('sidebar').classList.add('-translate-x-full');
+                };
+
+                listContainer.appendChild(tab);
+            });
+
+            updateProgress();
+        }
+
+        // Progress indicators calculator
+        function updateProgress() {
+            if (TOPICS_DATA.length === 0) return;
+            const count = learnedList.length;
+            const percentage = (count / TOPICS_DATA.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${count} / ${TOPICS_DATA.length}`;
+        }
+
+        // Active Topic Renderer
+        function renderActiveTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topic = TOPICS_DATA[activeIdx];
+            
+            // Text Header update
+            document.getElementById('active-topic-num').textContent = `Thema ${topic.id}`;
+            document.getElementById('active-topic-title-de').textContent = topic.title_de;
+            document.getElementById('active-topic-title-en').textContent = topic.title_en;
+
+            // Update learned button style
+            const isLearned = learnedList.includes(topic.id);
+            const learnedBtn = document.getElementById('learned-toggle');
+            if (isLearned) {
+                learnedBtn.className = "text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors flex items-center gap-1.5";
+                learnedBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Gelernt`;
+            } else {
+                learnedBtn.className = "text-xs bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-lg px-4 py-2 border border-slate-200 transition-colors flex items-center gap-1.5 shadow-sm";
+                learnedBtn.innerHTML = `<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Als gelernt markieren`;
+            }
+
+            const container = document.getElementById('active-topic-container');
+            container.innerHTML = "";
+
+            const deClass = activeView === 'en' ? 'hidden' : 'block';
+            const enClass = activeView === 'de' ? 'hidden' : 'block';
+
+            // 1. EINLEITUNG CARD
+            const einleitungCard = document.createElement('div');
+            einleitungCard.className = "bg-white border-l-4 border-l-indigo-500 border border-slate-100 rounded-xl p-6 shadow-sm";
+            einleitungCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-3">1. Einleitung / <span class="italic font-medium text-slate-400">Introduction</span></h4>
+                <p class="${deClass} text-slate-700 font-semibold text-base leading-relaxed">${applyHighlights(topic.einleitung_de)}</p>
+                <p class="${enClass} text-slate-400 italic text-sm mt-2">${topic.einleitung_en}</p>
+            `;
+            container.appendChild(einleitungCard);
+
+            // 2. PRO & CONTRA CONTAINER (Grid system)
+            const proContraGrid = document.createElement('div');
+            proContraGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+            // PRO CARD
+            const proCard = document.createElement('div');
+            proCard.className = "bg-white border-l-4 border-l-emerald-500 border border-slate-100 rounded-xl p-6 shadow-sm flex flex-col justify-between";
+            let proItems = "";
+            topic.pro_de.forEach((deText, index) => {
+                proItems += `
+                    <div class="mb-4 last:mb-0">
+                        <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(deText)}</p>
+                        <p class="${enClass} text-slate-400 italic text-xs mt-1">${topic.pro_en[index]}</p>
+                    </div>
+                `;
+            });
+            proCard.innerHTML = `
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-3">2. Dafür (Pro) / <span class="italic font-medium text-slate-400">Pros & Arguments</span></h4>
+                    <div class="space-y-3">${proItems}</div>
+                </div>
+            `;
+            proContraGrid.appendChild(proCard);
+
+            // CONTRA CARD
+            const contraCard = document.createElement('div');
+            contraCard.className = "bg-white border-l-4 border-l-rose-500 border border-slate-100 rounded-xl p-6 shadow-sm flex flex-col justify-between";
+            let contraItems = "";
+            topic.contra_de.forEach((deText, index) => {
+                contraItems += `
+                    <div class="mb-4 last:mb-0">
+                        <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(deText)}</p>
+                        <p class="${enClass} text-slate-400 italic text-xs mt-1">${topic.contra_en[index]}</p>
+                    </div>
+                `;
+            });
+            contraCard.innerHTML = `
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-600 mb-3">3. Dagegen (Contra) / <span class="italic font-medium text-slate-400">Cons & Arguments</span></h4>
+                    <div class="space-y-3">${contraItems}</div>
+                </div>
+            `;
+            proContraGrid.appendChild(contraCard);
+            container.appendChild(proContraGrid);
+
+            // 3. PERSÖNLICHE ERFAHRUNG CARD
+            const erfahrungCard = document.createElement('div');
+            erfahrungCard.className = "bg-white border-l-4 border-l-amber-500 border border-slate-100 rounded-xl p-6 shadow-sm";
+            erfahrungCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 mb-3">4. Persönliche Erfahrung / <span class="italic font-medium text-slate-400">Personal Experience</span></h4>
+                <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(topic.pers_erfahrung_de)}</p>
+                <p class="${enClass} text-slate-400 italic text-xs mt-2">${topic.pers_erfahrung_en}</p>
+            `;
+            container.appendChild(erfahrungCard);
+
+            // 4. SIMULATION / DIALOG CARD
+            const simulationCard = document.createElement('div');
+            simulationCard.className = "bg-white border-l-4 border-l-purple-500 border border-slate-100 rounded-xl p-6 shadow-sm space-y-4";
+            
+            let dialogHtml = "";
+            topic.dialog.forEach((chat) => {
+                const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
+                const roleColor = isA ? "bg-indigo-50 border-indigo-200 text-indigo-700" : "bg-slate-50 border-slate-200 text-slate-700";
+                const alignment = isA ? "text-left" : "text-left md:translate-x-4";
+
+                dialogHtml += `
+                    <div class="p-4 rounded-xl border ${roleColor} ${alignment} transition-all max-w-[95%]">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-1">${chat.role}</span>
+                        <p class="${deClass} text-sm font-semibold leading-relaxed">${applyHighlights(chat.de)}</p>
+                        <p class="${enClass} text-xs italic text-slate-400 mt-1">${chat.en}</p>
+                    </div>
+                `;
+            });
+
+            simulationCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-purple-600 mb-3">5. Simulation / Dialog / <span class="italic font-medium text-slate-400">Discussion Transcript</span></h4>
+                <div class="space-y-3.5">${dialogHtml}</div>
+            `;
+            container.appendChild(simulationCard);
+
+            // 5. GEMEINSAME LÖSUNG CARD
+            const schlussCard = document.createElement('div');
+            schlussCard.className = "bg-white border-l-4 border-l-yellow-500 border border-slate-100 rounded-xl p-6 shadow-sm";
+            schlussCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-600 mb-3">6. Gemeinsame Lösung / Schlussfolgerung / <span class="italic font-medium text-slate-400">Conclusion</span></h4>
+                <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(topic.schluss_de)}</p>
+                <p class="${enClass} text-slate-400 italic text-xs mt-2">${topic.schluss_en}</p>
+            `;
+            container.appendChild(schlussCard);
+
+            // 6. SCHLÜSSELWÖRTER CARD
+            const keywordsCard = document.createElement('div');
+            keywordsCard.className = "bg-white border-l-4 border-l-slate-400 border border-slate-100 rounded-xl p-6 shadow-sm";
+            
+            const kwBadges = topic.keywords.split(', ').map(kw => {
+                return `<span class="inline-block bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg transition-transform hover:scale-105 select-none cursor-default">${kw}</span>`;
+            }).join(' ');
+
+            keywordsCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">7. Schlüsselwörter / <span class="italic font-medium text-slate-400">Keywords</span></h4>
+                <div class="flex flex-wrap gap-2">${kwBadges}</div>
+            `;
+            container.appendChild(keywordsCard);
+        }
+
+        // German Text-To-Speech implementation
+        function playSpeech() {
+            if (TOPICS_DATA.length === 0) return;
+            const topic = TOPICS_DATA[activeIdx];
+            let blocks = [];
+            
+            blocks.push(topic.einleitung_de);
+            topic.pro_de.forEach(txt => blocks.push(deClassTextOnly(txt)));
+            topic.contra_de.forEach(txt => blocks.push(deClassTextOnly(txt)));
+            blocks.push(topic.pers_erfahrung_de);
+            topic.dialog.forEach(chat => blocks.push(`${chat.role}: ${chat.de}`));
+            blocks.push(topic.schluss_de);
+
+            const speechText = blocks.join(". ");
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(speechText);
+                utterance.lang = 'de-DE';
+                utterance.rate = 0.95; 
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Die Sprachausgabe wird von Ihrem Browser nicht unterstützt.");
+            }
+        }
+
+        // Local storage learned list operations
+        document.getElementById('learned-toggle').onclick = () => {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (learnedList.includes(topicId)) {
+                learnedList = learnedList.filter(id => id !== topicId);
+            } else {
+                learnedList.push(topicId);
+            }
+            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        // Interactive changes
+        document.getElementById('lang-view').addEventListener('change', (e) => {
+            activeView = e.target.value;
+            renderActiveTopic();
+        });
+
+        // Toggle highlights configuration
+        const highlightsBtn = document.getElementById('toggle-highlights');
+        highlightsBtn.onclick = () => {
+            showHighlights = !showHighlights;
+            highlightsBtn.textContent = showHighlights ? "Hervorhebung: AN" : "Hervorhebung: AUS";
+            highlightsBtn.className = showHighlights 
+                ? "text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors"
+                : "text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg px-4 py-2 border border-slate-300 transition-colors";
+            renderActiveTopic();
+        };
+
+        // Search trigger
+        document.getElementById('search-bar').addEventListener('input', () => {
+            renderSidebar();
+        });
+
+        // Speech activation trigger
+        document.getElementById('speech-btn').onclick = () => {
+            playSpeech();
+        };
+
+        // Mobile Nav Drawer Toggle
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            document.getElementById('menu-icon').innerHTML = isHidden 
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        });
+
+        // Initialize App
+        loadTopics();
+    </script>
+</body>
+</html>
