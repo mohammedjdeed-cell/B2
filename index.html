@@ -340,15 +340,6 @@
 
     <!-- MAIN APP JS ENGINE -->
     <script>
-        // PWA Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker registered successfully!', reg.scope))
-                    .catch(err => console.error('Service Worker registration failed:', err));
-            });
-        }
-
         const CONNECTORS = [
             "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
             "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
@@ -691,7 +682,9 @@
                     if (replaced) {
                         const span = document.createElement('span');
                         span.innerHTML = safeHTML;
-                        node.parentNode.replaceChild(span, node);
+                        if (node.parentNode) {
+                            node.parentNode.replaceChild(span, node);
+                        }
                     }
                 } else if (node.nodeType === Node.ELEMENT_NODE) {
                     // Do not process nested highlights recursively
@@ -714,8 +707,18 @@
                 let newVal = element.innerHTML.trim();
                 if (isArray) {
                     if (subKey) {
+                        // Ensure array, index, and subkey container object exist before assignment
+                        if (!TOPICS_DATA[activeIdx][keyPath]) {
+                            TOPICS_DATA[activeIdx][keyPath] = [];
+                        }
+                        if (!TOPICS_DATA[activeIdx][keyPath][index]) {
+                            TOPICS_DATA[activeIdx][keyPath][index] = {};
+                        }
                         TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
                     } else {
+                        if (!TOPICS_DATA[activeIdx][keyPath]) {
+                            TOPICS_DATA[activeIdx][keyPath] = [];
+                        }
                         TOPICS_DATA[activeIdx][keyPath][index] = newVal;
                     }
                 } else {
@@ -1246,13 +1249,26 @@
         // Initialize App
         loadTopics();
     </script>
-    <!-- Add this registration script before </body> -->
+
+    <!-- Unified PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker registered successfully!', reg))
-                    .catch(err => console.error('Service Worker registration failed:', err));
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('[PWA] Registered and active with scope:', reg.scope);
+                        
+                        // Detect waiting updates to notify the user
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[PWA] New version ready. Please refresh the page to update.');
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.error('[PWA] Registration failed:', err));
             });
         }
     </script>
