@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TELC B2 Diskussionstrainer (Themen 1 - 52)</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="B2 Trainer">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3251/3251521.png">
+
     <!-- Tailwind CSS for sleek modern design -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -176,6 +185,11 @@
                     <button id="reset-edits-btn" class="w-full text-[11px] text-red-600 dark:text-red-400 hover:underline font-bold transition-all text-center block hidden py-1">
                         Änderungen zurücksetzen
                     </button>
+                    <!-- PWA Install Button -->
+                    <button id="pwa-install-btn" class="hidden w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2.5 border border-emerald-500 shadow-sm transition-colors flex items-center justify-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>App installieren</span>
+                    </button>
                 </div>
             </div>
         </aside>
@@ -184,7 +198,7 @@
         <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
 
             <!-- CLOUD SYNC & WORKSPACE STATUS PANEL -->
-            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-[#E2E8F0] dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200 animate-fadeIn">
+            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-[#E2E8F0] dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200">
                 <!-- Logged Out View -->
                 <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -315,6 +329,15 @@
 
     <!-- MAIN APP JS ENGINE -->
     <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered successfully!', reg.scope))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
+
         const CONNECTORS = [
             "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
             "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
@@ -397,6 +420,17 @@
                 toolsChevron.classList.remove('rotate-180');
             }
         };
+
+        // Helper function to safely slide the mobile sidebar menu closed
+        function closeSidebarMobile() {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
+                }
+            }
+        }
 
         // Auth state tracking listener
         auth.onAuthStateChanged(async (user) => {
@@ -777,7 +811,7 @@
                     activeIdx = index;
                     renderSidebar();
                     renderActiveTopic();
-                    document.getElementById('sidebar').classList.add('-translate-x-full');
+                    closeSidebarMobile();
                 };
 
                 listContainer.appendChild(tab);
@@ -1095,6 +1129,7 @@
             const editTipBanner = document.getElementById('edit-tip-banner');
             if (isEditMode) {
                 editTipBanner.classList.remove('hidden');
+                closeSidebarMobile(); // Auto-close drawer so workspace edits are visible immediately
             } else {
                 editTipBanner.classList.add('hidden');
                 hideToolbar();
@@ -1113,7 +1148,7 @@
             playSpeech();
         };
 
-        // Mobile Nav Drawer Toggle
+        // Mobile Nav Drawer Toggle (Does not alter editing state)
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobile-nav-toggle');
         mobileToggle.addEventListener('click', () => {
@@ -1122,6 +1157,33 @@
             document.getElementById('menu-icon').innerHTML = isHidden 
                 ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
                 : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        });
+
+        // PWA Install Prompt Event Listener
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        const installBtn = document.getElementById('pwa-install-btn');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User installation decision: ${outcome}`);
+                deferredPrompt = null;
+                installBtn.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA app installed successfully!');
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.add('hidden');
         });
 
         // Initialize App
