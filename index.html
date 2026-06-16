@@ -33,6 +33,37 @@
             color: #0F172A;
             border-bottom: 2px solid #CA8A04;
         }
+
+        /* Modern Custom User Highlights (Transparent) */
+        .hl-yellow {
+            background-color: rgba(253, 224, 71, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .hl-orange {
+            background-color: rgba(249, 115, 22, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .hl-blue {
+            background-color: rgba(59, 130, 246, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        /* Dark Mode Highlighting refinements */
+        .dark .hl-yellow {
+            background-color: rgba(253, 224, 71, 0.25) !important;
+            color: #fef08a;
+        }
+        .dark .hl-orange {
+            background-color: rgba(249, 115, 22, 0.25) !important;
+            color: #ffedd5;
+        }
+        .dark .hl-blue {
+            background-color: rgba(59, 130, 246, 0.25) !important;
+            color: #dbeafe;
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -185,12 +216,40 @@
                 </div>
             </div>
 
+            <!-- EDITING TIP BANNER (Visible only in edit mode) -->
+            <div id="edit-tip-banner" class="hidden bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 flex items-center gap-3 transition-all duration-200 shadow-sm">
+                <span class="text-indigo-500 text-lg">💡</span>
+                <p class="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
+                    <strong class="text-indigo-600 dark:text-indigo-400">Bearbeitungs-Tipp:</strong> Markieren Sie beliebigen Text in den bearbeitbaren Feldern, um das schwebende Menü anzuzeigen. Dort können Sie ausgewählte Abschnitte <strong class="font-extrabold">Fett</strong> machen oder mit den Farben <span class="text-yellow-600 dark:text-yellow-400 font-bold">Gelb</span>, <span class="text-orange-500 dark:text-orange-400 font-bold">Orange</span> und <span class="text-blue-500 dark:text-blue-400 font-bold">Blau</span> hervorheben.
+                </p>
+            </div>
+
             <!-- DYNAMIC CARD WRAPPER -->
             <div id="active-topic-container" class="space-y-6">
                 <!-- Rendered dynamically -->
             </div>
 
         </main>
+    </div>
+
+    <!-- FLOATING RICH TEXT EDITING TOOLBAR -->
+    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5 dark:ring-white/5">
+        <!-- Bold Button -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2.5 py-1 text-xs font-black text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors shadow-sm" title="Fett">
+            B
+        </button>
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <!-- Highlight Colors -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400/40 hover:scale-110 active:scale-95 border border-yellow-400 transition-all shadow-inner" title="Gelb hervorheben"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-6 h-6 rounded-full bg-orange-400/40 hover:scale-110 active:scale-95 border border-orange-400 transition-all shadow-inner" title="Orange hervorheben"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400/40 hover:scale-110 active:scale-95 border border-blue-400 transition-all shadow-inner" title="Blau hervorheben"></button>
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <!-- Clear Formatting -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 dark:hover:border-rose-900 transition-all" title="Formatierung aufheben">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </button>
     </div>
 
     <!-- MAIN APP JS ENGINE -->
@@ -302,26 +361,58 @@
             return temp.textContent || temp.innerText || "";
         }
 
-        // Dynamic highlight engine
-        function applyHighlights(text) {
-            if (!showHighlights) return text;
-            let result = text;
+        // DOM-based connector highlighting engine (safe for embedded tags & style wrappers)
+        function applyHighlights(htmlText) {
+            if (!showHighlights) return htmlText;
+            
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+
             const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
-            sorted.forEach(word => {
-                const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
-                result = result.replace(regex, `<span class="highlight">$&</span>`);
-            });
-            return result;
+
+            function highlightNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.nodeValue;
+                    let replaced = false;
+
+                    // Escape HTML properties inside text block temporarily
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    let safeHTML = div.innerHTML;
+
+                    sorted.forEach(word => {
+                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
+                        if (regex.test(safeHTML)) {
+                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
+                            replaced = true;
+                        }
+                    });
+
+                    if (replaced) {
+                        const span = document.createElement('span');
+                        span.innerHTML = safeHTML;
+                        node.parentNode.replaceChild(span, node);
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Do not process nested highlights recursively
+                    if (!node.classList.contains('highlight')) {
+                        Array.from(node.childNodes).forEach(highlightNode);
+                    }
+                }
+            }
+
+            Array.from(temp.childNodes).forEach(highlightNode);
+            return temp.innerHTML;
         }
 
-        // Helper function to programmatically bind editable inputs with auto-save triggers
+        // Helper function to programmatically bind editable inputs with auto-save triggers (using innerHTML)
         function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
             if (!element) return;
             element.contentEditable = "true";
             element.classList.add("border-b", "border-dashed", "border-indigo-400/50", "dark:border-indigo-500/50", "hover:bg-indigo-50/50", "dark:hover:bg-indigo-950/20", "transition-colors", "cursor-text", "focus:bg-transparent", "focus:outline-none");
             element.addEventListener('blur', () => {
-                let newVal = element.innerText.trim();
+                let newVal = element.innerHTML.trim();
                 if (isArray) {
                     if (subKey) {
                         TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
@@ -334,6 +425,112 @@
                 saveEdits();
             });
         }
+
+        // Active selection formatter implementation
+        function applySelectionFormat(type, value) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+            const range = selection.getRangeAt(0);
+
+            if (type === 'bold') {
+                document.execCommand('bold', false, null);
+            } else if (type === 'highlight') {
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {
+                    // Fallback using execCommand backColor if DOM hierarchy extraction fails
+                    document.execCommand('backColor', false, value === 'yellow' ? 'rgba(253, 224, 71, 0.4)' : (value === 'orange' ? 'rgba(249, 115, 22, 0.4)' : 'rgba(147, 197, 253, 0.4)'));
+                }
+            } else if (type === 'clear') {
+                document.execCommand('removeFormat', false, null);
+                document.execCommand('backColor', false, 'transparent');
+                
+                // Clear custom hl span nodes if matching selection structure
+                let node = selection.anchorNode;
+                while (node && node.nodeType !== Node.ELEMENT_NODE) {
+                    node = node.parentNode;
+                }
+                if (node && (node.className.includes('hl-yellow') || node.className.includes('hl-orange') || node.className.includes('hl-blue'))) {
+                    const parent = node.parentNode;
+                    while (node.firstChild) {
+                        parent.insertBefore(node.firstChild, node);
+                    }
+                    parent.removeChild(node);
+                }
+            }
+
+            // Fire active contenteditable blur event immediately to save HTML modifications
+            let activeContainer = selection.anchorNode;
+            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+                activeContainer = activeContainer.parentNode;
+            }
+            if (activeContainer && activeContainer.hasAttribute('contenteditable')) {
+                activeContainer.dispatchEvent(new Event('blur'));
+            }
+
+            // Re-evaluate floating toolbar position
+            handleSelectionChange();
+        }
+
+        // Toolbar positioning engine
+        function handleSelectionChange() {
+            if (!isEditMode) {
+                hideToolbar();
+                return;
+            }
+
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+                hideToolbar();
+                return;
+            }
+
+            // Check if selection context resides inside a valid contenteditable node
+            let parent = selection.anchorNode;
+            let isInsideEditable = false;
+            while (parent) {
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
+                    isInsideEditable = true;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+
+            if (!isInsideEditable) {
+                hideToolbar();
+                return;
+            }
+
+            // Adjust layout positioning above selection range
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('formatting-toolbar');
+
+            toolbar.classList.remove('hidden');
+
+            const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+
+            const top = rect.top + window.scrollY - toolbarHeight - 10;
+            const left = rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2);
+
+            toolbar.style.top = `${top}px`;
+            toolbar.style.left = `${left}px`;
+        }
+
+        function hideToolbar() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (toolbar) toolbar.classList.add('hidden');
+        }
+
+        document.addEventListener('selectionchange', handleSelectionChange);
+        window.addEventListener('resize', hideToolbar);
+        window.addEventListener('scroll', hideToolbar);
 
         // Initialize and update the sidebar
         function renderSidebar() {
@@ -588,13 +785,21 @@
             }
 
             // 6. SCHLÜSSELWÖRTER CARD
+            let kwBadges = "";
+            if (topic.keywords) {
+                const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
+                list.forEach(kw => {
+                    kwBadges += `<span class="px-2.5 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-600">${kw}</span>`;
+                });
+            }
+
             const keywordsCard = document.createElement('div');
             keywordsCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-slate-400 border border-slate-100 dark:border-slate-700/50 rounded-xl p-6 shadow-sm transition-colors duration-200";
             keywordsCard.innerHTML = `
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">7. Schlüsselwörter / <span class="italic font-medium text-slate-400 dark:text-slate-500">Keywords</span></h4>
                 <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
                 <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
-                    <input type="text" class="w-full text-xs font-mono bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg p-2" value="${topic.keywords}" />
+                    <input type="text" class="w-full text-xs font-mono bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg p-2" value="${topic.keywords || ''}" />
                 </div>
             `;
             container.appendChild(keywordsCard);
@@ -678,6 +883,15 @@
             editModeToggle.classList.toggle('dark:text-slate-200', !isEditMode);
             
             editModeToggle.querySelector('span').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            
+            const editTipBanner = document.getElementById('edit-tip-banner');
+            if (isEditMode) {
+                editTipBanner.classList.remove('hidden');
+            } else {
+                editTipBanner.classList.add('hidden');
+                hideToolbar();
+            }
+
             renderActiveTopic(); // Re-render target elements to bind contenteditable properties
         };
 
