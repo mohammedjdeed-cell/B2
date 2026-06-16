@@ -89,7 +89,7 @@
             background: #64748b;
         }
     </style>
-    <!-- Firebase SDK Compat libraries -->
+    <!-- Firebase SDK Compat Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -184,7 +184,7 @@
         <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
 
             <!-- CLOUD SYNC & WORKSPACE STATUS PANEL -->
-            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-[#E2E8F0] dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200">
+            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-[#E2E8F0] dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200 animate-fadeIn">
                 <!-- Logged Out View -->
                 <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -322,6 +322,23 @@
             "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
         ];
 
+        // Firebase Configuration Information
+        const firebaseConfig = {
+          apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+          authDomain: "b2telc-6e061.firebaseapp.com",
+          databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "b2telc-6e061",
+          storageBucket: "b2telc-6e061.firebasestorage.app",
+          messagingSenderId: "593882455085",
+          appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+          measurementId: "G-SPHLVHRL6K"
+        };
+
+        // Initialize Firebase services
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // Global Variables
         let TOPICS_DATA = [];
         let activeIdx = 0;
@@ -329,6 +346,9 @@
         let activeView = "both";
         let isEditMode = false;
         let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        
+        let currentUser = null; // Currently logged in workspace user
+        let editedTopicIds = []; // Tracks which topics have custom edits in this workspace
 
         // Theme Toggle Elements
         const themeToggle = document.getElementById('theme-toggle');
@@ -378,45 +398,141 @@
             }
         };
 
-        // Fetch API Loader to fetch database asynchronously
+        // Auth state tracking listener
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-logged-out').classList.add('hidden');
+                document.getElementById('auth-logged-in').classList.remove('hidden');
+                
+                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
+                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Alle Änderungen werden automatisch in der Cloud gesichert.`;
+                
+                await loadTopics();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-logged-out').classList.remove('hidden');
+                document.getElementById('auth-logged-in').classList.add('hidden');
+                
+                await loadTopics();
+            }
+        });
+
+        // Trigger sign-in operations mapping user nicknames to secure email credentials
+        document.getElementById('btn-login').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+
+            if (!password) {
+                alert("Bitte geben Sie das Passwort ein.");
+                return;
+            }
+
+            try {
+                const loginBtn = document.getElementById('btn-login');
+                loginBtn.disabled = true;
+                loginBtn.textContent = "Lädt...";
+
+                await auth.signInWithEmailAndPassword(email, password);
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Anmeldung fehlgeschlagen: " + err.message);
+            } finally {
+                const loginBtn = document.getElementById('btn-login');
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Arbeitsbereich laden";
+            }
+        };
+
+        document.getElementById('btn-logout').onclick = () => {
+            auth.signOut();
+        };
+
+        // Fetch API Loader with overlay modifications matching active user credentials
         async function loadTopics() {
             try {
-                // Check if local modified database exists
-                const localEdits = localStorage.getItem('edited_topics_data_1_52');
-                if (localEdits) {
-                    TOPICS_DATA = JSON.parse(localEdits);
-                    showResetButton();
-                    renderSidebar();
-                    renderActiveTopic();
-                } else {
-                    const response = await fetch('topics.json');
-                    if (!response.ok) {
-                        throw new Error('Netzwerk-Antwort war nicht in Ordnung');
-                    }
-                    TOPICS_DATA = await response.json();
-                    showResetButton();
-                    renderSidebar();
-                    renderActiveTopic();
+                // Fetch default database from topics.json
+                const response = await fetch('topics.json');
+                if (!response.ok) {
+                    throw new Error('Netzwerk-Antwort war nicht in Ordnung');
                 }
+                let baseTopics = await response.json();
+                
+                editedTopicIds = []; // Clear current list of edited identifiers
+
+                if (currentUser) {
+                    // Authenticated: Load personal user overrides from Firestore
+                    const snapshot = await db.collection('users')
+                                             .doc(currentUser.uid)
+                                             .collection('edited_topics')
+                                             .get();
+                    
+                    snapshot.forEach(doc => {
+                        const cloudTopic = doc.data();
+                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                        }
+                        editedTopicIds.push(parseInt(doc.id));
+                    });
+                } else {
+                    // Not Authenticated: Fallback to local storage
+                    const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                    if (localEdits) {
+                        const parsedEdits = JSON.parse(localEdits);
+                        parsedEdits.forEach(localTopic => {
+                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            if (idx !== -1) {
+                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
+                                editedTopicIds.push(localTopic.id);
+                            }
+                        });
+                    }
+                }
+
+                TOPICS_DATA = baseTopics;
+                showResetButton();
+                renderSidebar();
+                renderActiveTopic();
             } catch (error) {
                 console.error("Fehler beim Laden der Themen:", error);
-                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden von 'topics.json'.</span>";
-                document.getElementById('active-topic-title-en').textContent = "Please ensure 'topics.json' is in the same directory and hosted on a local or remote server.";
+                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden der Spieldaten.</span>";
             }
         }
 
-        // Save modifications to LocalStorage
-        function saveEdits() {
-            localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+        // Save modifications to active database context (Firestore or fallback to LocalStorage)
+        async function saveEdits() {
+            const activeTopic = TOPICS_DATA[activeIdx];
+            
+            // Add current active id to list of edited entries if not already stored
+            if (!editedTopicIds.includes(activeTopic.id)) {
+                editedTopicIds.push(activeTopic.id);
+            }
+
+            if (currentUser) {
+                try {
+                    await db.collection('users')
+                            .doc(currentUser.uid)
+                            .collection('edited_topics')
+                            .doc(activeTopic.id.toString())
+                            .set(activeTopic);
+                } catch (err) {
+                    console.error("Fehler beim Speichern in Cloud:", err);
+                }
+            } else {
+                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            }
+            
             showResetButton();
-            // Re-render sidebar in case a title was changed
             renderSidebar();
         }
 
-        // Toggle visibility of the reset button
+        // Toggle visibility of the reset button based on whether custom edits exist
         function showResetButton() {
             const resetBtn = document.getElementById('reset-edits-btn');
-            if (localStorage.getItem('edited_topics_data_1_52')) {
+            const activeTopic = TOPICS_DATA[activeIdx];
+            if (activeTopic && editedTopicIds.includes(activeTopic.id)) {
                 resetBtn.classList.remove('hidden');
             } else {
                 resetBtn.classList.add('hidden');
@@ -424,10 +540,25 @@
         }
 
         // Reset all modified data back to default topics.json
-        document.getElementById('reset-edits-btn').onclick = () => {
+        document.getElementById('reset-edits-btn').onclick = async () => {
             if (confirm("Möchten Sie alle Ihre vorgenommenen Änderungen verwerfen und die Originaldaten wiederherstellen?")) {
-                localStorage.removeItem('edited_topics_data_1_52');
-                loadTopics();
+                const activeTopic = TOPICS_DATA[activeIdx];
+                if (currentUser) {
+                    try {
+                        await db.collection('users')
+                                .doc(currentUser.uid)
+                                .collection('edited_topics')
+                                .doc(activeTopic.id.toString())
+                                .delete();
+                    } catch (err) {
+                        console.error("Fehler beim Löschen des Cloud-Dokuments:", err);
+                    }
+                } else {
+                    let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
+                    localEdits = localEdits.filter(t => t.id !== activeTopic.id);
+                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
+                }
+                await loadTopics();
             }
         };
 
