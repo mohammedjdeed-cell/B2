@@ -102,8 +102,11 @@
                         <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Ansichtsmodus</span>
                         <select id="lang-view" class="text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
                             <option value="both">Bilinguale Ansicht (DE & EN)</option>
+                            <option value="de_ar">Bilinguale Ansicht (DE & AR)</option>
+                            <option value="all">Trilinguale Ansicht (DE, EN & AR)</option>
                             <option value="de">Nur Deutsch (Prüfungsmodus)</option>
                             <option value="en">Nur Englisch (Translation)</option>
+                            <option value="ar">Nur Arabisch (Translation)</option>
                         </select>
                     </div>
 
@@ -172,6 +175,13 @@
                 document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500'>Fehler beim Laden von 'topics.json'.</span>";
                 document.getElementById('active-topic-title-en').textContent = "Please ensure 'topics.json' is in the same directory and hosted on a local or remote server.";
             }
+        }
+
+        // Helper function to strip HTML tags for Speech Synthesis
+        function deClassTextOnly(htmlText) {
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+            return temp.textContent || temp.innerText || "";
         }
 
         // Dynamic highlight engine
@@ -266,8 +276,10 @@
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
-            const deClass = activeView === 'en' ? 'hidden' : 'block';
-            const enClass = activeView === 'de' ? 'hidden' : 'block';
+            // Visibility classes mapping
+            const deClass = (activeView === 'both' || activeView === 'de_ar' || activeView === 'all' || activeView === 'de') ? 'block' : 'hidden';
+            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? 'block' : 'hidden';
+            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? 'block' : 'hidden';
 
             // 1. EINLEITUNG CARD
             const einleitungCard = document.createElement('div');
@@ -276,6 +288,7 @@
                 <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-3">1. Einleitung / <span class="italic font-medium text-slate-400">Introduction</span></h4>
                 <p class="${deClass} text-slate-700 font-semibold text-base leading-relaxed">${applyHighlights(topic.einleitung_de)}</p>
                 <p class="${enClass} text-slate-400 italic text-sm mt-2">${topic.einleitung_en}</p>
+                <p class="${arClass} text-slate-600 font-medium text-sm mt-2 text-right leading-relaxed" dir="rtl">${topic.einleitung_ar || ''}</p>
             `;
             container.appendChild(einleitungCard);
 
@@ -288,10 +301,13 @@
             proCard.className = "bg-white border-l-4 border-l-emerald-500 border border-slate-100 rounded-xl p-6 shadow-sm flex flex-col justify-between";
             let proItems = "";
             topic.pro_de.forEach((deText, index) => {
+                const enText = topic.pro_en ? topic.pro_en[index] : '';
+                const arText = topic.pro_ar ? topic.pro_ar[index] : '';
                 proItems += `
                     <div class="mb-4 last:mb-0">
                         <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(deText)}</p>
-                        <p class="${enClass} text-slate-400 italic text-xs mt-1">${topic.pro_en[index]}</p>
+                        <p class="${enClass} text-slate-400 italic text-xs mt-1">${enText}</p>
+                        <p class="${arClass} text-slate-600 font-medium text-xs mt-1 text-right" dir="rtl">${arText}</p>
                     </div>
                 `;
             });
@@ -308,10 +324,13 @@
             contraCard.className = "bg-white border-l-4 border-l-rose-500 border border-slate-100 rounded-xl p-6 shadow-sm flex flex-col justify-between";
             let contraItems = "";
             topic.contra_de.forEach((deText, index) => {
+                const enText = topic.contra_en ? topic.contra_en[index] : '';
+                const arText = topic.contra_ar ? topic.contra_ar[index] : '';
                 contraItems += `
                     <div class="mb-4 last:mb-0">
                         <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(deText)}</p>
-                        <p class="${enClass} text-slate-400 italic text-xs mt-1">${topic.contra_en[index]}</p>
+                        <p class="${enClass} text-slate-400 italic text-xs mt-1">${enText}</p>
+                        <p class="${arClass} text-slate-600 font-medium text-xs mt-1 text-right" dir="rtl">${arText}</p>
                     </div>
                 `;
             });
@@ -331,6 +350,7 @@
                 <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 mb-3">4. Persönliche Erfahrung / <span class="italic font-medium text-slate-400">Personal Experience</span></h4>
                 <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(topic.pers_erfahrung_de)}</p>
                 <p class="${enClass} text-slate-400 italic text-xs mt-2">${topic.pers_erfahrung_en}</p>
+                <p class="${arClass} text-slate-600 font-medium text-xs mt-2 text-right leading-relaxed" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
             container.appendChild(erfahrungCard);
 
@@ -349,6 +369,7 @@
                         <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-1">${chat.role}</span>
                         <p class="${deClass} text-sm font-semibold leading-relaxed">${applyHighlights(chat.de)}</p>
                         <p class="${enClass} text-xs italic text-slate-400 mt-1">${chat.en}</p>
+                        <p class="${arClass} text-xs text-slate-600 font-medium mt-1 text-right leading-relaxed" dir="rtl">${chat.ar || ''}</p>
                     </div>
                 `;
             });
@@ -366,6 +387,7 @@
                 <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-600 mb-3">6. Gemeinsame Lösung / Schlussfolgerung / <span class="italic font-medium text-slate-400">Conclusion</span></h4>
                 <p class="${deClass} text-slate-700 font-semibold text-sm leading-relaxed">${applyHighlights(topic.schluss_de)}</p>
                 <p class="${enClass} text-slate-400 italic text-xs mt-2">${topic.schluss_en}</p>
+                <p class="${arClass} text-slate-600 font-medium text-xs mt-2 text-right leading-relaxed" dir="rtl">${topic.schluss_ar || ''}</p>
             `;
             container.appendChild(schlussCard);
 
