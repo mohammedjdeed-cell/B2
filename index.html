@@ -206,17 +206,28 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
                             Cloud-Arbeitsbereich inaktiv
                         </h3>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Wählen Sie Ihren Namen und geben Sie das Passwort ein, um Änderungen in der Cloud zu sichern.</p>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Laden Sie Ihren Arbeitsbereich oder erstellen Sie hier ein neues Konto.</p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3">
-                        <select id="user-select" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="mohammed">Mohammed Jdeed</option>
-                            <option value="mai">Mai Hasan</option>
-                        </select>
-                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36">
-                        <button id="btn-login" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
-                            Arbeitsbereich laden
-                        </button>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select id="user-select" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="mohammed">Mohammed Jdeed</option>
+                                <option value="mai">Mai Hasan</option>
+                            </select>
+                            <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36">
+                            <button id="btn-login" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                                Arbeitsbereich laden
+                            </button>
+                            <button id="btn-signup" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                                Konto erstellen
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+                                <input type="checkbox" id="remember-me" checked class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-900 w-3.5 h-3.5">
+                                Angemeldet bleiben
+                            </label>
+                        </div>
                     </div>
                 </div>
                 
@@ -457,6 +468,7 @@
             const userKey = document.getElementById('user-select').value;
             const password = document.getElementById('workspace-password').value;
             const email = `${userKey}@b2telc.com`;
+            const rememberMe = document.getElementById('remember-me').checked;
 
             if (!password) {
                 alert("Bitte geben Sie das Passwort ein.");
@@ -468,6 +480,12 @@
                 loginBtn.disabled = true;
                 loginBtn.textContent = "Lädt...";
 
+                // Apply persistence preference (Session or Indefinite Local)
+                const persistence = rememberMe 
+                    ? firebase.auth.Auth.Persistence.LOCAL 
+                    : firebase.auth.Auth.Persistence.SESSION;
+                
+                await auth.setPersistence(persistence);
                 await auth.signInWithEmailAndPassword(email, password);
                 document.getElementById('workspace-password').value = "";
             } catch (err) {
@@ -476,6 +494,45 @@
                 const loginBtn = document.getElementById('btn-login');
                 loginBtn.disabled = false;
                 loginBtn.textContent = "Arbeitsbereich laden";
+            }
+        };
+
+        // Sign-Up registration flow
+        document.getElementById('btn-signup').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!password) {
+                alert("Bitte geben Sie ein Passwort für die Erstellung ein.");
+                return;
+            }
+            if (password.length < 6) {
+                alert("Das Passwort muss mindestens 6 Zeichen lang sein.");
+                return;
+            }
+
+            try {
+                const signupBtn = document.getElementById('btn-signup');
+                signupBtn.disabled = true;
+                signupBtn.textContent = "Erstellt...";
+
+                // Apply persistence preference (Session or Indefinite Local)
+                const persistence = rememberMe 
+                    ? firebase.auth.Auth.Persistence.LOCAL 
+                    : firebase.auth.Auth.Persistence.SESSION;
+                
+                await auth.setPersistence(persistence);
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("Konto erfolgreich erstellt und Arbeitsbereich geladen!");
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Kontoerstellung fehlgeschlagen: " + err.message);
+            } finally {
+                const signupBtn = document.getElementById('btn-signup');
+                signupBtn.disabled = false;
+                signupBtn.textContent = "Konto erstellen";
             }
         };
 
@@ -531,7 +588,7 @@
                 renderActiveTopic();
             } catch (error) {
                 console.error("Fehler beim Laden der Themen:", error);
-                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden der Spieldaten.</span>";
+                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden der Spieldaten. Bitte stellen Sie sicher, dass die App über einen lokalen/Webserver geladen wird (CORS-Fehlervermeidung).</span>";
             }
         }
 
