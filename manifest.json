@@ -1,22 +1,67 @@
 {
+  "id": "/?source=pwa",
   "name": "TELC B2 Diskussionstrainer",
   "short_name": "B2 Trainer",
-  "description": "TELC B2 Mündliche Prüfung - Diskussionstraining App",
-  "start_url": "index.html",
+  "description": "TELC B2 Mündliche Prüfung - Interaktives Diskussionstraining und Lern-Dashboard.",
+  "categories": ["education", "utilities", "books"],
+  "lang": "de",
+  "dir": "ltr",
+  "scope": "/",
+  "start_url": "/index.html?source=pwa",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#F8FAFC",
   "theme_color": "#4f46e5",
-  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3251/3251521.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3251/3251521.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Themenübersicht",
+      "short_name": "Themen",
+      "description": "Öffne die Liste aller 52 Prüfungsthemen",
+      "url": "/index.html?action=view-topics",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "TELC B2 Dashboard auf dem Desktop"
+    },
+    {
+      "src": "screenshots/mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Interaktive Prüfungssimulation auf dem Mobiltelefon"
     }
   ]
 }
