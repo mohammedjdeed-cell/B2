@@ -38,5 +38,30 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Themenübersicht",
+      "short_name": "Themen",
+      "description": "Öffne die Liste aller 52 Prüfungsthemen",
+      "url": "/index.html?action=view-topics",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "TELC B2 Dashboard auf dem Desktop"
+    },
+    {
+      "src": "screenshots/mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Interaktive Prüfungssimulation auf dem Mobiltelefon"
+    }
   ]
 }
