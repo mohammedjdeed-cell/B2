@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
@@ -110,7 +109,7 @@
         
         [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
         [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
-        [data-theme="dark"] .hl-blue   { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
+        [data-theme="dark"] .hl-blue { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
 
         /* Clean non-breaking border-based word circle */
         .word-circle {
@@ -1397,6 +1396,8 @@
 
         function playBlockAudio(text, buttonEl) {
             window.speechSynthesis.cancel();
+            window.speechSynthesis.resume(); // Chromium engine wake up call
+            
             if (activeSpeakingButton) {
                 activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
             }
@@ -1407,7 +1408,10 @@
             utterance.rate = speed;
 
             const savedVoiceName = localStorage.getItem('b2_selected_voice');
-            const voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
+            let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
+            if (!voiceObj && availableGermanVoices.length > 0) {
+                voiceObj = availableGermanVoices[0]; // fallback
+            }
             if (voiceObj) utterance.voice = voiceObj;
 
             buttonEl.classList.add('animate-pulse', 'text-rose-600');
