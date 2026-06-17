@@ -12,7 +12,7 @@
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#27272a">
+    <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -30,41 +30,49 @@
     
     <style>
         :root {
-            --bg-app:        #F4F4F5; /* Zinc 100 */
+            --bg-app:        #F5F4F0;
             --bg-card:       #FFFFFF;
-            --bg-sidebar:    #FAFAF9;
-            --border:        #E4E4E7; /* Zinc 200 */
-            --text-primary:  #09090B; /* Zinc 950 */
-            --text-muted:    #71717A; /* Zinc 500 */
-            --text-faint:    #A1A1AA; /* Zinc 400 */
-            --accent:        #27272A; /* Zinc 800 */          
-            --accent-light:  #F4F4F5;          
+            --bg-sidebar:    #FAFAF8;
+            --border:        rgba(0,0,0,0.08);
+            --text-primary:  #1A1A1A;
+            --text-muted:    #6B7280;
+            --text-faint:    #9CA3AF;
+            --accent:        #2563EB;          
+            --accent-light:  #EFF6FF;          
             --success:       #16A34A;
             --success-light: #F0FDF4;
             --danger:        #DC2626;
             --danger-light:  #FEF2F2;
-            --shadow-sm:     0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md:     0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.05);
-            --radius-card:   12px;
+            --amber:         #D97706;
+            --amber-light:   #FFFBEB;
+            --purple:        #7C3AED;
+            --purple-light:  #F5F3FF;
+            --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+            --radius-card:   14px;
             --radius-btn:    8px;
         }
 
         [data-theme="dark"] {
-            --bg-app:        #09090B; /* Zinc 950 */
-            --bg-card:       #18181B; /* Zinc 900 */
-            --bg-sidebar:    #18181B;
-            --border:        #27272A; /* Zinc 800 */
-            --text-primary:  #FAFAFA; /* Zinc 50 */
-            --text-muted:    #A1A1AA; /* Zinc 400 */
-            --text-faint:    #52525B; /* Zinc 600 */
-            --accent:        #E4E4E7; /* Zinc 200 */
-            --accent-light:  #27272A;
+            --bg-app:        #111827;
+            --bg-card:       #1F2937;
+            --bg-sidebar:    #111827;
+            --border:        rgba(255,255,255,0.08);
+            --text-primary:  #F9FAFB;
+            --text-muted:    #9CA3AF;
+            --text-faint:    #6B7280;
+            --accent:        #3B82F6;
+            --accent-light:  rgba(59,130,246,0.12);
             --success:       #22C55E;
-            --success-light: rgba(34,197,94,0.1);
+            --success-light: rgba(34,197,94,0.12);
             --danger:        #EF4444;
-            --danger-light:  rgba(239,68,68,0.1);
-            --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
-            --shadow-md:     0 4px 6px -1px rgba(0,0,0,0.5);
+            --danger-light:  rgba(239,68,68,0.12);
+            --amber:         #F59E0B;
+            --amber-light:   rgba(245,158,11,0.12);
+            --purple:        #A78BFA;
+            --purple-light:  rgba(167,139,250,0.12);
+            --shadow-sm:     0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md:     0 4px 12px rgba(0,0,0,0.4);
         }
 
         body {
@@ -79,55 +87,64 @@
             text-align: right;
         }
 
-        /* Inline highlighting system */
         .highlight {
             background-color: #FEF08A;
             color: #854D0E;
-            font-weight: 600;
-            padding: 1px 4px;
+            font-weight: 700;
+            padding: 1px 2px;
             border-radius: 4px;
+            border-bottom: 2px solid #FACC15;
+            display: inline-block;
         }
         [data-theme="dark"] .highlight {
-            background-color: #EAB308;
-            color: #09090b;
+            background-color: #CA8A04;
+            color: #FEF9C3;
+            border-bottom-color: #EAB308;
         }
 
-        .hl-yellow { background-color: rgba(253, 224, 71, 0.35) !important; border-radius: 4px; padding: 1px 3px; }
-        .hl-orange { background-color: rgba(249, 115, 22, 0.35) !important; border-radius: 4px; padding: 1px 3px; }
-        .hl-blue   { background-color: rgba(59, 130, 246, 0.35) !important; border-radius: 4px; padding: 1px 3px; }
+        /* Custom User Highlights classes - optimized zero-spacing inline flow */
+        .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
+        .hl-orange { background-color: rgba(249, 115, 22, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
+        .hl-blue   { background-color: rgba(59, 130, 246, 0.4) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         
-        [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.2) !important; color: #fef08a; }
-        [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.2) !important; color: #ffedd5; }
-        [data-theme="dark"] .hl-blue   { background-color: rgba(59, 130, 246, 0.2) !important; color: #dbeafe; }
+        [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
+        [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
+        [data-theme="dark"] .hl-blue   { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
 
+        /* Clean non-breaking border-based word circle */
         .word-circle {
             position: relative;
-            display: inline-block;
-            border: 2px solid #EF4444;
-            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-            padding: 1px 4px;
-            margin: 0 2px;
-            transform: rotate(-1deg);
+            display: inline;
+            border: 1.5px solid #EF4444;
+            border-radius: 4px;
+            padding: 0px 2px;
+            margin: 0;
         }
 
         .topic-list-item {
-            min-height: 64px;
+            min-height: 72px;
         }
         .topic-list-item .topic-title {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            white-space: normal;
             font-size: 13px;
-            line-height: 1.35;
+            line-height: 1.4;
+            min-height: 36px;
         }
 
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
 
         .mindmap-node rect {
             transition: all 0.2s ease;
+        }
+        .mindmap-node:hover rect {
+            fill: var(--accent-light);
+            filter: brightness(0.98);
         }
     </style>
     
@@ -142,10 +159,10 @@
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             </div>
             <div>
-                <h1 class="text-base font-bold text-[var(--text-primary)]">TELC B2 Diskussionstrainer</h1>
+                <h1 class="text-lg font-bold text-[var(--text-primary)]">TELC B2 Diskussionstrainer</h1>
                 <p class="text-xs text-[var(--text-muted)]">Interaktive Vorbereitung & Strukturierte Analyse (1 – 52)</p>
             </div>
         </div>
@@ -153,8 +170,8 @@
         <div class="flex items-center gap-3 flex-wrap">
             <!-- Tabs selector -->
             <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
             </div>
 
             <!-- Dark / Light toggle -->
@@ -162,13 +179,46 @@
                 <svg id="theme-toggle-sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z"></path></svg>
                 <svg id="theme-toggle-moon-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
+
+            <!-- Burger Menu Dropdown -->
+            <div class="relative inline-block text-left">
+                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
+                    <button id="edit-mode-toggle" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>✏️</span><span id="edit-mode-status-text">Bearbeitungsmodus: AUS</span>
+                    </button>
+                    <hr class="border-[var(--border)] my-1" />
+                    <button onclick="undo()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>↩️</span><span>Zurück</span>
+                    </button>
+                    <button onclick="redo()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>↪️</span><span>Vor</span>
+                    </button>
+                    <hr class="border-[var(--border)] my-1" />
+                    <input type="file" id="import-json-input" class="hidden" accept=".json" onchange="importTopicsJSON(event)" />
+                    <button onclick="document.getElementById('import-json-input').click()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>📥</span><span>JSON importieren</span>
+                    </button>
+                    <button id="export-json-btn" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>📤</span><span>JSON exportieren</span>
+                    </button>
+                    <hr class="border-[var(--border)] my-1" />
+                    <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
+                        <span>🧹</span><span>Änderungen zurücksetzen</span>
+                    </button>
+                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center">
+                        <span>📲</span><span>App installieren</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
         <!-- Sidebar Navigation -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
-            
             <!-- Progress Tracker Panel -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3">
                 <div class="flex items-center justify-between text-xs font-bold">
@@ -181,72 +231,51 @@
                 
                 <!-- Filters for Progress Tracking -->
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
-                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)]">Alle</button>
+                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]">Alle</button>
                     <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Gelernt</button>
                     <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Offen</button>
                 </div>
             </div>
 
-            <!-- Search and Filter Panel -->
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-sidebar)] space-y-2">
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex flex-col gap-2">
+                <h3 class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Prüfungsthemen</h3>
                 <div class="relative">
-                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--text-primary)] transition-all" />
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all shadow-inner" />
                     <svg class="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
 
             <!-- List container -->
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                <!-- Programmatic list items -->
+                <!-- Javascript Injection -->
             </nav>
 
-            <!-- Permanent Settings Panel -->
-            <div class="p-4 border-t border-[var(--border)] bg-zinc-50 dark:bg-zinc-900/50 space-y-3">
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="undo()" class="py-1.5 text-[11px] font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm" title="Rückgängig (Ctrl+Z)">
-                        ↩️ Zurück
-                    </button>
-                    <button onclick="redo()" class="py-1.5 text-[11px] font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm" title="Wiederholen (Ctrl+Y)">
-                        ↪️ Vor
-                    </button>
-                </div>
-
-                <div class="space-y-1.5">
-                    <button id="edit-mode-toggle" class="w-full text-xs bg-zinc-200 dark:bg-zinc-800 text-[var(--text-primary)] font-bold rounded-lg py-2 transition-colors">
-                        Bearbeitungsmodus: AUS
-                    </button>
-                    <input type="file" id="import-json-input" class="hidden" accept=".json" onchange="importTopicsJSON(event)" />
-                    <button onclick="document.getElementById('import-json-input').click()" class="w-full text-xs bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] font-bold rounded-lg py-2 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                        📥 JSON importieren
-                    </button>
-                    <button id="export-json-btn" class="w-full text-xs bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] font-bold rounded-lg py-2 transition-colors">
-                        📤 JSON exportieren
-                    </button>
-                    <button id="reset-edits-btn" class="w-full text-[10px] text-[var(--danger)] hover:underline font-bold transition-all text-center block hidden py-1">
-                        Änderungen zurücksetzen
-                    </button>
-                    <button id="pwa-install-btn" class="hidden w-full text-xs bg-[var(--success)] hover:bg-[var(--success)]/90 text-white font-bold rounded-lg py-2 transition-all">
-                        App auf Gerät installieren
-                    </button>
-                </div>
+            <!-- Clean, interactive undo/redo shortcuts inside the sidebar -->
+            <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2">
+                <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    ↩️ Zurück
+                </button>
+                <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    ↪️ Vor
+                </button>
             </div>
         </aside>
 
         <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <!-- Sidebar trigger mobile overlay -->
-            <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--text-primary)] text-[var(--bg-card)] p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
+            <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <!-- WORKSPACE PANEL (Firebase Sync Module) -->
+            <!-- WORKSPACE PANEL (Firebase Synchronization Container) -->
             <div id="workspace-panel" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)]">
                 <!-- Logged Out Module -->
                 <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                            Lokal gesicherter Zustand aktiv
+                            <span class="w-2 h-2 rounded-full bg-[var(--amber)] animate-pulse"></span>
+                            Offline-Schnittstelle aktiv
                         </h3>
                         <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Änderungen werden lokal gesichert. Zur Cloud-Synchronisierung bitte einloggen.</p>
                     </div>
@@ -256,8 +285,8 @@
                             <option value="mai">Mai Hasan</option>
                         </select>
                         <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--text-primary)] w-28">
-                        <button id="btn-login" class="text-xs bg-[var(--accent)] text-[var(--bg-card)] font-bold px-3 py-1.5 rounded-lg hover:opacity-90 transition-all">Laden</button>
-                        <button id="btn-signup" class="text-xs bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-all">Registrieren</button>
+                        <button id="btn-login" class="text-xs bg-[var(--accent)] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-[var(--accent)]/95 transition-all">Laden</button>
+                        <button id="btn-signup" class="text-xs bg-[var(--success)] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-[var(--success)]/95 transition-all">Konto</button>
                     </div>
                 </div>
                 <!-- Logged In Module -->
@@ -277,16 +306,16 @@
 
             <!-- CONTROLS & SUBBAR -->
             <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div class="flex items-start gap-3">
-                    <span id="active-topic-emoji" class="text-3xl mt-1 select-none">📌</span>
+                <div class="flex items-center gap-3">
+                    <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
                     <div>
-                        <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--text-primary)] border border-[var(--border)] rounded uppercase tracking-wider">Thema --</span>
+                        <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/10 rounded uppercase tracking-wider">Thema --</span>
                         <h2 id="active-topic-title-de" class="text-lg font-bold text-[var(--text-primary)] mt-1">Lade Diskussionsthema...</h2>
                         <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading discussion topic...</h3>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-2 items-center w-full md:w-auto justify-end">
+                <div class="flex flex-wrap gap-2 items-center">
                     <div class="flex flex-col">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Anzeige</span>
                         <select id="lang-view" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
@@ -317,14 +346,14 @@
 
             <!-- TAB 1: DASHBOARD CONTAINER -->
             <div id="dashboard-tab-section" class="space-y-6">
-                <div id="edit-tip-banner" class="hidden bg-zinc-100 dark:bg-zinc-900 border border-[var(--border)] rounded-xl p-3 flex items-start gap-2.5">
+                <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text in beliebigen Absätzen, um ihn farblich zu markieren oder einzukreisen. Um den Textinhalt direkt zu verändern, klicken Sie auf das Stift-Symbol (✏️) rechts oben auf der Karte.
+                        <strong>Bearbeitungs-Modus:</strong> Markieren Sie beliebigen Text in den Cards, um die Textformatierung (Fett, Farbe oder Einkreisen) zu starten. Benutzen Sie das Stiftsymbol (✏️) an den Blöcken für strukturelle Änderungen.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    <!-- Cards are populated dynamically -->
+                    <!-- Cards will render here -->
                 </div>
             </div>
 
@@ -333,17 +362,17 @@
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
                         <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Mindmap — Alle 52 Themen nach Kategorien</h3>
-                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Klicken Sie direkt auf die Themenblätter, um das Thema im Dashboard zu öffnen.</p>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Klicken Sie direkt auf die Themenblätter, um das Thema im Dashboard zu öffnen [8].</p>
                     </div>
                     <div class="flex flex-wrap gap-2 text-[9px] font-bold">
-                        <span class="px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-[var(--text-primary)]">🟢 GESUNDHEIT</span>
-                        <span class="px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-[var(--text-primary)]">🔵 ARBEIT</span>
-                        <span class="px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-[var(--text-primary)]">🟣 MOBILITÄT</span>
-                        <span class="px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-[var(--text-primary)]">🔴 POLITIK</span>
-                        <span class="px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-[var(--text-primary)]">🟡 TECHNOLOGIE</span>
+                        <span class="px-2 py-1 rounded bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400">🟢 GESUNDHEIT</span>
+                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-400">🔵 ARBEIT</span>
+                        <span class="px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-400">🟣 MOBILITÄT</span>
+                        <span class="px-2 py-1 rounded bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-400">🔴 POLITIK</span>
+                        <span class="px-2 py-1 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400">🟡 TECHNOLOGIE</span>
                     </div>
                 </div>
-                <div class="flex-1 border border-[var(--border)] rounded-xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 relative min-h-[350px]">
+                <div class="flex-1 border border-[var(--border)] rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900 relative min-h-[350px]">
                     <svg id="mindmap-svg" class="w-full h-full cursor-grab active:cursor-grabbing"></svg>
                 </div>
             </section>
@@ -351,27 +380,27 @@
     </div>
 
     <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
-    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150">
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]">B</button>
+    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-105 border border-yellow-400"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-5 h-5 rounded-full bg-orange-400/40 hover:scale-105 border border-orange-400"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-105 border border-blue-400"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="w-5 h-5 rounded-full bg-transparent hover:scale-105 border-2 border-red-600 flex items-center justify-center text-[10px] text-red-600 font-bold">○</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-105 border border-yellow-400" title="Gelb"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-5 h-5 rounded-full bg-orange-400/40 hover:scale-105 border border-orange-400" title="Orange"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-105 border border-blue-400" title="Blau"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="w-5 h-5 rounded-full bg-transparent hover:scale-105 border-2 border-red-600 flex items-center justify-center text-[10px] text-red-600 font-bold" title="Einkreisen">○</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all" title="Formatierung aufheben">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </button>
     </div>
 
-    <!-- DYNAMIC VOICE PICKER FLOATING POPOVER -->
-    <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-xl w-64 space-y-3">
+    <!-- DYNAMIC PER-BLOCK VOICE PICKER FLOATING POPOVER -->
+    <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
-            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-zinc-100 dark:bg-zinc-800 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
+            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
-        <div id="voice-list-container" class="max-h-28 overflow-y-auto space-y-1 text-[11px]">
-            <!-- Programmatic voices -->
+        <div id="voice-list-container" class="max-h-28 overflow-y-auto space-y-1 text-[11px] custom-scrollbar">
+            <!-- Programmatic voices selection -->
         </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between gap-2">
@@ -383,8 +412,8 @@
                 </select>
             </div>
             <div class="flex gap-2">
-                <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] text-[var(--bg-card)] font-bold text-xs">Vorlesen</button>
-                <button id="voice-picker-stop" class="flex-1 py-1.5 rounded bg-rose-600 text-white font-bold text-xs">Stopp</button>
+                <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white font-bold text-xs shadow-sm shadow-[var(--accent)]/20">Vorlesen</button>
+                <button id="voice-picker-stop" class="flex-1 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs">Stopp</button>
             </div>
         </div>
     </div>
@@ -424,7 +453,6 @@
 
     <!-- MAIN APP STATE ENGINE -->
     <script>
-        // Mapping expressive emojis to the 52 topics
         const TOPIC_ICONS = {
             1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
             9: "🏫", 10: "🪙", 11: "🏡", 12: "⚖️", 13: "🎨", 14: "👔", 15: "📱", 16: "📺", 
@@ -442,6 +470,7 @@
             "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
         ];
 
+        // Explicit fallback categorizations
         const TOPIC_CATEGORIES_LOOKUP = {
             1: 'Freizeit & Gesundheit', 2: 'Bildung & Technologie', 3: 'Gesellschaft & Politik',
             4: 'Freizeit & Gesundheit', 5: 'Freizeit & Gesundheit', 6: 'Umwelt & Mobilität',
@@ -463,6 +492,14 @@
             52: 'Gesellschaft & Politik'
         };
 
+        const CATEGORY_SVGS = {
+            'Freizeit & Gesundheit': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><path d="M14 20c2-4 6-6 6-6s4 2 6 6" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="20" r="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M55 20h10M60 15v10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Arbeit & Karriere': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="24" height="18" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M16 16h8M16 20h6M16 24h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/><path d="M48 28V16l10-4v16" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="22" width="4" height="6" fill="#7C3AED"/></svg>`,
+            'Umwelt & Mobilität': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><path d="M10 28c0-8 6-16 14-16s14 8 14 16" stroke="#16A34A" stroke-width="1.5" fill="none"/><circle cx="24" cy="18" r="4" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><rect x="45" y="20" width="24" height="10" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><circle cx="50" cy="32" r="3" fill="#2563EB"/><circle cx="65" cy="32" r="3" fill="#2563EB"/></svg>`,
+            'Gesellschaft & Politik': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="12" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/><path d="M14 24c0-4 2-8 6-8s6 4 6 8" fill="#7C3AED" opacity="0.3"/><circle cx="20" cy="16" r="3" fill="#7C3AED"/><path d="M48 28l8-12 8 12" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 28h8" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        };
+
         const firebaseConfig = {
             apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
             authDomain: "b2telc-6e061.firebaseapp.com",
@@ -470,7 +507,8 @@
             projectId: "b2telc-6e061",
             storageBucket: "b2telc-6e061.firebasestorage.app",
             messagingSenderId: "593882455085",
-            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4"
+            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+            measurementId: "G-SPHLVHRL6K"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -481,10 +519,11 @@
         let TOPICS_DATA = [];
         window.TOPICS_DATA = [];
         let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
+        let showHighlights = true;
         let activeView = "both";
         let isEditMode = false;
         let activeTab = "dashboard";
-        let currentFilter = "all"; // all, learned, offen
+        let currentFilter = "all";
         let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
         let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
         let currentUser = null;
@@ -493,7 +532,7 @@
         // Advanced Block Editor Context Variables
         let activeEditBlockContext = null;
 
-        // Undo & Redo History stack
+        // Undo & Redo persistent history stack
         let undoStack = [];
         let redoStack = [];
 
@@ -501,19 +540,32 @@
             if (undoStack.length > 50) {
                 undoStack.shift();
             }
-            undoStack.push(JSON.stringify(TOPICS_DATA));
-            redoStack = []; 
+            // Capture both visual highlights and content changes together
+            const stateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            undoStack.push(JSON.stringify(stateSnapshot));
+            redoStack = []; // clear redo stack on new action
         }
 
         function undo() {
             if (undoStack.length === 0) {
+                alert("Keine weiteren Änderungen zum Rückgängigmachen!");
                 return;
             }
-            const currentState = JSON.stringify(TOPICS_DATA);
-            redoStack.push(currentState);
-            const prevState = undoStack.pop();
-            TOPICS_DATA = JSON.parse(prevState);
+            const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            redoStack.push(JSON.stringify(currentStateSnapshot));
+            
+            const prevStateSnapshot = JSON.parse(undoStack.pop());
+            TOPICS_DATA = prevStateSnapshot.topics;
             window.TOPICS_DATA = TOPICS_DATA;
+            highlightsStore = prevStateSnapshot.highlights;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            
             saveEditsSilent();
             renderSidebar();
             renderActiveTopic();
@@ -521,13 +573,21 @@
 
         function redo() {
             if (redoStack.length === 0) {
+                alert("Keine Änderungen zum Wiederholen!");
                 return;
             }
-            const currentState = JSON.stringify(TOPICS_DATA);
-            undoStack.push(currentState);
-            const nextState = redoStack.pop();
-            TOPICS_DATA = JSON.parse(nextState);
+            const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            undoStack.push(JSON.stringify(currentStateSnapshot));
+            
+            const nextStateSnapshot = JSON.parse(redoStack.pop());
+            TOPICS_DATA = nextStateSnapshot.topics;
             window.TOPICS_DATA = TOPICS_DATA;
+            highlightsStore = nextStateSnapshot.highlights;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            
             saveEditsSilent();
             renderSidebar();
             renderActiveTopic();
@@ -539,13 +599,14 @@
                     const activeTopic = TOPICS_DATA[activeIdx];
                     await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
                 } catch(e) {
-                    console.error("Cloud-Synchronisationsfehler:", e);
+                    console.error("Fehler bei der Cloud-Synchronisation:", e);
                 }
             } else {
                 localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
             }
         }
 
+        // Intercept global key binds for seamless undo / redo
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
                 e.preventDefault();
@@ -557,7 +618,21 @@
             }
         });
 
-        // Highlights System
+        // Burger Menu Toggle Logic
+        function toggleMenuDropdown(event) {
+            event.stopPropagation();
+            const content = document.getElementById('menu-dropdown-content');
+            content.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const content = document.getElementById('menu-dropdown-content');
+            if (content && !content.classList.contains('hidden') && !e.target.closest('#menu-dropdown-btn') && !e.target.closest('#menu-dropdown-content')) {
+                content.classList.add('hidden');
+            }
+        });
+
+        // Formatting selection logic
         function saveHighlight(topicId, blockKey, htmlContent) {
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
             highlightsStore[topicId][blockKey] = htmlContent;
@@ -568,10 +643,52 @@
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
+        // Deep-cleaning formatting reset
+        function cleanBlockContent(keyPath, isArray = false, index = null, subKey = null) {
+            pushToHistory();
+            const activeTopic = TOPICS_DATA[activeIdx];
+            let rawText = "";
+            
+            if (isArray) {
+                if (subKey) {
+                    rawText = activeTopic[keyPath][index][subKey];
+                } else {
+                    rawText = activeTopic[keyPath][index];
+                }
+            } else {
+                rawText = activeTopic[keyPath];
+            }
+            
+            // Strip HTML tags
+            const temp = document.createElement("div");
+            temp.innerHTML = rawText;
+            const cleanText = temp.textContent || temp.innerText || "";
+            
+            if (isArray) {
+                if (subKey) {
+                    activeTopic[keyPath][index][subKey] = cleanText;
+                } else {
+                    activeTopic[keyPath][index] = cleanText;
+                }
+            } else {
+                activeTopic[keyPath] = cleanText;
+            }
+            
+            // Wipe from highlightsStore
+            const blockKey = isArray ? (subKey ? `${keyPath}_de_${index}` : `${keyPath}_${index}`) : keyPath;
+            if (highlightsStore[activeTopic.id]) {
+                delete highlightsStore[activeTopic.id][blockKey];
+                localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            }
+            
+            saveEditsSilent();
+            renderActiveTopic();
+        }
+
         function clearAllHighlightsForTopic() {
             if (TOPICS_DATA.length === 0) return;
             const topicId = TOPICS_DATA[activeIdx].id;
-            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema löschen?")) {
+            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen und Einkreisungen für dieses Thema unwiderruflich löschen?")) {
                 if (highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
                     localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
@@ -580,9 +697,10 @@
             }
         }
 
-        // Speech API
+        // Active Voice API Variables
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
+        let currentlyPlayingBlockKey = null;
 
         // Theme management
         const themeToggle = document.getElementById('theme-toggle');
@@ -617,6 +735,7 @@
 
         applyTheme();
 
+        // Switch Workspace view tabs
         function switchTab(tabId) {
             activeTab = tabId;
             const dashBtn = document.getElementById('tab-dashboard-btn');
@@ -625,14 +744,14 @@
             const mapSect = document.getElementById('mindmap-tab-section');
 
             if (tabId === 'dashboard') {
-                dashBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]";
-                mapBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                dashBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
+                mapBtn.className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
                 dashSect.classList.remove('hidden');
                 mapSect.classList.add('hidden');
                 renderActiveTopic();
             } else {
-                mapBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm border border-[var(--border)]";
-                dashBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                mapBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
+                dashBtn.className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
                 mapSect.classList.remove('hidden');
                 dashSect.classList.add('hidden');
                 setTimeout(initMindmap, 50);
@@ -650,14 +769,14 @@
             }
         }
 
-        // Firebase Auth Observer
+        // Firebase Auth observer
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('auth-logged-out').classList.add('hidden');
                 document.getElementById('auth-logged-in').classList.remove('hidden');
-                const name = user.email.includes('mohammed') ? "Mohammed" : "Mai";
-                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Cloud Sync`;
+                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
+                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Synchronisiert`;
                 await loadTopics();
             } else {
                 currentUser = null;
@@ -698,7 +817,7 @@
 
             try {
                 await auth.createUserWithEmailAndPassword(email, password);
-                alert("Konto wurde erfolgreich erstellt.");
+                alert("Konto registriert.");
                 document.getElementById('workspace-password').value = "";
             } catch (err) {
                 alert("Fehler bei Registrierung: " + err.message);
@@ -709,7 +828,7 @@
 
         async function loadTopics() {
             try {
-                const response = await fetch('./topics.json');
+                const response = await fetch('./topics.json'); // explicit relative fetch URL
                 let baseTopics = await response.json();
                 editedTopicIds = [];
 
@@ -737,6 +856,7 @@
                     }
                 }
 
+                // Map fallback categories to avoid category cluttering
                 baseTopics.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
                 });
@@ -753,7 +873,7 @@
         }
 
         async function saveEdits() {
-            pushToHistory(); 
+            pushToHistory(); // Record state before saving changes
             const activeTopic = TOPICS_DATA[activeIdx];
             if (!editedTopicIds.includes(activeTopic.id)) {
                 editedTopicIds.push(activeTopic.id);
@@ -802,6 +922,7 @@
         };
 
         function applyConnectorsHighlight(htmlText) {
+            if (!showHighlights) return htmlText;
             const temp = document.createElement("div");
             temp.innerHTML = htmlText;
             const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
@@ -840,6 +961,37 @@
             return temp.innerHTML;
         }
 
+        function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
+            if (!element) return;
+            element.contentEditable = "true";
+            element.setAttribute('autocapitalize', 'none');
+            element.setAttribute('autocorrect', 'off');
+            element.setAttribute('spellcheck', 'false');
+            element.setAttribute('autocomplete', 'off');
+            element.classList.add("border-b", "border-dashed", "border-zinc-400", "cursor-text");
+            element.addEventListener('focus', () => {
+                // Record undo state on focus before any modifications are completed
+                pushToHistory();
+            });
+            element.addEventListener('blur', () => {
+                let newVal = element.innerHTML.trim();
+                const activeTopic = TOPICS_DATA[activeIdx];
+                if (isArray) {
+                    if (subKey) {
+                        if (!activeTopic[keyPath]) activeTopic[keyPath] = [];
+                        if (!activeTopic[keyPath][index]) activeTopic[keyPath][index] = {};
+                        activeTopic[keyPath][index][subKey] = newVal;
+                    } else {
+                        if (!activeTopic[keyPath]) activeTopic[keyPath] = [];
+                        activeTopic[keyPath][index] = newVal;
+                    }
+                } else {
+                    activeTopic[keyPath] = newVal;
+                }
+                saveEdits();
+            });
+        }
+
         // Advanced Dialog Editor Modal Trigger
         function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
             const topic = TOPICS_DATA[activeIdx];
@@ -852,7 +1004,6 @@
             if (isArray) {
                 if (subKey) {
                     textDE = topic[keyPath]?.[index]?.[subKey] || "";
-                    // Retrieve translations from index matching
                     textEN = topic[keyPath + '_en']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['en'] || "";
                     textAR = topic[keyPath + '_ar']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['ar'] || "";
                 } else {
@@ -895,7 +1046,6 @@
                     if (!topic[keyPath][index]) topic[keyPath][index] = {};
                     topic[keyPath][index][subKey] = valDE;
 
-                    // Support dialog subkey mappings
                     if (subKey === 'de') {
                         topic[keyPath][index]['en'] = valEN;
                         topic[keyPath][index]['ar'] = valAR;
@@ -974,26 +1124,32 @@
         }
 
         function unwrapSelection(range, activeContainer) {
-            const fragment = range.extractContents();
-            const tempDiv = document.createElement('div');
-            tempDiv.appendChild(fragment);
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            // Find all matching custom formatting spans in this active block
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-orange, .hl-blue, .word-circle, .highlight');
             
-            const strippedHTML = tempDiv.innerHTML.replace(/<span class="(hl-yellow|hl-orange|hl-blue|word-circle|highlight)">([\s\S]*?)<\/span>/gi, '$2');
+            spans.forEach(span => {
+                // If selection intersects with this span element, unwrap it smoothly
+                if (selection.containsNode(span, true)) {
+                    const parent = span.parentNode;
+                    while (span.firstChild) {
+                        parent.insertBefore(span.firstChild, span);
+                    }
+                    parent.removeChild(span);
+                }
+            });
+
+            // Merge adjacent text nodes together cleanly
+            activeContainer.normalize();
             
-            const markerNode = document.createElement('span');
-            markerNode.innerHTML = strippedHTML;
-            range.insertNode(markerNode);
+            // Re-save the cleared state to persistence
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
             
-            const parent = markerNode.parentNode;
-            while (markerNode.firstChild) {
-                parent.insertBefore(markerNode.firstChild, markerNode);
-            }
-            parent.removeChild(markerNode);
-            
-            document.execCommand('removeFormat', false, null);
-            document.execCommand('backColor', false, 'transparent');
-            
-            window.getSelection().removeAllRanges();
+            // Trigger blur pipeline
+            activeContainer.dispatchEvent(new Event('blur'));
         }
 
         function handleSelectionChange() {
@@ -1058,37 +1214,35 @@
             TOPICS_DATA.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
                 
-                // Track Progress filters
                 if (currentFilter === 'learned' && !isLearned) return;
                 if (currentFilter === 'offen' && isLearned) return;
 
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
                     return;
                 }
-                
                 const isActive = index === activeIdx;
                 const tab = document.createElement('button');
                 tab.className = `w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 topic-list-item ${
                     isActive 
-                    ? 'bg-[var(--accent-light)] border-[var(--border)] ring-1 ring-zinc-300 dark:ring-zinc-700' 
+                    ? 'bg-[var(--accent-light)] border-[var(--accent)]/20 ring-2 ring-[var(--accent)]/10' 
                     : 'bg-transparent border-transparent hover:bg-[var(--bg-app)]'
                 }`;
 
-                const statusIndicator = isLearned 
-                    ? `<span class="text-emerald-500 font-bold mt-0.5 select-none text-sm">✓</span>`
-                    : `<span class="text-[var(--text-faint)] text-xs font-semibold mt-0.5 select-none">${topic.id}</span>`;
+                const badge = isLearned 
+                    ? `<span class="text-[var(--success)] mt-0.5">✓</span>`
+                    : `<span class="text-[var(--text-faint)] text-xs font-bold mt-0.5">${topic.id}</span>`;
 
                 const emojiIcon = TOPIC_ICONS[topic.id] || "📌";
 
                 tab.innerHTML = `
-                    <div class="flex items-center gap-1.5 flex-col justify-center min-w-[24px]">
-                        ${statusIndicator}
+                    <div class="flex items-center gap-1 flex-col justify-center min-w-[24px]">
+                        ${badge}
                         <span class="text-base select-none">${emojiIcon}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
+                        <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
                         <div class="flex items-center justify-between mt-1 gap-1">
-                            <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Allgemein'}</span>
+                            <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
                             <span class="text-[8px] px-1 bg-[var(--bg-app)] rounded text-[var(--text-faint)]">TELC B2</span>
                         </div>
                     </div>
@@ -1110,21 +1264,25 @@
             if (TOPICS_DATA.length === 0) return;
             const percentage = (learnedList.length / TOPICS_DATA.length) * 100;
             document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length} (${Math.round(percentage)}%)`;
+            document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
-        // Voice Engine Logic
+        // PER-BLOCK VOICE AUDIO POPULATION & LOGIC
         function openVoicePicker(event, blockKey, textToSpeak) {
             event.stopPropagation();
             const panel = document.getElementById('voice-picker-panel');
             const rect = event.currentTarget.getBoundingClientRect();
             panel.classList.remove('hidden');
 
+            // Float modal adjacent to speaker
             const top = rect.bottom + window.scrollY + 8;
             const left = Math.max(16, Math.min(window.innerWidth - 270, rect.left + window.scrollX - 110));
             panel.style.top = `${top}px`;
             panel.style.left = `${left}px`;
 
+            currentlyPlayingBlockKey = blockKey;
+            
+            // Build and clean HTML tags for playback
             const cleanText = textToSpeak.replace(/<\/?[^>]+(>|$)/g, "");
 
             document.getElementById('voice-picker-play').onclick = () => {
@@ -1142,6 +1300,7 @@
             document.getElementById('voice-picker-panel').classList.add('hidden');
         }
 
+        // Auto close helper for modal UX
         document.addEventListener('click', (e) => {
             const panel = document.getElementById('voice-picker-panel');
             if (!panel.classList.contains('hidden') && !panel.contains(e.target) && !e.target.closest('button')) {
@@ -1157,9 +1316,17 @@
             
             if (availableGermanVoices.length === 0) {
                 window.speechSynthesis.onvoiceschanged = populateVoicesList;
-                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] p-2 italic'>Systemstimmen werden geladen...</div>";
+                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] p-2 italic'>Sprachdateien werden analysiert...</div>";
                 return;
             }
+
+            availableGermanVoices.sort((a,b) => {
+                const aMs = a.name.includes('Microsoft') ? 0 : 1;
+                const bMs = b.name.includes('Microsoft') ? 0 : 1;
+                const aGoogle = a.name.includes('Google') ? 0 : 1;
+                const bGoogle = b.name.includes('Google') ? 0 : 1;
+                return aMs - bMs || aGoogle - bGoogle || a.name.localeCompare(b.name);
+            });
 
             const savedVoice = localStorage.getItem('b2_selected_voice') || '';
 
@@ -1169,11 +1336,19 @@
                     localStorage.setItem('b2_selected_voice', voice.name);
                 }
                 const row = document.createElement('div');
-                row.className = `flex items-center justify-between p-1.5 rounded cursor-pointer ${isSelected ? 'bg-[var(--accent-light)] text-[var(--text-primary)] font-bold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
+                row.className = `flex items-center justify-between p-1.5 rounded cursor-pointer ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-bold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
                 
+                let badge = "";
+                if (voice.name.includes('Microsoft')) badge = "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>";
+                else if (voice.name.includes('Google')) badge = "<span class='text-[8px] bg-green-100 text-green-700 px-1 rounded font-bold'>Google</span>";
+                else badge = "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>";
+
                 row.innerHTML = `
-                    <span class="truncate max-w-[170px]">${voice.name}</span>
-                    <button class="px-1.5 py-0.5 text-[9px] bg-zinc-200 dark:bg-zinc-700 rounded hover:opacity-80" onclick="testVoice(event, '${voice.name}')">Test</button>
+                    <div class="flex items-center gap-1.5 truncate max-w-[170px]">
+                        ${badge}
+                        <span class="truncate">${voice.name}</span>
+                    </div>
+                    <button class="px-1.5 py-0.5 text-[10px] bg-slate-200 dark:bg-slate-700 rounded hover:opacity-80" onclick="testVoice(event, '${voice.name}')">Test</button>
                 `;
                 row.onclick = (e) => {
                     if (e.target.tagName !== 'BUTTON') {
@@ -1188,7 +1363,7 @@
         function testVoice(event, voiceName) {
             event.stopPropagation();
             window.speechSynthesis.cancel();
-            const ut = new SpeechSynthesisUtterance("Test");
+            const ut = new SpeechSynthesisUtterance("Vorschau");
             const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
             if (voiceObj) ut.voice = voiceObj;
             window.speechSynthesis.speak(ut);
@@ -1197,7 +1372,7 @@
         function playBlockAudio(text, buttonEl) {
             window.speechSynthesis.cancel();
             if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-500');
+                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
             }
             
             const speed = parseFloat(document.getElementById('voice-picker-speed').value);
@@ -1209,38 +1384,41 @@
             const voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
             if (voiceObj) utterance.voice = voiceObj;
 
-            buttonEl.classList.add('animate-pulse', 'text-rose-500');
+            buttonEl.classList.add('animate-pulse', 'text-rose-600');
             activeSpeakingButton = buttonEl;
 
             utterance.onend = () => {
-                buttonEl.classList.remove('animate-pulse', 'text-rose-500');
+                buttonEl.classList.remove('animate-pulse', 'text-rose-600');
                 activeSpeakingButton = null;
             };
+            utterance.onerror = () => {
+                buttonEl.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = null;
+            };
+
             window.speechSynthesis.speak(utterance);
         }
 
         function stopBlockAudio() {
             window.speechSynthesis.cancel();
             if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-500');
+                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
                 activeSpeakingButton = null;
             }
         }
 
-        // Layout Render Blocks
-        function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, rawPath, isArray = false, arrayIdx = null, subKey = null) {
-            const editBtnParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
-            
+        function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category, rawPath, isArray = false, arrayIdx = null, subKey = null) {
+            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
             return `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
                     <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
                         <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--text-primary)]"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="openVoicePicker(event, '${blockKey}', \`${textToSpeak.replace(/"/g, '&quot;')}\`)" class="px-2 py-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--text-primary)] transition-all font-bold">🔊 Anhören</button>
-                            <button onclick="openBlockEditor(${editBtnParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
+                            <button onclick="openVoicePicker(event, '${blockKey}', \`${textToSpeak.replace(/"/g, '&quot;')}\`)" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
+                            <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
                                 ✏️ Bearbeiten
                             </button>
                         </div>
@@ -1259,10 +1437,21 @@
             document.getElementById('active-topic-title-en').textContent = topic.title_en;
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
+            if (isEditMode) {
+                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
+                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
+            } else {
+                document.getElementById('active-topic-title-de').contentEditable = "false";
+                document.getElementById('active-topic-title-en').contentEditable = "false";
+                document.getElementById('active-topic-title-de').className = "text-lg font-bold text-[var(--text-primary)] mt-1";
+                document.getElementById('active-topic-title-en').className = "text-xs italic text-[var(--text-muted)] mt-0.5";
+            }
+
+            // Sync Learned Button status
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
             if (isLearned) {
-                learnedBtn.className = "text-xs bg-emerald-600 text-white font-bold rounded-lg px-3 py-1.5 shadow-sm transition-all";
+                learnedBtn.className = "text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-1.5 shadow-sm transition-all";
                 learnedBtn.innerHTML = "✓ Gelernt";
             } else {
                 learnedBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 shadow-sm transition-all";
@@ -1276,32 +1465,34 @@
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
-            // 1. EINLEITUNG
+            // 1. EINLEITUNG WITH CATEGORY SVG ILLUSTRATION
             const einleitungKey = "einleitung_de";
             const savedEinleitung = getHighlight(topic.id, einleitungKey);
             const einleitungHtml = `
-                <div class="topic-illustration h-12 w-full mb-3 flex items-center justify-between opacity-95 border-b border-[var(--border)] pb-2">
+                <div class="topic-illustration h-16 w-full mb-4 flex items-center justify-between opacity-90 border-b border-[var(--border)] pb-3">
                     <div class="flex items-center gap-3">
-                        <span class="text-2xl select-none">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                        <div class="w-12 h-12 flex-shrink-0 bg-[var(--accent-light)] rounded-xl p-2 border border-[var(--accent)]/10">
+                            ${CATEGORY_SVGS[topic.category] || CATEGORY_SVGS['Gesellschaft & Politik']}
+                        </div>
                         <div>
-                            <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider bg-[var(--bg-app)] px-2 py-0.5 rounded">Kategorie</span>
-                            <h4 class="text-xs font-bold text-[var(--text-primary)] mt-0.5">${topic.category || 'Allgemeines Thema'}</h4>
+                            <span class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider bg-[var(--accent-light)] px-2 py-1 rounded-md">Kategorie</span>
+                            <h4 class="text-sm font-bold text-[var(--text-primary)] mt-1">${topic.category || 'Allgemeines Thema'}</h4>
                         </div>
                     </div>
                 </div>
-                <div data-block-key="${einleitungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${einleitungKey}', this.innerHTML)">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text">${topic.einleitung_en}</p>
-                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" dir="rtl">${topic.einleitung_ar || ''}</p>
+                <div data-block-key="${einleitungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${einleitungKey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</div>
+                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.einleitung_en}</p>
+                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.einleitung_ar || ''}</p>
             `;
             const einleitungCard = document.createElement('div');
-            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, 'einleitung_de');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, topic.category, 'einleitung_de');
             container.appendChild(einleitungCard);
 
-            // PRO & CONTRA SIDES
+            // PRO & CONTRA COLLAPSIBLE/RESPONSIVE WRAPPERS
             const proContraParent = document.createElement('div');
             proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
-            // PRO
+            // PRO SECTION
             const proKey = "pro_de_0";
             let proContent = "";
             topic.pro_de.forEach((deVal, index) => {
@@ -1310,18 +1501,18 @@
                 const enVal = topic.pro_en ? topic.pro_en[index] : '';
                 const arVal = topic.pro_ar ? topic.pro_ar[index] : '';
                 proContent += `
-                    <div class="mb-4 last:mb-0 border-l-2 border-emerald-500/45 pl-3">
-                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text">${enVal}</p>
-                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" dir="rtl">${arVal}</p>
+                    <div class="mb-4 last:mb-0 relative">
+                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${enVal}</p>
+                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${arVal}</p>
                     </div>
                 `;
             });
             const proCard = document.createElement('div');
-            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro) / Arguments", proContent, proKey, topic.pro_de.join(". "), 'pro_de', true, 0);
+            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro) / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category, 'pro_de', true, 0);
             proContraParent.appendChild(proCard);
 
-            // CONTRA
+            // CONTRA SECTION
             const contraKey = "contra_de_0";
             let contraContent = "";
             topic.contra_de.forEach((deVal, index) => {
@@ -1330,60 +1521,61 @@
                 const enVal = topic.contra_en ? topic.contra_en[index] : '';
                 const arVal = topic.contra_ar ? topic.contra_ar[index] : '';
                 contraContent += `
-                    <div class="mb-4 last:mb-0 border-l-2 border-rose-500/45 pl-3">
-                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text">${enVal}</p>
-                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" dir="rtl">${arVal}</p>
+                    <div class="mb-4 last:mb-0 relative">
+                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${enVal}</p>
+                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${arVal}</p>
                     </div>
                 `;
             });
             const contraCard = document.createElement('div');
-            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra) / Arguments", contraContent, contraKey, topic.contra_de.join(". "), 'contra_de', true, 0);
+            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra) / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category, 'contra_de', true, 0);
             proContraParent.appendChild(contraCard);
             container.appendChild(proContraParent);
 
-            // 4. PERSÖNLICHE ERFAHRUNG
+            // 4. PERSÖNLICHE ERFAHRUNG CARD
             const erfahrungKey = "pers_erfahrung_de";
             const savedErfahrung = getHighlight(topic.id, erfahrungKey);
             const erfahrungHtml = `
-                <div data-block-key="${erfahrungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text">${topic.pers_erfahrung_en}</p>
-                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
+                <div data-block-key="${erfahrungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
+                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.pers_erfahrung_en}</p>
+                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
             const erfahrungCard = document.createElement('div');
-            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, 'pers_erfahrung_de');
+            keywordsCard = null; // garbage collect
+            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category, 'pers_erfahrung_de');
             container.appendChild(erfahrungCard);
 
-            // 5. DIALOG SIMULATION
+            // 5. DIALOG SIMULATION CARD
             let dialogHtml = '<div class="space-y-3">';
             topic.dialog.forEach((chat, index) => {
                 const skey = `dialog_de_${index}`;
                 const saved = getHighlight(topic.id, skey);
                 const isA = chat.role.includes('A');
                 dialogHtml += `
-                    <div class="p-3 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
+                    <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
-                        <div data-block-key="${skey}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
-                        <p class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text">${chat.en}</p>
-                        <p class="${arClass} text-[11px] text-right font-medium font-arabic mt-1 select-text" dir="rtl">${chat.ar || ''}</p>
+                        <div data-block-key="${skey}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
+                        <p class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1">${chat.en}</p>
+                        <p class="${arClass} text-[11px] text-right font-medium font-arabic mt-1" dir="rtl">${chat.ar || ''}</p>
                     </div>
                 `;
             });
             dialogHtml += '</div>';
             const dialogCard = document.createElement('div');
-            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), 'dialog', true, 0, 'de');
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), topic.category, 'dialog', true, 0, 'de');
             container.appendChild(dialogCard);
 
-            // 6. SCHLUSSFOLGERUNG / GEMEINSAME LÖSUNG
+            // 6. SCHLUSSFOLGERUNG / GEMEINSAME LÖSUNG CARD
             const schlussKey = "schluss_de";
             const savedSchluss = getHighlight(topic.id, schlussKey);
             const schlussHtml = `
-                <div data-block-key="${schlussKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${schlussKey}', this.innerHTML)">${isEditMode ? (savedSchluss || topic.schluss_de) : applyConnectorsHighlight(savedSchluss || topic.schluss_de)}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text">${topic.schluss_en}</p>
-                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" dir="rtl">${topic.schluss_ar || ''}</p>
+                <div data-block-key="${schlussKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${schlussKey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (savedSchluss || topic.schluss_de) : applyConnectorsHighlight(savedSchluss || topic.schluss_de)}</div>
+                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.schluss_en}</p>
+                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.schluss_ar || ''}</p>
             `;
             const schlussCard = document.createElement('div');
-            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, 'schluss_de');
+            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, topic.category, 'schluss_de');
             container.appendChild(schlussCard);
 
             // 7. KEYWORDS SYSTEM
@@ -1391,21 +1583,21 @@
             if (topic.keywords) {
                 const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
                 list.forEach(kw => {
-                    kwBadges += `<span class="px-2.5 py-1 text-[11px] font-medium bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded">${kw}</span>`;
+                    kwBadges += `<span class="px-2 py-1 text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded">${kw}</span>`;
                 });
             }
             const keywordsHtml = `
                 <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
                 <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
-                    <input type="text" id="keywords-input-field" class="w-full text-xs font-mono bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg p-2.5" value="${topic.keywords || ''}" />
+                    <input type="text" class="w-full text-xs font-mono bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg p-2" value="${topic.keywords || ''}" />
                 </div>
             `;
             const keywordsCard = document.createElement('div');
-            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", "", 'keywords');
+            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", "", topic.category, 'keywords');
             container.appendChild(keywordsCard);
 
             if (isEditMode) {
-                const kwInput = keywordsCard.querySelector('#keywords-input-field');
+                const kwInput = keywordsCard.querySelector('.keywords-edit input');
                 kwInput.addEventListener('blur', () => {
                     TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
                     saveEdits();
@@ -1414,7 +1606,7 @@
             showResetButton();
         }
 
-        // Minimalist Collapsible Mind Map Engine
+        // D3.JS FORCE DIRECTED MINDMAP IMPLEMENTATION (Collapsible Sleek Horizontal Tree)
         function buildDynamicMindmapData() {
             const categories = {
                 'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
@@ -1427,13 +1619,13 @@
             TOPICS_DATA.forEach(topic => {
                 const cat = topic.category || 'Gesellschaft & Politik';
                 if (!categories[cat]) {
-                    categories[cat] = { color: "#71717A", children: [] };
+                    categories[cat] = { color: "#6B7280", children: [] };
                 }
-                const emoji = TOPIC_ICONS[topic.id] || "📌";
                 categories[cat].children.push({
-                    name: `${emoji} T${topic.id}: ${topic.title_de}`,
+                    name: `T${topic.id}: ${topic.title_de}`,
                     id: topic.id,
-                    idx: TOPICS_DATA.indexOf(topic)
+                    idx: TOPICS_DATA.indexOf(topic),
+                    detail: topic.title_en
                 });
             });
 
@@ -1451,8 +1643,13 @@
             };
         }
 
+        // Tidy, Collapsible Horizontal Hierarchical layout completely eliminating overlapping
         function initMindmap() {
             if (TOPICS_DATA.length === 0) return;
+            
+            // Fix hoisting / access-before-initialization crash: Declare node index tracker FIRST
+            let iCount = 0;
+
             const svg = d3.select("#mindmap-svg");
             svg.selectAll("*").remove();
             
@@ -1473,12 +1670,13 @@
 
             svg.call(zoom);
 
-            const treemap = d3.tree().nodeSize([36, 180]);
+            const treemap = d3.tree().nodeSize([45, 240]);
             
             let root = d3.hierarchy(rawData, d => d.children);
             root.x0 = height / 2;
             root.y0 = 0;
 
+            // Collapse everything except first category branch by default
             root.children.forEach((d, i) => {
                 if (i > 0) collapse(d);
             });
@@ -1498,7 +1696,7 @@
                 const nodes = treeData.descendants();
                 const links = treeData.links();
 
-                nodes.forEach(d => { d.y = d.depth * 180; });
+                nodes.forEach(d => { d.y = d.depth * 220; });
 
                 const node = gContainer.selectAll('g.mindmap-node')
                     .data(nodes, d => d.id || (d.id = ++iCount));
@@ -1508,68 +1706,87 @@
                     .attr('transform', d => `translate(${source.y0},${source.x0})`)
                     .on('click', clickNode);
 
-                // Minimalistic shapes mapping
+                // Add shapes based on depth level
                 nodeEnter.each(function(d) {
                     const el = d3.select(this);
                     
                     if (d.data.priority === 'root') {
                         el.append('circle')
-                            .attr('r', 8)
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('stroke', 'var(--bg-card)')
+                            .attr('r', 16)
+                            .attr('fill', 'var(--accent)')
+                            .attr('stroke', '#ffffff')
                             .attr('stroke-width', 2);
                         
                         el.append('text')
                             .attr('dy', '.35em')
-                            .attr('x', -14)
+                            .attr('x', -24)
                             .attr('text-anchor', 'end')
                             .attr('fill', 'var(--text-primary)')
                             .attr('font-size', '10px')
-                            .attr('font-weight', '700')
+                            .attr('font-weight', 'bold')
                             .text(d.data.name);
                     } else if (d.data.priority === 'category') {
                         el.append('circle')
-                            .attr('r', 6)
+                            .attr('r', 12)
                             .attr('fill', d.data.color)
-                            .attr('stroke', 'var(--bg-card)')
+                            .attr('stroke', '#ffffff')
                             .attr('stroke-width', 1.5);
                         
                         el.append('text')
                             .attr('dy', '.35em')
-                            .attr('x', d => d.children || d._children ? -12 : 12)
+                            .attr('x', d => d.children || d._children ? -18 : 18)
                             .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
                             .attr('fill', 'var(--text-primary)')
                             .attr('font-size', '9px')
-                            .attr('font-weight', '600')
+                            .attr('font-weight', 'bold')
                             .text(d.data.name);
                     } else {
-                        // Muted leaf node representing discussion topics
-                        el.append('circle')
-                            .attr('r', 4)
-                            .attr('fill', d.parent.data.color || 'var(--text-muted)')
-                            .attr('stroke', 'var(--bg-card)')
-                            .attr('stroke-width', 1);
-
-                        el.append('text')
-                            .attr('dy', '.35em')
+                        // Leaf topic node
+                        const textW = Math.max(120, d.data.name.length * 6);
+                        
+                        el.append('rect')
                             .attr('x', 10)
+                            .attr('y', -16)
+                            .attr('width', textW)
+                            .attr('height', 32)
+                            .attr('rx', 6)
+                            .attr('fill', 'var(--bg-card)')
+                            .attr('stroke', d.parent.data.color || 'var(--border)')
+                            .attr('stroke-width', 1.5);
+                        
+                        el.append('text')
+                            .attr('dy', '-2px')
+                            .attr('x', 20)
                             .attr('text-anchor', 'start')
                             .attr('fill', 'var(--text-primary)')
                             .attr('font-size', '8px')
-                            .text(d.data.name.length > 28 ? d.data.name.substring(0, 26) + '...' : d.data.name);
+                            .attr('font-weight', 'bold')
+                            .text(d.data.name.substring(0, 22) + (d.data.name.length > 22 ? '...' : ''));
+
+                        el.append('text')
+                            .attr('dy', '9px')
+                            .attr('x', 20)
+                            .attr('text-anchor', 'start')
+                            .attr('fill', 'var(--text-muted)')
+                            .attr('font-size', '7px')
+                            .text(d.data.detail ? d.data.detail.substring(0, 26) + '...' : '');
                     }
                 });
 
                 const nodeUpdate = nodeEnter.merge(node);
 
-                nodeUpdate.transition().duration(200)
+                nodeUpdate.transition().duration(250)
                     .attr('transform', d => `translate(${d.y},${d.x})`);
 
-                const nodeExit = node.exit().transition().duration(200)
+                nodeUpdate.select('circle')
+                    .attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)'))
+                    .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff')
+                    .attr('stroke-width', d => d._children ? 3 : 2);
+
+                const nodeExit = node.exit().transition().duration(250)
                     .attr('transform', d => `translate(${source.y},${source.x})`)
                     .remove();
 
-                // Sleek connections
                 const link = gContainer.selectAll('path.mindmap-link')
                     .data(links, d => d.target.id);
 
@@ -1577,8 +1794,8 @@
                     .attr('class', 'mindmap-link')
                     .attr('fill', 'none')
                     .attr('stroke', 'var(--border)')
-                    .attr('stroke-opacity', 0.5)
-                    .attr('stroke-width', 1)
+                    .attr('stroke-opacity', 0.4)
+                    .attr('stroke-width', 1.5)
                     .attr('d', d => {
                         const o = {x: source.x0, y: source.y0};
                         return diagonal(o, o);
@@ -1586,13 +1803,13 @@
 
                 const linkUpdate = linkEnter.merge(link);
 
-                linkUpdate.transition().duration(200)
+                linkUpdate.transition().duration(250)
                     .attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)')
                     .attr('stroke-opacity', 0.6)
-                    .attr('stroke-width', 1)
+                    .attr('stroke-width', 2)
                     .attr('d', d => diagonal(d.source, d.target));
 
-                const linkExit = link.exit().transition().duration(200)
+                const linkExit = link.exit().transition().duration(250)
                     .attr('d', d => {
                         const o = {x: source.x, y: source.y};
                         return diagonal(o, o);
@@ -1605,14 +1822,16 @@
                 });
 
                 function diagonal(s, d) {
-                    return `M ${s.y} ${s.x}
-                            C ${(s.y + d.y) / 2} ${s.x},
-                              ${(s.y + d.y) / 2} ${d.x},
-                              ${d.y} ${d.x}`;
+                    const startY = s.y + (s.data.priority === undefined ? 130 : 0);
+                    const endY = d.y;
+                    return `M ${startY} ${s.x}
+                            C ${(startY + endY) / 2} ${s.x},
+                              ${(startY + endY) / 2} ${d.x},
+                              ${endY} ${d.x}`;
                 }
 
                 function clickNode(event, d) {
-                    if (d.data.idx !== undefined) {
+                    if (d.data.id) {
                         activeIdx = d.data.idx;
                         localStorage.setItem('b2_active_idx', activeIdx);
                         renderSidebar();
@@ -1631,11 +1850,11 @@
                 }
             }
 
-            let iCount = 0;
-            svg.call(zoom.transform, d3.zoomIdentity.translate(margin.left, height / 2).scale(0.95));
+            // Align mindmap to fit viewport
+            svg.call(zoom.transform, d3.zoomIdentity.translate(margin.left, height / 2).scale(0.8));
         }
 
-        // Import & Export Backup
+        // EXPORT THE SYSTEM DATABASE AS topics.json
         function exportTopicsJSON() {
             if (TOPICS_DATA.length === 0) return;
             const cleanData = JSON.stringify(TOPICS_DATA, null, 2);
@@ -1650,6 +1869,7 @@
             URL.revokeObjectURL(url);
         }
 
+        // IMPORT CUSTOMIZED topics.json
         async function importTopicsJSON(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1675,7 +1895,7 @@
                         renderActiveTopic();
                         alert("topics.json erfolgreich importiert!");
                     } else {
-                        alert("Ungültiges Format.");
+                        alert("Ungültiges Dateiformat. Muss ein Array von Themen sein.");
                     }
                 } catch (err) {
                     alert("Fehler beim Lesen der Datei: " + err.message);
@@ -1704,19 +1924,23 @@
             renderActiveTopic();
         });
 
+        // Toggle edit mode
         const editModeToggle = document.getElementById('edit-mode-toggle');
         editModeToggle.onclick = () => {
             isEditMode = !isEditMode;
             editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
             editModeToggle.classList.toggle('text-white', isEditMode);
-            editModeToggle.classList.toggle('dark:text-zinc-950', isEditMode);
-            editModeToggle.textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            
+            const statusText = document.getElementById('edit-mode-status-text');
+            statusText.textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            
             document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
             renderActiveTopic();
         };
 
         document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
 
+        // Mobile responsive aside sidebar trigger
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobile-nav-toggle');
         mobileToggle.addEventListener('click', () => {
@@ -1727,34 +1951,17 @@
                 : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
         });
 
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            const pwaBtn = document.getElementById('pwa-install-btn');
-            if (pwaBtn) pwaBtn.classList.remove('hidden');
-        });
-
-        const pwaBtn = document.getElementById('pwa-install-btn');
-        if (pwaBtn) {
-            pwaBtn.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                pwaBtn.classList.add('hidden');
-            });
-        }
-
+        // Initialize PWA database trigger cleanly
         loadTopics();
     </script>
 
+    <!-- Unified Progressive Web App Service Worker registration pipeline -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js', { scope: './' })
                     .then((reg) => {
-                        console.log('Service Worker aktiv mit Scope:', reg.scope);
+                        console.log('SW active with scope:', reg.scope);
                         reg.addEventListener('updatefound', () => {
                             const nw = reg.installing;
                             nw.addEventListener('statechange', () => {
@@ -1764,16 +1971,16 @@
                             });
                         });
                     })
-                    .catch(err => console.error('PWA-Fehler:', err));
+                    .catch(err => console.error('PWA system initialization failed:', err));
             });
         }
 
         function showUpdateBanner() {
             const banner = document.createElement('div');
-            banner.className = "fixed bottom-0 left-0 right-0 bg-zinc-800 text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
+            banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
             banner.innerHTML = `
-                <span>🔄 Eine neue Anwendungsversion ist offline bereit.</span>
-                <button onclick="location.reload()" class="bg-white text-zinc-900 px-3 py-1.5 rounded font-black hover:bg-slate-100">Aktualisieren</button>
+                <span>🔄 Eine neue Anwendungsversion ist offline einsatzbereit.</span>
+                <button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black hover:bg-slate-100">Aktualisieren</button>
             `;
             document.body.appendChild(banner);
         }
