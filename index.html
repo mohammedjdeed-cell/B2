@@ -1,3 +1,13 @@
+Der Fehler lag an einem fehlenden Aufruf der Funktion loadTopics() am Ende des
+JavaScript-Bereichs in index.html [1]. Die Funktion wurde zwar definiert, aber
+nach der Bereinigung am Ende des Skripts nicht gestartet. Dadurch blieb die App
+leer und konnte die Themen nicht laden.
+
+Der Aufruf wurde am Ende des Skripts hinzugefügt, sodass ./topics.json beim
+Laden der Seite korrekt eingelesen wird [1].
+
+index.html
+
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
@@ -1791,3 +1801,156 @@
         // IMPORT CUSTOMIZED topics.json [4]
         async function importTopicsJSON(event) {
             const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported) && imported.length > 0) {
+                        pushToHistory();
+                        TOPICS_DATA = imported;
+                        window.TOPICS_DATA = imported;
+                        localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
+                        
+                        if (currentUser) {
+                            alert("Daten importiert. Aktualisiere Cloud-Arbeitsbereich...");
+                            for (const t of imported) {
+                                await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
+                            }
+                        }
+                        activeIdx = 0;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        alert("topics.json erfolgreich importiert!");
+                    } else {
+                        alert("Ungültiges Dateiformat. Muss ein Array von Themen sein.");
+                    }
+                } catch (err) {
+                    alert("Fehler beim Lesen der Datei: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        document.getElementById('export-json-btn').onclick = exportTopicsJSON;
+
+        document.getElementById('learned-toggle').onclick = () => {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (learnedList.includes(topicId)) {
+                learnedList = learnedList.filter(id => id !== topicId);
+            } else {
+                learnedList.push(topicId);
+            }
+            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        document.getElementById('lang-view').addEventListener('change', (e) => {
+            activeView = e.target.value;
+            renderActiveTopic();
+        });
+
+        // Toggle edit mode
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        editModeToggle.onclick = () => {
+            isEditMode = !isEditMode;
+            editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
+            editModeToggle.classList.toggle('text-white', isEditMode);
+            editModeToggle.textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
+            renderActiveTopic();
+        };
+
+        document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
+
+        // Mobile responsive aside sidebar trigger
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            document.getElementById('menu-icon').innerHTML = isHidden 
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        });
+
+        // Overlay & Reel methods
+        function openReel() {
+            const overlay = document.getElementById('reel-overlay');
+            const iframe = document.getElementById('reel-iframe');
+            overlay.classList.remove('hidden');
+            localStorage.setItem('b2_active_idx', activeIdx);
+            iframe.src = `./reel-mode.html?idx=${activeIdx}`;
+        }
+
+        function closeReel() {
+            const overlay = document.getElementById('reel-overlay');
+            const iframe = document.getElementById('reel-iframe');
+            try {
+                if (iframe.contentWindow && iframe.contentWindow.speechSynthesis) {
+                    iframe.contentWindow.speechSynthesis.cancel();
+                }
+            } catch(e) {}
+            overlay.classList.add('hidden');
+            iframe.src = 'about:blank';
+        }
+
+        // PWA Installation helper
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const pwaBtn = document.getElementById('pwa-install-btn');
+            if (pwaBtn) pwaBtn.classList.remove('hidden');
+        });
+
+        const pwaBtn = document.getElementById('pwa-install-btn');
+        if (pwaBtn) {
+            pwaBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                pwaBtn.classList.add('hidden');
+            });
+        }
+
+        // Initialize PWA database trigger cleanly [1]
+        loadTopics();
+    </script>
+
+    <!-- Unified Progressive Web App Service Worker registration pipeline -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then((reg) => {
+                        console.log('SW active with scope:', reg.scope);
+                        reg.addEventListener('updatefound', () => {
+                            const nw = reg.installing;
+                            nw.addEventListener('statechange', () => {
+                                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showUpdateBanner();
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.error('PWA system initialization failed:', err));
+            });
+        }
+
+        function showUpdateBanner() {
+            const banner = document.createElement('div');
+            banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
+            banner.innerHTML = `
+                <span>🔄 Eine neue Anwendungsversion ist offline einsatzbereit.</span>
+                <button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black hover:bg-slate-100">Aktualisieren</button>
+            `;
+            document.body.appendChild(banner);
+        }
+    </script>
+</body>
+</html>
