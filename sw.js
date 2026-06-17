@@ -2,6 +2,7 @@ const CACHE_NAME = 'b2-trainer-v1';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './reel-mode.html', // Offline-Caching für das neue Reel-Overlay
   './topics.json',
   './manifest.json',
   'https://cdn.tailwindcss.com' // Pre-cached so Tailwind works completely offline
