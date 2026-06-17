@@ -1,31 +1,28 @@
 const CACHE_NAME = 'b2-trainer-v1';
 const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './topics.json',
-  './manifest.json',
-  'https://cdn.tailwindcss.com'
+  '/',
+  '/index.html',
+  '/topics.json',
+  '/manifest.json'
 ];
 
-// 1. Install Event: Populate static shell assets
+// Installs cache buffers
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Pre-caching offline shell');
       return cache.addAll(STATIC_ASSETS);
     }).then(() => self.skipWaiting())
   );
 });
 
-// 2. Activate Event: Perform cache maintenance on version updates
+// Cache maintenance on activation
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[Service Worker] Clearing old cache', cache);
-            return caches.delete(cache);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
       );
@@ -33,42 +30,25 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch Event Routing
+// Fetch interception with SWR strategy
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Ignore non-GET, non-http, and browser extension requests
   if (request.method !== 'GET') return;
   if (!url.protocol.startsWith('http')) return;
 
-  // Intercept and handle with SWR Strategy
-  event.respondWith(staleWhileRevalidate(request));
+  event.respondWith(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cachedResponse = await cache.match(request);
+      const networkFetch = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+      }).catch((err) => console.log('SWR fall-back to cache:', err));
+
+      return cachedResponse || networkFetch;
+    })
+  );
 });
-
-// Stale-While-Revalidate function logic
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-
-  // Trigger background fetch to update the cache bucket
-  const networkFetch = fetchAndCache(request, cache);
-
-  // Return the cached copy immediately if found, otherwise wait on the network fetch
-  return cachedResponse || networkFetch;
-}
-
-// Background fetcher and dynamic cache writer
-async function fetchAndCache(request, cache) {
-  try {
-    const response = await fetch(request);
-    
-    // Save valid response streams to avoid caching empty or corrupt errors
-    if (response && response.status === 200 && response.type !== 'opaque') {
-      await cache.put(request, response.clone());
-    }
-    return response;
-  } catch (error) {
-    console.warn('[Service Worker] Fetch failed (offline mode active). Cache used.', error);
-  }
-}
