@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full bg-zinc-950 text-zinc-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2 Trainer — Simulation Player Reel | Themen 1-52</title>
+    
+    <!-- Google Fonts import for Inter & Noto Sans Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: radial-gradient(circle at center, #1f2937 0%, #111827 100%);
+        }
+        [dir="rtl"], [lang="ar"], .ar-text {
+            font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="h-full flex items-center justify-center overflow-hidden">
+
+    <!-- Mobile-optimized simulated 9:16 aspect viewport card layout -->
+    <div class="relative w-full max-w-md h-full md:h-[88vh] md:max-h-[820px] bg-gray-900 border-0 md:border md:border-gray-800 md:rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden transition-all duration-300">
+        
+        <!-- Reel Header: Progress bar, Topic details & Nav -->
+        <header class="p-4 border-b border-gray-800 bg-gray-900/90 backdrop-blur-md z-10 space-y-3">
+            <!-- Progress strip bar indicator -->
+            <div class="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
+                <div id="playback-progress" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div id="reel-illustration" class="w-10 h-10 flex-shrink-0 bg-gray-800 rounded-lg p-1">
+                        <!-- Loaded dynamically -->
+                    </div>
+                    <div>
+                        <span id="topic-badge" class="px-2 py-0.5 rounded bg-blue-600/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider">Thema --</span>
+                        <h2 id="topic-title" class="text-xs font-bold truncate max-w-[180px] mt-0.5 text-zinc-100">Lade...</h2>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="prevTopic()" class="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-zinc-300 hover:text-white transition-all text-xs" title="Vorheriges Thema">◀</button>
+                    <button onclick="nextTopic()" class="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-zinc-300 hover:text-white transition-all text-xs" title="Nächstes Thema">▶</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Chat Scroller container -->
+        <main id="chat-scroller" class="flex-1 overflow-y-auto px-4 py-5 space-y-4 custom-scrollbar flex flex-col justify-start">
+            <!-- Programmatic dialogues items -->
+        </main>
+
+        <!-- Subtitles Translation dynamic block container -->
+        <div id="translation-caption-container" class="px-4 py-3 bg-blue-950/40 border-t border-gray-800 text-center min-h-[64px] max-h-[120px] overflow-y-auto flex items-center justify-center transition-all">
+            <p id="translation-subtitle" class="text-xs italic text-blue-200 leading-relaxed font-semibold">Bilingualer Untertitel erscheint hier beim Abspielen...</p>
+        </div>
+
+        <!-- Controls panel -->
+        <footer class="p-4 bg-gray-900/95 border-t border-gray-800 space-y-3 z-10">
+            <div class="flex items-center justify-between gap-2">
+                <button id="playback-trigger" onclick="togglePlayback()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold text-xs shadow-md transition-all">
+                    <span id="trigger-icon">▶</span>
+                    <span id="trigger-text">Simulation starten</span>
+                </button>
+
+                <select id="translation-selector" onchange="changeSubtitleLang()" class="text-xs bg-gray-800 border border-gray-700 rounded-xl px-2.5 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                    <option value="en">Subtitle: EN</option>
+                    <option value="ar">Subtitle: AR</option>
+                    <option value="none">Keine Untertitel</option>
+                </select>
+                
+                <select id="speed-selector" onchange="changeSpeed()" class="text-xs bg-gray-800 border border-gray-700 rounded-xl px-2 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                    <option value="0.8">0.8x</option>
+                    <option value="0.9">0.9x</option>
+                    <option value="1.0" selected>1.0x</option>
+                    <option value="1.1">1.1x</option>
+                    <option value="1.2">1.2x</option>
+                </select>
+            </div>
+            
+            <div class="flex items-center justify-between text-[9px] text-gray-500 font-bold px-1 uppercase tracking-wider">
+                <span>Swipe / Wischen zum Navigieren</span>
+                <span>Auto-Scroll: Aktiv</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SPEECH PLAYBACK ENGINE SCRIPT -->
+    <script>
+        const CATEGORY_SVGS = {
+            'Freizeit & Gesundheit': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><path d="M14 20c2-4 6-6 6-6s4 2 6 6" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="20" r="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M55 20h10M60 15v10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Arbeit & Karriere': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="24" height="18" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M16 16h8M16 20h6M16 24h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/><path d="M48 28V16l10-4v16" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="22" width="4" height="6" fill="#7C3AED"/></svg>`,
+            'Umwelt & Mobilität': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><path d="M10 28c0-8 6-16 14-16s14 8 14 16" stroke="#16A34A" stroke-width="1.5" fill="none"/><circle cx="24" cy="18" r="4" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><rect x="45" y="20" width="24" height="10" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><circle cx="50" cy="32" r="3" fill="#2563EB"/><circle cx="65" cy="32" r="3" fill="#2563EB"/></svg>`,
+            'Gesellschaft & Politik': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="12" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/><path d="M14 24c0-4 2-8 6-8s6 4 6 8" fill="#7C3AED" opacity="0.3"/><circle cx="20" cy="16" r="3" fill="#7C3AED"/><path d="M48 28l8-12 8 12" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 28h8" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        };
+
+        let topicsList = [];
+        let activeIdx = 0;
+        let activeTopic = null;
+        
+        let currentSpeakerLine = -1;
+        let isPlaying = false;
+        let playbackSpeed = 1.0;
+        let subtitleLang = 'en';
+
+        async function initializeReelEngine() {
+            if (window.parent && window.parent.TOPICS_DATA && window.parent.TOPICS_DATA.length > 0) {
+                topicsList = window.parent.TOPICS_DATA;
+                // Retrieve index from shell environment directly
+                activeIdx = typeof window.parent.activeIdx !== 'undefined' ? window.parent.activeIdx : 0;
+            } else {
+                try {
+                    const response = await fetch('topics.json');
+                    topicsList = await response.json();
+                    activeIdx = 0;
+                } catch(e) {
+                    console.error("Datenfehler: Fallback topics.json unmöglich.", e);
+                }
+            }
+            loadActiveTopic();
+        }
+
+        function loadActiveTopic() {
+            if (topicsList.length === 0) return;
+            activeTopic = topicsList[activeIdx];
+            
+            // Sync with parent workspace layout shell dynamically
+            if (window.parent && typeof window.parent.activeIdx !== 'undefined') {
+                window.parent.activeIdx = activeIdx;
+                if (typeof window.parent.renderSidebar === 'function') {
+                    window.parent.renderSidebar();
+                    window.parent.renderActiveTopic();
+                }
+            }
+
+            // Bind metadata displays
+            document.getElementById('topic-badge').textContent = `Thema ${activeTopic.id} / 52`;
+            document.getElementById('topic-title').textContent = activeTopic.title_de;
+            document.getElementById('reel-illustration').innerHTML = CATEGORY_SVGS[activeTopic.category] || CATEGORY_SVGS['Gesellschaft & Politik'];
+            
+            resetPlaybackState();
+            renderDialogueReel();
+        }
+
+        function renderDialogueReel() {
+            const scroller = document.getElementById('chat-scroller');
+            scroller.innerHTML = "";
+            if (!activeTopic || !activeTopic.dialog) return;
+
+            activeTopic.dialog.forEach((chat, index) => {
+                const isA = chat.role.includes('A');
+                const row = document.createElement('div');
+                row.className = `flex w-full ${isA ? 'justify-start' : 'justify-end'} transition-all duration-300`;
+                row.id = `line-wrapper-${index}`;
+                
+                row.innerHTML = `
+                    <div id="dialog-bubble-${index}" onclick="jumpToSpeakerLine(${index})" class="max-w-[85%] rounded-2xl p-3.5 cursor-pointer border shadow-sm transition-all duration-200 ${
+                        isA 
+                        ? 'bg-blue-950/40 border-blue-900/60 text-blue-100 rounded-bl-none hover:bg-blue-900/30' 
+                        : 'bg-zinc-800/80 border-zinc-700 text-zinc-100 rounded-br-none hover:bg-zinc-700/80'
+                    }">
+                        <div class="flex items-center justify-between gap-4 mb-1 text-[8px] font-bold uppercase tracking-wider ${isA ? 'text-blue-400' : 'text-emerald-400'}">
+                            <span>${chat.role}</span>
+                            <span>Satz ${index + 1}</span>
+                        </div>
+                        <p class="text-xs font-semibold leading-relaxed text-zinc-100 break-words overflow-wrap-anywhere">${chat.de}</p>
+                    </div>
+                `;
+                scroller.appendChild(row);
+            });
+            updateCaptionContainer("");
+            updateProgressBar();
+        }
+
+        function jumpToSpeakerLine(idx) {
+            resetUtterancePlayback();
+            currentSpeakerLine = idx;
+            isPlaying = true;
+            updatePlaybackTriggerUI();
+            speakSequence();
+        }
+
+        function togglePlayback() {
+            if (isPlaying) {
+                window.speechSynthesis.cancel();
+                isPlaying = false;
+                updatePlaybackTriggerUI();
+            } else {
+                isPlaying = true;
+                updatePlaybackTriggerUI();
+                if (currentSpeakerLine === -1 || currentSpeakerLine >= activeTopic.dialog.length) {
+                    currentSpeakerLine = 0;
+                }
+                speakSequence();
+            }
+        }
+
+        function speakSequence() {
+            if (!isPlaying) return;
+            if (currentSpeakerLine >= activeTopic.dialog.length) {
+                resetPlaybackState();
+                return;
+            }
+
+            const item = activeTopic.dialog[currentSpeakerLine];
+            highlightSpeakingBubble(currentSpeakerLine);
+            scrollBubbleIntoView(currentSpeakerLine);
+            updateProgressBar();
+
+            // Handle captions
+            if (subtitleLang === 'en') {
+                updateCaptionContainer(item.en || '');
+            } else if (subtitleLang === 'ar') {
+                updateCaptionContainer(item.ar || '', true);
+            } else {
+                updateCaptionContainer("");
+            }
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(item.de);
+            utterance.lang = 'de-DE';
+            utterance.rate = playbackSpeed;
+
+            // Voice settings matching
+            if (window.parent && window.parent.speechSynthesis) {
+                const savedVoice = localStorage.getItem('b2_selected_voice');
+                const voices = window.speechSynthesis.getVoices();
+                const matchedObj = voices.find(v => v.name === savedVoice);
+                if (matchedObj) utterance.voice = matchedObj;
+            }
+
+            utterance.onend = () => {
+                if (isPlaying) {
+                    currentSpeakerLine++;
+                    setTimeout(speakSequence, 950);
+                }
+            };
+            utterance.onerror = (e) => {
+                if (isPlaying && e.error !== 'interrupted') {
+                    currentSpeakerLine++;
+                    speakSequence();
+                }
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function highlightSpeakingBubble(idx) {
+            activeTopic.dialog.forEach((_, i) => {
+                const bubble = document.getElementById(`dialog-bubble-${i}`);
+                if (bubble) {
+                    bubble.classList.remove('ring-2', 'ring-blue-500', 'scale-[1.01]');
+                    bubble.classList.add('opacity-45');
+                }
+            });
+
+            const activeBubble = document.getElementById(`dialog-bubble-${idx}`);
+            if (activeBubble) {
+                activeBubble.classList.remove('opacity-45');
+                activeBubble.classList.add('ring-2', 'ring-blue-500', 'scale-[1.01]');
+            }
+        }
+
+        function scrollBubbleIntoView(idx) {
+            const wrapper = document.getElementById(`line-wrapper-${idx}`);
+            const scroller = document.getElementById('chat-scroller');
+            if (wrapper && scroller) {
+                scroller.scrollTo({
+                    top: wrapper.offsetTop - scroller.offsetTop - 30,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function updateProgressBar() {
+            const total = activeTopic && activeTopic.dialog ? activeTopic.dialog.length : 1;
+            const progress = currentSpeakerLine === -1 ? 0 : ((currentSpeakerLine + 1) / total) * 100;
+            document.getElementById('playback-progress').style.width = `${progress}%`;
+        }
+
+        function updateCaptionContainer(text, isRTL = false) {
+            const textEl = document.getElementById('translation-subtitle');
+            textEl.textContent = text || "Bilingualer Untertitel erscheint hier beim Abspielen...";
+            if (isRTL) {
+                textEl.className = "text-xs font-bold text-amber-300 text-right leading-relaxed w-full font-arabic";
+                textEl.dir = "rtl";
+            } else {
+                textEl.className = "text-xs italic text-blue-200 leading-relaxed font-semibold";
+                textEl.dir = "ltr";
+            }
+        }
+
+        function resetUtterancePlayback() {
+            window.speechSynthesis.cancel();
+        }
+
+        function resetPlaybackState() {
+            resetUtterancePlayback();
+            isPlaying = false;
+            currentSpeakerLine = -1;
+            updatePlaybackTriggerUI();
+            updateCaptionContainer("");
+            updateProgressBar();
+            
+            if (activeTopic && activeTopic.dialog) {
+                activeTopic.dialog.forEach((_, i) => {
+                    const bubble = document.getElementById(`dialog-bubble-${i}`);
+                    if (bubble) bubble.classList.remove('ring-2', 'ring-blue-500', 'scale-[1.01]', 'opacity-45');
+                });
+            }
+        }
+
+        function updatePlaybackTriggerUI() {
+            const icon = document.getElementById('trigger-icon');
+            const text = document.getElementById('trigger-text');
+            const button = document.getElementById('playback-trigger');
+            
+            if (isPlaying) {
+                icon.textContent = '⏸';
+                text.textContent = 'Simulation pausieren';
+                button.className = "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs shadow-md transition-all";
+            } else {
+                icon.textContent = '▶';
+                text.textContent = (currentSpeakerLine > 0) ? 'Fortsetzen' : 'Simulation starten';
+                button.className = "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold text-xs shadow-md transition-all";
+            }
+        }
+
+        function changeSpeed() {
+            const selector = document.getElementById('speed-selector');
+            playbackSpeed = parseFloat(selector.value);
+            if (isPlaying && currentSpeakerLine >= 0) {
+                jumpToSpeakerLine(currentSpeakerLine);
+            }
+        }
+
+        function changeSubtitleLang() {
+            subtitleLang = document.getElementById('translation-selector').value;
+            if (isPlaying && currentSpeakerLine >= 0) {
+                const item = activeTopic.dialog[currentSpeakerLine];
+                if (subtitleLang === 'en') {
+                    updateCaptionContainer(item.en || '');
+                } else if (subtitleLang === 'ar') {
+                    updateCaptionContainer(item.ar || '', true);
+                } else {
+                    updateCaptionContainer("");
+                }
+            }
+        }
+
+        function prevTopic() {
+            if (topicsList.length === 0) return;
+            activeIdx = (activeIdx - 1 + topicsList.length) % topicsList.length;
+            loadActiveTopic();
+        }
+
+        function nextTopic() {
+            if (topicsList.length === 0) return;
+            activeIdx = (activeIdx + 1) % topicsList.length;
+            loadActiveTopic();
+        }
+
+        // Gesture support detection
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 70) {
+                if (diff > 0) nextTopic();
+                else prevTopic();
+            }
+        }, { passive: true });
+
+        initializeReelEngine();
+    </script>
+</body>
+</html>
