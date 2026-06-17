@@ -1,9 +1,8 @@
 
-const CACHE_NAME = 'b2trainer-v3';
+const CACHE_NAME = 'b2trainer-v4';
 const OFFLINE_URL = './index.html';
 const PRECACHE_ASSETS = [
   './index.html',
-  './reel-mode.html',
   './manifest.json',
   './topics.json',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap',
@@ -13,7 +12,9 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(PRECACHE_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -40,3 +41,4 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
