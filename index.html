@@ -102,7 +102,6 @@
             border-bottom-color: #EAB308;
         }
 
-        /* Custom User Highlights classes - optimized zero-spacing inline flow */
         .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         .hl-orange { background-color: rgba(249, 115, 22, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         .hl-blue   { background-color: rgba(59, 130, 246, 0.4) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
@@ -111,7 +110,6 @@
         [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
         [data-theme="dark"] .hl-blue { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
 
-        /* Clean non-breaking border-based word circle */
         .word-circle {
             position: relative;
             display: inline;
@@ -168,19 +166,16 @@
         </div>
 
         <div class="flex items-center gap-3 flex-wrap">
-            <!-- Tabs selector -->
             <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
                 <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
                 <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
             </div>
 
-            <!-- Dark / Light toggle -->
             <button id="theme-toggle" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors">
                 <svg id="theme-toggle-sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z"></path></svg>
                 <svg id="theme-toggle-moon-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
 
-            <!-- Burger Menu Dropdown -->
             <div class="relative inline-block text-left">
                 <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -219,7 +214,6 @@
     <div class="flex flex-1 overflow-hidden relative">
         <!-- Sidebar Navigation -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
-            <!-- Progress Tracker Panel -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3">
                 <div class="flex items-center justify-between text-xs font-bold">
                     <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Dein Fortschritt</span>
@@ -229,7 +223,6 @@
                     <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
                 </div>
                 
-                <!-- Filters for Progress Tracking -->
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
                     <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]">Alle</button>
                     <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Gelernt</button>
@@ -245,12 +238,10 @@
                 </div>
             </div>
 
-            <!-- List container -->
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                <!-- Javascript Injection -->
+                <!-- Programmatic list rendering -->
             </nav>
 
-            <!-- Clean, interactive undo/redo shortcuts inside the sidebar -->
             <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2">
                 <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
                     ↩️ Zurück
@@ -263,7 +254,6 @@
 
         <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-            <!-- Sidebar trigger mobile overlay -->
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
@@ -353,7 +343,7 @@
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    <!-- Cards will render here -->
+                    <!-- Cards layout anchor -->
                 </div>
             </div>
 
@@ -362,7 +352,7 @@
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
                         <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Mindmap — Alle 52 Themen nach Kategorien</h3>
-                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Klicken Sie direkt auf die Themenblätter, um das Thema im Dashboard zu öffnen [8].</p>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Klicken Sie direkt auf die Themenblätter, um das Thema im Dashboard zu öffnen.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 text-[9px] font-bold">
                         <span class="px-2 py-1 rounded bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400">🟢 GESUNDHEIT</span>
@@ -399,9 +389,8 @@
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
-        <!-- Set max-height and custom spacing so Microsoft system voice rows are never cut off or half shown -->
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
-            <!-- Programmatic voices selection -->
+            <!-- Programmatic layout execution -->
         </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between gap-2">
@@ -471,7 +460,6 @@
             "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
         ];
 
-        // Explicit fallback categorizations
         const TOPIC_CATEGORIES_LOOKUP = {
             1: 'Freizeit & Gesundheit', 2: 'Bildung & Technologie', 3: 'Gesellschaft & Politik',
             4: 'Freizeit & Gesundheit', 5: 'Freizeit & Gesundheit', 6: 'Umwelt & Mobilität',
@@ -516,7 +504,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Local State Management
         let TOPICS_DATA = [];
         window.TOPICS_DATA = [];
         let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
@@ -529,11 +516,8 @@
         let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
         let currentUser = null;
         let editedTopicIds = [];
-
-        // Advanced Block Editor Context Variables
         let activeEditBlockContext = null;
 
-        // Undo & Redo persistent history stack
         let undoStack = [];
         let redoStack = [];
 
@@ -541,13 +525,12 @@
             if (undoStack.length > 50) {
                 undoStack.shift();
             }
-            // Capture both visual highlights and content changes together
             const stateSnapshot = {
                 topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             undoStack.push(JSON.stringify(stateSnapshot));
-            redoStack = []; // clear redo stack on new action
+            redoStack = []; 
         }
 
         function undo() {
@@ -607,7 +590,6 @@
             }
         }
 
-        // Intercept global key binds for seamless undo / redo
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
                 e.preventDefault();
@@ -619,7 +601,6 @@
             }
         });
 
-        // Burger Menu Toggle Logic
         function toggleMenuDropdown(event) {
             event.stopPropagation();
             const content = document.getElementById('menu-dropdown-content');
@@ -633,7 +614,6 @@
             }
         });
 
-        // Formatting selection logic
         function saveHighlight(topicId, blockKey, htmlContent) {
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
             highlightsStore[topicId][blockKey] = htmlContent;
@@ -642,48 +622,6 @@
 
         function getHighlight(topicId, blockKey) {
             return highlightsStore[topicId]?.[blockKey] || null;
-        }
-
-        // Deep-cleaning formatting reset
-        function cleanBlockContent(keyPath, isArray = false, index = null, subKey = null) {
-            pushToHistory();
-            const activeTopic = TOPICS_DATA[activeIdx];
-            let rawText = "";
-            
-            if (isArray) {
-                if (subKey) {
-                    rawText = activeTopic[keyPath][index][subKey];
-                } else {
-                    rawText = activeTopic[keyPath][index];
-                }
-            } else {
-                rawText = activeTopic[keyPath];
-            }
-            
-            // Strip HTML tags
-            const temp = document.createElement("div");
-            temp.innerHTML = rawText;
-            const cleanText = temp.textContent || temp.innerText || "";
-            
-            if (isArray) {
-                if (subKey) {
-                    activeTopic[keyPath][index][subKey] = cleanText;
-                } else {
-                    activeTopic[keyPath][index] = cleanText;
-                }
-            } else {
-                activeTopic[keyPath] = cleanText;
-            }
-            
-            // Wipe from highlightsStore
-            const blockKey = isArray ? (subKey ? `${keyPath}_de_${index}` : `${keyPath}_${index}`) : keyPath;
-            if (highlightsStore[activeTopic.id]) {
-                delete highlightsStore[activeTopic.id][blockKey];
-                localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
-            }
-            
-            saveEditsSilent();
-            renderActiveTopic();
         }
 
         function clearAllHighlightsForTopic() {
@@ -698,12 +636,10 @@
             }
         }
 
-        // Active Voice API Variables
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
         let currentlyPlayingBlockKey = null;
 
-        // Theme management
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun-icon');
         const moonIcon = document.getElementById('theme-toggle-moon-icon');
@@ -736,7 +672,6 @@
 
         applyTheme();
 
-        // Switch Workspace view tabs
         function switchTab(tabId) {
             activeTab = tabId;
             const dashBtn = document.getElementById('tab-dashboard-btn');
@@ -770,7 +705,6 @@
             }
         }
 
-        // Firebase Auth observer
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
@@ -829,7 +763,7 @@
 
         async function loadTopics() {
             try {
-                const response = await fetch('./topics.json'); // explicit relative fetch URL
+                const response = await fetch('./topics.json'); 
                 let baseTopics = await response.json();
                 editedTopicIds = [];
 
@@ -857,7 +791,6 @@
                     }
                 }
 
-                // Map fallback categories to avoid category cluttering
                 baseTopics.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
                 });
@@ -874,7 +807,7 @@
         }
 
         async function saveEdits() {
-            pushToHistory(); // Record state before saving changes
+            pushToHistory(); 
             const activeTopic = TOPICS_DATA[activeIdx];
             if (!editedTopicIds.includes(activeTopic.id)) {
                 editedTopicIds.push(activeTopic.id);
@@ -962,38 +895,22 @@
             return temp.innerHTML;
         }
 
-        function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
+        function makeEditable(element, keyPath) {
             if (!element) return;
             element.contentEditable = "true";
             element.setAttribute('autocapitalize', 'none');
             element.setAttribute('autocorrect', 'off');
             element.setAttribute('spellcheck', 'false');
-            element.setAttribute('autocomplete', 'off');
             element.classList.add("border-b", "border-dashed", "border-zinc-400", "cursor-text");
-            element.addEventListener('focus', () => {
-                // Record undo state on focus before any modifications are completed
-                pushToHistory();
-            });
+            element.addEventListener('focus', () => { pushToHistory(); });
             element.addEventListener('blur', () => {
                 let newVal = element.innerHTML.trim();
                 const activeTopic = TOPICS_DATA[activeIdx];
-                if (isArray) {
-                    if (subKey) {
-                        if (!activeTopic[keyPath]) activeTopic[keyPath] = [];
-                        if (!activeTopic[keyPath][index]) activeTopic[keyPath][index] = {};
-                        activeTopic[keyPath][index][subKey] = newVal;
-                    } else {
-                        if (!activeTopic[keyPath]) activeTopic[keyPath] = [];
-                        activeTopic[keyPath][index] = newVal;
-                    }
-                } else {
-                    activeTopic[keyPath] = newVal;
-                }
+                activeTopic[keyPath] = newVal;
                 saveEdits();
             });
         }
 
-        // Advanced Dialog Editor Modal Trigger
         function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
             const topic = TOPICS_DATA[activeIdx];
             activeEditBlockContext = { keyPath, isArray, index, subKey };
@@ -1128,11 +1045,8 @@
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
 
-            // Find all matching custom formatting spans in this active block
             const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-orange, .hl-blue, .word-circle, .highlight');
-            
             spans.forEach(span => {
-                // If selection intersects with this span element, unwrap it smoothly
                 if (selection.containsNode(span, true)) {
                     const parent = span.parentNode;
                     while (span.firstChild) {
@@ -1142,14 +1056,9 @@
                 }
             });
 
-            // Merge adjacent text nodes together cleanly
             activeContainer.normalize();
-            
-            // Re-save the cleared state to persistence
             const blockKey = activeContainer.getAttribute('data-block-key');
             saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
-            
-            // Trigger blur pipeline
             activeContainer.dispatchEvent(new Event('blur'));
         }
 
@@ -1268,34 +1177,24 @@
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
-        // PER-BLOCK VOICE AUDIO POPULATION & LOGIC
         function openVoicePicker(event, blockKey, textToSpeak) {
             event.stopPropagation();
             const panel = document.getElementById('voice-picker-panel');
             
-            // Render hidden initially to correctly read offsets
             panel.classList.remove('hidden');
             panel.style.visibility = 'hidden';
             
             const rect = event.currentTarget.getBoundingClientRect();
-            
             const popoverWidth = panel.offsetWidth || 256;
             const popoverHeight = panel.offsetHeight || 285;
 
-            // Strict viewport-relative position mapping
-            let top = rect.bottom + 8; // Render below button by default
+            let top = rect.bottom + 8;
             if (rect.bottom + popoverHeight > window.innerHeight) {
-                // Not enough room below: Render above button instead
                 top = rect.top - popoverHeight - 8;
             }
-            
-            // Constrain top/bottom safely inside viewport edges
             top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
 
-            // Align popover center to button center
             let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
-            
-            // Constrain left/right safely inside viewport edges
             left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
 
             panel.style.top = `${top}px`;
@@ -1303,8 +1202,6 @@
             panel.style.visibility = 'visible';
 
             currentlyPlayingBlockKey = blockKey;
-            
-            // Build and clean HTML tags for playback
             const cleanText = textToSpeak.replace(/<\/?[^>]+(>|$)/g, "");
 
             document.getElementById('voice-picker-play').onclick = () => {
@@ -1322,10 +1219,9 @@
             document.getElementById('voice-picker-panel').classList.add('hidden');
         }
 
-        // Auto close helper for modal UX
         document.addEventListener('click', (e) => {
             const panel = document.getElementById('voice-picker-panel');
-            if (!panel.classList.contains('hidden') && !panel.contains(e.target) && !e.target.closest('button')) {
+            if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !e.target.closest('button')) {
                 closeVoicePicker();
             }
         });
@@ -1345,9 +1241,7 @@
             availableGermanVoices.sort((a,b) => {
                 const aMs = a.name.includes('Microsoft') ? 0 : 1;
                 const bMs = b.name.includes('Microsoft') ? 0 : 1;
-                const aGoogle = a.name.includes('Google') ? 0 : 1;
-                const bGoogle = b.name.includes('Google') ? 0 : 1;
-                return aMs - bMs || aGoogle - bGoogle || a.name.localeCompare(b.name);
+                return aMs - bMs || a.name.localeCompare(b.name);
             });
 
             const savedVoice = localStorage.getItem('b2_selected_voice') || '';
@@ -1360,12 +1254,7 @@
                 const row = document.createElement('div');
                 row.className = `flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-semibold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
                 
-                let badge = "";
-                if (voice.name.includes('Microsoft')) badge = "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>";
-                else if (voice.name.includes('Google')) badge = "<span class='text-[8px] bg-green-100 text-green-700 px-1 rounded font-bold'>Google</span>";
-                else badge = "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>";
-
-                // Simplify voice names by stripping redundant brands and desktop tags
+                let badge = voice.name.includes('Microsoft') ? "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>" : "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>";
                 const cleanDisplayLabel = voice.name.replace("Microsoft ", "").replace(" Desktop", "").replace("Natural - ", "");
 
                 row.innerHTML = `
@@ -1396,7 +1285,7 @@
 
         function playBlockAudio(text, buttonEl) {
             window.speechSynthesis.cancel();
-            window.speechSynthesis.resume(); // Chromium engine wake up call
+            window.speechSynthesis.resume();
             
             if (activeSpeakingButton) {
                 activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
@@ -1409,9 +1298,7 @@
 
             const savedVoiceName = localStorage.getItem('b2_selected_voice');
             let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
-            if (!voiceObj && availableGermanVoices.length > 0) {
-                voiceObj = availableGermanVoices[0]; // fallback
-            }
+            if (!voiceObj && availableGermanVoices.length > 0) voiceObj = availableGermanVoices[0];
             if (voiceObj) utterance.voice = voiceObj;
 
             buttonEl.classList.add('animate-pulse', 'text-rose-600');
@@ -1421,11 +1308,6 @@
                 buttonEl.classList.remove('animate-pulse', 'text-rose-600');
                 activeSpeakingButton = null;
             };
-            utterance.onerror = () => {
-                buttonEl.classList.remove('animate-pulse', 'text-rose-600');
-                activeSpeakingButton = null;
-            };
-
             window.speechSynthesis.speak(utterance);
         }
 
@@ -1473,11 +1355,8 @@
             } else {
                 document.getElementById('active-topic-title-de').contentEditable = "false";
                 document.getElementById('active-topic-title-en').contentEditable = "false";
-                document.getElementById('active-topic-title-de').className = "text-lg font-bold text-[var(--text-primary)] mt-1";
-                document.getElementById('active-topic-title-en').className = "text-xs italic text-[var(--text-muted)] mt-0.5";
             }
 
-            // Sync Learned Button status
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
             if (isLearned) {
@@ -1495,7 +1374,7 @@
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
-            // 1. EINLEITUNG WITH CATEGORY SVG ILLUSTRATION
+            // 1. EINLEITUNG
             const einleitungKey = "einleitung_de";
             const savedEinleitung = getHighlight(topic.id, einleitungKey);
             const einleitungHtml = `
@@ -1506,11 +1385,11 @@
                         </div>
                         <div>
                             <span class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider bg-[var(--accent-light)] px-2 py-1 rounded-md">Kategorie</span>
-                            <h4 class="text-sm font-bold text-[var(--text-primary)] mt-1">${topic.category || 'Allgemeines Thema'}</h4>
+                            <h4 class="text-sm font-bold text-[var(--text-primary)] mt-1">${topic.category}</h4>
                         </div>
                     </div>
                 </div>
-                <div data-block-key="${einleitungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${einleitungKey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</div>
+                <div data-block-key="${einleitungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${einleitungKey}', this.innerHTML)">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</div>
                 <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.einleitung_en}</p>
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.einleitung_ar || ''}</p>
             `;
@@ -1518,7 +1397,6 @@
             einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, topic.category, 'einleitung_de');
             container.appendChild(einleitungCard);
 
-            // PRO & CONTRA COLLAPSIBLE/RESPONSIVE WRAPPERS
             const proContraParent = document.createElement('div');
             proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
@@ -1528,13 +1406,11 @@
             topic.pro_de.forEach((deVal, index) => {
                 const skey = `pro_de_${index}`;
                 const saved = getHighlight(topic.id, skey);
-                const enVal = topic.pro_en ? topic.pro_en[index] : '';
-                const arVal = topic.pro_ar ? topic.pro_ar[index] : '';
                 proContent += `
                     <div class="mb-4 last:mb-0 relative">
-                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${enVal}</p>
-                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${arVal}</p>
+                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.pro_en ? topic.pro_en[index] : ''}</p>
+                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.pro_ar ? topic.pro_ar[index] : ''}</p>
                     </div>
                 `;
             });
@@ -1548,13 +1424,11 @@
             topic.contra_de.forEach((deVal, index) => {
                 const skey = `contra_de_${index}`;
                 const saved = getHighlight(topic.id, skey);
-                const enVal = topic.contra_en ? topic.contra_en[index] : '';
-                const arVal = topic.contra_ar ? topic.contra_ar[index] : '';
                 contraContent += `
                     <div class="mb-4 last:mb-0 relative">
-                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${enVal}</p>
-                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${arVal}</p>
+                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.contra_en ? topic.contra_en[index] : ''}</p>
+                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.contra_ar ? topic.contra_ar[index] : ''}</p>
                     </div>
                 `;
             });
@@ -1563,11 +1437,11 @@
             proContraParent.appendChild(contraCard);
             container.appendChild(proContraParent);
 
-            // 4. PERSÖNLICHE ERFAHRUNG CARD
+            // 4. PERSÖNLICHE ERFAHRUNG
             const erfahrungKey = "pers_erfahrung_de";
             const savedErfahrung = getHighlight(topic.id, erfahrungKey);
             const erfahrungHtml = `
-                <div data-block-key="${erfahrungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
+                <div data-block-key="${experimentKey = 'pers_erfahrung_de'}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
                 <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.pers_erfahrung_en}</p>
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
@@ -1575,7 +1449,7 @@
             erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category, 'pers_erfahrung_de');
             container.appendChild(erfahrungCard);
 
-            // 5. DIALOG SIMULATION CARD
+            // 5. DIALOG SIMULATION
             let dialogHtml = '<div class="space-y-3">';
             topic.dialog.forEach((chat, index) => {
                 const skey = `dialog_de_${index}`;
@@ -1584,7 +1458,7 @@
                 dialogHtml += `
                     <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
-                        <div data-block-key="${skey}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
+                        <div data-block-key="${skey}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
                         <p class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1">${chat.en}</p>
                         <p class="${arClass} text-[11px] text-right font-medium font-arabic mt-1" dir="rtl">${chat.ar || ''}</p>
                     </div>
@@ -1595,11 +1469,11 @@
             dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), topic.category, 'dialog', true, 0, 'de');
             container.appendChild(dialogCard);
 
-            // 6. SCHLUSSFOLGERUNG / GEMEINSAME LÖSUNG CARD
+            // 6. GEMEINSAME LÖSUNG
             const schlussKey = "schluss_de";
             const savedSchluss = getHighlight(topic.id, schlussKey);
             const schlussHtml = `
-                <div data-block-key="${schlussKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${schlussKey}', this.innerHTML)" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">${isEditMode ? (savedSchluss || topic.schluss_de) : applyConnectorsHighlight(savedSchluss || topic.schluss_de)}</div>
+                <div data-block-key="${schlussKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${schlussKey}', this.innerHTML)">${isEditMode ? (savedSchluss || topic.schluss_de) : applyConnectorsHighlight(savedSchluss || topic.schluss_de)}</div>
                 <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.schluss_en}</p>
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.schluss_ar || ''}</p>
             `;
@@ -1607,7 +1481,7 @@
             schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, topic.category, 'schluss_de');
             container.appendChild(schlussCard);
 
-            // 7. KEYWORDS SYSTEM
+            // 7. KEYWORDS
             let kwBadges = "";
             if (topic.keywords) {
                 const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
@@ -1635,7 +1509,6 @@
             showResetButton();
         }
 
-        // D3.JS FORCE DIRECTED MINDMAP IMPLEMENTATION (Collapsible Sleek Horizontal Tree)
         function buildDynamicMindmapData() {
             const categories = {
                 'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
@@ -1647,70 +1520,46 @@
 
             TOPICS_DATA.forEach(topic => {
                 const cat = topic.category || 'Gesellschaft & Politik';
-                if (!categories[cat]) {
-                    categories[cat] = { color: "#6B7280", children: [] };
-                }
                 categories[cat].children.push({
                     name: `T${topic.id}: ${topic.title_de}`,
                     id: topic.id,
-                    idx: TOPICS_DATA.indexOf(topic),
-                    detail: topic.title_en
+                    idx: TOPICS_DATA.indexOf(topic)
                 });
             });
-
-            const children = Object.keys(categories).map(catName => ({
-                name: catName,
-                color: categories[catName].color,
-                priority: 'category',
-                children: categories[catName].children
-            }));
 
             return {
                 name: "TELC B2 Themen",
                 priority: "root",
-                children: children
+                children: Object.keys(categories).map(catName => ({
+                    name: catName,
+                    color: categories[catName].color,
+                    priority: 'category',
+                    children: categories[catName].children
+                }))
             };
         }
 
-        // Tidy, Collapsible Horizontal Hierarchical layout completely eliminating overlapping
         function initMindmap() {
             if (TOPICS_DATA.length === 0) return;
-            
-            // Declare node index tracker first to prevent hoisting crashes
             let iCount = 0;
 
             const svg = d3.select("#mindmap-svg");
             svg.selectAll("*").remove();
-            
             const width = svg.node().clientWidth || 900;
             const height = svg.node().clientHeight || 600;
             
             const rawData = buildDynamicMindmapData();
-            const margin = {top: 20, right: 90, bottom: 30, left: 90};
-            
-            const gContainer = svg.append("g")
-                .attr("class", "mindmap-container");
+            const gContainer = svg.append("g").attr("class", "mindmap-container");
 
-            const zoom = d3.zoom()
-                .scaleExtent([0.1, 3])
-                .on("zoom", (event) => {
-                    gContainer.attr("transform", event.transform);
-                });
-
+            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => { gContainer.attr("transform", event.transform); });
             svg.call(zoom);
 
-            // Refine nodeSize to render compact branch nodes without collisions (16px height spacing is extremely compact and avoids overlaps)
             const treemap = d3.tree().nodeSize([16, 160]);
-            
             let root = d3.hierarchy(rawData, d => d.children);
             root.x0 = height / 2;
             root.y0 = 0;
 
-            // Collapse everything except first category branch by default
-            root.children.forEach((d, i) => {
-                if (i > 0) collapse(d);
-            });
-
+            root.children.forEach((d, i) => { if (i > 0) collapse(d); });
             update(root);
 
             function collapse(d) {
@@ -1728,122 +1577,42 @@
 
                 nodes.forEach(d => { d.y = d.depth * 170; });
 
-                const node = gContainer.selectAll('g.mindmap-node')
-                    .data(nodes, d => d.id || (d.id = ++iCount));
+                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = ++iCount));
+                const nodeEnter = node.enter().append('g').attr('class', 'mindmap-node cursor-pointer').attr('transform', d => `translate(${source.y0},${source.x0})`).on('click', clickNode);
 
-                const nodeEnter = node.enter().append('g')
-                    .attr('class', 'mindmap-node cursor-pointer')
-                    .attr('transform', d => `translate(${source.y0},${source.x0})`)
-                    .on('click', clickNode);
-
-                // Add shapes based on depth level: Using clean, lightweight minimalistic labels without box overlays
                 nodeEnter.each(function(d) {
                     const el = d3.select(this);
-                    
                     if (d.data.priority === 'root') {
-                        el.append('circle')
-                            .attr('r', 8)
-                            .attr('fill', 'var(--accent)')
-                            .attr('stroke', '#ffffff')
-                            .attr('stroke-width', 2);
-                        
-                        el.append('text')
-                            .attr('dy', '.35em')
-                            .attr('x', -14)
-                            .attr('text-anchor', 'end')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '9px')
-                            .attr('font-weight', 'bold')
-                            .text(d.data.name);
+                        el.append('circle').attr('r', 8).attr('fill', 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 2);
+                        el.append('text').attr('dy', '.35em').attr('x', -14).attr('text-anchor', 'end').attr('fill', 'var(--text-primary)').attr('font-size', '9px').attr('font-weight', 'bold').text(d.data.name);
                     } else if (d.data.priority === 'category') {
-                        el.append('circle')
-                            .attr('r', 6)
-                            .attr('fill', d.data.color)
-                            .attr('stroke', '#ffffff')
-                            .attr('stroke-width', 1.5);
-                        
-                        el.append('text')
-                            .attr('dy', '.35em')
-                            .attr('x', d => d.children || d._children ? -12 : 12)
-                            .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '8px')
-                            .attr('font-weight', 'bold')
-                            .text(d.data.name);
+                        el.append('circle').attr('r', 6).attr('fill', d.data.color).attr('stroke', '#ffffff').attr('stroke-width', 1.5);
+                        el.append('text').attr('dy', '.35em').attr('x', d => d.children || d._children ? -12 : 12).attr('text-anchor', d => d.children || d._children ? 'end' : 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').attr('font-weight', 'bold').text(d.data.name);
                     } else {
-                        // Leaf topic node - Minimalistic tiny color dots with elegant flat text
-                        el.append('circle')
-                            .attr('r', 3)
-                            .attr('fill', d.parent.data.color || 'var(--accent)')
-                            .attr('stroke', '#ffffff')
-                            .attr('stroke-width', 1);
-                        
-                        el.append('text')
-                            .attr('dy', '.35em')
-                            .attr('x', 10)
-                            .attr('text-anchor', 'start')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '8px')
-                            .text(d.data.name.length > 25 ? d.data.name.substring(0, 23) + '...' : d.data.name);
+                        el.append('circle').attr('r', 3).attr('fill', d.parent.data.color || 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 1);
+                        el.append('text').attr('dy', '.35em').attr('x', 10).attr('text-anchor', 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').text(d.data.name.length > 25 ? d.data.name.substring(0, 23) + '...' : d.data.name);
                     }
                 });
 
                 const nodeUpdate = nodeEnter.merge(node);
-
-                nodeUpdate.transition().duration(250)
-                    .attr('transform', d => `translate(${d.y},${d.x})`);
+                nodeUpdate.transition().duration(250).attr('transform', d => `translate(${d.y},${d.x})`);
 
                 nodeUpdate.select('circle')
                     .attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)'))
-                    .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff')
-                    .attr('stroke-width', d => d._children ? 2 : 1);
+                    .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff');
 
-                const nodeExit = node.exit().transition().duration(250)
-                    .attr('transform', d => `translate(${source.y},${source.x})`)
-                    .remove();
+                node.exit().transition().duration(250).attr('transform', d => `translate(${source.y},${source.x})`).remove();
 
-                const link = gContainer.selectAll('path.mindmap-link')
-                    .data(links, d => d.target.id);
+                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
+                const linkEnter = link.enter().insert('path', "g").attr('class', 'mindmap-link').attr('fill', 'none').attr('stroke', 'var(--border)').attr('stroke-opacity', 0.4).attr('stroke-width', 1)
+                    .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
 
-                const linkEnter = link.enter().insert('path', "g")
-                    .attr('class', 'mindmap-link')
-                    .attr('fill', 'none')
-                    .attr('stroke', 'var(--border)')
-                    .attr('stroke-opacity', 0.4)
-                    .attr('stroke-width', 1)
-                    .attr('d', d => {
-                        const o = {x: source.x0, y: source.y0};
-                        return diagonal(o, o);
-                    });
+                linkEnter.merge(link).transition().duration(250).attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)').attr('stroke-opacity', 0.6).attr('d', d => diagonal(d.source, d.target));
+                link.exit().transition().duration(250).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
 
-                const linkUpdate = linkEnter.merge(link);
+                nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
 
-                linkUpdate.transition().duration(250)
-                    .attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)')
-                    .attr('stroke-opacity', 0.6)
-                    .attr('stroke-width', 1)
-                    .attr('d', d => diagonal(d.source, d.target));
-
-                const linkExit = link.exit().transition().duration(250)
-                    .attr('d', d => {
-                        const o = {x: source.x, y: source.y};
-                        return diagonal(o, o);
-                    })
-                    .remove();
-
-                nodes.forEach(d => {
-                    d.x0 = d.x;
-                    d.y0 = d.y;
-                });
-
-                function diagonal(s, d) {
-                    const startY = s.y;
-                    const endY = d.y;
-                    return `M ${startY} ${s.x}
-                            C ${(startY + endY) / 2} ${s.x},
-                              ${(startY + endY) / 2} ${d.x},
-                              ${endY} ${d.x}`;
-                }
+                function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
 
                 function clickNode(event, d) {
                     if (d.data.idx !== undefined) {
@@ -1853,23 +1622,15 @@
                         renderActiveTopic();
                         switchTab('dashboard');
                     } else {
-                        if (d.children) {
-                            d._children = d.children;
-                            d.children = null;
-                        } else {
-                            d.children = d._children;
-                            d._children = null;
-                        }
+                        if (d.children) { d._children = d.children; d.children = null; }
+                        else { d.children = d._children; d._children = null; }
                         update(d);
                     }
                 }
             }
-
-            // Align mindmap to fit viewport
-            svg.call(zoom.transform, d3.zoomIdentity.translate(margin.left, height / 2).scale(0.85));
+            svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
         }
 
-        // EXPORT THE SYSTEM DATABASE AS topics.json
         function exportTopicsJSON() {
             if (TOPICS_DATA.length === 0) return;
             const cleanData = JSON.stringify(TOPICS_DATA, null, 2);
@@ -1884,7 +1645,6 @@
             URL.revokeObjectURL(url);
         }
 
-        // IMPORT CUSTOMIZED topics.json
         async function importTopicsJSON(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1897,9 +1657,7 @@
                         TOPICS_DATA = imported;
                         window.TOPICS_DATA = imported;
                         localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
-                        
                         if (currentUser) {
-                            alert("Daten importiert. Aktualisiere Cloud-Arbeitsbereich...");
                             for (const t of imported) {
                                 await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
                             }
@@ -1909,12 +1667,8 @@
                         renderSidebar();
                         renderActiveTopic();
                         alert("topics.json erfolgreich importiert!");
-                    } else {
-                        alert("Ungültiges Dateiformat. Muss ein Array von Themen sein.");
                     }
-                } catch (err) {
-                    alert("Fehler beim Lesen der Datei: " + err.message);
-                }
+                } catch (err) { alert("Fehler beim Lesen der Datei: " + err.message); }
             };
             reader.readAsText(file);
         }
@@ -1939,23 +1693,18 @@
             renderActiveTopic();
         });
 
-        // Toggle edit mode
         const editModeToggle = document.getElementById('edit-mode-toggle');
         editModeToggle.onclick = () => {
             isEditMode = !isEditMode;
             editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
             editModeToggle.classList.toggle('text-white', isEditMode);
-            
-            const statusText = document.getElementById('edit-mode-status-text');
-            statusText.textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
-            
+            document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
             document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
             renderActiveTopic();
         };
 
         document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
 
-        // Mobile responsive aside sidebar trigger
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobile-nav-toggle');
         mobileToggle.addEventListener('click', () => {
@@ -1966,38 +1715,27 @@
                 : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
         });
 
-        // Initialize PWA database trigger cleanly
         loadTopics();
     </script>
 
-    <!-- Unified Progressive Web App Service Worker registration pipeline -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js', { scope: './' })
                     .then((reg) => {
-                        console.log('SW active with scope:', reg.scope);
                         reg.addEventListener('updatefound', () => {
                             const nw = reg.installing;
                             nw.addEventListener('statechange', () => {
                                 if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                                    showUpdateBanner();
+                                    const banner = document.createElement('div');
+                                    banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
+                                    banner.innerHTML = `<span>🔄 Neue App-Version offline verfügbar.</span><button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black">Aktualisieren</button>`;
+                                    document.body.appendChild(banner);
                                 }
                             });
                         });
-                    })
-                    .catch(err => console.error('PWA system initialization failed:', err));
+                    });
             });
-        }
-
-        function showUpdateBanner() {
-            const banner = document.createElement('div');
-            banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
-            banner.innerHTML = `
-                <span>🔄 Eine neue Anwendungsversion ist offline einsatzbereit.</span>
-                <button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black hover:bg-slate-100">Aktualisieren</button>
-            `;
-            document.body.appendChild(banner);
         }
     </script>
 </body>
