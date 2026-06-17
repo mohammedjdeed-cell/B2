@@ -1,15 +1,40 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full bg-zinc-950 text-zinc-100">
+<html lang="de" class="h-full bg-zinc-950 text-zinc-100 transition-colors duration-200" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reel Mode - TELC B2 Diskussionstrainer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>
+        :root, [data-theme="light"] {
+            --bg-primary: #f7f6f2;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-muted: #64748b;
+            --border-primary: #e2e8f0;
+            --card-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] {
+            --bg-primary: #09090b;
+            --bg-card: #18181b;
+            --text-primary: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-primary: #27272a;
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
         }
+
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
         }
@@ -20,89 +45,433 @@
             background: #3f3f46;
             border-radius: 9999px;
         }
+
+        /* Card Entry Animation & Stagger Delays */
+        .card-active {
+            animation: cardSlideUp 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes cardSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-child {
+            opacity: 0;
+            animation: fadeInStagger 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .stagger-child:nth-child(1) { animation-delay: 40ms; }
+        .stagger-child:nth-child(2) { animation-delay: 80ms; }
+        .stagger-child:nth-child(3) { animation-delay: 120ms; }
+        .stagger-child:nth-child(4) { animation-delay: 160ms; }
+        .stagger-child:nth-child(5) { animation-delay: 200ms; }
+
+        @keyframes fadeInStagger {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Watermark after styles */
+        .watermark-card::after {
+            content: var(--watermark-icon);
+            font-size: 180px;
+            opacity: 0.05;
+            position: absolute;
+            bottom: -20px;
+            right: -10px;
+            pointer-events: none;
+            z-index: 0;
+            user-select: none;
+        }
+
+        /* SVG Handdrawn Circle Animation Style */
+        .highlight-circle {
+            animation: drawCircle 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @media print {
+            .highlight-circle {
+                display: none !important;
+            }
+        }
+
+        /* Active word animation wash */
+        .tts-word-active {
+            border-radius: 4px;
+            background-color: rgba(162, 155, 254, 0.15);
+            transition: background-color 200ms ease;
+        }
+        [data-theme="light"] .tts-word-active {
+            background-color: rgba(95, 79, 207, 0.12);
+        }
     </style>
 </head>
-<body class="h-full flex items-center justify-center overflow-hidden">
+<body class="h-full flex items-center justify-center overflow-hidden transition-colors duration-200">
 
-    <!-- Container designed to simulate a 9:16 mobile display card on screens, and scale full-screen on mobile -->
-    <div class="relative w-full max-w-md h-full md:h-[92vh] md:max-h-[850px] bg-zinc-900 border-0 md:border md:border-zinc-800 md:rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden transition-all duration-300">
+    <!-- Transition Flash Overlay -->
+    <div id="transition-flash" class="fixed inset-0 bg-white pointer-events-none z-50 opacity-0"></div>
+
+    <!-- Top Progress Bar -->
+    <div id="top-progress" class="fixed top-0 left-0 w-full h-[3px] z-50 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] shadow-sm transition-all duration-300" style="width: 0%"></div>
+
+    <!-- Main Outer Container mimicking a 9:16 vertical card screen -->
+    <div class="relative w-full max-w-md h-full md:h-[92vh] md:max-h-[850px] bg-zinc-900 dark:bg-zinc-950 border-0 md:border md:border-zinc-800 dark:md:border-zinc-800 md:rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden transition-all duration-300">
         
-        <!-- Reel Header: Title, topic indicator and quick navigation -->
-        <header class="p-4 border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-md z-10">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span id="topic-badge" class="px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-wider">Thema 1</span>
-                    <h2 id="topic-title" class="text-sm font-extrabold tracking-tight truncate max-w-[220px] mt-1 text-zinc-100">Wird geladen...</h2>
+        <!-- Navigation Header -->
+        <header class="p-4 border-b border-zinc-800 bg-zinc-900/80 dark:bg-zinc-950/80 backdrop-blur-md z-10 flex flex-col gap-1">
+            <div id="topic-indicator-label" class="text-[10px] uppercase tracking-wider font-extrabold text-center text-zinc-500 dark:text-zinc-400">
+                Lade Thema...
+            </div>
+            <div class="flex items-center justify-between mt-1">
+                <div class="min-w-0">
+                    <span id="topic-badge" class="px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-wider">Thema 1</span>
+                    <h2 id="topic-title" class="text-sm font-black tracking-tight truncate max-w-[190px] mt-0.5 text-zinc-100 dark:text-zinc-50">Wird geladen...</h2>
                 </div>
-                <div class="flex items-center gap-1">
-                    <button onclick="prevTopic()" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all text-xs" title="Vorheriges Thema">
-                        ◀
+                <div class="flex items-center gap-1.5">
+                    <button onclick="prevTopic()" class="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all text-xs flex items-center justify-center" title="Vorheriges Thema">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="nextTopic()" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all text-xs" title="Nächstes Thema">
-                        ▶
+                    <button onclick="nextTopic()" class="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all text-xs flex items-center justify-center" title="Nächstes Thema">
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Main Dialog Reel Content Screen -->
-        <main id="chat-scroller" class="flex-1 overflow-y-auto px-4 py-6 space-y-4 custom-scrollbar flex flex-col justify-start">
-            <!-- Simulated conversation lines will append here dynamically -->
-        </main>
-
-        <!-- Translation Subtitles / Caption Block -->
-        <div id="translation-caption-container" class="px-4 py-3 bg-indigo-950/40 border-t border-zinc-800 text-center min-h-[60px] flex items-center justify-center transition-all duration-300">
-            <p id="translation-subtitle" class="text-xs italic text-indigo-200 leading-relaxed font-medium">Bilingualer Untertitel erscheint hier beim Abspielen...</p>
+        <!-- Carousel Workspace Stack -->
+        <div id="reel-card-container" class="flex-1 relative flex flex-col justify-center px-4 py-4 transition-all duration-300">
+            <!-- Active Card Container -->
+            <div id="active-reel-card" class="w-full h-full rounded-2xl relative p-6 flex flex-col justify-between border border-zinc-800/80 dark:border-zinc-800 overflow-y-auto overflow-x-hidden custom-scrollbar transition-all duration-300 watermark-card">
+                <!-- Content will be programmatically populated depending on slide indices -->
+            </div>
         </div>
 
-        <!-- System Controls Panel (Play / Speed / Languages) -->
-        <footer class="p-4 bg-zinc-900/90 border-t border-zinc-800 space-y-3 z-10">
-            <div class="flex items-center justify-between gap-2 flex-wrap">
-                <!-- Dialogue Play/Pause Trigger Button -->
-                <button id="playback-trigger" onclick="togglePlayback()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-indigo-600/10 transition-all">
-                    <span id="trigger-icon">▶</span>
-                    <span id="trigger-text">Simulation starten</span>
+        <!-- Language Subtitles Overlay -->
+        <div id="translation-caption-container" class="px-4 py-3 bg-zinc-950/60 dark:bg-zinc-950 border-t border-zinc-800/60 text-center min-h-[65px] flex items-center justify-center transition-all duration-300">
+            <p id="translation-subtitle" class="text-xs italic text-indigo-200 leading-relaxed font-semibold">Tippe auf den Text oder starte die Wiedergabe...</p>
+        </div>
+
+        <!-- Master Interface Controls panel -->
+        <footer class="p-4 bg-zinc-900/90 dark:bg-zinc-950/90 border-t border-zinc-800 space-y-3.5 z-10">
+            <!-- TTS Slider row -->
+            <div class="grid grid-cols-2 gap-3 text-xs bg-zinc-950/50 dark:bg-zinc-900/30 p-2.5 rounded-xl border border-zinc-800/60">
+                <div class="space-y-1">
+                    <div class="flex justify-between text-zinc-400 font-bold text-[10px] uppercase">
+                        <span>Geschwindigkeit</span>
+                        <span id="speed-val">1.0x</span>
+                    </div>
+                    <input type="range" id="speed-slider" min="0.7" max="1.5" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-550">
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-zinc-400 font-bold text-[10px] uppercase">
+                        <span>Tonhöhe</span>
+                        <span id="pitch-val">1.0</span>
+                    </div>
+                    <input type="range" id="pitch-slider" min="0.8" max="1.2" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-550">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Dynamic Player buttons -->
+                <button onclick="togglePlayback()" id="playback-btn" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/10 transition-all active:scale-95" title="Wiedergabe umschalten">
+                    <i id="playback-icon" data-lucide="play" class="w-4 h-4"></i>
+                    <span id="playback-text">Wiedergabe</span>
                 </button>
 
-                <!-- Translation Dropdown Config -->
-                <select id="translation-selector" onchange="changeSubtitleLang()" class="text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors cursor-pointer">
+                <button onclick="stopPlayback()" class="p-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all active:scale-95" title="Wiedergabe stoppen">
+                    <i data-lucide="square" class="w-4.5 h-4.5"></i>
+                </button>
+
+                <!-- Translation Subtitle Switcher -->
+                <select id="translation-selector" onchange="changeSubtitleLang()" class="text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-2.5 py-3 font-bold text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer">
                     <option value="en">Subtitle: EN</option>
                     <option value="ar">Subtitle: AR</option>
                     <option value="none">No Subtitles</option>
                 </select>
-                
-                <!-- Speed selection config -->
-                <select id="speed-selector" onchange="changeSpeed()" class="text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors cursor-pointer">
-                    <option value="0.8">0.8x</option>
-                    <option value="0.9">0.9x</option>
-                    <option value="1.0" selected>1.0x</option>
-                    <option value="1.1">1.1x</option>
-                    <option value="1.2">1.2x</option>
+            </div>
+
+            <!-- Language and Voice Selector Configuration -->
+            <div class="flex gap-2">
+                <select id="lang-selector" onchange="changeTtsLang()" class="w-1/4 text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer">
+                    <option value="de" selected>DE</option>
+                    <option value="en">EN</option>
+                    <option value="ar">AR</option>
+                </select>
+                <select id="voice-selector" onchange="selectTtsVoice()" class="flex-1 text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer">
+                    <!-- Loaded dynamically -->
                 </select>
             </div>
             
-            <div class="flex items-center justify-between text-[10px] text-zinc-500 font-semibold px-1">
-                <span>Auto-Scroll: Aktiv</span>
-                <span>Wischen / Klicken zum Navigieren</span>
+            <div class="flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400 font-extrabold px-1 uppercase tracking-wider">
+                <span>Swipe für nächste Karte</span>
+                <span>Wische / Klicke zum Navigieren</span>
             </div>
         </footer>
     </div>
 
-    <!-- MAIN SOUND & VISUAL SCRIPT INTERACTION -->
+    <!-- MAIN SOUND & VISUAL ENGINE -->
     <script>
         let topicsList = [];
         let activeIdx = 0;
         let activeTopic = null;
-        
-        let currentSpeakerLine = -1;
+        let currentSlide = 0; // 0 to 6 representing sections
+        const TOTAL_SLIDES = 7;
+
         let isPlaying = false;
         let synth = window.speechSynthesis;
         let activeUtterance = null;
+        let lastActiveSpan = null;
+        let currentWordIndex = 0;
+        
         let playbackSpeed = 1.0;
+        let playbackPitch = 1.0;
+        let ttsLang = 'de';
         let subtitleLang = 'en';
+        let voicesList = [];
+        let currentSelectedVoice = null;
 
-        // Interface with parent memory space directly if present, or fetch fresh copies as fallback
+        // Sync visual theme context on startup
+        function syncThemeWithParent() {
+            try {
+                const parentTheme = window.parent && window.parent.document.documentElement.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                    if (parentTheme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                }
+            } catch(e) {
+                console.warn("Could not sync with parent theme, defaulting to dark mode", e);
+            }
+        }
+
+        // Voice matching rules per specs
+        function getBestVoiceForLanguage(langCode, list) {
+            let priority = [];
+            if (langCode === 'de') {
+                priority = ["Microsoft Katja", "Microsoft Hedda", "Google Deutsch"];
+            } else if (langCode === 'en') {
+                priority = ["Microsoft Aria", "Microsoft Jenny", "Google US English"];
+            } else if (langCode === 'ar') {
+                priority = ["Microsoft Hala", "Google Arabic"];
+            }
+
+            // Priority matching
+            for (let name of priority) {
+                let match = list.find(v => v.name.includes(name));
+                if (match) return match;
+            }
+
+            // Neural/Natural matching
+            let neural = list.find(v => v.name.includes("Neural") || v.name.includes("Natural"));
+            if (neural) return neural;
+
+            // Simple language code filter match
+            let codeMatch = list.find(v => v.lang.startsWith(langCode));
+            if (codeMatch) return codeMatch;
+
+            // Fallback
+            return list[0] || null;
+        }
+
+        function populateVoiceSelector() {
+            if (!synth) return;
+            const selectEl = document.getElementById('voice-selector');
+            if (!selectEl) return;
+
+            voicesList = synth.getVoices();
+            // Filter list to current selected speaking language
+            let filtered = voicesList.filter(v => v.lang.toLowerCase().startsWith(ttsLang));
+            if (filtered.length === 0) {
+                filtered = voicesList; // match fallback
+            }
+
+            // Sort list: put prioritized ones first
+            let priorities = [];
+            if (ttsLang === 'de') priorities = ["Katja", "Hedda", "Deutsch"];
+            else if (ttsLang === 'en') priorities = ["Aria", "Jenny", "US English"];
+            else if (ttsLang === 'ar') priorities = ["Hala", "Arabic"];
+
+            filtered.sort((a, b) => {
+                let prioA = priorities.findIndex(p => a.name.includes(p));
+                let prioB = priorities.findIndex(p => b.name.includes(p));
+                if (prioA !== -1 && prioB === -1) return -1;
+                if (prioB !== -1 && prioA === -1) return 1;
+                if (prioA !== -1 && prioB !== -1) return prioA - prioB;
+                return a.name.localeCompare(b.name);
+            });
+
+            selectEl.innerHTML = "";
+            filtered.forEach(voice => {
+                const opt = document.createElement('option');
+                opt.value = voice.name;
+                const cloudIcon = voice.localService ? "💻" : "🌐";
+                opt.textContent = `${voice.name} ${cloudIcon}`;
+                selectEl.appendChild(opt);
+            });
+
+            // Auto-select best matching prioritized voice
+            currentSelectedVoice = getBestVoiceForLanguage(ttsLang, filtered);
+            if (currentSelectedVoice) {
+                selectEl.value = currentSelectedVoice.name;
+            }
+        }
+
+        function selectTtsVoice() {
+            const selectEl = document.getElementById('voice-selector');
+            currentSelectedVoice = voicesList.find(v => v.name === selectEl.value);
+            if (isPlaying) {
+                restartTtsSegment();
+            }
+        }
+
+        function changeTtsLang() {
+            ttsLang = document.getElementById('lang-selector').value;
+            populateVoiceSelector();
+            if (isPlaying) {
+                restartTtsSegment();
+            }
+        }
+
+        function updateAudioParams() {
+            playbackSpeed = parseFloat(document.getElementById('speed-slider').value);
+            playbackPitch = parseFloat(document.getElementById('pitch-slider').value);
+            document.getElementById('speed-val').textContent = `${playbackSpeed.toFixed(1)}x`;
+            document.getElementById('pitch-val').textContent = `${playbackPitch.toFixed(1)}`;
+            if (isPlaying) {
+                restartTtsSegment();
+            }
+        }
+
+        function changeSubtitleLang() {
+            subtitleLang = document.getElementById('translation-selector').value;
+            renderCaptionLine();
+        }
+
+        // SVG ellipse drawing logic
+        function wrapWithCircle(element, colorHex) {
+            if (!element) return;
+            removeCircle(element);
+
+            const parent = element.parentNode;
+            if (parent && getComputedStyle(parent).position === 'static') {
+                parent.style.position = 'relative';
+            }
+
+            const rect = element.getBoundingClientRect();
+            const W = rect.width;
+            const H = rect.height;
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("class", "highlight-circle absolute pointer-events-none z-10 overflow-visible");
+            svg.style.width = (W + 24) + "px";
+            svg.style.height = (H + 20) + "px";
+            svg.style.top = (element.offsetTop - 10) + "px";
+            svg.style.left = (element.offsetLeft - 12) + "px";
+
+            const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            const cx = W / 2 + (Math.random() * 6 - 3);
+            const cy = H / 2 + (Math.random() * 4 - 2);
+            const rx = W / 2 + 10 + (Math.random() * 6 - 2);
+            const ry = H / 2 + 8 + (Math.random() * 4 - 1);
+
+            ellipse.setAttribute("cx", cx);
+            ellipse.setAttribute("cy", cy);
+            ellipse.setAttribute("rx", rx);
+            ellipse.setAttribute("ry", ry);
+            ellipse.setAttribute("stroke", colorHex);
+            ellipse.setAttribute("stroke-width", "2.5");
+            ellipse.setAttribute("fill", "none");
+            ellipse.setAttribute("stroke-linecap", "round");
+
+            const perimeter = 2 * Math.PI * Math.sqrt((rx * rx + ry * ry) / 2);
+            ellipse.setAttribute("stroke-dasharray", perimeter);
+            ellipse.setAttribute("stroke-dashoffset", perimeter);
+
+            svg.appendChild(ellipse);
+            element.parentNode.insertBefore(svg, element.nextSibling);
+            element.highlightCircleSvg = svg;
+
+            ellipse.animate([
+                { strokeDashoffset: perimeter },
+                { strokeDashoffset: 0 }
+            ], {
+                duration: 500,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'forwards'
+            });
+        }
+
+        function removeCircle(element) {
+            if (!element) return;
+            if (element.highlightCircleSvg) {
+                if (element.highlightCircleSvg.parentNode) {
+                    element.highlightCircleSvg.parentNode.removeChild(element.highlightCircleSvg);
+                }
+                element.highlightCircleSvg = null;
+            }
+            // Fallback removal sibling search
+            let sibling = element.nextSibling;
+            if (sibling && sibling.classList && sibling.classList.contains('highlight-circle')) {
+                sibling.parentNode.removeChild(sibling);
+            }
+        }
+
+        function getColorForContext(contextType) {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            switch(contextType) {
+                case 'tts':
+                    return isDark ? '#a29bfe' : '#5f4fcf';
+                case 'keyword':
+                    return isDark ? '#fdcb6e' : '#c9860c';
+                case 'pro':
+                    return isDark ? '#00cec9' : '#007a73';
+                case 'contra':
+                    return isDark ? '#ff7675' : '#c0392b';
+                case 'dialog_a':
+                    return isDark ? '#74b9ff' : '#2980b9';
+                case 'dialog_b':
+                    return isDark ? '#fd79a8' : '#a8315e';
+                default:
+                    return isDark ? '#a29bfe' : '#5f4fcf';
+            }
+        }
+
+        // Helper text splitter to rebuild strings into highlightable word structures
+        function textToWordSpans(text, contextType) {
+            if (!text) return "";
+            // Strip any raw tags
+            const div = document.createElement('div');
+            div.innerHTML = text;
+            const plain = div.textContent || div.innerText || "";
+            const words = plain.split(/(\s+)/);
+            
+            let html = "";
+            let charIdx = 0;
+            words.forEach(word => {
+                if (word.trim() === "") {
+                    html += word;
+                    charIdx += word.length;
+                } else {
+                    html += `<span class="tts-word relative cursor-pointer inline-block" data-start="${charIdx}" data-end="${charIdx + word.length}" data-context="${contextType}">${word}</span>`;
+                    charIdx += word.length;
+                }
+            });
+            return html;
+        }
+
+        // Sync and initialize topics data
         async function initializeReelEngine() {
+            syncThemeWithParent();
             if (window.parent && window.parent.TOPICS_DATA && window.parent.TOPICS_DATA.length > 0) {
                 topicsList = window.parent.TOPICS_DATA;
                 activeIdx = window.parent.activeIdx || 0;
@@ -112,17 +481,26 @@
                     topicsList = await response.json();
                     activeIdx = 0;
                 } catch(e) {
-                    console.error("Could not fetch fallback topics.json directly", e);
+                    console.error("Could not load Fallback JSON data", e);
                 }
             }
+
+            if (synth) {
+                synth.onvoiceschanged = () => {
+                    populateVoiceSelector();
+                };
+                populateVoiceSelector();
+            }
+
             loadActiveTopic();
+            lucide.createIcons();
         }
 
         function loadActiveTopic() {
             if (topicsList.length === 0) return;
             activeTopic = topicsList[activeIdx];
-            
-            // Sync parent active page context if loaded inside the master shell
+
+            // Sync structural parameters with parent Master window
             if (window.parent && typeof window.parent.activeIdx !== 'undefined') {
                 window.parent.activeIdx = activeIdx;
                 if (typeof window.parent.renderActiveTopic === 'function') {
@@ -131,235 +509,2460 @@
                 }
             }
 
-            // UI Refresh setup
             document.getElementById('topic-badge').textContent = `Thema ${activeTopic.id} / 52`;
             document.getElementById('topic-title').textContent = activeTopic.title_de;
-            
+
             resetPlaybackState();
-            renderDialogueReel();
+            renderActiveSlide();
+            updateTopProgress();
         }
 
-        function renderDialogueReel() {
-            const scroller = document.getElementById('chat-scroller');
-            scroller.innerHTML = "";
+        function updateTopProgress() {
+            const bar = document.getElementById('top-progress');
+            const percent = ((currentSlide + 1) / TOTAL_SLIDES) * 100;
+            bar.style.width = `${percent}%`;
 
-            if (!activeTopic || !activeTopic.dialog) return;
+            const label = document.getElementById('topic-indicator-label');
+            label.textContent = `Thema ${activeTopic.id} · Karte ${currentSlide + 1} von ${TOTAL_SLIDES}`;
+        }
 
-            activeTopic.dialog.forEach((chat, index) => {
-                const isA = chat.role.includes('Schüler A') || chat.role.includes('Schülerin A');
-                const row = document.createElement('div');
-                
-                // Align left for Student A, Align right for Student B
-                row.className = `flex w-full ${isA ? 'justify-start' : 'justify-end'} animate-fade-in transition-all duration-300`;
-                row.id = `line-wrapper-${index}`;
-                
-                row.innerHTML = `
-                    <div id="dialog-bubble-${index}" onclick="jumpToSpeakerLine(${index})" class="max-w-[85%] rounded-2xl p-3.5 cursor-pointer transition-all border duration-200 ${
-                        isA 
-                        ? 'bg-zinc-800/80 border-zinc-700 text-indigo-200 rounded-bl-none shadow-md hover:bg-zinc-700' 
-                        : 'bg-indigo-950/70 border-indigo-900/60 text-indigo-100 rounded-br-none shadow-md hover:bg-indigo-900/60'
-                    }">
-                        <div class="flex items-center justify-between gap-4 mb-1 text-[9px] font-extrabold uppercase tracking-widest ${isA ? 'text-indigo-400' : 'text-emerald-400'}">
-                            <span>${chat.role}</span>
-                            <span>Line ${index + 1}</span>
-                        </div>
-                        <p class="text-sm font-semibold leading-relaxed text-zinc-100">${chat.de}</p>
+        // Slide Content Builders
+        function renderActiveSlide() {
+            const card = document.getElementById('active-reel-card');
+            card.className = "w-full h-full rounded-2xl relative p-6 flex flex-col justify-between border border-zinc-800/80 dark:border-zinc-800 overflow-y-auto overflow-x-hidden custom-scrollbar watermark-card card-active";
+            
+            // Clean previous circle SVG items
+            const oldSvgs = card.querySelectorAll('.highlight-circle');
+            oldSvgs.forEach(s => s.parentNode.removeChild(s));
+
+            // Set backgrounds depending on selection
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            let bgStyle = "";
+            let watermark = "📖";
+
+            switch(currentSlide) {
+                case 0: // Intro
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 20% 20%, #3d1a78 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 20% 20%, rgba(61, 26, 120, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "📖";
+                    buildIntroSlide(card);
+                    break;
+                case 1: // Pro
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 20% 10%, #003d2b 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 20% 10%, rgba(0, 61, 43, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "👍";
+                    buildProSlide(card);
+                    break;
+                case 2: // Contra
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 20% 10%, #3d1500 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 20% 10%, rgba(61, 21, 0, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "👎";
+                    buildContraSlide(card);
+                    break;
+                case 3: // Personal
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 30% 15%, #2d2000 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 30% 15%, rgba(45, 32, 0, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "👤";
+                    buildPersonalSlide(card);
+                    break;
+                case 4: // Dialog
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 20% 10%, #001a3d 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 20% 10%, rgba(0, 26, 61, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "💬";
+                    buildDialogSlide(card);
+                    break;
+                case 5: // Schluss
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 80% 80%, #1a0d3d 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 80% 80%, rgba(26, 13, 61, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "🎯";
+                    buildSchlussSlide(card);
+                    break;
+                case 6: // Keywords
+                    bgStyle = isDark 
+                        ? "radial-gradient(ellipse at 20% 10%, #200d3d 0%, #0f0f10 70%)"
+                        : "radial-gradient(ellipse at 20% 10%, rgba(32, 13, 61, 0.07) 0%, #f7f6f2 70%)";
+                    watermark = "🔑";
+                    buildKeywordsSlide(card);
+                    break;
+            }
+
+            card.style.background = bgStyle;
+            card.style.setProperty('--watermark-icon', `'${watermark}'`);
+            
+            // Build captions
+            renderCaptionLine();
+        }
+
+        // Active UI slide layouts
+        function buildIntroSlide(card) {
+            const deText = textToWordSpans(activeTopic.einleitung_de, 'tts');
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full stagger-child">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-400 uppercase">1. Einleitung</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-2">Thema einleiten</h3>
+                    </div>
+                    <div class="my-auto py-4">
+                        <p id="tts-content-container" class="text-base md:text-lg font-semibold leading-relaxed text-zinc-100 border-l-2 border-indigo-500 pl-4 py-1">${deText}</p>
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Tippe auf ein Wort, um es einzukreisen.</div>
+                </div>
+            `;
+        }
+
+        function buildProSlide(card) {
+            let listHtml = "";
+            activeTopic.pro_de.forEach((pro, index) => {
+                const spanified = textToWordSpans(pro, 'pro');
+                listHtml += `
+                    <div class="stagger-child bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/80 flex gap-2">
+                        <span class="text-emerald-400 font-extrabold text-sm">✓</span>
+                        <p class="text-xs md:text-sm font-semibold text-zinc-200 leading-relaxed">${spanified}</p>
                     </div>
                 `;
-                scroller.appendChild(row);
             });
-            
-            updateCaptionContainer("");
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-400 uppercase">2. Dafür (Pro)</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-2">Dafür-Argumente</h3>
+                    </div>
+                    <div id="tts-content-container" class="space-y-2.5 my-auto py-4">
+                        ${listHtml}
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Argumentationskette für die Diskussion.</div>
+                </div>
+            `;
         }
 
-        function jumpToSpeakerLine(idx) {
-            resetUtterancePlayback();
-            currentSpeakerLine = idx;
-            isPlaying = true;
-            updatePlaybackTriggerUI();
-            speakSequence();
+        function buildContraSlide(card) {
+            let listHtml = "";
+            activeTopic.contra_de.forEach((contra, index) => {
+                const spanified = textToWordSpans(contra, 'contra');
+                listHtml += `
+                    <div class="stagger-child bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/80 flex gap-2">
+                        <span class="text-rose-400 font-extrabold text-sm">✗</span>
+                        <p class="text-xs md:text-sm font-semibold text-zinc-200 leading-relaxed">${spanified}</p>
+                    </div>
+                `;
+            });
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-400 uppercase">3. Dagegen (Contra)</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-2">Dagegen-Argumente</h3>
+                    </div>
+                    <div id="tts-content-container" class="space-y-2.5 my-auto py-4">
+                        ${listHtml}
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Gegenargumente parat haben.</div>
+                </div>
+            `;
         }
 
-        function togglePlayback() {
-            if (isPlaying) {
-                synth.cancel();
-                isPlaying = false;
-                updatePlaybackTriggerUI();
-            } else {
-                isPlaying = true;
-                updatePlaybackTriggerUI();
-                if (currentSpeakerLine === -1 || currentSpeakerLine >= activeTopic.dialog.length) {
-                    currentSpeakerLine = 0;
-                }
-                speakSequence();
+        function buildPersonalSlide(card) {
+            const deText = textToWordSpans(activeTopic.pers_erfahrung_de, 'tts');
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full stagger-child">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 uppercase">4. Erfahrung</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-2">Eigene Erfahrungen teilen</h3>
+                    </div>
+                    <div class="my-auto py-4">
+                        <p id="tts-content-container" class="text-sm md:text-base font-medium leading-relaxed text-zinc-100 border-l-2 border-amber-500 pl-4 py-1">${deText}</p>
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Zeigt persönliche Relevanz im B2-Niveau.</div>
+                </div>
+            `;
+        }
+
+        function buildDialogSlide(card) {
+            let dialogHtml = "";
+            activeTopic.dialog.forEach((chat, index) => {
+                const isA = chat.role.includes('Schüler A') || chat.role.includes('Schülerin A');
+                const roleType = isA ? 'dialog_a' : 'dialog_b';
+                const spanified = textToWordSpans(chat.de, roleType);
+                dialogHtml += `
+                    <div class="stagger-child p-3 rounded-xl border ${
+                        isA 
+                        ? 'bg-zinc-950/50 border-indigo-900/60 text-indigo-200' 
+                        : 'bg-indigo-950/20 border-zinc-800 text-zinc-300'
+                    }">
+                        <span class="text-[8px] font-extrabold uppercase tracking-widest block mb-1 text-zinc-400">${chat.role}</span>
+                        <p class="text-xs font-semibold leading-relaxed text-zinc-100">${spanified}</p>
+                    </div>
+                `;
+            });
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-purple-500/20 text-purple-400 uppercase">5. Dialog</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-1">Prüfungssimulation</h3>
+                    </div>
+                    <div id="tts-content-container" class="space-y-2 max-h-[340px] overflow-y-auto custom-scrollbar pr-1 my-auto py-2">
+                        ${dialogHtml}
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Wechselgespräch nachempfinden.</div>
+                </div>
+            `;
+        }
+
+        function buildSchlussSlide(card) {
+            const deText = textToWordSpans(activeTopic.schluss_de, 'tts');
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full stagger-child">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-yellow-500/20 text-yellow-400 uppercase">6. Gemeinsame Lösung</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-2">Kompromiss & Schluss</h3>
+                    </div>
+                    <div class="my-auto py-4">
+                        <p id="tts-content-container" class="text-base font-semibold leading-relaxed text-zinc-100 border-l-2 border-yellow-500 pl-4 py-1">${deText}</p>
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Das Gespräch gemeinsam beenden.</div>
+                </div>
+            `;
+        }
+
+        let currentlyHighlightedKeywordChip = null;
+        function buildKeywordsSlide(card) {
+            let kwBadges = "";
+            if (activeTopic.keywords) {
+                const list = activeTopic.keywords.split(',').map(k => k.trim()).filter(Boolean);
+                list.forEach((kw, index) => {
+                    kwBadges += `
+                        <button onclick="tapKeywordChip(this)" class="stagger-child px-3 py-2 text-xs font-semibold bg-zinc-950/60 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl transition-all relative inline-block">
+                            ${kw}
+                        </button>
+                    `;
+                });
             }
+            card.innerHTML = `
+                <div class="relative z-10 w-full flex flex-col justify-between h-full">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-pink-500/20 text-pink-400 uppercase">7. Schlüsselwörter</span>
+                        <h3 class="text-base font-black text-zinc-100 dark:text-zinc-50 mt-2">Keywords & Wortschatz</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2.5 my-auto py-4 justify-center">
+                        ${kwBadges}
+                    </div>
+                    <div class="text-[10px] text-zinc-500">Wichtige Schlüsselbegriffe im Überblick.</div>
+                </div>
+            `;
         }
 
-        function speakSequence() {
-            if (!isPlaying) return;
-            if (currentSpeakerLine >= activeTopic.dialog.length) {
-                resetPlaybackState();
+        // Tap triggers custom wrapWithCircle circle around keyword badge + scale(1.15) pulse
+        function tapKeywordChip(chipEl) {
+            if (currentlyHighlightedKeywordChip) {
+                removeCircle(currentlyHighlightedKeywordChip);
+                currentlyHighlightedKeywordChip.style.transform = 'none';
+            }
+
+            currentlyHighlightedKeywordChip = chipEl;
+            const color = getColorForContext('keyword');
+            wrapWithCircle(chipEl, color);
+
+            // Animate scale pulse
+            chipEl.animate([
+                { transform: 'scale(1)' },
+                { transform: 'scale(1.15)' },
+                { transform: 'scale(1)' }
+            ], {
+                duration: 400,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+            });
+            chipEl.style.transform = 'scale(1.15)';
+        }
+
+        function renderCaptionLine() {
+            const container = document.getElementById('translation-subtitle');
+            if (subtitleLang === 'none') {
+                container.textContent = "";
                 return;
             }
 
-            const item = activeTopic.dialog[currentSpeakerLine];
-            highlightSpeakingBubble(currentSpeakerLine);
-            scrollBubbleIntoView(currentSpeakerLine);
+            let text = "";
+            let isRTL = false;
 
-            // Render Subtitle Captions
-            if (subtitleLang === 'en') {
-                updateCaptionContainer(item.en || '');
-            } else if (subtitleLang === 'ar') {
-                updateCaptionContainer(item.ar || '', true);
+            if (currentSlide === 0) {
+                text = (subtitleLang === 'en') ? activeTopic.einleitung_en : activeTopic.einleitung_ar;
+            } else if (currentSlide === 1) {
+                // Combine Pro list translation values
+                text = (subtitleLang === 'en') ? activeTopic.pro_en.join(" · ") : activeTopic.pro_ar.join(" · ");
+            } else if (currentSlide === 2) {
+                text = (subtitleLang === 'en') ? activeTopic.contra_en.join(" · ") : activeTopic.contra_ar.join(" · ");
+            } else if (currentSlide === 3) {
+                text = (subtitleLang === 'en') ? activeTopic.pers_erfahrung_en : activeTopic.pers_erfahrung_ar;
+            } else if (currentSlide === 4) {
+                // dialogue context translator matching currently speaking turns if running
+                if (isPlaying && currentWordIndex >= 0 && currentWordIndex < activeTopic.dialog.length) {
+                    const activeDialog = activeTopic.dialog[currentWordIndex];
+                    text = (subtitleLang === 'en') ? activeDialog.en : activeDialog.ar;
+                } else {
+                    text = (subtitleLang === 'en') ? "Dialog Translation Feed" : "موجز ترجمة الحوار";
+                }
+            } else if (currentSlide === 5) {
+                text = (subtitleLang === 'en') ? activeTopic.schluss_en : activeTopic.schluss_ar;
             } else {
-                updateCaptionContainer("");
+                text = (subtitleLang === 'en') ? "Keywords Overview" : "نظرة عامة على الكلمات المفتاحية";
             }
 
-            // Speak line through system synthesizer
-            synth.cancel();
-            activeUtterance = new SpeechSynthesisUtterance(item.de);
-            activeUtterance.lang = 'de-DE';
+            if (subtitleLang === 'ar') {
+                isRTL = true;
+            }
+
+            container.textContent = text || "";
+            container.dir = isRTL ? 'rtl' : 'ltr';
+            if (isRTL) {
+                container.className = "text-sm text-amber-300 font-bold text-center leading-relaxed w-full";
+            } else {
+                container.className = "text-xs italic text-indigo-200 leading-relaxed font-semibold";
+            }
+        }
+
+        // Global manual word click highlighter
+        document.addEventListener('click', (e) => {
+            const word = e.target.closest('.tts-word');
+            if (word) {
+                if (word.highlightCircleSvg) {
+                    removeCircle(word);
+                } else {
+                    const ctx = word.getAttribute('data-context') || 'tts';
+                    wrapWithCircle(word, getColorForContext(ctx));
+                }
+            }
+        });
+
+        // TTS audio engine routines
+        function togglePlayback() {
+            if (isPlaying) {
+                synth.pause();
+                isPlaying = false;
+                document.getElementById('playback-icon').setAttribute('data-lucide', 'play');
+                document.getElementById('playback-text').textContent = "Fortsetzen";
+                lucide.createIcons();
+            } else {
+                if (synth.paused) {
+                    synth.resume();
+                    isPlaying = true;
+                    document.getElementById('playback-icon').setAttribute('data-lucide', 'pause');
+                    document.getElementById('playback-text').textContent = "Pausieren";
+                    lucide.createIcons();
+                } else {
+                    startSpeechSynthesis();
+                }
+            }
+        }
+
+        function stopPlayback() {
+            resetPlaybackState();
+        }
+
+        function restartTtsSegment() {
+            if (isPlaying) {
+                synth.cancel();
+                startSpeechSynthesis();
+            }
+        }
+
+        function startSpeechSynthesis() {
+            if (!activeTopic) return;
+            resetUtterances();
+
+            let speakText = "";
+            let segments = [];
+
+            // Fetch block to speak depends on active parameters
+            const container = document.getElementById('tts-content-container');
+            if (!container) return;
+
+            // Rebuild cleaned content text
+            const spans = container.querySelectorAll('.tts-word');
+            if (spans.length === 0) return;
+
+            // Build pure raw string of this container to match Boundary event offsets
+            let rawString = "";
+            spans.forEach(s => {
+                const wordText = s.textContent || s.innerText || "";
+                // Capture indices
+                s.setAttribute('data-start', rawString.length);
+                rawString.length += wordText.length;
+                s.setAttribute('data-end', rawString.length);
+                
+                rawString += " ";
+                rawString.length += 1; // offset for space
+            });
+
+            activeUtterance = new SpeechSynthesisUtterance(container.textContent || container.innerText || "");
+            activeUtterance.lang = ttsLang === 'de' ? 'de-DE' : (ttsLang === 'en' ? 'en-US' : 'ar-SA');
             activeUtterance.rate = playbackSpeed;
+            activeUtterance.pitch = playbackPitch;
+
+            if (currentSelectedVoice) {
+                activeUtterance.voice = currentSelectedVoice;
+            }
+
+            activeUtterance.onboundary = (event) => {
+                if (event.name === 'word') {
+                    const charIndex = event.charIndex;
+                    let matchedSpan = null;
+
+                    spans.forEach(span => {
+                        const start = parseInt(span.getAttribute('data-start'));
+                        const end = parseInt(span.getAttribute('data-end'));
+                        if (charIndex >= start && charIndex <= end) {
+                            matchedSpan = span;
+                        }
+                    });
+
+                    if (matchedSpan) {
+                        if (lastActiveSpan) {
+                            lastActiveSpan.classList.remove('tts-word-active');
+                            removeCircle(lastActiveSpan);
+                        }
+
+                        matchedSpan.classList.add('tts-word-active');
+                        const context = matchedSpan.getAttribute('data-context') || 'tts';
+                        wrapWithCircle(matchedSpan, getColorForContext(context));
+                        lastActiveSpan = matchedSpan;
+                        matchedSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
+            };
 
             activeUtterance.onend = () => {
-                if (isPlaying) {
-                    currentSpeakerLine++;
-                    setTimeout(speakSequence, 900); // Short conversational delay
-                }
+                resetPlaybackState();
             };
 
             activeUtterance.onerror = (e) => {
-                if (isPlaying && e.error !== 'interrupted') {
-                    console.warn("Speech generation error. Proceeding forward.", e);
-                    currentSpeakerLine++;
-                    speakSequence();
+                if (e.error !== 'interrupted') {
+                    resetPlaybackState();
                 }
             };
 
+            isPlaying = true;
+            document.getElementById('playback-icon').setAttribute('data-lucide', 'pause');
+            document.getElementById('playback-text').textContent = "Pausieren";
+            lucide.createIcons();
             synth.speak(activeUtterance);
         }
 
-        function highlightSpeakingBubble(idx) {
-            // Remove previous active state styling on all dialogues
-            activeTopic.dialog.forEach((_, i) => {
-                const bubble = document.getElementById(`dialog-bubble-${i}`);
-                if (bubble) {
-                    bubble.classList.remove('ring-2', 'ring-indigo-500', 'bg-zinc-800', 'bg-indigo-900', 'scale-102');
-                    bubble.classList.add('opacity-40'); // Soft focus on unselected elements
-                }
-            });
-
-            const activeBubble = document.getElementById(`dialog-bubble-${idx}`);
-            if (activeBubble) {
-                activeBubble.classList.remove('opacity-40');
-                activeBubble.classList.add('ring-2', 'ring-indigo-500', 'scale-[1.02]');
-            }
-        }
-
-        function scrollBubbleIntoView(idx) {
-            const wrapper = document.getElementById(`line-wrapper-${idx}`);
-            const scroller = document.getElementById('chat-scroller');
-            if (wrapper && scroller) {
-                scroller.scrollTo({
-                    top: wrapper.offsetTop - scroller.offsetTop - 40,
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        function updateCaptionContainer(text, isRTL = false) {
-            const textEl = document.getElementById('translation-subtitle');
-            textEl.textContent = text || "Bilingualer Untertitel erscheint hier beim Abspielen...";
-            textEl.dir = isRTL ? 'rtl' : 'ltr';
-            if (isRTL) {
-                textEl.className = "text-sm text-amber-300 font-medium text-right leading-relaxed w-full";
-            } else {
-                textEl.className = "text-xs italic text-indigo-200 leading-relaxed font-medium";
-            }
-        }
-
-        function resetUtterancePlayback() {
+        function resetUtterances() {
             synth.cancel();
             if (activeUtterance) {
+                activeUtterance.onboundary = null;
                 activeUtterance.onend = null;
                 activeUtterance.onerror = null;
             }
         }
 
         function resetPlaybackState() {
-            resetUtterancePlayback();
+            resetUtterances();
             isPlaying = false;
-            currentSpeakerLine = -1;
-            updatePlaybackTriggerUI();
-            updateCaptionContainer("");
-            
-            // Restore visual focus settings across all dialog bubbles
-            if (activeTopic && activeTopic.dialog) {
-                activeTopic.dialog.forEach((_, i) => {
-                    const bubble = document.getElementById(`dialog-bubble-${i}`);
-                    if (bubble) {
-                        bubble.classList.remove('ring-2', 'ring-indigo-500', 'scale-[1.02]', 'opacity-40');
-                    }
+            document.getElementById('playback-icon').setAttribute('data-lucide', 'play');
+            document.getElementById('playback-text').textContent = "Simulation starten";
+            lucide.createIcons();
+
+            if (lastActiveSpan) {
+                lastActiveSpan.classList.remove('tts-word-active');
+                removeCircle(lastActiveSpan);
+                lastActiveSpan = null;
+            }
+
+            // Restore styling across spans
+            const container = document.getElementById('tts-content-container');
+            if (container) {
+                const spans = container.querySelectorAll('.tts-word');
+                spans.forEach(s => {
+                    s.classList.remove('tts-word-active');
+                    removeCircle(s);
                 });
             }
         }
 
-        function updatePlaybackTriggerUI() {
-            const icon = document.getElementById('trigger-icon');
-            const text = document.getElementById('trigger-text');
-            const button = document.getElementById('playback-trigger');
-            
-            if (isPlaying) {
-                icon.textContent = '⏸';
-                text.textContent = 'Simulation pausieren';
-                button.classList.replace('bg-indigo-600', 'bg-zinc-700');
-                button.classList.replace('hover:bg-indigo-500', 'hover:bg-zinc-600');
+        // Carousel navigators
+        function triggerTransitionFlash() {
+            const flash = document.getElementById('transition-flash');
+            if (!flash) return;
+            flash.animate([
+                { opacity: 0 },
+                { opacity: 0.12 },
+                { opacity: 0 }
+            ], {
+                duration: 600,
+                easing: 'ease-out'
+            });
+        }
+
+        function goToNextCard() {
+            if (currentSlide < TOTAL_SLIDES - 1) {
+                currentSlide++;
+                renderActiveSlide();
+                updateTopProgress();
             } else {
-                icon.textContent = '▶';
-                text.textContent = (currentSpeakerLine > 0) ? 'Fortsetzen' : 'Simulation starten';
-                button.classList.replace('bg-zinc-700', 'bg-indigo-600');
-                button.classList.replace('hover:bg-zinc-600', 'hover:bg-indigo-500');
-            }
-        }
-
-        function changeSpeed() {
-            const selector = document.getElementById('speed-selector');
-            playbackSpeed = parseFloat(selector.value);
-            if (isPlaying) {
-                // Re-initialize running line immediately with fresh playback speed settings
-                jumpToSpeakerLine(currentSpeakerLine);
-            }
-        }
-
-        function changeSubtitleLang() {
-            const selector = document.getElementById('translation-selector');
-            subtitleLang = selector.value;
-            if (isPlaying && currentSpeakerLine >= 0 && currentSpeakerLine < activeTopic.dialog.length) {
-                const item = activeTopic.dialog[currentSpeakerLine];
-                if (subtitleLang === 'en') {
-                    updateCaptionContainer(item.en || '');
-                } else if (subtitleLang === 'ar') {
-                    updateCaptionContainer(item.ar || '', true);
-                } else {
-                    updateCaptionContainer("");
+                // Transition to Topic N + 1
+                if (activeIdx < topicsList.length - 1) {
+                    triggerTransitionFlash();
+                    activeIdx++;
+                    currentSlide = 0;
+                    loadActiveTopic();
                 }
             }
+            // Reset drag transition state
+            dragContainer.style.transform = 'translateY(0)';
+        }
+
+        function goToPrevCard() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderActiveSlide();
+                updateTopProgress();
+            } else {
+                // Transition to Topic N - 1
+                if (activeIdx > 0) {
+                    triggerTransitionFlash();
+                    activeIdx--;
+                    currentSlide = TOTAL_SLIDES - 1;
+                    loadActiveTopic();
+                }
+            }
+            dragContainer.style.transform = 'translateY(0)';
         }
 
         function prevTopic() {
             if (topicsList.length === 0) return;
             activeIdx = (activeIdx - 1 + topicsList.length) % topicsList.length;
+            currentSlide = 0;
             loadActiveTopic();
         }
 
         function nextTopic() {
             if (topicsList.length === 0) return;
             activeIdx = (activeIdx + 1) % topicsList.length;
+            currentSlide = 0;
             loadActiveTopic();
         }
 
-        // Initialize script parameters
+        // Drag & spring gestures
+        let touchStartY = 0;
+        let dragDeltaY = 0;
+        const dragContainer = document.getElementById('reel-card-container');
+
+        dragContainer.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            dragDeltaY = 0;
+        }, { passive: true });
+
+        dragContainer.addEventListener('touchmove', (e) => {
+            const deltaY = e.touches[0].clientY - touchStartY;
+            dragDeltaY = deltaY;
+            dragContainer.style.transform = `translateY(${dragDeltaY * 0.35}px)`;
+            dragContainer.style.transition = 'none';
+        }, { passive: true });
+
+        dragContainer.addEventListener('touchend', () => {
+            dragContainer.style.transition = 'transform 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            if (dragDeltaY < -100) {
+                goToNextCard();
+            } else if (dragDeltaY > 100) {
+                goToPrevCard();
+            } else {
+                dragContainer.style.transform = 'translateY(0)';
+            }
+        });
+
         initializeReelEngine();
+    </script>
+</body>
+</html>
+
+=== FILE: index.html ===
+
+<!DOCTYPE html>
+<html lang="de" class="h-full bg-slate-50 transition-colors duration-200" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TELC B2 Diskussionstrainer (Themen 1 - 52)</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="B2 Trainer">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3251/3251521.png">
+
+    <!-- Tailwind CSS with custom configuration support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        /* Universal Theme Variables */
+        :root, [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-muted: #64748b;
+            --border-primary: #e2e8f0;
+            --highlight-bg: #fef08a;
+            --highlight-text: #854d0e;
+            --highlight-border: #facc15;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-primary: #334155;
+            --highlight-bg: #ca8a04;
+            --highlight-text: #fef9c3;
+            --highlight-border: #eab308;
+        }
+
+        /* Active word boundary highlighting */
+        .tts-word-active {
+            border-radius: 4px;
+            background-color: rgba(162, 155, 254, 0.2);
+            transition: background-color 150ms ease;
+        }
+        [data-theme="light"] .tts-word-active {
+            background-color: rgba(95, 79, 207, 0.12);
+        }
+
+        /* Standard Newspaper Cutout Highlighting */
+        .highlight {
+            background-color: var(--highlight-bg);
+            color: var(--highlight-text);
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 4px;
+            border-bottom: 2px solid var(--highlight-border);
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        /* Custom User Highlights classes */
+        .hl-yellow {
+            background-color: rgba(253, 224, 71, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .hl-orange {
+            background-color: rgba(249, 115, 22, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .hl-blue {
+            background-color: rgba(59, 130, 246, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        
+        /* Dark theme selection support */
+        .dark .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
+        .dark .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
+        .dark .hl-blue { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
+
+        /* Custom scrollbar configurations */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Hand-drawn circle styling */
+        .highlight-circle {
+            animation: drawCircle 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @media print {
+            .highlight-circle {
+                display: none !important;
+            }
+        }
+    </style>
+    <!-- Firebase SDK Compat Core Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="h-full flex flex-col transition-colors duration-200">
+
+    <!-- MAIN DASHBOARD APP HEADER -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">TELC B2 Diskussionstrainer</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Teil 2: Diskussion · Komplettes Lern-Dashboard (Themen 1 – 52)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Learning Progress Visual Indicators -->
+            <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
+                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lernfortschritt:</span>
+                <div class="w-28 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <span id="progress-text" class="text-xs font-bold text-slate-700 dark:text-slate-300">Lade...</span>
+            </div>
+
+            <!-- Interactive Reel Mode Button -->
+            <button onclick="openReel()" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-950/45 text-indigo-600 dark:text-indigo-400 font-bold text-xs transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                <span>🎬 Reel-Modus</span>
+            </button>
+
+            <!-- Dark Theme Toggle Control -->
+            <button id="theme-toggle" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg id="theme-toggle-sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z"></path>
+                </svg>
+                <svg id="theme-toggle-moon-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- MOBILE NAV TRIGGER BUTTON -->
+        <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 active:scale-95 transition-transform duration-100">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <!-- APP SIDEBAR CONTROLS -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Inhaltsverzeichnis</h3>
+                <div class="relative">
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-inner" />
+                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <!-- List of loaded discussion topics -->
+            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-white dark:bg-slate-800 transition-colors">
+                <!-- Programmatically populated -->
+            </nav>
+
+            <!-- Collapsible Configuration Settings Area -->
+            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors">
+                <button id="sidebar-tools-toggle" class="w-full text-xs bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-between shadow-sm">
+                    <span class="flex items-center gap-1.5">
+                        <i data-lucide="settings" class="w-4.5 h-4.5 text-indigo-550"></i>
+                        Optionen & Bearbeitung
+                    </span>
+                    <i id="tools-chevron" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+                </button>
+                
+                <div id="sidebar-tools-menu" class="hidden mt-2 space-y-2 pt-1 transition-all">
+                    <!-- Toggle Edit Configuration State -->
+                    <button id="edit-mode-toggle" class="w-full text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2.5 border border-slate-300 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        <span>Bearbeitungsmodus: AUS</span>
+                    </button>
+                    <!-- Export current edited JSON array as topics.json -->
+                    <button id="export-json-btn" class="w-full text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-700 dark:text-indigo-200 dark:hover:bg-slate-600 text-indigo-700 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>topics.json exportieren</span>
+                    </button>
+
+                    <!-- Feature 3: JSON Import & Export Backup Interface Row -->
+                    <div class="border-t border-slate-200 dark:border-slate-700/60 pt-2.5 mt-1 space-y-2">
+                        <span class="text-[10px] font-black tracking-wider text-slate-400 dark:text-slate-500 uppercase block">Daten & Backup</span>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button onclick="exportBackupData()" class="text-[10px] text-center bg-white dark:bg-slate-800 hover:bg-indigo-50 text-indigo-700 dark:text-indigo-300 font-extrabold border border-indigo-200 dark:border-indigo-900 rounded-lg py-2 transition-all flex items-center justify-center gap-1">
+                                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i>
+                                Backup
+                            </button>
+                            <button onclick="triggerImportFileInput()" class="text-[10px] text-center bg-white dark:bg-slate-800 hover:bg-indigo-50 text-indigo-700 dark:text-indigo-300 font-extrabold border border-indigo-200 dark:border-indigo-900 rounded-lg py-2 transition-all flex items-center justify-center gap-1">
+                                <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+                                Import
+                            </button>
+                        </div>
+                        <input type="file" id="import-file-input" accept=".json" class="hidden" onchange="importBackupData(event)">
+                    </div>
+
+                    <!-- Erase Local Custom Edits -->
+                    <button id="reset-edits-btn" class="w-full text-[11px] text-red-600 dark:text-red-400 hover:underline font-bold transition-all text-center block hidden py-1">
+                        Änderungen zurücksetzen
+                    </button>
+                    <!-- Trigger PWA Installation -->
+                    <button id="pwa-install-btn" class="hidden w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2.5 border border-emerald-500 shadow-sm transition-colors flex items-center justify-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>App installieren</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN SCROLLABLE WRAPPER -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
+
+            <!-- REALTIME DATABASE SYNCHRONIZATION CONTAINER -->
+            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200">
+                <!-- Logged Out Module -->
+                <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            Cloud-Arbeitsbereich inaktiv
+                        </h3>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Laden Sie Ihren Arbeitsbereich oder erstellen Sie hier ein neues Konto.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select id="user-select" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                                <option value="mohammed">Mohammed Jdeed</option>
+                                <option value="mai">Mai Hasan</option>
+                            </select>
+                            <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36 transition-colors">
+                            <button id="btn-login" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                                Arbeitsbereich laden
+                            </button>
+                            <button id="btn-signup" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                                Konto erstellen
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+                                <input type="checkbox" id="remember-me" checked class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-900 w-3.5 h-3.5">
+                                Angemeldet bleiben
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Logged In Module -->
+                <div id="auth-logged-in" class="hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 p-2.5 rounded-xl text-emerald-600 dark:text-emerald-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Cloud-Synchronisierung aktiv
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="user-display-name">Geladen: --</p>
+                        </div>
+                    </div>
+                    <button id="btn-logout" class="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all">
+                        Abmelden
+                    </button>
+                </div>
+            </div>
+
+            <!-- THEME VIEW & SYSTEM CONTROLLER BAR -->
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-colors duration-200">
+                <div>
+                    <span id="active-topic-num" class="inline-flex items-center py-1 px-3 rounded-md text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900 mb-2 uppercase tracking-wide">Thema --</span>
+                    <h2 id="active-topic-title-de" class="text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight">Wähle ein Thema aus</h2>
+                    <h3 id="active-topic-title-en" class="text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium">Select a topic from the sidebar</h3>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
+                    
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ansichtsmodus</span>
+                        <select id="lang-view" class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-colors">
+                            <option value="both">Bilinguale Ansicht (DE & EN)</option>
+                            <option value="de_ar">Bilinguale Ansicht (DE & AR)</option>
+                            <option value="all">Trilinguale Ansicht (DE, EN & AR)</option>
+                            <option value="de">Nur Deutsch (Prüfungsmodus)</option>
+                            <option value="en">Nur Englisch (Translation)</option>
+                            <option value="ar">Nur Arabisch (Translation)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Highlighting</span>
+                        <button id="toggle-highlights" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors">
+                            Hervorhebung: AN
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lernstatus</span>
+                        <button id="learned-toggle" class="text-xs bg-emerald-550 hover:bg-emerald-600 text-emerald-800 dark:text-emerald-200 font-bold rounded-lg px-4 py-2 border border-emerald-200 dark:border-emerald-900 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Als gelernt markieren
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Sleek Upgraded Audio Controls Bar -->
+            <div id="speech-bar" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 md:p-5 shadow-sm transition-all flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="bg-indigo-50 dark:bg-indigo-950 p-2.5 rounded-xl border border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-xs font-black tracking-wider text-slate-400 dark:text-slate-500 uppercase">Text-to-Speech Vorlesen</h4>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <!-- Speaking language selector -->
+                            <select id="tts-audio-lang-selector" onchange="changeTtsLang()" class="text-[11px] font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md px-1.5 py-0.5 text-slate-700 dark:text-slate-300">
+                                <option value="de">Deutsch (DE)</option>
+                                <option value="en">English (EN)</option>
+                                <option value="ar">العربية (AR)</option>
+                            </select>
+                            <select id="voice-selector" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 font-semibold text-slate-700 dark:text-slate-200 max-w-[180px]">
+                                <!-- Loaded dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sliders for Speed/Pitch -->
+                <div class="flex flex-wrap items-center gap-4 w-full md:w-auto text-xs">
+                    <div class="space-y-1 w-full sm:w-[130px]">
+                        <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                            <span>Geschwindigkeit</span>
+                            <span id="speed-val">1.0x</span>
+                        </div>
+                        <input type="range" id="speed-slider" min="0.7" max="1.5" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+                    <div class="space-y-1 w-full sm:w-[130px]">
+                        <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                            <span>Tonhöhe</span>
+                            <span id="pitch-val">1.0</span>
+                        </div>
+                        <input type="range" id="pitch-slider" min="0.8" max="1.2" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+                </div>
+
+                <!-- Media Action controllers -->
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="toggleSpeechPlayback()" id="tts-playback-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/10 transition-all active:scale-95">
+                        <i id="tts-play-icon" data-lucide="play" class="w-4 h-4"></i>
+                        <span id="tts-play-text">Vorlesen</span>
+                    </button>
+                    <button onclick="stopSpeechPlayback()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all active:scale-95" title="Stoppen">
+                        <i data-lucide="square" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SYSTEM EDITING BANNER (Only active during editing mode) -->
+            <div id="edit-tip-banner" class="hidden bg-indigo-50/50 dark:bg-indigo-950/25 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                <span class="text-indigo-500 text-lg">💡</span>
+                <p class="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
+                    <strong class="text-indigo-600 dark:text-indigo-400">Bearbeitungs-Tipp:</strong> Markieren Sie beliebigen Text in den bearbeitbaren Feldern, um das schwebende Menü anzuzeigen. Dort können Sie ausgewählte Abschnitte <strong class="font-extrabold">Fett</strong> machen oder mit den Farben <span class="text-yellow-600 dark:text-yellow-400 font-bold">Gelb</span>, <span class="text-orange-500 dark:text-orange-400 font-bold">Orange</span> und <span class="text-blue-500 dark:text-blue-400 font-bold">Blau</span> hervorheben.
+                </p>
+            </div>
+
+            <!-- DYNAMIC TARGET CARDS GRID -->
+            <div id="active-topic-container" class="space-y-6">
+                <!-- Programmatically populated -->
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
+    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5 dark:ring-white/5">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2.5 py-1 text-xs font-black text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors shadow-sm" title="Fett">
+            B
+        </button>
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400/40 hover:scale-110 active:scale-95 border border-yellow-400 transition-all shadow-inner" title="Gelb hervorheben"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-6 h-6 rounded-full bg-orange-400/40 hover:scale-110 active:scale-95 border border-orange-400 transition-all shadow-inner" title="Orange hervorheben"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400/40 hover:scale-110 active:scale-95 border border-blue-400 transition-all shadow-inner" title="Blau hervorheben"></button>
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 dark:hover:border-rose-900 transition-all" title="Formatierung aufheben">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- REEL MODE MODAL OVERLAY -->
+    <div id="reel-overlay" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center transition-all duration-300">
+        <iframe id="reel-iframe" class="w-full h-full border-none" src="about:blank"></iframe>
+        <button onclick="closeReel()" class="absolute top-5 right-5 z-50 bg-white/10 dark:bg-black/40 hover:bg-rose-600 dark:hover:bg-rose-600 border border-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-md" title="Reel-Modus schließen">
+            ✕
+        </button>
+    </div>
+
+    <!-- MAIN APP STATE ENGINE -->
+    <script>
+        const CONNECTORS = [
+            "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
+            "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
+            "Vielleicht können wir uns darauf einigen", "Zusammenfassend lässt sich sagen", 
+            "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
+        ];
+
+        // Preserved Firebase Configuration Details
+        const firebaseConfig = {
+          apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+          authDomain: "b2telc-6e061.firebaseapp.com",
+          databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "b2telc-6e061",
+          storageBucket: "b2telc-6e061.firebasestorage.app",
+          messagingSenderId: "593882455085",
+          appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+          measurementId: "G-SPHLVHRL6K"
+        };
+
+        // Initialize Firebase services
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Local State Variables
+        let TOPICS_DATA = [];
+        let activeIdx = 0;
+        let showHighlights = true;
+        let activeView = "both";
+        let isEditMode = false;
+        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        
+        let currentUser = null;
+        let editedTopicIds = [];
+
+        // TTS control parameters
+        let isTtsPlaying = false;
+        let synth = window.speechSynthesis;
+        let speechSegmentsList = [];
+        let currentSegmentIdx = 0;
+        let activeUtterance = null;
+        let lastActiveSpan = null;
+        let ttsSpeed = 1.0;
+        let ttsPitch = 1.0;
+        let ttsLang = 'de';
+        let currentSelectedVoice = null;
+        let voicesList = [];
+
+        // Theme DOM references
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun-icon');
+        const moonIcon = document.getElementById('theme-toggle-moon-icon');
+
+        // Check cache and system preferences for dark mode fallback
+        let isDark = localStorage.getItem('theme_mode_1_52') === 'dark' || 
+                     (!('theme_mode_1_52' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        function applyTheme() {
+            const rootEl = document.documentElement;
+            if (isDark) {
+                rootEl.classList.add('dark');
+                rootEl.setAttribute('data-theme', 'dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                rootEl.classList.remove('dark');
+                rootEl.setAttribute('data-theme', 'light');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggle.onclick = () => {
+            isDark = !isDark;
+            localStorage.setItem('theme_mode_1_52', isDark ? 'dark' : 'light');
+            applyTheme();
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        applyTheme();
+
+        const toolsToggle = document.getElementById('sidebar-tools-toggle');
+        const toolsMenu = document.getElementById('sidebar-tools-menu');
+        const toolsChevron = document.getElementById('tools-chevron');
+
+        toolsToggle.onclick = () => {
+            const isHidden = toolsMenu.classList.contains('hidden');
+            if (isHidden) {
+                toolsMenu.classList.remove('hidden');
+                toolsChevron.classList.add('rotate-180');
+            } else {
+                toolsMenu.classList.add('hidden');
+                toolsChevron.classList.remove('rotate-180');
+            }
+        };
+
+        function closeSidebarMobile() {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
+                }
+            }
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-logged-out').classList.add('hidden');
+                document.getElementById('auth-logged-in').classList.remove('hidden');
+                
+                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
+                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Alle Änderungen werden automatisch in der Cloud gesichert.`;
+                
+                await loadTopics();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-logged-out').classList.remove('hidden');
+                document.getElementById('auth-logged-in').classList.add('hidden');
+                
+                await loadTopics();
+            }
+        });
+
+        document.getElementById('btn-login').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!password) {
+                alert("Bitte geben Sie das Passwort ein.");
+                return;
+            }
+
+            try {
+                const loginBtn = document.getElementById('btn-login');
+                loginBtn.disabled = true;
+                loginBtn.textContent = "Lädt...";
+
+                const persistence = rememberMe 
+                    ? firebase.auth.Auth.Persistence.LOCAL 
+                    : firebase.auth.Auth.Persistence.SESSION;
+                
+                await auth.setPersistence(persistence);
+                await auth.signInWithEmailAndPassword(email, password);
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Anmeldung fehlgeschlagen: " + err.message);
+            } finally {
+                const loginBtn = document.getElementById('btn-login');
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Arbeitsbereich laden";
+            }
+        };
+
+        document.getElementById('btn-signup').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!password) {
+                alert("Bitte geben Sie ein Passwort für die Erstellung ein.");
+                return;
+            }
+            if (password.length < 6) {
+                alert("Das Passwort muss mindestens 6 Zeichen lang sein.");
+                return;
+            }
+
+            try {
+                const signupBtn = document.getElementById('btn-signup');
+                signupBtn.disabled = true;
+                signupBtn.textContent = "Erstellt...";
+
+                const persistence = rememberMe 
+                    ? firebase.auth.Auth.Persistence.LOCAL 
+                    : firebase.auth.Auth.Persistence.SESSION;
+                
+                await auth.setPersistence(persistence);
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("Konto erfolgreich erstellt und Arbeitsbereich geladen!");
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Kontoerstellung fehlgeschlagen: " + err.message);
+            } finally {
+                const signupBtn = document.getElementById('btn-signup');
+                signupBtn.disabled = false;
+                signupBtn.textContent = "Konto erstellen";
+            }
+        };
+
+        document.getElementById('btn-logout').onclick = () => {
+            auth.signOut();
+        };
+
+        async function loadTopics() {
+            try {
+                const response = await fetch('topics.json');
+                if (!response.ok) {
+                    throw new Error('Netzwerk-Antwort war nicht in Ordnung');
+                }
+                let baseTopics = await response.json();
+                
+                editedTopicIds = [];
+
+                if (currentUser) {
+                    const snapshot = await db.collection('users')
+                                             .doc(currentUser.uid)
+                                             .collection('edited_topics')
+                                             .get();
+                    
+                    snapshot.forEach(doc => {
+                        const cloudTopic = doc.data();
+                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                        }
+                        editedTopicIds.push(parseInt(doc.id));
+                    });
+                } else {
+                    const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                    if (localEdits) {
+                        const parsedEdits = JSON.parse(localEdits);
+                        parsedEdits.forEach(localTopic => {
+                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            if (idx !== -1) {
+                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
+                                editedTopicIds.push(localTopic.id);
+                            }
+                        });
+                    }
+                }
+
+                TOPICS_DATA = baseTopics;
+                showResetButton();
+                renderSidebar();
+                renderActiveTopic();
+            } catch (error) {
+                console.error("Fehler beim Laden der Themen:", error);
+                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden der Spieldaten. Bitte stellen Sie sicher, dass die App über einen lokalen/Webserver geladen wird.</span>";
+            }
+        }
+
+        async function saveEdits() {
+            const activeTopic = TOPICS_DATA[activeIdx];
+            
+            if (!editedTopicIds.includes(activeTopic.id)) {
+                editedTopicIds.push(activeTopic.id);
+            }
+
+            if (currentUser) {
+                try {
+                    await db.collection('users')
+                            .doc(currentUser.uid)
+                            .collection('edited_topics')
+                            .doc(activeTopic.id.toString())
+                            .set(activeTopic);
+                } catch (err) {
+                    console.error("Fehler beim Speichern in Cloud:", err);
+                }
+            } else {
+                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            }
+            
+            showResetButton();
+            renderSidebar();
+        }
+
+        function showResetButton() {
+            const resetBtn = document.getElementById('reset-edits-btn');
+            const activeTopic = TOPICS_DATA[activeIdx];
+            if (activeTopic && editedTopicIds.includes(activeTopic.id)) {
+                resetBtn.classList.remove('hidden');
+            } else {
+                resetBtn.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('reset-edits-btn').onclick = async () => {
+            if (confirm("Möchten Sie alle Ihre vorgenommenen Änderungen verwerfen und die Originaldaten wiederherstellen?")) {
+                const activeTopic = TOPICS_DATA[activeIdx];
+                if (currentUser) {
+                    try {
+                        await db.collection('users')
+                                .doc(currentUser.uid)
+                                .collection('edited_topics')
+                                .doc(activeTopic.id.toString())
+                                .delete();
+                    } catch (err) {
+                        console.error("Fehler beim Löschen des Cloud-Dokuments:", err);
+                    }
+                } else {
+                    let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
+                    localEdits = localEdits.filter(t => t.id !== activeTopic.id);
+                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
+                }
+                await loadTopics();
+            }
+        };
+
+        function deClassTextOnly(htmlText) {
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+            return temp.textContent || temp.innerText || "";
+        }
+
+        function applyHighlights(htmlText) {
+            if (!showHighlights) return htmlText;
+            
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+
+            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
+
+            function highlightNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.nodeValue;
+                    let replaced = false;
+
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    let safeHTML = div.innerHTML;
+
+                    sorted.forEach(word => {
+                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
+                        if (regex.test(safeHTML)) {
+                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
+                            replaced = true;
+                        }
+                    });
+
+                    if (replaced) {
+                        const span = document.createElement('span');
+                        span.innerHTML = safeHTML;
+                        if (node.parentNode) {
+                            node.parentNode.replaceChild(span, node);
+                        }
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (!node.classList.contains('highlight')) {
+                        Array.from(node.childNodes).forEach(highlightNode);
+                    }
+                }
+            }
+
+            Array.from(temp.childNodes).forEach(highlightNode);
+            return temp.innerHTML;
+        }
+
+        function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
+            if (!element) return;
+            element.contentEditable = "true";
+            element.classList.add("border-b", "border-dashed", "border-indigo-400/50", "dark:border-indigo-500/50", "hover:bg-indigo-50/50", "dark:hover:bg-indigo-950/20", "transition-colors", "cursor-text", "focus:bg-transparent", "focus:outline-none");
+            element.addEventListener('blur', () => {
+                let newVal = element.innerHTML.trim();
+                if (isArray) {
+                    if (subKey) {
+                        if (!TOPICS_DATA[activeIdx][keyPath]) {
+                            TOPICS_DATA[activeIdx][keyPath] = [];
+                        }
+                        if (!TOPICS_DATA[activeIdx][keyPath][index]) {
+                            TOPICS_DATA[activeIdx][keyPath][index] = {};
+                        }
+                        TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
+                    } else {
+                        if (!TOPICS_DATA[activeIdx][keyPath]) {
+                            TOPICS_DATA[activeIdx][keyPath] = [];
+                        }
+                        TOPICS_DATA[activeIdx][keyPath][index] = newVal;
+                    }
+                } else {
+                    TOPICS_DATA[activeIdx][keyPath] = newVal;
+                }
+                saveEdits();
+            });
+        }
+
+        function applySelectionFormat(type, value) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+            const range = selection.getRangeAt(0);
+
+            if (type === 'bold') {
+                document.execCommand('bold', false, null);
+            } else if (type === 'highlight') {
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {
+                    document.execCommand('backColor', false, value === 'yellow' ? 'rgba(253, 224, 71, 0.4)' : (value === 'orange' ? 'rgba(249, 115, 22, 0.4)' : 'rgba(147, 197, 253, 0.4)'));
+                }
+            } else if (type === 'clear') {
+                document.execCommand('removeFormat', false, null);
+                document.execCommand('backColor', false, 'transparent');
+                
+                let node = selection.anchorNode;
+                while (node && node.nodeType !== Node.ELEMENT_NODE) {
+                    node = node.parentNode;
+                }
+                if (node && (node.className.includes('hl-yellow') || node.className.includes('hl-orange') || node.className.includes('hl-blue'))) {
+                    const parent = node.parentNode;
+                    while (node.firstChild) {
+                        parent.insertBefore(node.firstChild, node);
+                    }
+                    parent.removeChild(node);
+                }
+            }
+
+            let activeContainer = selection.anchorNode;
+            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+                activeContainer = activeContainer.parentNode;
+            }
+            if (activeContainer && activeContainer.hasAttribute('contenteditable')) {
+                activeContainer.dispatchEvent(new Event('blur'));
+            }
+
+            handleSelectionChange();
+        }
+
+        function handleSelectionChange() {
+            if (!isEditMode) {
+                hideToolbar();
+                return;
+            }
+
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+                hideToolbar();
+                return;
+            }
+
+            let parent = selection.anchorNode;
+            let isInsideEditable = false;
+            while (parent) {
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
+                    isInsideEditable = true;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+
+            if (!isInsideEditable) {
+                hideToolbar();
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('formatting-toolbar');
+
+            toolbar.classList.remove('hidden');
+
+            const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+
+            const top = rect.top + window.scrollY - toolbarHeight - 10;
+            const left = rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2);
+
+            toolbar.style.top = `${top}px`;
+            toolbar.style.left = `${left}px`;
+        }
+
+        function hideToolbar() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (toolbar) toolbar.classList.add('hidden');
+        }
+
+        document.addEventListener('selectionchange', handleSelectionChange);
+        window.addEventListener('resize', hideToolbar);
+        window.addEventListener('scroll', hideToolbar);
+
+        function renderSidebar() {
+            const listContainer = document.getElementById('topic-list');
+            listContainer.innerHTML = "";
+            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+
+            TOPICS_DATA.forEach((topic, index) => {
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
+                    return;
+                }
+
+                const isActive = index === activeIdx;
+                const isLearned = learnedList.includes(topic.id);
+
+                const tab = document.createElement('button');
+                tab.className = `w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 relative ${
+                    isActive 
+                    ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900 ring-2 ring-indigo-500/10' 
+                    : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                }`;
+
+                const icon = isLearned 
+                    ? `<span class="text-emerald-500 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></span>`
+                    : `<span class="text-slate-300 dark:text-slate-500 font-bold text-xs mt-1">${topic.id}</span>`;
+
+                tab.innerHTML = `
+                    ${icon}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold truncate ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}">${topic.title_de}</p>
+                        <p class="text-xs truncate text-slate-400 dark:text-slate-500 mt-0.5 italic">${topic.title_en}</p>
+                    </div>
+                `;
+
+                tab.onclick = () => {
+                    activeIdx = index;
+                    renderSidebar();
+                    renderActiveTopic();
+                    closeSidebarMobile();
+                };
+
+                listContainer.appendChild(tab);
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (TOPICS_DATA.length === 0) return;
+            const count = learnedList.length;
+            const percentage = (count / TOPICS_DATA.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${count} / ${TOPICS_DATA.length}`;
+        }
+
+        // Feature 4: wrap word in highlight circle SVG sibling
+        function wrapWithCircle(element, colorHex) {
+            if (!element) return;
+            removeCircle(element);
+
+            const parent = element.parentNode;
+            if (parent && getComputedStyle(parent).position === 'static') {
+                parent.style.position = 'relative';
+            }
+
+            const rect = element.getBoundingClientRect();
+            const W = rect.width;
+            const H = rect.height;
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("class", "highlight-circle absolute pointer-events-none z-10 overflow-visible");
+            svg.style.width = (W + 24) + "px";
+            svg.style.height = (H + 20) + "px";
+            svg.style.top = (element.offsetTop - 10) + "px";
+            svg.style.left = (element.offsetLeft - 12) + "px";
+
+            const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            const cx = W / 2 + (Math.random() * 6 - 3);
+            const cy = H / 2 + (Math.random() * 4 - 2);
+            const rx = W / 2 + 10 + (Math.random() * 6 - 2);
+            const ry = H / 2 + 8 + (Math.random() * 4 - 1);
+
+            ellipse.setAttribute("cx", cx);
+            ellipse.setAttribute("cy", cy);
+            ellipse.setAttribute("rx", rx);
+            ellipse.setAttribute("ry", ry);
+            ellipse.setAttribute("stroke", colorHex);
+            ellipse.setAttribute("stroke-width", "2.5");
+            ellipse.setAttribute("fill", "none");
+            ellipse.setAttribute("stroke-linecap", "round");
+
+            const perimeter = 2 * Math.PI * Math.sqrt((rx * rx + ry * ry) / 2);
+            ellipse.setAttribute("stroke-dasharray", perimeter);
+            ellipse.setAttribute("stroke-dashoffset", perimeter);
+
+            svg.appendChild(ellipse);
+            element.parentNode.insertBefore(svg, element.nextSibling);
+            element.highlightCircleSvg = svg;
+
+            ellipse.animate([
+                { strokeDashoffset: perimeter },
+                { strokeDashoffset: 0 }
+            ], {
+                duration: 500,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'forwards'
+            });
+        }
+
+        function removeCircle(element) {
+            if (!element) return;
+            if (element.highlightCircleSvg) {
+                if (element.highlightCircleSvg.parentNode) {
+                    element.highlightCircleSvg.parentNode.removeChild(element.highlightCircleSvg);
+                }
+                element.highlightCircleSvg = null;
+            }
+            // fallback sibling removal
+            let next = element.nextSibling;
+            if (next && next.classList && next.classList.contains('highlight-circle')) {
+                next.parentNode.removeChild(next);
+            }
+        }
+
+        function getColorForContext(contextType) {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            switch(contextType) {
+                case 'tts':
+                    return isDark ? '#a29bfe' : '#5f4fcf';
+                case 'keyword':
+                    return isDark ? '#fdcb6e' : '#c9860c';
+                case 'pro':
+                    return isDark ? '#00cec9' : '#007a73';
+                case 'contra':
+                    return isDark ? '#ff7675' : '#c0392b';
+                case 'dialog_a':
+                    return isDark ? '#74b9ff' : '#2980b9';
+                case 'dialog_b':
+                    return isDark ? '#fd79a8' : '#a8315e';
+                default:
+                    return isDark ? '#a29bfe' : '#5f4fcf';
+            }
+        }
+
+        // Helper text splitter to render plain words into highlightable elements
+        function textToWordSpans(text, contextType) {
+            if (!text) return "";
+            const div = document.createElement('div');
+            div.innerHTML = text;
+            const plainText = div.textContent || div.innerText || "";
+            const words = plainText.split(/(\s+)/);
+            
+            let html = "";
+            let charIdx = 0;
+            words.forEach(word => {
+                if (word.trim() === "") {
+                    html += word;
+                    charIdx += word.length;
+                } else {
+                    html += `<span class="tts-word relative cursor-pointer inline-block" data-start="${charIdx}" data-end="${charIdx + word.length}" data-context="${contextType}">${word}</span>`;
+                    charIdx += word.length;
+                }
+            });
+            return html;
+        }
+
+        function renderActiveTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topic = TOPICS_DATA[activeIdx];
+            
+            document.getElementById('active-topic-num').textContent = `Thema ${topic.id}`;
+            document.getElementById('active-topic-title-de').textContent = topic.title_de;
+            document.getElementById('active-topic-title-en').textContent = topic.title_en;
+
+            if (isEditMode) {
+                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
+                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
+            } else {
+                document.getElementById('active-topic-title-de').contentEditable = "false";
+                document.getElementById('active-topic-title-en').contentEditable = "false";
+                document.getElementById('active-topic-title-de').className = "text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight";
+                document.getElementById('active-topic-title-en').className = "text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium";
+            }
+
+            const isLearned = learnedList.includes(topic.id);
+            const learnedBtn = document.getElementById('learned-toggle');
+            if (isLearned) {
+                learnedBtn.className = "text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors flex items-center gap-1.5";
+                learnedBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Gelernt`;
+            } else {
+                learnedBtn.className = "text-xs bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 shadow-sm";
+                learnedBtn.innerHTML = `<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Als gelernt markieren`;
+            }
+
+            const container = document.getElementById('active-topic-container');
+            container.innerHTML = "";
+
+            const deClass = (activeView === 'both' || activeView === 'de_ar' || activeView === 'all' || activeView === 'de') ? 'block' : 'hidden';
+            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? 'block' : 'hidden';
+            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? 'block' : 'hidden';
+
+            // 1. EINLEITUNG CARD
+            const einleitungCard = document.createElement('div');
+            einleitungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-indigo-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            einleitungCard.setAttribute("data-context", "tts");
+            
+            const einleitungTextDE = isEditMode ? topic.einleitung_de : textToWordSpans(topic.einleitung_de, 'tts');
+            const einleitungTextEN = isEditMode ? topic.einleitung_en : textToWordSpans(topic.einleitung_en, 'tts');
+            const einleitungTextAR = isEditMode ? topic.einleitung_ar : textToWordSpans(topic.einleitung_ar, 'tts');
+
+            einleitungCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-3">1. Einleitung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Introduction</span></h4>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-base leading-relaxed einleitung-de" id="speech-segment-einleitung-de">${einleitungTextDE}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-sm mt-2 einleitung-en" id="speech-segment-einleitung-en">${einleitungTextEN}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-sm mt-2 text-right leading-relaxed einleitung-ar" id="speech-segment-einleitung-ar" dir="rtl">${einleitungTextAR || ''}</p>
+            `;
+            container.appendChild(einleitungCard);
+
+            if (isEditMode) {
+                makeEditable(einleitungCard.querySelector('.einleitung-de'), 'einleitung_de');
+                makeEditable(einleitungCard.querySelector('.einleitung-en'), 'einleitung_en');
+                makeEditable(einleitungCard.querySelector('.einleitung-ar'), 'einleitung_ar');
+            }
+
+            // 2. PRO & CONTRA CONTAINER (Grid system)
+            const proContraGrid = document.createElement('div');
+            proContraGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+            // PRO CARD
+            const proCard = document.createElement('div');
+            proCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-emerald-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
+            proCard.setAttribute("data-context", "pro");
+            let proItems = "";
+            topic.pro_de.forEach((deText, index) => {
+                const enText = topic.pro_en ? topic.pro_en[index] : '';
+                const arText = topic.pro_ar ? topic.pro_ar[index] : '';
+                
+                const spanifiedDE = isEditMode ? deText : textToWordSpans(deText, 'pro');
+                const spanifiedEN = isEditMode ? enText : textToWordSpans(enText, 'pro');
+                const spanifiedAR = isEditMode ? arText : textToWordSpans(arText, 'pro');
+
+                proItems += `
+                    <div class="mb-4 last:mb-0 pro-item-block" data-index="${index}">
+                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed pro-de" id="speech-segment-pro-de-${index}">${spanifiedDE}</p>
+                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 pro-en" id="speech-segment-pro-en-${index}">${spanifiedEN}</p>
+                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right pro-ar" id="speech-segment-pro-ar-${index}" dir="rtl">${spanifiedAR || ''}</p>
+                    </div>
+                `;
+            });
+            proCard.innerHTML = `
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">2. Dafür (Pro) / <span class="italic font-medium text-slate-400 dark:text-slate-500">Pros & Arguments</span></h4>
+                    <div class="space-y-3">${proItems}</div>
+                </div>
+            `;
+            proContraGrid.appendChild(proCard);
+
+            if (isEditMode) {
+                proCard.querySelectorAll('.pro-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.pro-de'), 'pro_de', true, idx);
+                    makeEditable(item.querySelector('.pro-en'), 'pro_en', true, idx);
+                    makeEditable(item.querySelector('.pro-ar'), 'pro_ar', true, idx);
+                });
+            }
+
+            // CONTRA CARD
+            const contraCard = document.createElement('div');
+            contraCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-rose-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
+            contraCard.setAttribute("data-context", "contra");
+            let contraItems = "";
+            topic.contra_de.forEach((deText, index) => {
+                const enText = topic.contra_en ? topic.contra_en[index] : '';
+                const arText = topic.contra_ar ? topic.contra_ar[index] : '';
+
+                const spanifiedDE = isEditMode ? deText : textToWordSpans(deText, 'contra');
+                const spanifiedEN = isEditMode ? enText : textToWordSpans(enText, 'contra');
+                const spanifiedAR = isEditMode ? arText : textToWordSpans(arText, 'contra');
+
+                contraItems += `
+                    <div class="mb-4 last:mb-0 contra-item-block" data-index="${index}">
+                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed contra-de" id="speech-segment-contra-de-${index}">${spanifiedDE}</p>
+                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 contra-en" id="speech-segment-contra-en-${index}">${spanifiedEN}</p>
+                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right contra-ar" id="speech-segment-contra-ar-${index}" dir="rtl">${spanifiedAR || ''}</p>
+                    </div>
+                `;
+            });
+            contraCard.innerHTML = `
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-3">3. Dagegen (Contra) / <span class="italic font-medium text-slate-400 dark:text-slate-500">Cons & Arguments</span></h4>
+                    <div class="space-y-3">${contraItems}</div>
+                </div>
+            `;
+            proContraGrid.appendChild(contraCard);
+            container.appendChild(proContraGrid);
+
+            if (isEditMode) {
+                contraCard.querySelectorAll('.contra-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.contra-de'), 'contra_de', true, idx);
+                    makeEditable(item.querySelector('.contra-en'), 'contra_en', true, idx);
+                    makeEditable(item.querySelector('.contra-ar'), 'contra_ar', true, idx);
+                });
+            }
+
+            // 3. PERSÖNLICHE ERFAHRUNG CARD
+            const erfahrungCard = document.createElement('div');
+            erfahrungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-amber-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            erfahrungCard.setAttribute("data-context", "tts");
+
+            const erfahrungTextDE = isEditMode ? topic.pers_erfahrung_de : textToWordSpans(topic.pers_erfahrung_de, 'tts');
+            const erfahrungTextEN = isEditMode ? topic.pers_erfahrung_en : textToWordSpans(topic.pers_erfahrung_en, 'tts');
+            const erfahrungTextAR = isEditMode ? topic.pers_erfahrung_ar : textToWordSpans(topic.pers_erfahrung_ar, 'tts');
+
+            erfahrungCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">4. Persönliche Erfahrung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Personal Experience</span></h4>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed erfahrung-de" id="speech-segment-erfahrung-de">${erfahrungTextDE}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 erfahrung-en" id="speech-segment-erfahrung-en">${erfahrungTextEN}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed erfahrung-ar" id="speech-segment-erfahrung-ar" dir="rtl">${erfahrungTextAR || ''}</p>
+            `;
+            container.appendChild(erfahrungCard);
+
+            if (isEditMode) {
+                makeEditable(erfahrungCard.querySelector('.erfahrung-de'), 'pers_erfahrung_de');
+                makeEditable(erfahrungCard.querySelector('.erfahrung-en'), 'pers_erfahrung_en');
+                makeEditable(erfahrungCard.querySelector('.erfahrung-ar'), 'pers_erfahrung_ar');
+            }
+
+            // 4. SIMULATION / DIALOG CARD
+            const simulationCard = document.createElement('div');
+            simulationCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-purple-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm space-y-4 transition-colors duration-200";
+            
+            let dialogHtml = "";
+            topic.dialog.forEach((chat, index) => {
+                const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
+                const roleColor = isA 
+                    ? "bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-300 shadow-sm" 
+                    : "bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 shadow-sm";
+                const alignment = isA ? "text-left animate-fadeInLeft" : "text-left md:translate-x-4 animate-fadeInRight";
+
+                const spanifiedDE = isEditMode ? chat.de : textToWordSpans(chat.de, isA ? 'dialog_a' : 'dialog_b');
+                const spanifiedEN = isEditMode ? chat.en : textToWordSpans(chat.en, isA ? 'dialog_a' : 'dialog_b');
+                const spanifiedAR = isEditMode ? chat.ar : textToWordSpans(chat.ar, isA ? 'dialog_a' : 'dialog_b');
+
+                dialogHtml += `
+                    <div class="p-4 rounded-xl border ${roleColor} ${alignment} transition-all max-w-[95%] dialog-item-block" data-index="${index}" data-context="${isA ? 'dialog_a' : 'dialog_b'}">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-1">${chat.role}</span>
+                        <p class="${deClass} text-sm font-semibold leading-relaxed dialog-de" id="speech-segment-dialog-de-${index}">${spanifiedDE}</p>
+                        <p class="${enClass} text-xs italic text-slate-400 dark:text-slate-400 mt-1 dialog-en" id="speech-segment-dialog-en-${index}">${spanifiedEN}</p>
+                        <p class="${arClass} text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 text-right leading-relaxed dialog-ar" id="speech-segment-dialog-ar-${index}" dir="rtl">${spanifiedAR || ''}</p>
+                    </div>
+                `;
+            });
+
+            simulationCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">5. Simulation / Dialog / <span class="italic font-medium text-slate-400 dark:text-slate-500">Discussion Transcript</span></h4>
+                <div class="space-y-3.5">${dialogHtml}</div>
+            `;
+            container.appendChild(simulationCard);
+
+            if (isEditMode) {
+                simulationCard.querySelectorAll('.dialog-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.dialog-de'), 'dialog', true, idx, 'de');
+                    makeEditable(item.querySelector('.dialog-en'), 'dialog', true, idx, 'en');
+                    makeEditable(item.querySelector('.dialog-ar'), 'dialog', true, idx, 'ar');
+                });
+            }
+
+            // 5. GEMEINSAME LÖSUNG CARD
+            const schlussCard = document.createElement('div');
+            schlussCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-yellow-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            schlussCard.setAttribute("data-context", "tts");
+
+            const schlussTextDE = isEditMode ? topic.schluss_de : textToWordSpans(topic.schluss_de, 'tts');
+            const schlussTextEN = isEditMode ? topic.schluss_en : textToWordSpans(topic.schluss_en, 'tts');
+            const schlussTextAR = isEditMode ? topic.schluss_ar : textToWordSpans(topic.schluss_ar, 'tts');
+
+            schlussCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-3">6. Gemeinsame Lösung / Schlussfolgerung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Conclusion</span></h4>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed schluss-de" id="speech-segment-schluss-de">${schlussTextDE}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 schluss-en" id="speech-segment-schluss-en">${schlussTextEN}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed schluss-ar" id="speech-segment-schluss-ar" dir="rtl">${schlussTextAR || ''}</p>
+            `;
+            container.appendChild(schlussCard);
+
+            if (isEditMode) {
+                makeEditable(schlussCard.querySelector('.schluss-de'), 'schluss_de');
+                makeEditable(schlussCard.querySelector('.schluss-en'), 'schluss_en');
+                makeEditable(schlussCard.querySelector('.schluss-ar'), 'schluss_ar');
+            }
+
+            // 6. SCHLÜSSELWÖRTER CARD
+            let kwBadges = "";
+            if (topic.keywords) {
+                const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
+                list.forEach(kw => {
+                    kwBadges += `<span class="px-2.5 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-600 transition-colors">${kw}</span>`;
+                });
+            }
+
+            const keywordsCard = document.createElement('div');
+            keywordsCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            keywordsCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">7. Schlüsselwörter / <span class="italic font-medium text-slate-400 dark:text-slate-500">Keywords</span></h4>
+                <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
+                <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
+                    <input type="text" class="w-full text-xs font-mono bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg p-2" value="${topic.keywords || ''}" />
+                </div>
+            `;
+            container.appendChild(keywordsCard);
+
+            if (isEditMode) {
+                const kwInput = keywordsCard.querySelector('.keywords-edit input');
+                kwInput.addEventListener('blur', () => {
+                    TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
+                    saveEdits();
+                });
+            }
+
+            lucide.createIcons();
+            populateVoiceSelector();
+        }
+
+        // Global manual word highlights click
+        document.addEventListener('click', (e) => {
+            const wordSpan = e.target.closest('.tts-word');
+            if (wordSpan && !isEditMode) {
+                if (wordSpan.highlightCircleSvg) {
+                    removeCircle(wordSpan);
+                } else {
+                    const ctx = wordSpan.getAttribute('data-context') || 'tts';
+                    wrapWithCircle(wordSpan, getColorForContext(ctx));
+                }
+            }
+        });
+
+        // Feature 1: prioritized voice selector matching specs
+        function getBestVoiceForLanguage(langCode, list) {
+            let priority = [];
+            if (langCode === 'de') {
+                priority = ["Microsoft Katja", "Microsoft Hedda", "Google Deutsch"];
+            } else if (langCode === 'en') {
+                priority = ["Microsoft Aria", "Microsoft Jenny", "Google US English"];
+            } else if (langCode === 'ar') {
+                priority = ["Microsoft Hala", "Google Arabic"];
+            }
+
+            for (let name of priority) {
+                let match = list.find(v => v.name.includes(name));
+                if (match) return match;
+            }
+
+            let neural = list.find(v => v.name.includes("Neural") || v.name.includes("Natural"));
+            if (neural) return neural;
+
+            let codeMatch = list.find(v => v.lang.startsWith(langCode));
+            if (codeMatch) return codeMatch;
+
+            return list[0] || null;
+        }
+
+        function populateVoiceSelector() {
+            if (!synth) return;
+            const selectEl = document.getElementById('voice-selector');
+            if (!selectEl) return;
+
+            voicesList = synth.getVoices();
+            let filtered = voicesList.filter(v => v.lang.toLowerCase().startsWith(ttsLang));
+            if (filtered.length === 0) {
+                filtered = voicesList;
+            }
+
+            let priorities = [];
+            if (ttsLang === 'de') priorities = ["Katja", "Hedda", "Deutsch"];
+            else if (ttsLang === 'en') priorities = ["Aria", "Jenny", "US English"];
+            else if (ttsLang === 'ar') priorities = ["Hala", "Arabic"];
+
+            filtered.sort((a, b) => {
+                let prioA = priorities.findIndex(p => a.name.includes(p));
+                let prioB = priorities.findIndex(p => b.name.includes(p));
+                if (prioA !== -1 && prioB === -1) return -1;
+                if (prioB !== -1 && prioA === -1) return 1;
+                if (prioA !== -1 && prioB !== -1) return prioA - prioB;
+                return a.name.localeCompare(b.name);
+            });
+
+            selectEl.innerHTML = "";
+            filtered.forEach(voice => {
+                const opt = document.createElement('option');
+                opt.value = voice.name;
+                const cloudIcon = voice.localService ? "💻" : "🌐";
+                opt.textContent = `${voice.name} ${cloudIcon}`;
+                selectEl.appendChild(opt);
+            });
+
+            currentSelectedVoice = getBestVoiceForLanguage(ttsLang, filtered);
+            if (currentSelectedVoice) {
+                selectEl.value = currentSelectedVoice.name;
+            }
+        }
+
+        function changeTtsLang() {
+            ttsLang = document.getElementById('tts-audio-lang-selector').value;
+            populateVoiceSelector();
+            if (isTtsPlaying) {
+                restartSpeechSynthesis();
+            }
+        }
+
+        function updateAudioParams() {
+            ttsSpeed = parseFloat(document.getElementById('speed-slider').value);
+            ttsPitch = parseFloat(document.getElementById('pitch-slider').value);
+            document.getElementById('speed-val').textContent = `${ttsSpeed.toFixed(1)}x`;
+            document.getElementById('pitch-val').textContent = `${ttsPitch.toFixed(1)}`;
+            if (isTtsPlaying) {
+                restartSpeechSynthesis();
+            }
+        }
+
+        // Segment speak queues to easily scroll cards/blocks into view
+        function toggleSpeechPlayback() {
+            if (isTtsPlaying) {
+                synth.pause();
+                isTtsPlaying = false;
+                document.getElementById('tts-play-icon').setAttribute('data-lucide', 'play');
+                document.getElementById('tts-play-text').textContent = "Vorlesen";
+                lucide.createIcons();
+            } else {
+                if (synth.paused) {
+                    synth.resume();
+                    isTtsPlaying = true;
+                    document.getElementById('tts-play-icon').setAttribute('data-lucide', 'pause');
+                    document.getElementById('tts-play-text').textContent = "Pausieren";
+                    lucide.createIcons();
+                } else {
+                    buildSpeechSegments();
+                    currentSegmentIdx = 0;
+                    startSpeechSegment(0);
+                }
+            }
+        }
+
+        function stopSpeechPlayback() {
+            resetSpeechState();
+        }
+
+        function restartSpeechSynthesis() {
+            if (isTtsPlaying) {
+                synth.cancel();
+                startSpeechSegment(currentSegmentIdx);
+            }
+        }
+
+        function buildSpeechSegments() {
+            speechSegmentsList = [];
+            const topic = TOPICS_DATA[activeIdx];
+            if (!topic) return;
+
+            // Segment 1: Einleitung
+            const einleitungSelector = `#speech-segment-einleitung-${ttsLang}`;
+            const einleitungEl = document.querySelector(einleitungSelector);
+            if (einleitungEl) {
+                speechSegmentsList.push({ element: einleitungEl, contextType: 'tts' });
+            }
+
+            // Segment 2: Pro items
+            topic.pro_de.forEach((_, idx) => {
+                const proEl = document.querySelector(`#speech-segment-pro-${ttsLang}-${idx}`);
+                if (proEl) speechSegmentsList.push({ element: proEl, contextType: 'pro' });
+            });
+
+            // Segment 3: Contra items
+            topic.contra_de.forEach((_, idx) => {
+                const contraEl = document.querySelector(`#speech-segment-contra-${ttsLang}-${idx}`);
+                if (contraEl) speechSegmentsList.push({ element: contraEl, contextType: 'contra' });
+            });
+
+            // Segment 4: Erfahrung
+            const erfahrungEl = document.querySelector(`#speech-segment-erfahrung-${ttsLang}`);
+            if (erfahrungEl) {
+                speechSegmentsList.push({ element: erfahrungEl, contextType: 'tts' });
+            }
+
+            // Segment 5: Dialogue turns
+            topic.dialog.forEach((chat, idx) => {
+                const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
+                const dEl = document.querySelector(`#speech-segment-dialog-${ttsLang}-${idx}`);
+                if (dEl) {
+                    speechSegmentsList.push({ element: dEl, contextType: isA ? 'dialog_a' : 'dialog_b' });
+                }
+            });
+
+            // Segment 6: Schluss
+            const schlussEl = document.querySelector(`#speech-segment-schluss-${ttsLang}`);
+            if (schlussEl) {
+                speechSegmentsList.push({ element: schlussEl, contextType: 'tts' });
+            }
+        }
+
+        function startSpeechSegment(idx) {
+            if (idx >= speechSegmentsList.length) {
+                resetSpeechState();
+                return;
+            }
+
+            currentSegmentIdx = idx;
+            const segment = speechSegmentsList[idx];
+            const container = segment.element;
+            if (!container) {
+                startSpeechSegment(idx + 1);
+                return;
+            }
+
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            const spans = container.querySelectorAll('.tts-word');
+            if (spans.length === 0) {
+                startSpeechSegment(idx + 1);
+                return;
+            }
+
+            // Align character markers correctly
+            let rawString = "";
+            spans.forEach(span => {
+                const text = span.textContent || span.innerText || "";
+                span.setAttribute('data-start', rawString.length);
+                rawString.length += text.length;
+                span.setAttribute('data-end', rawString.length);
+                rawString += " ";
+                rawString.length += 1;
+            });
+
+            activeUtterance = new SpeechSynthesisUtterance(container.textContent || container.innerText || "");
+            activeUtterance.lang = ttsLang === 'de' ? 'de-DE' : (ttsLang === 'en' ? 'en-US' : 'ar-SA');
+            activeUtterance.rate = ttsSpeed;
+            activeUtterance.pitch = ttsPitch;
+
+            // Match selected dropdown voice
+            const voiceSelect = document.getElementById('voice-selector');
+            if (voiceSelect && voiceSelect.value) {
+                const voice = voicesList.find(v => v.name === voiceSelect.value);
+                if (voice) activeUtterance.voice = voice;
+            }
+
+            activeUtterance.onboundary = (event) => {
+                if (event.name === 'word') {
+                    const charIndex = event.charIndex;
+                    let matchedSpan = null;
+
+                    spans.forEach(s => {
+                        const start = parseInt(s.getAttribute('data-start'));
+                        const end = parseInt(s.getAttribute('data-end'));
+                        if (charIndex >= start && charIndex <= end) {
+                            matchedSpan = s;
+                        }
+                    });
+
+                    if (matchedSpan) {
+                        if (lastActiveSpan) {
+                            lastActiveSpan.classList.remove('tts-word-active');
+                            removeCircle(lastActiveSpan);
+                        }
+
+                        matchedSpan.classList.add('tts-word-active');
+                        wrapWithCircle(matchedSpan, getColorForContext(segment.contextType));
+                        lastActiveSpan = matchedSpan;
+                        matchedSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
+            };
+
+            activeUtterance.onend = () => {
+                if (lastActiveSpan) {
+                    lastActiveSpan.classList.remove('tts-word-active');
+                    removeCircle(lastActiveSpan);
+                    lastActiveSpan = null;
+                }
+                startSpeechSegment(idx + 1);
+            };
+
+            activeUtterance.onerror = (e) => {
+                if (e.error !== 'interrupted') {
+                    startSpeechSegment(idx + 1);
+                }
+            };
+
+            isTtsPlaying = true;
+            document.getElementById('tts-play-icon').setAttribute('data-lucide', 'pause');
+            document.getElementById('tts-play-text').textContent = "Pausieren";
+            lucide.createIcons();
+
+            synth.speak(activeUtterance);
+        }
+
+        function resetUtterances() {
+            synth.cancel();
+            if (activeUtterance) {
+                activeUtterance.onboundary = null;
+                activeUtterance.onend = null;
+                activeUtterance.onerror = null;
+            }
+        }
+
+        function resetSpeechState() {
+            resetUtterances();
+            isTtsPlaying = false;
+            document.getElementById('tts-play-icon').setAttribute('data-lucide', 'play');
+            document.getElementById('tts-play-text').textContent = "Vorlesen";
+            lucide.createIcons();
+
+            if (lastActiveSpan) {
+                lastActiveSpan.classList.remove('tts-word-active');
+                removeCircle(lastActiveSpan);
+                lastActiveSpan = null;
+            }
+
+            // Remove highlighted states
+            speechSegmentsList.forEach(seg => {
+                if (seg.element) {
+                    const spans = seg.element.querySelectorAll('.tts-word');
+                    spans.forEach(s => {
+                        s.classList.remove('tts-word-active');
+                        removeCircle(s);
+                    });
+                }
+            });
+        }
+
+        // SpeechSynthesis on voices loaded binding
+        if (synth) {
+            synth.onvoiceschanged = () => {
+                populateVoiceSelector();
+            };
+            populateVoiceSelector();
+        }
+
+        // Feature 3: JSON backup exports & imports implementation
+        function exportBackupData() {
+            if (TOPICS_DATA.length === 0) return;
+
+            const backupObj = {
+                version: "1.0",
+                exportDate: new Date().toISOString(),
+                topics: TOPICS_DATA,
+                progress: learnedList
+            };
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const filename = `b2-trainer-backup-${dateStr}.json`;
+
+            const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            showToast("✅ Backup gespeichert!");
+        }
+
+        function triggerImportFileInput() {
+            document.getElementById('import-file-input').click();
+        }
+
+        function importBackupData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && Array.isArray(parsed.topics)) {
+                        // Validation: verify title_de and id parameters on entries
+                        const isValid = parsed.topics.every(t => typeof t.id !== 'undefined' && t.title_de);
+                        if (isValid) {
+                            TOPICS_DATA = parsed.topics;
+                            activeIdx = 0;
+                            
+                            if (Array.isArray(parsed.progress)) {
+                                learnedList = parsed.progress;
+                            } else {
+                                learnedList = [];
+                            }
+
+                            showResetButton();
+                            renderSidebar();
+                            renderActiveTopic();
+                            showToast(`✅ ${parsed.topics.length} Themen importiert!`);
+                        } else {
+                            showToast("❌ Ungültige Datei: Fehlende ID oder Titel.", true);
+                        }
+                    } else {
+                        showToast("❌ Ungültige Datei.", true);
+                    }
+                } catch(err) {
+                    console.error("JSON Parse Error: ", err);
+                    showToast("❌ Ungültige Datei.", true);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ""; // clear selector
+        }
+
+        // Lightweight Toast notification builder
+        function showToast(message, isError = false) {
+            let toast = document.getElementById('app-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'app-toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            if (isError) {
+                toast.className = "fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-lg transition-all duration-300 transform translate-y-0 opacity-100 font-bold text-xs bg-rose-600 text-white flex items-center gap-2 border border-rose-500 animate-bounce";
+            } else {
+                toast.className = "fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-lg transition-all duration-300 transform translate-y-0 opacity-100 font-bold text-xs bg-emerald-600 text-white flex items-center gap-2 border border-emerald-500";
+            }
+
+            setTimeout(() => {
+                toast.className = "fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-lg transition-all duration-300 transform translate-y-10 opacity-0 font-bold text-xs";
+            }, 2500);
+        }
+
+        // Action Trigger to Export modified database array to topics.json File
+        function exportTopicsJSON() {
+            if (TOPICS_DATA.length === 0) return;
+            
+            // Clean HTML formatting tags from data if any remain
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TOPICS_DATA, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "topics.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Bind Export Action
+        document.getElementById('export-json-btn').onclick = () => {
+            exportTopicsJSON();
+        };
+
+        document.getElementById('learned-toggle').onclick = () => {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (learnedList.includes(topicId)) {
+                learnedList = learnedList.filter(id => id !== topicId);
+            } else {
+                learnedList.push(topicId);
+            }
+            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        document.getElementById('lang-view').addEventListener('change', (e) => {
+            activeView = e.target.value;
+            renderActiveTopic();
+        });
+
+        const highlightsBtn = document.getElementById('toggle-highlights');
+        highlightsBtn.onclick = () => {
+            showHighlights = !showHighlights;
+            highlightsBtn.textContent = showHighlights ? "Hervorhebung: AN" : "Hervorhebung: AUS";
+            highlightsBtn.className = showHighlights 
+                ? "text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors"
+                : "text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-300 dark:border-slate-600 transition-colors";
+            renderActiveTopic();
+        };
+
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        editModeToggle.onclick = () => {
+            isEditMode = !isEditMode;
+            editModeToggle.classList.toggle('bg-indigo-600', isEditMode);
+            editModeToggle.classList.toggle('text-white', isEditMode);
+            editModeToggle.classList.toggle('hover:bg-indigo-700', isEditMode);
+            editModeToggle.classList.toggle('bg-slate-200', !isEditMode);
+            editModeToggle.classList.toggle('dark:bg-slate-700', !isEditMode);
+            editModeToggle.classList.toggle('text-slate-700', !isEditMode);
+            editModeToggle.classList.toggle('dark:text-slate-200', !isEditMode);
+            
+            editModeToggle.querySelector('span').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            
+            const editTipBanner = document.getElementById('edit-tip-banner');
+            if (isEditMode) {
+                editTipBanner.classList.remove('hidden');
+                closeSidebarMobile();
+            } else {
+                editTipBanner.classList.add('hidden');
+                hideToolbar();
+            }
+
+            renderActiveTopic();
+        };
+
+        document.getElementById('search-bar').addEventListener('input', () => {
+            renderSidebar();
+        });
+
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            document.getElementById('menu-icon').innerHTML = isHidden 
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        });
+
+        // Overlay & Reel-Modus Methods
+        function openReel() {
+            const overlay = document.getElementById('reel-overlay');
+            const iframe = document.getElementById('reel-iframe');
+            overlay.classList.remove('hidden');
+            iframe.src = './reel-mode.html';
+        }
+
+        function closeReel() {
+            const overlay = document.getElementById('reel-overlay');
+            const iframe = document.getElementById('reel-iframe');
+            
+            // Terminate speech playback in the iframe before closing it
+            try {
+                if (iframe.contentWindow && iframe.contentWindow.speechSynthesis) {
+                    iframe.contentWindow.speechSynthesis.cancel();
+                }
+            } catch(e) {}
+            
+            overlay.classList.add('hidden');
+            iframe.src = 'about:blank';
+        }
+
+        // Initialize install prompt listener
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        const installBtn = document.getElementById('pwa-install-btn');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User installation decision: ${outcome}`);
+                deferredPrompt = null;
+                installBtn.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA app installed successfully!');
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.add('hidden');
+        });
+
+        loadTopics();
     </script>
 </body>
 </html>
