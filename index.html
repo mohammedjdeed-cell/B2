@@ -19,7 +19,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <!-- html2pdf.js for PDF Book Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script>
@@ -101,24 +100,9 @@
             margin: 0;
         }
 
-        .topic-list-item { min-height: 72px; }
-        .topic-list-item .topic-title {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: normal;
-            font-size: 13px;
-            line-height: 1.4;
-            min-height: 36px;
-        }
-
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
-        
-        /* Required for PDF Generation isolation */
-        #pdf-export-container { display: none; }
     </style>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -127,7 +111,6 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden relative">
 
-    <!-- MASTER BAR -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
@@ -150,12 +133,10 @@
                 <svg id="theme-toggle-moon-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
 
-            <!-- Themen Toggle Button -->
             <button onclick="toggleSidebar()" class="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center gap-2 font-bold text-xs">
                 <span>📚</span> <span class="hidden md:inline">Themenmenü</span>
             </button>
 
-            <!-- Burger Menu Dropdown -->
             <div class="relative inline-block text-left">
                 <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -188,9 +169,7 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden relative w-full">
-        <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 w-full transition-all duration-300">
-            <!-- WORKSPACE PANEL (Firebase Auth) -->
             <div id="workspace-panel" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)]">
                 <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -200,12 +179,12 @@
                         </h3>
                         <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Änderungen werden lokal gesichert.</p>
                     </div>
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <select id="user-select" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)]">
+                    <div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
+                        <select id="user-select" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] flex-1 md:flex-none">
                             <option value="mohammed">Mohammed Jdeed</option>
                             <option value="mai">Mai Hasan</option>
                         </select>
-                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--text-primary)] w-28">
+                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--text-primary)] flex-1 md:w-28">
                         <button id="btn-login" class="text-xs bg-[var(--accent)] text-white font-bold px-3 py-1.5 rounded-lg hover:opacity-90">Laden</button>
                     </div>
                 </div>
@@ -221,7 +200,6 @@
                 </div>
             </div>
 
-            <!-- TAB 1: DASHBOARD -->
             <div id="dashboard-tab-section" class="space-y-6">
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
@@ -252,23 +230,19 @@
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    <!-- Cards layout anchor -->
-                </div>
+                    </div>
             </div>
 
-            <!-- TAB 2: REDEMITTEL -->
             <section id="redemittel-tab-section" class="hidden space-y-6">
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-3 mb-4 flex items-center gap-2">
                         <span>🗣️</span> B2 Redemittel & Strukturen
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="redemittel-container">
-                        <!-- Populated by JS -->
-                    </div>
+                        </div>
                 </div>
             </section>
 
-            <!-- TAB 3: MINDMAP -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-4">
                     <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Themen-Mindmap</h3>
@@ -279,7 +253,6 @@
             </section>
         </main>
 
-        <!-- Right Expandable Sidebar -->
         <aside id="sidebar" class="absolute top-0 right-0 h-full z-30 w-80 bg-[var(--bg-sidebar)] border-l border-[var(--border)] flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex justify-between items-center">
                 <div class="flex items-center gap-2">
@@ -299,15 +272,10 @@
             </div>
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                <!-- Programmatic list rendering -->
-            </nav>
+                </nav>
         </aside>
     </div>
 
-    <!-- Hidden PDF Export Container -->
-    <div id="pdf-export-container"></div>
-
-    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
@@ -319,7 +287,6 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg">✕</button>
     </div>
 
-    <!-- ADVANCED BLOCK CONTENT EDITOR MODAL -->
     <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
@@ -347,46 +314,46 @@
         </div>
     </div>
 
-    <!-- MAIN APP SCRIPT -->
     <script>
+        // 1. Dark Mode Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun-icon');
+        const moonIcon = document.getElementById('theme-toggle-moon-icon');
+        let isDark = localStorage.getItem('theme_mode') === 'dark' || (!('theme_mode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        function applyTheme() {
+            const rootEl = document.documentElement;
+            if (isDark) {
+                rootEl.classList.add('dark');
+                rootEl.setAttribute('data-theme', 'dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                rootEl.classList.remove('dark');
+                rootEl.setAttribute('data-theme', 'light');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+        themeToggle.onclick = () => {
+            isDark = !isDark;
+            localStorage.setItem('theme_mode', isDark ? 'dark' : 'light');
+            applyTheme();
+        };
+        applyTheme();
+
+        // 2. Data & State Initialization
         const REDEMITTEL_DATA = {
-            "Einleitung": [
-                "Das Thema ... ist heutzutage sehr aktuell und wird oft diskutiert.",
-                "In dem vorliegenden Text geht es um die Frage, ob ...",
-                "Ein wichtiges Thema in der heutigen Gesellschaft ist ..."
-            ],
-            "Eigene Meinung äußern": [
-                "Ich bin der Meinung, dass ...",
-                "Meiner Ansicht nach ist ...",
-                "Ich stehe auf dem Standpunkt, dass ...",
-                "Persönlich denke ich, dass ..."
-            ],
-            "Zustimmen": [
-                "Da bin ich völlig Ihrer Meinung.",
-                "Das sehe ich ganz genauso.",
-                "Sie haben völlig recht, wenn Sie sagen, dass ...",
-                "Diesem Argument kann ich nur zustimmen."
-            ],
-            "Widersprechen": [
-                "Da muss ich Ihnen leider widersprechen.",
-                "Das sehe ich etwas anders, weil ...",
-                "Dieses Argument überzeugt mich nicht ganz.",
-                "Man darf dabei aber nicht vergessen, dass ..."
-            ],
-            "Argumente strukturieren": [
-                "Einerseits ..., andererseits ...",
-                "Ein weiterer wichtiger Punkt ist ...",
-                "Dafür spricht, dass ...",
-                "Ein Argument dagegen ist ..."
-            ],
-            "Schlussfolgern": [
-                "Zusammenfassend lässt sich sagen, dass ...",
-                "Alles in allem komme ich zu dem Schluss, dass ...",
-                "Als Fazit können wir festhalten, dass ..."
-            ]
+            "Einleitung": ["Das Thema ... ist heutzutage sehr aktuell und wird oft diskutiert.", "In dem vorliegenden Text geht es um die Frage, ob ...", "Ein wichtiges Thema in der heutigen Gesellschaft ist ..."],
+            "Eigene Meinung äußern": ["Ich bin der Meinung, dass ...", "Meiner Ansicht nach ist ...", "Ich stehe auf dem Standpunkt, dass ...", "Persönlich denke ich, dass ..."],
+            "Zustimmen": ["Da bin ich völlig Ihrer Meinung.", "Das sehe ich ganz genauso.", "Sie haben völlig recht, wenn Sie sagen, dass ...", "Diesem Argument kann ich nur zustimmen."],
+            "Widersprechen": ["Da muss ich Ihnen leider widersprechen.", "Das sehe ich etwas anders, weil ...", "Dieses Argument überzeugt mich nicht ganz.", "Man darf dabei aber nicht vergessen, dass ..."],
+            "Argumente strukturieren": ["Einerseits ..., andererseits ...", "Ein weiterer wichtiger Punkt ist ...", "Dafür spricht, dass ...", "Ein Argument dagegen ist ..."],
+            "Schlussfolgern": ["Zusammenfassend lässt sich sagen, dass ...", "Alles in allem komme ich zu dem Schluss, dass ...", "Als Fazit können wir festhalten, dass ..."]
         };
 
-        const TOPIC_ICONS = { 1:"🚭", 2:"🎮", 3:"💍", 4:"☀️", 5:"💊", 6:"⚡", 7:"👴", 8:"🔄", 9:"🏫", 10:"🪙" }; // Fallback object
+        const TOPIC_ICONS = { 1:"🚭", 2:"🎮", 3:"💍", 4:"☀️", 5:"💊", 6:"⚡", 7:"👴", 8:"🔄", 9:"🏫", 10:"🪙" };
+        const TOPIC_CATEGORIES_LOOKUP = { 1:'Freizeit & Gesundheit', 2:'Bildung & Technologie', 3:'Gesellschaft & Politik' }; // Fallbacks
 
         const firebaseConfig = {
             apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
@@ -405,24 +372,18 @@
         let currentFilter = "all";
         let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
         let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
-        let currentUser = null;
-        let editedTopicIds = [];
-        let activeEditBlockContext = null;
-
         let undoStack = [];
         let redoStack = [];
-        
-        let ttsEngine = window.speechSynthesis;
 
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            sb.classList.toggle('translate-x-full');
-        }
+        // 3. UI Toggles
+        window.toggleSidebar = function() {
+            document.getElementById('sidebar').classList.toggle('translate-x-full');
+        };
 
-        function toggleMenuDropdown(event) {
+        window.toggleMenuDropdown = function(event) {
             event.stopPropagation();
             document.getElementById('menu-dropdown-content').classList.toggle('hidden');
-        }
+        };
 
         document.addEventListener('click', (e) => {
             const content = document.getElementById('menu-dropdown-content');
@@ -431,24 +392,31 @@
             }
         });
 
-        // Robust TTS Wrapper
-        function playAudioText(text) {
-            ttsEngine.cancel();
+        // 4. Robust TTS Engine
+        window.playAudioText = function(text) {
+            window.speechSynthesis.cancel();
             if (!text) return;
             const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
             const ut = new SpeechSynthesisUtterance(cleanText);
             ut.lang = 'de-DE';
             
-            let voices = ttsEngine.getVoices().filter(v => v.lang.startsWith('de'));
-            if (voices.length > 0) {
-                // Try to find a premium or natural voice
-                let pref = voices.find(v => v.name.includes('Google') || v.name.includes('Natural'));
-                ut.voice = pref || voices[0];
+            // Wait for voices to load if not ready
+            let voices = window.speechSynthesis.getVoices();
+            if(voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
+                    if(voices.length > 0) ut.voice = voices[0];
+                    window.speechSynthesis.speak(ut);
+                };
+            } else {
+                voices = voices.filter(v => v.lang.startsWith('de'));
+                if(voices.length > 0) ut.voice = voices[0];
+                window.speechSynthesis.speak(ut);
             }
-            ttsEngine.speak(ut);
-        }
+        };
 
-        function switchTab(tabId) {
+        // 5. Navigation & Tabs
+        window.switchTab = function(tabId) {
             document.getElementById('dashboard-tab-section').classList.add('hidden');
             document.getElementById('mindmap-tab-section').classList.add('hidden');
             document.getElementById('redemittel-tab-section').classList.add('hidden');
@@ -462,39 +430,15 @@
 
             if (tabId === 'dashboard') renderActiveTopic();
             if (tabId === 'redemittel') renderRedemittel();
-            if (tabId === 'mindmap') setTimeout(initMindmap, 50);
-        }
+            if (tabId === 'mindmap') setTimeout(initMindmap, 100);
+        };
 
-        function renderRedemittel() {
-            const container = document.getElementById('redemittel-container');
-            if (container.innerHTML.trim().length > 10) return; // already rendered
-            
-            container.innerHTML = "";
-            for (const [category, phrases] of Object.entries(REDEMITTEL_DATA)) {
-                let listHtml = "";
-                phrases.forEach(p => {
-                    listHtml += `
-                        <div class="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 group">
-                            <span class="text-xs text-[var(--text-primary)] font-medium leading-relaxed">${p}</span>
-                            <div class="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
-                                <button onclick="playAudioText('${p}')" class="p-1.5 rounded-md hover:bg-[var(--accent-light)] text-[var(--accent)]" title="Anhören">🔊</button>
-                            </div>
-                        </div>`;
-                });
-                container.innerHTML += `
-                    <div class="bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-4">
-                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">${category}</h4>
-                        ${listHtml}
-                    </div>`;
-            }
-        }
-
+        // 6. Data Loaders & Renderers
         async function loadTopics() {
             try {
                 const response = await fetch('./topics.json'); 
-                let baseTopics = await response.json();
-                TOPICS_DATA = baseTopics;
-                window.TOPICS_DATA = baseTopics;
+                TOPICS_DATA = await response.json();
+                TOPICS_DATA.forEach(t => t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Allgemein');
                 renderSidebar();
                 renderActiveTopic();
             } catch (e) {
@@ -502,27 +446,17 @@
             }
         }
 
-        function saveHighlight(topicId, blockKey, htmlContent) {
-            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
-            highlightsStore[topicId][blockKey] = htmlContent;
-            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
-        }
-
         function getHighlight(topicId, blockKey) {
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
-        function clearAllHighlightsForTopic() {
-            if (TOPICS_DATA.length === 0) return;
-            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen löschen?")) {
-                delete highlightsStore[TOPICS_DATA[activeIdx].id];
-                localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
-                renderActiveTopic();
-            }
-        }
+        window.saveHighlight = function(topicId, blockKey, htmlContent) {
+            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+            highlightsStore[topicId][blockKey] = htmlContent;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+        };
 
         function buildCardWrapper(title, contentHtml, textToSpeak, rawPath, isArray = false, arrayIdx = null, subKey = null) {
-            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
             const safeText = textToSpeak ? textToSpeak.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
             return `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] relative">
@@ -530,7 +464,6 @@
                         <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         <div class="flex gap-2">
                             <button onclick="playAudioText('${safeText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] font-bold">🔊 Hören</button>
-                            <button onclick="openBlockEditor(${cleanParams})" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
                         </div>
                     </div>
                     ${contentHtml}
@@ -578,7 +511,7 @@
             topic.pro_de.forEach((val, i) => {
                 const k = `pro_de_${i}`;
                 pContent += `<div class="mb-3"><div data-block-key="${k}" class="text-sm" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${k}', this.innerHTML)">${getHighlight(topic.id, k) || val}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)]">${topic.pro_en[i]}</p></div>`;
+                <p class="${enClass} text-xs italic text-[var(--text-muted)]">${topic.pro_en ? topic.pro_en[i] : ''}</p></div>`;
             });
             pcGrid.innerHTML += buildCardWrapper("Pro Argumente", pContent, topic.pro_de.join(". "), 'pro_de', true, 0);
 
@@ -586,7 +519,7 @@
             topic.contra_de.forEach((val, i) => {
                 const k = `contra_de_${i}`;
                 cContent += `<div class="mb-3"><div data-block-key="${k}" class="text-sm" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${k}', this.innerHTML)">${getHighlight(topic.id, k) || val}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)]">${topic.contra_en[i]}</p></div>`;
+                <p class="${enClass} text-xs italic text-[var(--text-muted)]">${topic.contra_en ? topic.contra_en[i] : ''}</p></div>`;
             });
             pcGrid.innerHTML += buildCardWrapper("Contra Argumente", cContent, topic.contra_de.join(". "), 'contra_de', true, 0);
             container.appendChild(pcGrid);
@@ -610,10 +543,111 @@
             container.innerHTML += buildCardWrapper("Schlussfolgerung", sHtml, topic.schluss_de, 'schluss_de');
         }
 
-        function setFilter(type) {
+        window.renderRedemittel = function() {
+            const container = document.getElementById('redemittel-container');
+            if (container.innerHTML.trim().length > 10) return; 
+            container.innerHTML = "";
+            for (const [category, phrases] of Object.entries(REDEMITTEL_DATA)) {
+                let listHtml = "";
+                phrases.forEach(p => {
+                    const safeP = p.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                    listHtml += `
+                        <div class="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 group">
+                            <span class="text-xs text-[var(--text-primary)] font-medium leading-relaxed">${p}</span>
+                            <button onclick="playAudioText('${safeP}')" class="p-1.5 rounded-md hover:bg-[var(--accent-light)] text-[var(--accent)]" title="Anhören">🔊</button>
+                        </div>`;
+                });
+                container.innerHTML += `
+                    <div class="bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-4">
+                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">${category}</h4>
+                        ${listHtml}
+                    </div>`;
+            }
+        };
+
+        window.initMindmap = function() {
+            if (TOPICS_DATA.length === 0) return;
+            const svg = d3.select("#mindmap-svg");
+            svg.selectAll("*").remove();
+            
+            const width = svg.node().clientWidth || 800;
+            const height = svg.node().clientHeight || 600;
+            const gContainer = svg.append("g").attr("class", "mindmap-container");
+
+            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => gContainer.attr("transform", event.transform));
+            svg.call(zoom);
+
+            const categories = {};
+            TOPICS_DATA.forEach(t => {
+                const cat = t.category || 'Allgemein';
+                if(!categories[cat]) categories[cat] = [];
+                categories[cat].push({ name: `T${t.id}: ${t.title_de}`, id: t.id, idx: TOPICS_DATA.indexOf(t) });
+            });
+
+            const rawData = {
+                name: "TELC B2", priority: "root",
+                children: Object.keys(categories).map(catName => ({
+                    name: catName, priority: 'category', children: categories[catName]
+                }))
+            };
+
+            const treemap = d3.tree().nodeSize([20, 180]);
+            let root = d3.hierarchy(rawData, d => d.children);
+            root.x0 = height / 2; root.y0 = 0;
+
+            function update(source) {
+                const treeData = treemap(root);
+                const nodes = treeData.descendants(), links = treeData.links();
+                nodes.forEach(d => d.y = d.depth * 200);
+
+                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = Math.random()));
+                const nodeEnter = node.enter().append('g').attr('class', 'mindmap-node cursor-pointer')
+                    .attr('transform', d => `translate(${source.y0},${source.x0})`)
+                    .on('click', (e, d) => {
+                        if (d.data.idx !== undefined) {
+                            activeIdx = d.data.idx; localStorage.setItem('b2_active_idx', activeIdx);
+                            renderSidebar(); renderActiveTopic(); switchTab('dashboard');
+                        } else {
+                            if (d.children) { d._children = d.children; d.children = null; } 
+                            else { d.children = d._children; d._children = null; }
+                            update(d);
+                        }
+                    });
+
+                nodeEnter.each(function(d) {
+                    const el = d3.select(this);
+                    el.append('circle').attr('r', d.data.priority === 'root' ? 8 : (d.data.priority === 'category' ? 6 : 4))
+                      .attr('fill', 'var(--accent)').attr('stroke', '#fff').attr('stroke-width', 2);
+                    el.append('text').attr('dy', '.35em').attr('x', d.children || d._children ? -12 : 12)
+                      .attr('text-anchor', d.children || d._children ? 'end' : 'start')
+                      .attr('fill', 'var(--text-primary)').attr('font-size', d.data.priority ? '10px' : '9px').attr('font-weight', d.data.priority ? 'bold' : 'normal')
+                      .text(d.data.name.substring(0, 30));
+                });
+
+                const nodeUpdate = nodeEnter.merge(node);
+                nodeUpdate.transition().duration(250).attr('transform', d => `translate(${d.y},${d.x})`);
+
+                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
+                const linkEnter = link.enter().insert('path', "g").attr('class', 'mindmap-link').attr('fill', 'none')
+                    .attr('stroke', 'var(--border)').attr('stroke-width', 1.5)
+                    .attr('d', d => `M ${source.y0} ${source.x0} C ${source.y0} ${source.x0}, ${source.y0} ${source.x0}, ${source.y0} ${source.x0}`);
+
+                linkEnter.merge(link).transition().duration(250)
+                    .attr('d', d => `M ${d.source.y} ${d.source.x} C ${(d.source.y + d.target.y) / 2} ${d.source.x}, ${(d.source.y + d.target.y) / 2} ${d.target.x}, ${d.target.y} ${d.target.x}`);
+
+                nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+            }
+            
+            root.children.forEach(collapse);
+            function collapse(d) { if (d.children) { d._children = d.children; d._children.forEach(collapse); d.children = null; } }
+            update(root);
+            svg.call(zoom.transform, d3.zoomIdentity.translate(50, height / 2).scale(0.85));
+        };
+
+        window.setFilter = function(type) {
             currentFilter = type;
             renderSidebar();
-        }
+        };
 
         function renderSidebar() {
             const list = document.getElementById('topic-list');
@@ -628,7 +662,7 @@
 
                 const active = i === activeIdx;
                 list.innerHTML += `
-                    <button onclick="activeIdx=${i}; localStorage.setItem('b2_active_idx', ${i}); renderActiveTopic(); toggleSidebar();" 
+                    <button onclick="activeIdx=${i}; localStorage.setItem('b2_active_idx', ${i}); renderActiveTopic(); window.toggleSidebar();" 
                         class="w-full text-left p-3 rounded-xl border flex gap-3 ${active ? 'bg-[var(--accent-light)] border-[var(--accent)]' : 'hover:bg-[var(--bg-card)]'}">
                         <div class="text-lg">${TOPIC_ICONS[t.id] || "📌"}</div>
                         <div class="flex-1 min-w-0">
@@ -637,85 +671,74 @@
                     </button>`;
             });
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
-            document.getElementById('progress-bar').style.width = `${(learnedList.length/TOPICS_DATA.length)*100}%`;
         }
 
-        // --- PDF GENERATION ENGINE ---
-        function generatePDFBook() {
+        // 7. Interactive PDF Generator (Raw String Injection bypasses display:none limits)
+        window.generatePDFBook = function() {
             if(TOPICS_DATA.length === 0) return alert("Daten nicht geladen.");
             
-            // Show loading UI
             const btn = document.getElementById('menu-dropdown-btn');
             const originalIcon = btn.innerHTML;
-            btn.innerHTML = `<span class="animate-spin">⏳</span>`;
+            btn.innerHTML = `<span class="animate-pulse font-bold text-xs">⏳ Generiere...</span>`;
             
-            const pdfContainer = document.getElementById('pdf-export-container');
-            pdfContainer.innerHTML = "";
-            pdfContainer.style.display = "block"; // Must be block for html2pdf to render
-            
-            // Build the PDF Master Document
-            let html = `
+            let htmlString = `
                 <div style="padding: 40px; font-family: sans-serif; color: #1a1a1a;">
                     <div style="text-align:center; margin-bottom: 60px; margin-top: 100px;">
-                        <h1 style="font-size: 32px; color: #2563EB;">TELC B2 Diskussionstrainer</h1>
-                        <h2 style="font-size: 18px; color: #666;">Alle 52 Themen (inklusive Markierungen)</h2>
+                        <h1 style="font-size: 32px; color: #2563EB; font-weight: 800;">TELC B2 Diskussionstrainer</h1>
+                        <h2 style="font-size: 18px; color: #666; font-weight: normal; margin-top: 10px;">Alle 52 Themen (inklusive persönlicher Markierungen)</h2>
                     </div>
             `;
             
             TOPICS_DATA.forEach(topic => {
                 const eid = topic.id;
-                html += `
-                    <div style="page-break-before: always; margin-bottom: 30px;">
-                        <h3 style="font-size: 20px; border-bottom: 2px solid #2563EB; padding-bottom: 8px;">Thema ${eid}: ${topic.title_de}</h3>
+                htmlString += `
+                    <div style="page-break-before: always; padding-top: 20px;">
+                        <h3 style="font-size: 22px; color: #1a1a1a; border-bottom: 2px solid #2563EB; padding-bottom: 8px; margin-bottom: 20px;">Thema ${eid}: ${topic.title_de}</h3>
                         
-                        <div style="margin-top: 15px;">
-                            <strong style="color: #2563EB; font-size: 12px;">EINLEITUNG</strong>
-                            <p style="font-size: 13px; line-height: 1.5;">${getHighlight(eid, 'einleitung_de') || topic.einleitung_de}</p>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #2563EB; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Einleitung</strong>
+                            <p style="font-size: 14px; line-height: 1.6; margin-top: 5px;">${getHighlight(eid, 'einleitung_de') || topic.einleitung_de}</p>
                         </div>
 
-                        <div style="margin-top: 15px;">
-                            <strong style="color: #16A34A; font-size: 12px;">PRO ARGUMENTE</strong>
-                            <ul style="font-size: 13px; line-height: 1.5; margin-top: 4px;">`;
-                topic.pro_de.forEach((p, i) => { html += `<li>${getHighlight(eid, `pro_de_${i}`) || p}</li>`; });
-                html += `   </ul>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #16A34A; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Pro Argumente</strong>
+                            <ul style="font-size: 14px; line-height: 1.6; margin-top: 5px; padding-left: 20px;">`;
+                topic.pro_de.forEach((p, i) => { htmlString += `<li style="margin-bottom: 6px;">${getHighlight(eid, `pro_de_${i}`) || p}</li>`; });
+                htmlString += `</ul>
                         </div>
 
-                        <div style="margin-top: 15px;">
-                            <strong style="color: #DC2626; font-size: 12px;">CONTRA ARGUMENTE</strong>
-                            <ul style="font-size: 13px; line-height: 1.5; margin-top: 4px;">`;
-                topic.contra_de.forEach((c, i) => { html += `<li>${getHighlight(eid, `contra_de_${i}`) || c}</li>`; });
-                html += `   </ul>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #DC2626; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Contra Argumente</strong>
+                            <ul style="font-size: 14px; line-height: 1.6; margin-top: 5px; padding-left: 20px;">`;
+                topic.contra_de.forEach((c, i) => { htmlString += `<li style="margin-bottom: 6px;">${getHighlight(eid, `contra_de_${i}`) || c}</li>`; });
+                htmlString += `</ul>
                         </div>
                         
-                        <div style="margin-top: 15px;">
-                            <strong style="color: #2563EB; font-size: 12px;">DIALOG</strong>
-                            <div style="font-size: 13px; line-height: 1.5; margin-top: 4px;">`;
-                topic.dialog.forEach((d, i) => { html += `<p><b>${d.role}:</b> ${getHighlight(eid, `dialog_de_${i}`) || d.de}</p>`; });
-                html += `   </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #7C3AED; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Dialog Simulation</strong>
+                            <div style="font-size: 14px; line-height: 1.6; margin-top: 5px; background: #f9f9f9; padding: 15px; border-radius: 8px;">`;
+                topic.dialog.forEach((d, i) => { htmlString += `<p style="margin-bottom: 8px;"><b>${d.role}:</b> ${getHighlight(eid, `dialog_de_${i}`) || d.de}</p>`; });
+                htmlString += `</div>
                         </div>
                     </div>`;
             });
-            html += `</div>`;
-            pdfContainer.innerHTML = html;
+            htmlString += `</div>`;
 
             const opt = {
-                margin:       10,
+                margin:       [15, 15, 15, 15],
                 filename:     'TELC_B2_Diskussionen_Buch.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Execute html2pdf Promise
-            html2pdf().set(opt).from(pdfContainer).save().then(() => {
-                pdfContainer.style.display = "none";
-                pdfContainer.innerHTML = "";
+            html2pdf().set(opt).from(htmlString).save().then(() => {
                 btn.innerHTML = originalIcon;
                 document.getElementById('menu-dropdown-content').classList.add('hidden');
             });
-        }
+        };
 
-        // Boot
+        // 8. Event Listeners
         document.getElementById('edit-mode-toggle').onclick = () => {
             isEditMode = !isEditMode;
             document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Modus: AN" : "Modus: AUS";
@@ -724,6 +747,7 @@
         };
 
         document.getElementById('lang-view').onchange = (e) => { activeView = e.target.value; renderActiveTopic(); };
+        
         document.getElementById('learned-toggle').onclick = () => {
             if (!learnedList.includes(TOPICS_DATA[activeIdx].id)) learnedList.push(TOPICS_DATA[activeIdx].id);
             else learnedList = learnedList.filter(id => id !== TOPICS_DATA[activeIdx].id);
@@ -731,8 +755,10 @@
             renderSidebar(); renderActiveTopic();
         };
 
-        // Text formatting mechanics
-        function applySelectionFormat(type, value) {
+        document.getElementById('search-bar').addEventListener('input', renderSidebar);
+
+        // Formatting mechanics
+        window.applySelectionFormat = function(type, value) {
             if(!isEditMode) return;
             const sel = window.getSelection();
             if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
@@ -756,8 +782,8 @@
             }
             
             const blockKey = activeContainer.getAttribute('data-block-key');
-            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
-        }
+            window.saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
+        };
 
         document.addEventListener('selectionchange', () => {
             const sel = window.getSelection();
@@ -770,6 +796,7 @@
             toolbar.classList.remove('hidden');
         });
 
+        // Initialize Data
         loadTopics();
     </script>
 </body>
