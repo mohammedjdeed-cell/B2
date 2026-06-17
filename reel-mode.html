@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-zinc-950 text-zinc-100">
 <head>
@@ -122,19 +123,46 @@
         let subtitleLang = 'en';
 
         async function initializeReelEngine() {
-            if (window.parent && window.parent.TOPICS_DATA && window.parent.TOPICS_DATA.length > 0) {
-                topicsList = window.parent.TOPICS_DATA;
-                // Retrieve index from shell environment directly
-                activeIdx = typeof window.parent.activeIdx !== 'undefined' ? window.parent.activeIdx : 0;
-            } else {
+            let loaded = false;
+            
+            // 1. Try parent context
+            try {
+                if (window.parent && window.parent.TOPICS_DATA && window.parent.TOPICS_DATA.length > 0) {
+                    topicsList = window.parent.TOPICS_DATA;
+                    activeIdx = typeof window.parent.activeIdx !== 'undefined' ? window.parent.activeIdx : 0;
+                    loaded = true;
+                }
+            } catch (err) {
+                console.warn("Konnte nicht direkt auf das Elternfenster zugreifen (möglicherweise Cross-Origin):", err);
+            }
+
+            // 2. Try LocalStorage (same origin fallback)
+            if (!loaded) {
+                const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                if (localEdits) {
+                    topicsList = JSON.parse(localEdits);
+                    loaded = true;
+                }
+            }
+
+            // 3. Try Direct Fetch
+            if (!loaded) {
                 try {
                     const response = await fetch('topics.json');
                     topicsList = await response.json();
-                    activeIdx = 0;
+                    loaded = true;
                 } catch(e) {
-                    console.error("Datenfehler: Fallback topics.json unmöglich.", e);
+                    console.error("Datenfehler: topics.json konnte nicht geladen werden.", e);
                 }
             }
+
+            // Fallback parameters evaluation
+            if (loaded) {
+                const params = new URLSearchParams(window.location.search);
+                activeIdx = parseInt(params.get('idx')) || parseInt(localStorage.getItem('b2_active_idx')) || 0;
+                if (activeIdx >= topicsList.length) activeIdx = 0;
+            }
+
             loadActiveTopic();
         }
 
@@ -142,17 +170,22 @@
             if (topicsList.length === 0) return;
             activeTopic = topicsList[activeIdx];
             
-            // Sync with parent workspace layout shell dynamically
-            if (window.parent && typeof window.parent.activeIdx !== 'undefined') {
-                window.parent.activeIdx = activeIdx;
-                if (typeof window.parent.renderSidebar === 'function') {
-                    window.parent.renderSidebar();
-                    window.parent.renderActiveTopic();
+            // Sync with parent environment if accessible
+            try {
+                if (window.parent && typeof window.parent.activeIdx !== 'undefined') {
+                    window.parent.activeIdx = activeIdx;
+                    if (typeof window.parent.renderSidebar === 'function') {
+                        window.parent.renderSidebar();
+                        window.parent.renderActiveTopic();
+                    }
                 }
+            } catch (e) {
+                // Non-accessible parent fallback: preserve local storage index sync
+                localStorage.setItem('b2_active_idx', activeIdx);
             }
 
             // Bind metadata displays
-            document.getElementById('topic-badge').textContent = `Thema ${activeTopic.id} / 52`;
+            document.getElementById('topic-badge').textContent = `Thema ${activeTopic.id} / ${topicsList.length}`;
             document.getElementById('topic-title').textContent = activeTopic.title_de;
             document.getElementById('reel-illustration').innerHTML = CATEGORY_SVGS[activeTopic.category] || CATEGORY_SVGS['Gesellschaft & Politik'];
             
@@ -239,13 +272,11 @@
             utterance.lang = 'de-DE';
             utterance.rate = playbackSpeed;
 
-            // Voice settings matching
-            if (window.parent && window.parent.speechSynthesis) {
-                const savedVoice = localStorage.getItem('b2_selected_voice');
-                const voices = window.speechSynthesis.getVoices();
-                const matchedObj = voices.find(v => v.name === savedVoice);
-                if (matchedObj) utterance.voice = matchedObj;
-            }
+            // Robust local voice evaluation using sharing localStorage variables
+            const savedVoice = localStorage.getItem('b2_selected_voice');
+            const voices = window.speechSynthesis.getVoices();
+            const matchedObj = voices.find(v => v.name === savedVoice);
+            if (matchedObj) utterance.voice = matchedObj;
 
             utterance.onend = () => {
                 if (isPlaying) {
