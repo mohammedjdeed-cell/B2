@@ -1,74 +1,42 @@
-const CACHE_NAME = 'b2-trainer-v2';
-const STATIC_ASSETS = [
-  './',
+
+const CACHE_NAME = 'b2trainer-v3';
+const OFFLINE_URL = './index.html';
+const PRECACHE_ASSETS = [
   './index.html',
-  './topics.json',
+  './reel-mode.html',
   './manifest.json',
+  './topics.json',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap',
   'https://cdn.tailwindcss.com',
-  'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js' // Cached to keep dynamic icons working offline
+  'https://d3js.org/d3.v7.min.js'
 ];
 
-// 1. Install Event: Populate static shell assets
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Pre-caching offline shell');
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_ASSETS)).then(() => self.skipWaiting())
   );
 });
 
-// 2. Activate Event: Perform cache maintenance on version updates
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[Service Worker] Clearing old cache', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
 });
 
-// 3. Fetch Event Routing (Stale-While-Revalidate Strategy)
-self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  const url = new URL(request.url);
-
-  // Ignore non-GET, non-http, and Chrome/Browser Extensions requests
-  if (request.method !== 'GET') return;
-  if (!url.protocol.startsWith('http')) return;
-
-  event.respondWith(staleWhileRevalidate(request));
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      const networkFetch = fetch(event.request).then(response => {
+        if (response && response.status === 200 && response.type !== 'opaque') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => cached || caches.match(OFFLINE_URL));
+      return cached || networkFetch;
+    })
+  );
 });
-
-// Stale-While-Revalidate function logic
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-
-  // Trigger background fetch to update the cache bucket
-  const networkFetch = fetchAndCache(request, cache);
-
-  // Return instant cached copy if found, otherwise wait on network fetch
-  return cachedResponse || networkFetch;
-}
-
-// Background fetcher and dynamic cache writer
-async function fetchAndCache(request, cache) {
-  try {
-    const response = await fetch(request);
-    
-    // Only save valid response streams to avoid caching empty errors
-    if (response && response.status === 200 && response.type !== 'opaque') {
-      await cache.put(request, response.clone());
-    }
-    return response;
-  } catch (error) {
-    console.warn('[Service Worker] Fetch failed (possibly offline). Cache state used.', error);
-  }
-}
