@@ -182,6 +182,17 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         <span>Bearbeitungsmodus: AUS</span>
                     </button>
+                    <!-- Export current edited JSON array as topics.json -->
+                    <button id="export-json-btn" class="w-full text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-700 dark:text-indigo-200 dark:hover:bg-slate-600 text-indigo-700 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>topics.json exportieren</span>
+                    </button>
+                    <!-- Import topics.json backup file -->
+                    <button id="import-json-btn" class="w-full text-xs bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:text-zinc-200 dark:hover:bg-slate-600 text-slate-700 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>topics.json importieren</span>
+                    </button>
+                    <input type="file" id="import-json-file" class="hidden" accept=".json" />
                     <!-- Erase Local Custom Edits -->
                     <button id="reset-edits-btn" class="w-full text-[11px] text-red-600 dark:text-red-400 hover:underline font-bold transition-all text-center block hidden py-1">
                         Änderungen zurücksetzen
@@ -306,7 +317,7 @@
             <div id="edit-tip-banner" class="hidden bg-indigo-50/50 dark:bg-indigo-950/25 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 flex items-center gap-3 shadow-sm">
                 <span class="text-indigo-500 text-lg">💡</span>
                 <p class="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
-                    <strong class="text-indigo-600 dark:text-indigo-400">Bearbeitungs-Tipp:</strong> Markieren Sie beliebigen Text in den bearbeitbaren Feldern, um das schwebende Menü anzuzeigen. Dort können Sie ausgewählte Abschnitte <strong class="font-extrabold">Fett</strong> machen oder mit den Farben <span class="text-yellow-600 dark:text-yellow-400 font-bold">Gelb</span>, <span class="text-orange-500 dark:text-orange-400 font-bold font-bold">Orange</span> und <span class="text-blue-500 dark:text-blue-400 font-bold font-bold font-bold">Blau</span> hervorheben.
+                    <strong class="text-indigo-600 dark:text-indigo-400">Bearbeitungs-Tipp:</strong> Markieren Sie beliebigen Text in den bearbeitbaren Feldern, um das schwebende Menü anzuzeigen. Dort können Sie ausgewählte Abschnitte <strong class="font-extrabold">Fett</strong> machen oder mit den Farben <span class="text-yellow-600 dark:text-yellow-400 font-bold font-bold font-bold font-bold">Gelb</span>, <span class="text-orange-500 dark:text-orange-400 font-bold font-bold font-bold font-bold font-bold font-bold">Orange</span> und <span class="text-blue-500 dark:text-blue-400 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold">Blau</span> hervorheben.
                 </p>
             </div>
 
@@ -678,12 +689,38 @@
             return temp.innerHTML;
         }
 
+        // Automatic translation executor using public translation front-ends
+        async function translateText(text, targetLang) {
+            if (!text || !text.trim()) return "";
+            try {
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data[0]) {
+                    let translated = "";
+                    data[0].forEach(item => {
+                        if (item && item[0]) {
+                            translated += item[0];
+                        }
+                    });
+                    return translated;
+                }
+                return "";
+            } catch (e) {
+                console.error("Translation API failure:", e);
+                return "";
+            }
+        }
+
         function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
             if (!element) return;
             element.contentEditable = "true";
             element.classList.add("border-b", "border-dashed", "border-indigo-400/50", "dark:border-indigo-500/50", "hover:bg-indigo-50/50", "dark:hover:bg-indigo-950/20", "transition-colors", "cursor-text", "focus:bg-transparent", "focus:outline-none");
-            element.addEventListener('blur', () => {
+            
+            element.addEventListener('blur', async () => {
                 let newVal = element.innerHTML.trim();
+                let plainText = deClassTextOnly(newVal);
+
                 if (isArray) {
                     if (subKey) {
                         if (!TOPICS_DATA[activeIdx][keyPath]) {
@@ -693,14 +730,65 @@
                             TOPICS_DATA[activeIdx][keyPath][index] = {};
                         }
                         TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
+
+                        // Trigger auto-translate if German block 'de' is modified
+                        if (subKey === 'de') {
+                            element.classList.add('opacity-40');
+                            const [translatedEn, translatedAr] = await Promise.all([
+                                translateText(plainText, 'en'),
+                                translateText(plainText, 'ar')
+                            ]);
+                            TOPICS_DATA[activeIdx][keyPath][index]['en'] = translatedEn;
+                            TOPICS_DATA[activeIdx][keyPath][index]['ar'] = translatedAr;
+                            element.classList.remove('opacity-40');
+                            renderActiveTopic();
+                        }
                     } else {
                         if (!TOPICS_DATA[activeIdx][keyPath]) {
                             TOPICS_DATA[activeIdx][keyPath] = [];
                         }
                         TOPICS_DATA[activeIdx][keyPath][index] = newVal;
+
+                        // Trigger auto-translate if array keyPath ends with _de
+                        if (keyPath.endsWith('_de')) {
+                            const baseKey = keyPath.replace('_de', '');
+                            const targetEnKey = baseKey + '_en';
+                            const targetArKey = baseKey + '_ar';
+                            
+                            element.classList.add('opacity-40');
+                            const [translatedEn, translatedAr] = await Promise.all([
+                                translateText(plainText, 'en'),
+                                translateText(plainText, 'ar')
+                            ]);
+                            
+                            if (!TOPICS_DATA[activeIdx][targetEnKey]) TOPICS_DATA[activeIdx][targetEnKey] = [];
+                            if (!TOPICS_DATA[activeIdx][targetArKey]) TOPICS_DATA[activeIdx][targetArKey] = [];
+                            
+                            TOPICS_DATA[activeIdx][targetEnKey][index] = translatedEn;
+                            TOPICS_DATA[activeIdx][targetArKey][index] = translatedAr;
+                            element.classList.remove('opacity-40');
+                            renderActiveTopic();
+                        }
                     }
                 } else {
                     TOPICS_DATA[activeIdx][keyPath] = newVal;
+
+                    // Trigger auto-translate if keyPath ends with _de
+                    if (keyPath.endsWith('_de')) {
+                        const baseKey = keyPath.replace('_de', '');
+                        const targetEnKey = baseKey + '_en';
+                        const targetArKey = baseKey + '_ar';
+
+                        element.classList.add('opacity-40');
+                        const [translatedEn, translatedAr] = await Promise.all([
+                            translateText(plainText, 'en'),
+                            translateText(plainText, 'ar')
+                        ]);
+                        TOPICS_DATA[activeIdx][targetEnKey] = translatedEn;
+                        TOPICS_DATA[activeIdx][targetArKey] = translatedAr;
+                        element.classList.remove('opacity-40');
+                        renderActiveTopic();
+                    }
                 }
                 saveEdits();
             });
@@ -1094,7 +1182,7 @@
             const speechText = blocks.join(". ");
 
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Stop active speaking runs to prevent queue issues
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(speechText);
                 utterance.lang = 'de-DE';
                 utterance.rate = 0.95; 
@@ -1103,6 +1191,71 @@
                 alert("Die Sprachausgabe wird von Ihrem Browser nicht unterstützt.");
             }
         }
+
+        // Action Trigger to Export modified database array to topics.json File
+        function exportTopicsJSON() {
+            if (TOPICS_DATA.length === 0) return;
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TOPICS_DATA, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "topics.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Bind Export Action
+        document.getElementById('export-json-btn').onclick = () => {
+            exportTopicsJSON();
+        };
+
+        // Bind Import Actions
+        const importBtn = document.getElementById('import-json-btn');
+        const fileInput = document.getElementById('import-json-file');
+
+        importBtn.onclick = () => {
+            fileInput.click();
+        };
+
+        fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData) && importedData.length > 0 && importedData[0].id !== undefined) {
+                        TOPICS_DATA = importedData;
+                        editedTopicIds = importedData.map(t => t.id);
+
+                        if (currentUser) {
+                            const batch = db.batch();
+                            const userRef = db.collection('users').doc(currentUser.uid).collection('edited_topics');
+                            importedData.forEach(topic => {
+                                const docRef = userRef.doc(topic.id.toString());
+                                batch.set(docRef, topic);
+                            });
+                            await batch.commit();
+                        } else {
+                            localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+                        }
+                        
+                        alert("Themen erfolgreich importiert!");
+                        showResetButton();
+                        renderSidebar();
+                        renderActiveTopic();
+                    } else {
+                        alert("Ungültiges Dateiformat. Bitte laden Sie eine korrekte topics.json-Datei hoch.");
+                    }
+                } catch (err) {
+                    console.error("Import failure:", err);
+                    alert("Fehler beim Lesen der Datei.");
+                }
+            };
+            reader.readAsText(file);
+        };
 
         document.getElementById('learned-toggle').onclick = () => {
             if (TOPICS_DATA.length === 0) return;
