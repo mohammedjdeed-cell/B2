@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
-    <!-- PWA Meta Tags & Modern B2 Icon -->
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,9 +18,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
     
-    <!-- Modern SVG Base64 Icon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzI1NjNFQiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzQwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMjQwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzI1NjNFQiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzQwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMjQwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
+    <!-- Modern SVG Base64 Icon (Speech Bubble with B2) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
 
     <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -56,26 +56,27 @@
             --radius-btn:    8px;
         }
 
+        /* Beautiful, balanced dark mode contrast */
         [data-theme="dark"] {
-            --bg-app:        #18181B; 
-            --bg-card:       #27272A; 
-            --bg-sidebar:    #18181B;
+            --bg-app:        #121214; 
+            --bg-card:       #18181B; 
+            --bg-sidebar:    #121214;
             --border:        rgba(255,255,255,0.08);
             --text-primary:  #E4E4E7; 
             --text-muted:    #A1A1AA; 
             --text-faint:    #52525B; 
             --accent:        #60A5FA; 
-            --accent-light:  rgba(96,165,250,0.15);
-            --success:       #4ADE80; 
-            --success-light: rgba(74,222,128,0.15);
+            --accent-light:  rgba(96,165,250,0.12);
+            --success:       #34D399; 
+            --success-light: rgba(52,211,153,0.12);
             --danger:        #F87171; 
-            --danger-light:  rgba(248,113,113,0.15);
+            --danger-light:  rgba(248,113,113,0.12);
             --amber:         #FBBF24; 
-            --amber-light:   rgba(251,191,36,0.15);
+            --amber-light:   rgba(251,191,36,0.12);
             --purple:        #A78BFA; 
-            --purple-light:  rgba(167,139,250,0.15);
-            --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
-            --shadow-md:     0 4px 8px rgba(0,0,0,0.6);
+            --purple-light:  rgba(167,139,250,0.12);
+            --shadow-sm:     0 1px 2px rgba(0,0,0,0.4);
+            --shadow-md:     0 4px 12px rgba(0,0,0,0.5);
         }
 
         body {
@@ -90,22 +91,25 @@
             text-align: right;
         }
 
+        /* Pre-highlighted Connectors Styling */
         .highlight {
             background-color: #FEF08A;
             color: #854D0E;
             font-weight: 700;
-            padding: 1px 2px;
+            padding: 1px 4px;
             border-radius: 4px;
             border-bottom: 2px solid #FACC15;
             display: inline-block;
         }
         
+        /* Balanced pre-highlighted phrases in dark mode */
         [data-theme="dark"] .highlight {
             background-color: rgba(250, 204, 21, 0.15); 
             color: #FDE047;
             border-bottom: 1.5px solid rgba(250, 204, 21, 0.4);
         }
 
+        /* Custom drawn highlights via the toolbar */
         .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         .hl-orange { background-color: rgba(249, 115, 22, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         .hl-blue   { background-color: rgba(59, 130, 246, 0.4) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
@@ -123,6 +127,7 @@
             margin: 0;
         }
 
+        /* Sidebar Toggle CSS */
         #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
         .sidebar-collapsed { width: 5.5rem !important; }
         .sidebar-collapsed .hide-on-collapse { display: none !important; }
@@ -164,8 +169,8 @@
 </head>
 <body class="h-full flex flex-col overflow-x-hidden">
 
-    <!-- MASTER BAR -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 z-40 shadow-sm transition-colors duration-200">
+    <!-- MASTER BAR (No longer sticky so it scrolls out of view) -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 relative z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -435,7 +440,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
-                        <button id="btn-auto-translate" onclick="autoTranslateBlock()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate (Free API)</button>
+                        <button id="btn-auto-translate" onclick="autoTranslateBlock()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate</button>
                     </div>
                     <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
                 </div>
@@ -680,6 +685,7 @@
             if (!container) return;
             container.innerHTML = "";
             
+            // Get all voices
             let voices = window.speechSynthesis.getVoices();
             availableGermanVoices = voices.filter(v => v.lang.startsWith('de'));
             
@@ -689,14 +695,14 @@
                 return;
             }
 
-            // Prioritize Natural, Premium, and Online voices
+            // Algorithm to sort voices: Prioritize Natural, Premium, Online over basic desktop voices
             availableGermanVoices.sort((a, b) => {
                 const getScore = (v) => {
                     let score = 0;
                     let name = v.name.toLowerCase();
                     if (name.includes('natural') || name.includes('premium')) score += 100;
                     if (name.includes('online')) score += 50;
-                    if (name.includes('google')) score += 30; 
+                    if (name.includes('google')) score += 30; // Google Android TTS is decent
                     if (name.includes('microsoft')) score += 10;
                     return score;
                 };
@@ -735,14 +741,15 @@
             });
         }
 
-        function openVoicePicker(event, blockKey, textToSpeak) {
+        function openVoicePicker(event, blockKey) {
             event.stopPropagation();
+            const triggerBtn = event.currentTarget; // STORE THIS EXPLICITLY TO FIX THE NULL CRASH!
             const panel = document.getElementById('voice-picker-panel');
             
             panel.classList.remove('hidden');
             panel.style.visibility = 'hidden';
             
-            const rect = event.currentTarget.getBoundingClientRect();
+            const rect = triggerBtn.getBoundingClientRect();
             const popoverWidth = panel.offsetWidth || 256;
             const popoverHeight = panel.offsetHeight || 285;
 
@@ -761,12 +768,16 @@
 
             currentlyPlayingBlockKey = blockKey;
             
+            // Get clean text strictly from data-attribute to avoid parsing issues
+            const encodedText = triggerBtn.getAttribute('data-text') || "";
+            let textToSpeak = decodeURIComponent(encodedText);
             const tmp = document.createElement("div");
             tmp.innerHTML = textToSpeak;
             const cleanText = tmp.textContent || tmp.innerText || "";
 
+            // Use the stored reference 'triggerBtn'
             document.getElementById('voice-picker-play').onclick = () => {
-                playBlockAudio(cleanText, event.currentTarget);
+                playBlockAudio(cleanText, triggerBtn);
             };
             
             document.getElementById('voice-picker-stop').onclick = () => {
@@ -782,7 +793,6 @@
 
         function testVoice(event, voiceName) {
             event.stopPropagation();
-            // Important: Call cancel, then speak immediately in the same call stack for mobile
             window.speechSynthesis.cancel();
             
             const ut = new SpeechSynthesisUtterance("Das ist ein Test für die Sprachausgabe.");
@@ -809,15 +819,19 @@
             const savedVoiceName = localStorage.getItem('b2_selected_voice');
             let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
             
+            // Fallback to the highest scored voice in the array (Natural/Premium)
             if (!voiceObj && availableGermanVoices.length > 0) {
-                voiceObj = availableGermanVoices.find(v => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('google')) || availableGermanVoices[0];
+                voiceObj = availableGermanVoices[0];
             }
             if (voiceObj) utterance.voice = voiceObj;
 
+            // Fix garbage collection bug
             window.currentUtterance = utterance;
 
-            buttonEl.classList.add('animate-pulse', 'text-rose-600');
-            activeSpeakingButton = buttonEl;
+            if (buttonEl) {
+                buttonEl.classList.add('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = buttonEl;
+            }
 
             utterance.onend = () => {
                 if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
@@ -1429,6 +1443,8 @@
 
         function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category, rawPath, isArray = false, arrayIdx = null, subKey = null) {
             const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
+            const encodedText = encodeURIComponent(textToSpeak || "");
+            
             return `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
                     <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
@@ -1437,7 +1453,7 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="openVoicePicker(event, '${blockKey}', \`${textToSpeak.replace(/"/g, '&quot;')}\`)" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
+                            <button data-text="${encodedText}" onclick="openVoicePicker(event, '${blockKey}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
                             <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
                                 ✏️ Bearbeiten
                             </button>
