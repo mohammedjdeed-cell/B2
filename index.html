@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
-    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <link class="apple-touch-icon" href="./icons/icon-192.png">
 
     <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -268,7 +268,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <!-- WORKSPACE PANEL (Firebase Synchronization Container) -->
+            <!-- WORKSPACE PANEL -->
             <div id="workspace-panel" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)]">
                 <!-- Logged Out Module -->
                 <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -399,7 +399,8 @@
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
-        <div id="voice-list-container" class="max-h-28 overflow-y-auto space-y-1 text-[11px] custom-scrollbar">
+        <!-- Set max-height and custom spacing so Microsoft system voice rows are never cut off or half shown -->
+        <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
             <!-- Programmatic voices selection -->
         </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
@@ -1274,8 +1275,13 @@
             const rect = event.currentTarget.getBoundingClientRect();
             panel.classList.remove('hidden');
 
-            // Float modal adjacent to speaker
-            const top = rect.bottom + window.scrollY + 8;
+            // Intelligently calculate coordinates: If rendering below goes off-screen, render above the button [Viewport-Aware Positioning]
+            const popoverHeight = 250;
+            let top = rect.bottom + window.scrollY + 8;
+            if (rect.bottom + popoverHeight > window.innerHeight) {
+                top = rect.top + window.scrollY - popoverHeight - 8;
+            }
+
             const left = Math.max(16, Math.min(window.innerWidth - 270, rect.left + window.scrollX - 110));
             panel.style.top = `${top}px`;
             panel.style.left = `${left}px`;
@@ -1542,7 +1548,6 @@
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
             const erfahrungCard = document.createElement('div');
-            keywordsCard = null; // garbage collect
             erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category, 'pers_erfahrung_de');
             container.appendChild(erfahrungCard);
 
@@ -1647,7 +1652,7 @@
         function initMindmap() {
             if (TOPICS_DATA.length === 0) return;
             
-            // Fix hoisting / access-before-initialization crash: Declare node index tracker FIRST
+            // Declare node index tracker first to prevent hoisting crashes
             let iCount = 0;
 
             const svg = d3.select("#mindmap-svg");
@@ -1670,7 +1675,8 @@
 
             svg.call(zoom);
 
-            const treemap = d3.tree().nodeSize([45, 240]);
+            // Refine nodeSize to render compact branch nodes without collisions (16px height spacing is extremely compact and avoids overlaps)
+            const treemap = d3.tree().nodeSize([16, 160]);
             
             let root = d3.hierarchy(rawData, d => d.children);
             root.x0 = height / 2;
@@ -1696,7 +1702,7 @@
                 const nodes = treeData.descendants();
                 const links = treeData.links();
 
-                nodes.forEach(d => { d.y = d.depth * 220; });
+                nodes.forEach(d => { d.y = d.depth * 170; });
 
                 const node = gContainer.selectAll('g.mindmap-node')
                     .data(nodes, d => d.id || (d.id = ++iCount));
@@ -1706,70 +1712,55 @@
                     .attr('transform', d => `translate(${source.y0},${source.x0})`)
                     .on('click', clickNode);
 
-                // Add shapes based on depth level
+                // Add shapes based on depth level: Using clean, lightweight minimalistic labels without box overlays
                 nodeEnter.each(function(d) {
                     const el = d3.select(this);
                     
                     if (d.data.priority === 'root') {
                         el.append('circle')
-                            .attr('r', 16)
+                            .attr('r', 8)
                             .attr('fill', 'var(--accent)')
                             .attr('stroke', '#ffffff')
                             .attr('stroke-width', 2);
                         
                         el.append('text')
                             .attr('dy', '.35em')
-                            .attr('x', -24)
+                            .attr('x', -14)
                             .attr('text-anchor', 'end')
                             .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '10px')
+                            .attr('font-size', '9px')
                             .attr('font-weight', 'bold')
                             .text(d.data.name);
                     } else if (d.data.priority === 'category') {
                         el.append('circle')
-                            .attr('r', 12)
+                            .attr('r', 6)
                             .attr('fill', d.data.color)
                             .attr('stroke', '#ffffff')
                             .attr('stroke-width', 1.5);
                         
                         el.append('text')
                             .attr('dy', '.35em')
-                            .attr('x', d => d.children || d._children ? -18 : 18)
+                            .attr('x', d => d.children || d._children ? -12 : 12)
                             .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '9px')
-                            .attr('font-weight', 'bold')
-                            .text(d.data.name);
-                    } else {
-                        // Leaf topic node
-                        const textW = Math.max(120, d.data.name.length * 6);
-                        
-                        el.append('rect')
-                            .attr('x', 10)
-                            .attr('y', -16)
-                            .attr('width', textW)
-                            .attr('height', 32)
-                            .attr('rx', 6)
-                            .attr('fill', 'var(--bg-card)')
-                            .attr('stroke', d.parent.data.color || 'var(--border)')
-                            .attr('stroke-width', 1.5);
-                        
-                        el.append('text')
-                            .attr('dy', '-2px')
-                            .attr('x', 20)
-                            .attr('text-anchor', 'start')
                             .attr('fill', 'var(--text-primary)')
                             .attr('font-size', '8px')
                             .attr('font-weight', 'bold')
-                            .text(d.data.name.substring(0, 22) + (d.data.name.length > 22 ? '...' : ''));
-
+                            .text(d.data.name);
+                    } else {
+                        // Leaf topic node - Minimalistic tiny color dots with elegant flat text
+                        el.append('circle')
+                            .attr('r', 3)
+                            .attr('fill', d.parent.data.color || 'var(--accent)')
+                            .attr('stroke', '#ffffff')
+                            .attr('stroke-width', 1);
+                        
                         el.append('text')
-                            .attr('dy', '9px')
-                            .attr('x', 20)
+                            .attr('dy', '.35em')
+                            .attr('x', 10)
                             .attr('text-anchor', 'start')
-                            .attr('fill', 'var(--text-muted)')
-                            .attr('font-size', '7px')
-                            .text(d.data.detail ? d.data.detail.substring(0, 26) + '...' : '');
+                            .attr('fill', 'var(--text-primary)')
+                            .attr('font-size', '8px')
+                            .text(d.data.name.length > 25 ? d.data.name.substring(0, 23) + '...' : d.data.name);
                     }
                 });
 
@@ -1781,7 +1772,7 @@
                 nodeUpdate.select('circle')
                     .attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)'))
                     .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff')
-                    .attr('stroke-width', d => d._children ? 3 : 2);
+                    .attr('stroke-width', d => d._children ? 2 : 1);
 
                 const nodeExit = node.exit().transition().duration(250)
                     .attr('transform', d => `translate(${source.y},${source.x})`)
@@ -1795,7 +1786,7 @@
                     .attr('fill', 'none')
                     .attr('stroke', 'var(--border)')
                     .attr('stroke-opacity', 0.4)
-                    .attr('stroke-width', 1.5)
+                    .attr('stroke-width', 1)
                     .attr('d', d => {
                         const o = {x: source.x0, y: source.y0};
                         return diagonal(o, o);
@@ -1806,7 +1797,7 @@
                 linkUpdate.transition().duration(250)
                     .attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)')
                     .attr('stroke-opacity', 0.6)
-                    .attr('stroke-width', 2)
+                    .attr('stroke-width', 1)
                     .attr('d', d => diagonal(d.source, d.target));
 
                 const linkExit = link.exit().transition().duration(250)
@@ -1822,7 +1813,7 @@
                 });
 
                 function diagonal(s, d) {
-                    const startY = s.y + (s.data.priority === undefined ? 130 : 0);
+                    const startY = s.y;
                     const endY = d.y;
                     return `M ${startY} ${s.x}
                             C ${(startY + endY) / 2} ${s.x},
@@ -1831,7 +1822,7 @@
                 }
 
                 function clickNode(event, d) {
-                    if (d.data.id) {
+                    if (d.data.idx !== undefined) {
                         activeIdx = d.data.idx;
                         localStorage.setItem('b2_active_idx', activeIdx);
                         renderSidebar();
@@ -1851,7 +1842,7 @@
             }
 
             // Align mindmap to fit viewport
-            svg.call(zoom.transform, d3.zoomIdentity.translate(margin.left, height / 2).scale(0.8));
+            svg.call(zoom.transform, d3.zoomIdentity.translate(margin.left, height / 2).scale(0.85));
         }
 
         // EXPORT THE SYSTEM DATABASE AS topics.json
