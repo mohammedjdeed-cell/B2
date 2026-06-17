@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
     
+    <!-- Google Fonts Import for Inter & Noto Sans Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
@@ -17,12 +19,13 @@
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
     <link class="apple-touch-icon" href="./icons/icon-192.png">
 
+    <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
     <script>
-        tailwind.config = { darkMode: 'class' }
+        tailwind.config = {
+            darkMode: 'class'
+        }
     </script>
     
     <style>
@@ -47,6 +50,7 @@
             --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
             --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
             --radius-card:   14px;
+            --radius-btn:    8px;
         }
 
         [data-theme="dark"] {
@@ -72,15 +76,30 @@
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             background-color: var(--bg-app);
             color: var(--text-primary);
         }
 
         [dir="rtl"], [lang="ar"], .ar-text {
-            font-family: 'Noto Sans Arabic', system-ui, sans-serif;
+            font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
             direction: rtl;
             text-align: right;
+        }
+
+        .highlight {
+            background-color: #FEF08A;
+            color: #854D0E;
+            font-weight: 700;
+            padding: 1px 2px;
+            border-radius: 4px;
+            border-bottom: 2px solid #FACC15;
+            display: inline-block;
+        }
+        [data-theme="dark"] .highlight {
+            background-color: #CA8A04;
+            color: #FEF9C3;
+            border-bottom-color: #EAB308;
         }
 
         .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
@@ -100,32 +119,56 @@
             margin: 0;
         }
 
+        .topic-list-item {
+            min-height: 72px;
+        }
+        .topic-list-item .topic-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: normal;
+            font-size: 13px;
+            line-height: 1.4;
+            min-height: 36px;
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
+
+        .mindmap-node rect {
+            transition: all 0.2s ease;
+        }
+        .mindmap-node:hover rect {
+            fill: var(--accent-light);
+            filter: brightness(0.98);
+        }
     </style>
     
+    <!-- Firebase SDK compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="h-full flex flex-col overflow-hidden relative">
+<body class="h-full flex flex-col overflow-hidden">
 
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
+    <!-- MASTER BAR -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
-                <span class="text-sm font-black">B2</span>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             </div>
             <div>
-                <h1 class="text-sm md:text-lg font-bold text-[var(--text-primary)]">TELC Diskussionstrainer</h1>
+                <h1 class="text-lg font-bold text-[var(--text-primary)]">TELC B2 Diskussionstrainer</h1>
+                <p class="text-xs text-[var(--text-muted)]">Interaktive Vorbereitung & Strukturierte Analyse (1 – 52)</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] mr-2">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Lernen</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hidden md:block">🧠 Mindmap</button>
+        <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
             </div>
 
             <button id="theme-toggle" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors">
@@ -133,12 +176,8 @@
                 <svg id="theme-toggle-moon-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
 
-            <button onclick="toggleSidebar()" class="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center gap-2 font-bold text-xs">
-                <span>📚</span> <span class="hidden md:inline">Themenmenü</span>
-            </button>
-
             <div class="relative inline-block text-left">
-                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center">
+                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
                 <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
@@ -160,166 +199,452 @@
                     <button id="export-json-btn" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
                         <span>📤</span><span>JSON exportieren</span>
                     </button>
-                    <button onclick="generatePDFBook()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
-                        <span>📕</span><span>Als PDF Buch exportieren</span>
+                    <hr class="border-[var(--border)] my-1" />
+                    <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
+                        <span>🧹</span><span>Änderungen zurücksetzen</span>
+                    </button>
+                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center">
+                        <span>📲</span><span>App installieren</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden relative w-full">
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 w-full transition-all duration-300">
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Dein Fortschritt</span>
+                    <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
+                </div>
+                <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
+                    <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
+                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]">Alle</button>
+                    <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Gelernt</button>
+                    <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Offen</button>
+                </div>
+            </div>
+
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex flex-col gap-2">
+                <h3 class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Prüfungsthemen</h3>
+                <div class="relative">
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all shadow-inner" />
+                    <svg class="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
+                <!-- Programmatic list rendering -->
+            </nav>
+
+            <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2">
+                <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    ↩️ Zurück
+                </button>
+                <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    ↪️ Vor
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+            <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+
+            <!-- WORKSPACE PANEL -->
             <div id="workspace-panel" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)]">
+                <!-- Logged Out Module -->
                 <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-[var(--amber)] animate-pulse"></span>
                             Offline-Schnittstelle aktiv
                         </h3>
-                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Änderungen werden lokal gesichert.</p>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Änderungen werden lokal gesichert. Zur Cloud-Synchronisierung bitte einloggen.</p>
                     </div>
-                    <div class="flex flex-wrap gap-2 items-center w-full md:w-auto">
-                        <select id="user-select" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] flex-1 md:flex-none">
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select id="user-select" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)]">
                             <option value="mohammed">Mohammed Jdeed</option>
                             <option value="mai">Mai Hasan</option>
                         </select>
-                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--text-primary)] flex-1 md:w-28">
-                        <button id="btn-login" class="text-xs bg-[var(--accent)] text-white font-bold px-3 py-1.5 rounded-lg hover:opacity-90">Laden</button>
+                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--text-primary)] w-28">
+                        <button id="btn-login" class="text-xs bg-[var(--accent)] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-[var(--accent)]/95 transition-all">Laden</button>
+                        <button id="btn-signup" class="text-xs bg-[var(--success)] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-[var(--success)]/95 transition-all">Konto</button>
                     </div>
                 </div>
+                <!-- Logged In Module -->
                 <div id="auth-logged-in" class="hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
-                        <div class="bg-[var(--success-light)] border border-[var(--success)]/20 p-2 rounded-xl text-[var(--success)]">✓</div>
+                        <div class="bg-[var(--success-light)] border border-[var(--success)]/20 p-2 rounded-xl text-[var(--success)]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
                         <div>
-                            <h3 class="text-xs font-bold text-[var(--text-primary)]">Cloud-Synchronisierung aktiv</h3>
+                            <h3 class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">Cloud-Synchronisierung aktiv</h3>
                             <p class="text-[10px] text-[var(--text-muted)] mt-0.5" id="user-display-name">Konto: --</p>
                         </div>
                     </div>
-                    <button id="btn-logout" class="text-xs bg-[var(--bg-app)] hover:bg-[var(--border)] text-[var(--text-primary)] font-bold px-3 py-1.5 rounded-lg border border-[var(--border)]">Abmelden</button>
+                    <button id="btn-logout" class="text-xs bg-[var(--bg-app)] hover:bg-[var(--border)] text-[var(--text-primary)] font-bold px-3 py-1.5 rounded-lg border border-[var(--border)] transition-colors">Abmelden</button>
                 </div>
             </div>
 
-            <div id="dashboard-tab-section" class="space-y-6">
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
-                        <div>
-                            <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/10 rounded uppercase tracking-wider">Thema --</span>
-                            <h2 id="active-topic-title-de" class="text-lg font-bold text-[var(--text-primary)] mt-1">Lade Diskussionsthema...</h2>
-                            <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading discussion topic...</h3>
-                        </div>
+            <!-- CONTROLS & SUBBAR -->
+            <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
+                    <div>
+                        <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/10 rounded uppercase tracking-wider">Thema --</span>
+                        <h2 id="active-topic-title-de" class="text-lg font-bold text-[var(--text-primary)] mt-1">Lade Diskussionsthema...</h2>
+                        <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading discussion topic...</h3>
                     </div>
+                </div>
 
-                    <div class="flex flex-wrap gap-2 items-center">
+                <div class="flex flex-wrap gap-2 items-center">
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Anzeige</span>
                         <select id="lang-view" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
                             <option value="both">Bilingual (DE & EN)</option>
                             <option value="de_ar">Bilingual (DE & AR)</option>
+                            <option value="all">Trilingual (DE, EN & AR)</option>
                             <option value="de">Nur Deutsch (Prüfungsmodus)</option>
+                            <option value="en">Nur Englisch</option>
+                            <option value="ar">Nur Arabisch</option>
                         </select>
-                        <button id="learned-toggle" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 shadow-sm">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">Lernzustand</span>
+                        <button id="learned-toggle" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm">
                             Als gelernt markieren
                         </button>
                     </div>
+                    
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">Aktion</span>
+                        <button onclick="clearAllHighlightsForTopic()" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm flex items-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
+                            🧹 Zurücksetzen
+                        </button>
+                    </div>
                 </div>
+            </div>
 
+            <!-- TAB 1: DASHBOARD CONTAINER -->
+            <div id="dashboard-tab-section" class="space-y-6">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus:</strong> Text markieren für Farbe/Fett/Einkreisen. Stiftsymbol für inhaltliche Änderungen.
+                        <strong>Bearbeitungs-Modus:</strong> Markieren Sie beliebigen Text in den Cards, um die Textformatierung (Fett, Farbe oder Einkreisen) zu starten. Benutzen Sie das Stiftsymbol (✏️) an den Blöcken für strukturelle Änderungen.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    </div>
+                    <!-- Cards layout anchor -->
+                </div>
             </div>
 
-            <section id="redemittel-tab-section" class="hidden space-y-6">
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
-                    <h2 class="text-lg font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-3 mb-4 flex items-center gap-2">
-                        <span>🗣️</span> B2 Redemittel & Strukturen
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="redemittel-container">
-                        </div>
-                </div>
-            </section>
-
+            <!-- TAB 2: MINDMAP CONTAINER -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
-                <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-4">
-                    <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Themen-Mindmap</h3>
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
+                    <div>
+                        <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Mindmap — Alle 52 Themen nach Kategorien</h3>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Klicken Sie direkt auf die Themenblätter, um das Thema im Dashboard zu öffnen.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-[9px] font-bold">
+                        <span class="px-2 py-1 rounded bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400">🟢 GESUNDHEIT</span>
+                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-400">🔵 ARBEIT</span>
+                        <span class="px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-400">🟣 MOBILITÄT</span>
+                        <span class="px-2 py-1 rounded bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-400">🔴 POLITIK</span>
+                        <span class="px-2 py-1 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400">🟡 TECHNOLOGIE</span>
+                    </div>
                 </div>
                 <div class="flex-1 border border-[var(--border)] rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900 relative min-h-[350px]">
                     <svg id="mindmap-svg" class="w-full h-full cursor-grab active:cursor-grabbing"></svg>
                 </div>
             </section>
         </main>
-
-        <aside id="sidebar" class="absolute top-0 right-0 h-full z-30 w-80 bg-[var(--bg-sidebar)] border-l border-[var(--border)] flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-[var(--text-primary)]">Themenübersicht</span>
-                    <span id="progress-text" class="text-[10px] bg-[var(--accent-light)] text-[var(--accent)] px-2 py-0.5 rounded-full font-bold">0 / 52</span>
-                </div>
-                <button onclick="toggleSidebar()" class="p-1 hover:bg-[var(--border)] rounded text-[var(--text-muted)]">✕</button>
-            </div>
-            
-            <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)]">
-                <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full px-3 py-2 text-xs bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none" />
-                <div class="grid grid-cols-3 gap-1 mt-2 text-[10px] font-bold">
-                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--accent-light)] text-[var(--accent)]">Alle</button>
-                    <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Gelernt</button>
-                    <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Offen</button>
-                </div>
-            </div>
-
-            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                </nav>
-        </aside>
     </div>
 
+    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 border border-yellow-400"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-5 h-5 rounded-full bg-orange-400/40 border border-orange-400"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 border border-blue-400"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="w-5 h-5 rounded-full bg-transparent border-2 border-red-600 flex items-center justify-center text-[10px] text-red-600 font-bold">○</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-105 border border-yellow-400" title="Gelb"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-5 h-5 rounded-full bg-orange-400/40 hover:scale-105 border border-orange-400" title="Orange"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-105 border border-blue-400" title="Blau"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="w-5 h-5 rounded-full bg-transparent hover:scale-105 border-2 border-red-600 flex items-center justify-center text-[10px] text-red-600 font-bold" title="Einkreisen">○</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg">✕</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all" title="Formatierung aufheben">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
     </div>
 
-    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
-                <h3 class="text-sm font-bold text-[var(--text-primary)]">✏️ Block bearbeiten</h3>
-                <button onclick="closeBlockEditor()" class="text-[var(--text-muted)] font-bold">✕</button>
+    <!-- DYNAMIC PER-BLOCK VOICE PICKER FLOATING POPOVER -->
+    <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
+            <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
+            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
+        </div>
+        <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
+            <!-- Programmatic layout execution -->
+        </div>
+        <div class="space-y-2 pt-2 border-t border-[var(--border)]">
+            <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
+                <select id="voice-picker-speed" class="text-[11px] bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none">
+                    <option value="0.8">Langsam (0.8x)</option>
+                    <option value="1.0" selected>Normal (1.0x)</option>
+                    <option value="1.2">Schnell (1.2x)</option>
+                </select>
             </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Deutsch (DE)</label>
-                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
-                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
-                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none font-arabic"></textarea>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
-                <button onclick="closeBlockEditor()" class="px-3 py-1.5 text-xs font-bold rounded-lg border text-[var(--text-primary)]">Abbrechen</button>
-                <button onclick="saveBlockEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white">Sichern</button>
+            <div class="flex gap-2">
+                <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white font-bold text-xs shadow-sm shadow-[var(--accent)]/20">Vorlesen</button>
+                <button id="voice-picker-stop" class="flex-1 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs">Stopp</button>
             </div>
         </div>
     </div>
 
+    <!-- ADVANCED BLOCK CONTENT EDITOR MODAL -->
+    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
+            <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">✏️</span>
+                    <h3 class="text-sm font-bold text-[var(--text-primary)]">Block bearbeiten</h3>
+                </div>
+                <button onclick="closeBlockEditor()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Deutsch (DE)</label>
+                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-zinc-400 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
+                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-zinc-400 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
+                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-zinc-400 focus:outline-none font-arabic"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeBlockEditor()" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all">Abbrechen</button>
+                <button onclick="saveBlockEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-[var(--bg-card)] hover:opacity-90 transition-all">Sichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP STATE ENGINE -->
     <script>
-        // 1. Dark Mode Logic
+        const TOPIC_ICONS = {
+            1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
+            9: "🏫", 10: "🪙", 11: "🏡", 12: "⚖️", 13: "🎨", 14: "👔", 15: "📱", 16: "📺", 
+            17: "🔌", 18: "🦷", 19: "📚", 20: "🍷", 21: "🩸", 22: "💻", 23: "🗳️", 24: "✍️", 
+            25: "📝", 26: "💉", 27: "😄", 28: "🧪", 29: "🍕", 30: "🌃", 31: "🔍", 32: "🇪🇺", 
+            33: "🗳️", 34: "🏃", 35: "⏱️", 36: "🇬🇧", 37: "🏆", 38: "🎓", 39: "🚌", 40: "🧪", 
+            41: "🗣️", 42: "🧘", 43: "🐷", 44: "🔌", 45: "💳", 46: "🛍️", 47: "💸", 48: "📺", 
+            49: "🍳", 50: "🏫", 51: "🐭", 52: "🐶"
+        };
+
+        const CONNECTORS = [
+            "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
+            "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
+            "Vielleicht können wir uns darauf einigen", "Zusammenfassend lässt sich sagen", 
+            "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
+        ];
+
+        const TOPIC_CATEGORIES_LOOKUP = {
+            1: 'Freizeit & Gesundheit', 2: 'Bildung & Technologie', 3: 'Gesellschaft & Politik',
+            4: 'Freizeit & Gesundheit', 5: 'Freizeit & Gesundheit', 6: 'Umwelt & Mobilität',
+            7: 'Arbeit & Karriere', 8: 'Umwelt & Mobilität', 9: 'Bildung & Technologie',
+            10: 'Arbeit & Karriere', 11: 'Umwelt & Mobilität', 12: 'Gesellschaft & Politik',
+            13: 'Freizeit & Gesundheit', 14: 'Bildung & Technologie', 15: 'Bildung & Technologie',
+            16: 'Bildung & Technologie', 17: 'Bildung & Technologie', 18: 'Freizeit & Gesundheit',
+            19: 'Bildung & Technologie', 20: 'Freizeit & Gesundheit', 21: 'Freizeit & Gesundheit',
+            22: 'Bildung & Technologie', 23: 'Gesellschaft & Politik', 24: 'Bildung & Technologie',
+            25: 'Bildung & Technologie', 26: 'Freizeit & Gesundheit', 27: 'Freizeit & Gesundheit',
+            28: 'Freizeit & Gesundheit', 29: 'Freizeit & Gesundheit', 30: 'Gesellschaft & Politik',
+            31: 'Gesellschaft & Politik', 32: 'Gesellschaft & Politik', 33: 'Gesellschaft & Politik',
+            34: 'Freizeit & Gesundheit', 35: 'Arbeit & Karriere', 36: 'Arbeit & Karriere',
+            37: 'Arbeit & Karriere', 38: 'Bildung & Technologie', 39: 'Bildung & Technologie',
+            40: 'Bildung & Technologie', 41: 'Bildung & Technologie', 42: 'Arbeit & Karriere',
+            43: 'Gesellschaft & Politik', 44: 'Bildung & Technologie', 45: 'Bildung & Technologie',
+            46: 'Umwelt & Mobilität', 47: 'Gesellschaft & Politik', 48: 'Bildung & Technologie',
+            49: 'Gesellschaft & Politik', 50: 'Bildung & Technologie', 51: 'Gesellschaft & Politik',
+            52: 'Gesellschaft & Politik'
+        };
+
+        const CATEGORY_SVGS = {
+            'Freizeit & Gesundheit': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><path d="M14 20c2-4 6-6 6-6s4 2 6 6" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="20" r="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M55 20h10M60 15v10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Arbeit & Karriere': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="24" height="18" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M16 16h8M16 20h6M16 24h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/><path d="M48 28V16l10-4v16" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="22" width="4" height="6" fill="#7C3AED"/></svg>`,
+            'Umwelt & Mobilität': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><path d="M10 28c0-8 6-16 14-16s14 8 14 16" stroke="#16A34A" stroke-width="1.5" fill="none"/><circle cx="24" cy="18" r="4" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><rect x="45" y="20" width="24" height="10" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><circle cx="50" cy="32" r="3" fill="#2563EB"/><circle cx="65" cy="32" r="3" fill="#2563EB"/></svg>`,
+            'Gesellschaft & Politik': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="12" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/><path d="M14 24c0-4 2-8 6-8s6 4 6 8" fill="#7C3AED" opacity="0.3"/><circle cx="20" cy="16" r="3" fill="#7C3AED"/><path d="M48 28l8-12 8 12" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 28h8" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+            authDomain: "b2telc-6e061.firebaseapp.com",
+            databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "b2telc-6e061",
+            storageBucket: "b2telc-6e061.firebasestorage.app",
+            messagingSenderId: "593882455085",
+            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+            measurementId: "G-SPHLVHRL6K"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let TOPICS_DATA = [];
+        window.TOPICS_DATA = [];
+        let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
+        let showHighlights = true;
+        let activeView = "both";
+        let isEditMode = false;
+        let activeTab = "dashboard";
+        let currentFilter = "all";
+        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
+        let currentUser = null;
+        let editedTopicIds = [];
+        let activeEditBlockContext = null;
+
+        let undoStack = [];
+        let redoStack = [];
+
+        function pushToHistory() {
+            if (undoStack.length > 50) {
+                undoStack.shift();
+            }
+            const stateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            undoStack.push(JSON.stringify(stateSnapshot));
+            redoStack = []; 
+        }
+
+        function undo() {
+            if (undoStack.length === 0) {
+                alert("Keine weiteren Änderungen zum Rückgängigmachen!");
+                return;
+            }
+            const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            redoStack.push(JSON.stringify(currentStateSnapshot));
+            
+            const prevStateSnapshot = JSON.parse(undoStack.pop());
+            TOPICS_DATA = prevStateSnapshot.topics;
+            window.TOPICS_DATA = TOPICS_DATA;
+            highlightsStore = prevStateSnapshot.highlights;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            
+            saveEditsSilent();
+            renderSidebar();
+            renderActiveTopic();
+        }
+
+        function redo() {
+            if (redoStack.length === 0) {
+                alert("Keine Änderungen zum Wiederholen!");
+                return;
+            }
+            const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            undoStack.push(JSON.stringify(currentStateSnapshot));
+            
+            const nextStateSnapshot = JSON.parse(redoStack.pop());
+            TOPICS_DATA = nextStateSnapshot.topics;
+            window.TOPICS_DATA = TOPICS_DATA;
+            highlightsStore = nextStateSnapshot.highlights;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            
+            saveEditsSilent();
+            renderSidebar();
+            renderActiveTopic();
+        }
+
+        async function saveEditsSilent() {
+            if (currentUser) {
+                try {
+                    const activeTopic = TOPICS_DATA[activeIdx];
+                    await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
+                } catch(e) {
+                    console.error("Fehler bei der Cloud-Synchronisation:", e);
+                }
+            } else {
+                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                undo();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        function toggleMenuDropdown(event) {
+            event.stopPropagation();
+            const content = document.getElementById('menu-dropdown-content');
+            content.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const content = document.getElementById('menu-dropdown-content');
+            if (content && !content.classList.contains('hidden') && !e.target.closest('#menu-dropdown-btn') && !e.target.closest('#menu-dropdown-content')) {
+                content.classList.add('hidden');
+            }
+        });
+
+        function saveHighlight(topicId, blockKey, htmlContent) {
+            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+            highlightsStore[topicId][blockKey] = htmlContent;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+        }
+
+        function getHighlight(topicId, blockKey) {
+            return highlightsStore[topicId]?.[blockKey] || null;
+        }
+
+        function clearAllHighlightsForTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen und Einkreisungen für dieses Thema unwiderruflich löschen?")) {
+                if (highlightsStore[topicId]) {
+                    delete highlightsStore[topicId];
+                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                    renderActiveTopic();
+                }
+            }
+        }
+
+        let availableGermanVoices = [];
+        let activeSpeakingButton = null;
+        let currentlyPlayingBlockKey = null;
+
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun-icon');
         const moonIcon = document.getElementById('theme-toggle-moon-icon');
-        let isDark = localStorage.getItem('theme_mode') === 'dark' || (!('theme_mode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        let isDark = localStorage.getItem('theme_mode_1_52') === 'dark' || 
+                     (!('theme_mode_1_52' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
         function applyTheme() {
             const rootEl = document.documentElement;
@@ -335,110 +660,145 @@
                 moonIcon.classList.remove('hidden');
             }
         }
+
         themeToggle.onclick = () => {
             isDark = !isDark;
-            localStorage.setItem('theme_mode', isDark ? 'dark' : 'light');
+            localStorage.setItem('theme_mode_1_52', isDark ? 'dark' : 'light');
             applyTheme();
+            renderSidebar();
+            if (activeTab === 'dashboard') renderActiveTopic();
+            else initMindmap();
         };
+
         applyTheme();
 
-        // 2. Data & State Initialization
-        const REDEMITTEL_DATA = {
-            "Einleitung": ["Das Thema ... ist heutzutage sehr aktuell und wird oft diskutiert.", "In dem vorliegenden Text geht es um die Frage, ob ...", "Ein wichtiges Thema in der heutigen Gesellschaft ist ..."],
-            "Eigene Meinung äußern": ["Ich bin der Meinung, dass ...", "Meiner Ansicht nach ist ...", "Ich stehe auf dem Standpunkt, dass ...", "Persönlich denke ich, dass ..."],
-            "Zustimmen": ["Da bin ich völlig Ihrer Meinung.", "Das sehe ich ganz genauso.", "Sie haben völlig recht, wenn Sie sagen, dass ...", "Diesem Argument kann ich nur zustimmen."],
-            "Widersprechen": ["Da muss ich Ihnen leider widersprechen.", "Das sehe ich etwas anders, weil ...", "Dieses Argument überzeugt mich nicht ganz.", "Man darf dabei aber nicht vergessen, dass ..."],
-            "Argumente strukturieren": ["Einerseits ..., andererseits ...", "Ein weiterer wichtiger Punkt ist ...", "Dafür spricht, dass ...", "Ein Argument dagegen ist ..."],
-            "Schlussfolgern": ["Zusammenfassend lässt sich sagen, dass ...", "Alles in allem komme ich zu dem Schluss, dass ...", "Als Fazit können wir festhalten, dass ..."]
-        };
+        function switchTab(tabId) {
+            activeTab = tabId;
+            const dashBtn = document.getElementById('tab-dashboard-btn');
+            const mapBtn = document.getElementById('tab-mindmap-btn');
+            const dashSect = document.getElementById('dashboard-tab-section');
+            const mapSect = document.getElementById('mindmap-tab-section');
 
-        const TOPIC_ICONS = { 1:"🚭", 2:"🎮", 3:"💍", 4:"☀️", 5:"💊", 6:"⚡", 7:"👴", 8:"🔄", 9:"🏫", 10:"🪙" };
-        const TOPIC_CATEGORIES_LOOKUP = { 1:'Freizeit & Gesundheit', 2:'Bildung & Technologie', 3:'Gesellschaft & Politik' }; // Fallbacks
+            if (tabId === 'dashboard') {
+                dashBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
+                mapBtn.className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                dashSect.classList.remove('hidden');
+                mapSect.classList.add('hidden');
+                renderActiveTopic();
+            } else {
+                mapBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
+                dashBtn.className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                mapSect.classList.remove('hidden');
+                dashSect.classList.add('hidden');
+                setTimeout(initMindmap, 50);
+            }
+            closeSidebarMobile();
+        }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
-            authDomain: "b2telc-6e061.firebaseapp.com",
-            databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "b2telc-6e061"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        function closeSidebarMobile() {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
+                }
+            }
+        }
 
-        let TOPICS_DATA = [];
-        let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
-        let activeView = "both";
-        let isEditMode = false;
-        let currentFilter = "all";
-        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
-        let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
-        let undoStack = [];
-        let redoStack = [];
-
-        // 3. UI Toggles
-        window.toggleSidebar = function() {
-            document.getElementById('sidebar').classList.toggle('translate-x-full');
-        };
-
-        window.toggleMenuDropdown = function(event) {
-            event.stopPropagation();
-            document.getElementById('menu-dropdown-content').classList.toggle('hidden');
-        };
-
-        document.addEventListener('click', (e) => {
-            const content = document.getElementById('menu-dropdown-content');
-            if (content && !content.classList.contains('hidden') && !e.target.closest('#menu-dropdown-btn') && !e.target.closest('#menu-dropdown-content')) {
-                content.classList.add('hidden');
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-logged-out').classList.add('hidden');
+                document.getElementById('auth-logged-in').classList.remove('hidden');
+                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
+                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Synchronisiert`;
+                await loadTopics();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-logged-out').classList.remove('hidden');
+                document.getElementById('auth-logged-in').classList.add('hidden');
+                await loadTopics();
             }
         });
 
-        // 4. Robust TTS Engine
-        window.playAudioText = function(text) {
-            window.speechSynthesis.cancel();
-            if (!text) return;
-            const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
-            const ut = new SpeechSynthesisUtterance(cleanText);
-            ut.lang = 'de-DE';
-            
-            // Wait for voices to load if not ready
-            let voices = window.speechSynthesis.getVoices();
-            if(voices.length === 0) {
-                window.speechSynthesis.onvoiceschanged = () => {
-                    voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
-                    if(voices.length > 0) ut.voice = voices[0];
-                    window.speechSynthesis.speak(ut);
-                };
-            } else {
-                voices = voices.filter(v => v.lang.startsWith('de'));
-                if(voices.length > 0) ut.voice = voices[0];
-                window.speechSynthesis.speak(ut);
+        document.getElementById('btn-login').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+
+            if (!password) {
+                alert("Bitte geben Sie das Passwort ein.");
+                return;
+            }
+
+            try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                await auth.signInWithEmailAndPassword(email, password);
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Fehler: " + err.message);
             }
         };
 
-        // 5. Navigation & Tabs
-        window.switchTab = function(tabId) {
-            document.getElementById('dashboard-tab-section').classList.add('hidden');
-            document.getElementById('mindmap-tab-section').classList.add('hidden');
-            document.getElementById('redemittel-tab-section').classList.add('hidden');
-            
-            document.getElementById('tab-dashboard-btn').className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)]";
-            document.getElementById('tab-redemittel-btn').className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)]";
-            if(document.getElementById('tab-mindmap-btn')) document.getElementById('tab-mindmap-btn').className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hidden md:block";
+        document.getElementById('btn-signup').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
 
-            document.getElementById(`${tabId}-tab-section`).classList.remove('hidden');
-            document.getElementById(`tab-${tabId}-btn`).className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
+            if (!password || password.length < 6) {
+                alert("Passwort muss mindestens 6 Zeichen lang sein.");
+                return;
+            }
 
-            if (tabId === 'dashboard') renderActiveTopic();
-            if (tabId === 'redemittel') renderRedemittel();
-            if (tabId === 'mindmap') setTimeout(initMindmap, 100);
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("Konto registriert.");
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Fehler bei Registrierung: " + err.message);
+            }
         };
 
-        // 6. Data Loaders & Renderers
+        document.getElementById('btn-logout').onclick = () => { auth.signOut(); };
+
         async function loadTopics() {
             try {
                 const response = await fetch('./topics.json'); 
-                TOPICS_DATA = await response.json();
-                TOPICS_DATA.forEach(t => t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Allgemein');
+                let baseTopics = await response.json();
+                editedTopicIds = [];
+
+                if (currentUser) {
+                    const snapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
+                    snapshot.forEach(doc => {
+                        const cloudTopic = doc.data();
+                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                        }
+                        editedTopicIds.push(parseInt(doc.id));
+                    });
+                } else {
+                    const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                    if (localEdits) {
+                        const parsed = JSON.parse(localEdits);
+                        parsed.forEach(localTopic => {
+                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            if (idx !== -1) {
+                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
+                                editedTopicIds.push(localTopic.id);
+                            }
+                        });
+                    }
+                }
+
+                baseTopics.forEach(t => {
+                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
+                });
+
+                TOPICS_DATA = baseTopics;
+                window.TOPICS_DATA = baseTopics;
+                if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
+                showResetButton();
                 renderSidebar();
                 renderActiveTopic();
             } catch (e) {
@@ -446,28 +806,538 @@
             }
         }
 
-        function getHighlight(topicId, blockKey) {
-            return highlightsStore[topicId]?.[blockKey] || null;
+        async function saveEdits() {
+            pushToHistory(); 
+            const activeTopic = TOPICS_DATA[activeIdx];
+            if (!editedTopicIds.includes(activeTopic.id)) {
+                editedTopicIds.push(activeTopic.id);
+            }
+
+            if (currentUser) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
+                } catch (e) {
+                    console.error("Cloud-Sync-Fehler:", e);
+                }
+            } else {
+                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            }
+            showResetButton();
+            renderSidebar();
         }
 
-        window.saveHighlight = function(topicId, blockKey, htmlContent) {
-            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
-            highlightsStore[topicId][blockKey] = htmlContent;
-            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+        function showResetButton() {
+            const resetBtn = document.getElementById('reset-edits-btn');
+            const activeTopic = TOPICS_DATA[activeIdx];
+            if (activeTopic && editedTopicIds.includes(activeTopic.id)) {
+                resetBtn.classList.remove('hidden');
+            } else {
+                resetBtn.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('reset-edits-btn').onclick = async () => {
+            if (confirm("Möchten Sie alle Änderungen an diesem Thema verwerfen?")) {
+                pushToHistory();
+                const activeTopic = TOPICS_DATA[activeIdx];
+                if (currentUser) {
+                    await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).delete();
+                } else {
+                    let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
+                    localEdits = localEdits.filter(t => t.id !== activeTopic.id);
+                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
+                }
+                if (highlightsStore[activeTopic.id]) {
+                    delete highlightsStore[activeTopic.id];
+                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                }
+                await loadTopics();
+            }
         };
 
-        function buildCardWrapper(title, contentHtml, textToSpeak, rawPath, isArray = false, arrayIdx = null, subKey = null) {
-            const safeText = textToSpeak ? textToSpeak.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
+        function applyConnectorsHighlight(htmlText) {
+            if (!showHighlights) return htmlText;
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
+
+            function highlightNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.nodeValue;
+                    let replaced = false;
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    let safeHTML = div.innerHTML;
+
+                    sorted.forEach(word => {
+                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
+                        if (regex.test(safeHTML)) {
+                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
+                            replaced = true;
+                        }
+                    });
+
+                    if (replaced) {
+                        const span = document.createElement('span');
+                        span.innerHTML = safeHTML;
+                        if (node.parentNode) {
+                            node.parentNode.replaceChild(span, node);
+                        }
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (!node.classList.contains('highlight') && !node.classList.contains('word-circle') && !node.className.startsWith('hl-')) {
+                        Array.from(node.childNodes).forEach(highlightNode);
+                    }
+                }
+            }
+            Array.from(temp.childNodes).forEach(highlightNode);
+            return temp.innerHTML;
+        }
+
+        function makeEditable(element, keyPath) {
+            if (!element) return;
+            element.contentEditable = "true";
+            element.setAttribute('autocapitalize', 'none');
+            element.setAttribute('autocorrect', 'off');
+            element.setAttribute('spellcheck', 'false');
+            element.classList.add("border-b", "border-dashed", "border-zinc-400", "cursor-text");
+            element.addEventListener('focus', () => { pushToHistory(); });
+            element.addEventListener('blur', () => {
+                let newVal = element.innerHTML.trim();
+                const activeTopic = TOPICS_DATA[activeIdx];
+                activeTopic[keyPath] = newVal;
+                saveEdits();
+            });
+        }
+
+        function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
+            const topic = TOPICS_DATA[activeIdx];
+            activeEditBlockContext = { keyPath, isArray, index, subKey };
+
+            let textDE = "";
+            let textEN = "";
+            let textAR = "";
+
+            if (isArray) {
+                if (subKey) {
+                    textDE = topic[keyPath]?.[index]?.[subKey] || "";
+                    textEN = topic[keyPath + '_en']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['en'] || "";
+                    textAR = topic[keyPath + '_ar']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['ar'] || "";
+                } else {
+                    textDE = topic[keyPath]?.[index] || "";
+                    textEN = topic[keyPath.replace('_de', '_en')]?.[index] || "";
+                    textAR = topic[keyPath.replace('_de', '_ar')]?.[index] || "";
+                }
+            } else {
+                textDE = topic[keyPath] || "";
+                textEN = topic[keyPath.replace('_de', '_en')] || "";
+                textAR = topic[keyPath.replace('_de', '_ar')] || "";
+            }
+
+            document.getElementById('modal-edit-de').value = textDE;
+            document.getElementById('modal-edit-en').value = textEN;
+            document.getElementById('modal-edit-ar').value = textAR;
+
+            document.getElementById('block-editor-modal').classList.remove('hidden');
+        }
+
+        function closeBlockEditor() {
+            document.getElementById('block-editor-modal').classList.add('hidden');
+            activeEditBlockContext = null;
+        }
+
+        function saveBlockEditor() {
+            if (!activeEditBlockContext) return;
+            const { keyPath, isArray, index, subKey } = activeEditBlockContext;
+            const topic = TOPICS_DATA[activeIdx];
+
+            const valDE = document.getElementById('modal-edit-de').value.trim();
+            const valEN = document.getElementById('modal-edit-en').value.trim();
+            const valAR = document.getElementById('modal-edit-ar').value.trim();
+
+            pushToHistory();
+
+            if (isArray) {
+                if (subKey) {
+                    if (!topic[keyPath]) topic[keyPath] = [];
+                    if (!topic[keyPath][index]) topic[keyPath][index] = {};
+                    topic[keyPath][index][subKey] = valDE;
+
+                    if (subKey === 'de') {
+                        topic[keyPath][index]['en'] = valEN;
+                        topic[keyPath][index]['ar'] = valAR;
+                    }
+                } else {
+                    const deKey = keyPath;
+                    const enKey = keyPath.replace('_de', '_en');
+                    const arKey = keyPath.replace('_de', '_ar');
+
+                    if (!topic[deKey]) topic[deKey] = [];
+                    if (!topic[enKey]) topic[enKey] = [];
+                    if (!topic[arKey]) topic[arKey] = [];
+
+                    topic[deKey][index] = valDE;
+                    topic[enKey][index] = valEN;
+                    topic[arKey][index] = valAR;
+                }
+            } else {
+                const deKey = keyPath;
+                const enKey = keyPath.replace('_de', '_en');
+                const arKey = keyPath.replace('_de', '_ar');
+
+                topic[deKey] = valDE;
+                topic[enKey] = valEN;
+                topic[arKey] = valAR;
+            }
+
+            saveEdits();
+            closeBlockEditor();
+            renderActiveTopic();
+        }
+
+        function applySelectionFormat(type, value) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+            const range = selection.getRangeAt(0);
+
+            let activeContainer = selection.anchorNode;
+            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+                activeContainer = activeContainer.parentNode;
+            }
+
+            if (!activeContainer) return;
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            if (!blockKey) return;
+
+            pushToHistory();
+
+            if (type === 'bold') {
+                document.execCommand('bold', false, null);
+            } else if (type === 'highlight') {
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {
+                    document.execCommand('backColor', false, '#FEF08A');
+                }
+            } else if (type === 'circle') {
+                const span = document.createElement('span');
+                span.className = 'word-circle';
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {}
+            } else if (type === 'clear') {
+                unwrapSelection(range, activeContainer);
+            }
+
+            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
+            activeContainer.dispatchEvent(new Event('blur'));
+            handleSelectionChange();
+        }
+
+        function unwrapSelection(range, activeContainer) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-orange, .hl-blue, .word-circle, .highlight');
+            spans.forEach(span => {
+                if (selection.containsNode(span, true)) {
+                    const parent = span.parentNode;
+                    while (span.firstChild) {
+                        parent.insertBefore(span.firstChild, span);
+                    }
+                    parent.removeChild(span);
+                }
+            });
+
+            activeContainer.normalize();
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
+            activeContainer.dispatchEvent(new Event('blur'));
+        }
+
+        function handleSelectionChange() {
+            if (!isEditMode) {
+                hideToolbar();
+                return;
+            }
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+                hideToolbar();
+                return;
+            }
+            let parent = selection.anchorNode;
+            let isInsideEditable = false;
+            while (parent) {
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
+                    isInsideEditable = true;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+            if (!isInsideEditable) {
+                hideToolbar();
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('formatting-toolbar');
+            toolbar.classList.remove('hidden');
+
+            const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+            const top = rect.top + window.scrollY - toolbarHeight - 10;
+            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2)));
+
+            toolbar.style.top = `${top}px`;
+            toolbar.style.left = `${left}px`;
+        }
+
+        function hideToolbar() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (toolbar) toolbar.classList.add('hidden');
+        }
+
+        document.addEventListener('selectionchange', handleSelectionChange);
+        window.addEventListener('resize', hideToolbar);
+
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            document.getElementById('filter-all-btn').className = filterType === 'all' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
+            document.getElementById('filter-learned-btn').className = filterType === 'learned' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
+            document.getElementById('filter-offen-btn').className = filterType === 'offen' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
+            renderSidebar();
+        }
+
+        function renderSidebar() {
+            const listContainer = document.getElementById('topic-list');
+            listContainer.innerHTML = "";
+            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+
+            TOPICS_DATA.forEach((topic, index) => {
+                const isLearned = learnedList.includes(topic.id);
+                
+                if (currentFilter === 'learned' && !isLearned) return;
+                if (currentFilter === 'offen' && isLearned) return;
+
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
+                    return;
+                }
+                const isActive = index === activeIdx;
+                const tab = document.createElement('button');
+                tab.className = `w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 topic-list-item ${
+                    isActive 
+                    ? 'bg-[var(--accent-light)] border-[var(--accent)]/20 ring-2 ring-[var(--accent)]/10' 
+                    : 'bg-transparent border-transparent hover:bg-[var(--bg-app)]'
+                }`;
+
+                const badge = isLearned 
+                    ? `<span class="text-[var(--success)] mt-0.5">✓</span>`
+                    : `<span class="text-[var(--text-faint)] text-xs font-bold mt-0.5">${topic.id}</span>`;
+
+                const emojiIcon = TOPIC_ICONS[topic.id] || "📌";
+
+                tab.innerHTML = `
+                    <div class="flex items-center gap-1 flex-col justify-center min-w-[24px]">
+                        ${badge}
+                        <span class="text-base select-none">${emojiIcon}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
+                        <div class="flex items-center justify-between mt-1 gap-1">
+                            <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
+                            <span class="text-[8px] px-1 bg-[var(--bg-app)] rounded text-[var(--text-faint)]">TELC B2</span>
+                        </div>
+                    </div>
+                `;
+
+                tab.onclick = () => {
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    if (activeTab === 'dashboard') renderActiveTopic();
+                    closeSidebarMobile();
+                };
+                listContainer.appendChild(tab);
+            });
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (TOPICS_DATA.length === 0) return;
+            const percentage = (learnedList.length / TOPICS_DATA.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
+        }
+
+        function openVoicePicker(event, blockKey, textToSpeak) {
+            event.stopPropagation();
+            const panel = document.getElementById('voice-picker-panel');
+            
+            panel.classList.remove('hidden');
+            panel.style.visibility = 'hidden';
+            
+            const rect = event.currentTarget.getBoundingClientRect();
+            const popoverWidth = panel.offsetWidth || 256;
+            const popoverHeight = panel.offsetHeight || 285;
+
+            let top = rect.bottom + 8;
+            if (rect.bottom + popoverHeight > window.innerHeight) {
+                top = rect.top - popoverHeight - 8;
+            }
+            top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
+
+            let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+            left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
+
+            panel.style.top = `${top}px`;
+            panel.style.left = `${left}px`;
+            panel.style.visibility = 'visible';
+
+            currentlyPlayingBlockKey = blockKey;
+            const cleanText = textToSpeak.replace(/<\/?[^>]+(>|$)/g, "");
+
+            document.getElementById('voice-picker-play').onclick = () => {
+                playBlockAudio(cleanText, event.currentTarget);
+            };
+            
+            document.getElementById('voice-picker-stop').onclick = () => {
+                stopBlockAudio();
+            };
+            
+            populateVoicesList();
+        }
+
+        function closeVoicePicker() {
+            document.getElementById('voice-picker-panel').classList.add('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('voice-picker-panel');
+            if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !e.target.closest('button')) {
+                closeVoicePicker();
+            }
+        });
+
+        function populateVoicesList() {
+            const container = document.getElementById('voice-list-container');
+            if (!container) return;
+            container.innerHTML = "";
+            availableGermanVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
+            
+            if (availableGermanVoices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = populateVoicesList;
+                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] p-2 italic'>Sprachdateien werden analysiert...</div>";
+                return;
+            }
+
+            availableGermanVoices.sort((a,b) => {
+                const aMs = a.name.includes('Microsoft') ? 0 : 1;
+                const bMs = b.name.includes('Microsoft') ? 0 : 1;
+                return aMs - bMs || a.name.localeCompare(b.name);
+            });
+
+            const savedVoice = localStorage.getItem('b2_selected_voice') || '';
+
+            availableGermanVoices.forEach((voice, index) => {
+                const isSelected = voice.name === savedVoice || (savedVoice === '' && index === 0);
+                if (isSelected && savedVoice === '') {
+                    localStorage.setItem('b2_selected_voice', voice.name);
+                }
+                const row = document.createElement('div');
+                row.className = `flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-semibold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
+                
+                let badge = voice.name.includes('Microsoft') ? "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>" : "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>";
+                const cleanDisplayLabel = voice.name.replace("Microsoft ", "").replace(" Desktop", "").replace("Natural - ", "");
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-1.5 truncate max-w-[160px] select-none">
+                        ${badge}
+                        <span class="truncate" title="${voice.name}">${cleanDisplayLabel}</span>
+                    </div>
+                    <button class="px-2 py-1 text-[9px] bg-zinc-200 dark:bg-zinc-700 rounded-md font-bold hover:opacity-80 transition-opacity" onclick="testVoice(event, '${voice.name}')">Test</button>
+                `;
+                row.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        localStorage.setItem('b2_selected_voice', voice.name);
+                        populateVoicesList();
+                    }
+                };
+                container.appendChild(row);
+            });
+        }
+
+        function testVoice(event, voiceName) {
+            event.stopPropagation();
+            window.speechSynthesis.cancel();
+            const ut = new SpeechSynthesisUtterance("Vorschau");
+            const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
+            if (voiceObj) ut.voice = voiceObj;
+            window.speechSynthesis.speak(ut);
+        }
+
+        function playBlockAudio(text, buttonEl) {
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.resume();
+            
+            if (activeSpeakingButton) {
+                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+            }
+            
+            const speed = parseFloat(document.getElementById('voice-picker-speed').value);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = speed;
+
+            const savedVoiceName = localStorage.getItem('b2_selected_voice');
+            let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
+            if (!voiceObj && availableGermanVoices.length > 0) voiceObj = availableGermanVoices[0];
+            if (voiceObj) utterance.voice = voiceObj;
+
+            buttonEl.classList.add('animate-pulse', 'text-rose-600');
+            activeSpeakingButton = buttonEl;
+
+            utterance.onend = () => {
+                buttonEl.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = null;
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopBlockAudio() {
+            window.speechSynthesis.cancel();
+            if (activeSpeakingButton) {
+                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = null;
+            }
+        }
+
+        function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category, rawPath, isArray = false, arrayIdx = null, subKey = null) {
+            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
             return `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] relative">
-                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-2 mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
-                        <div class="flex gap-2">
-                            <button onclick="playAudioText('${safeText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] font-bold">🔊 Hören</button>
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
+                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openVoicePicker(event, '${blockKey}', \`${textToSpeak.replace(/"/g, '&quot;')}\`)" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
+                            <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
+                                ✏️ Bearbeiten
+                            </button>
                         </div>
                     </div>
                     ${contentHtml}
-                </div>`;
+                </div>
+            `;
         }
 
         function renderActiveTopic() {
@@ -479,325 +1349,394 @@
             document.getElementById('active-topic-title-en').textContent = topic.title_en;
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
-            const isLearned = learnedList.includes(topic.id);
-            const lBtn = document.getElementById('learned-toggle');
-            if (isLearned) {
-                lBtn.className = "text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-1.5";
-                lBtn.innerHTML = "✓ Gelernt";
+            if (isEditMode) {
+                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
+                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
             } else {
-                lBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)]";
-                lBtn.innerHTML = "Als gelernt markieren";
+                document.getElementById('active-topic-title-de').contentEditable = "false";
+                document.getElementById('active-topic-title-en').contentEditable = "false";
             }
 
-            const deClass = "block";
-            const enClass = (activeView === 'both' || activeView === 'all') ? 'block' : 'hidden';
-            const arClass = (activeView === 'de_ar' || activeView === 'all') ? 'block' : 'hidden';
+            const isLearned = learnedList.includes(topic.id);
+            const learnedBtn = document.getElementById('learned-toggle');
+            if (isLearned) {
+                learnedBtn.className = "text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-1.5 shadow-sm transition-all";
+                learnedBtn.innerHTML = "✓ Gelernt";
+            } else {
+                learnedBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 shadow-sm transition-all";
+                learnedBtn.innerHTML = "Als gelernt markieren";
+            }
+
+            const deClass = (activeView === 'both' || activeView === 'de_ar' || activeView === 'all' || activeView === 'de') ? 'block' : 'hidden';
+            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? 'block' : 'hidden';
+            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? 'block' : 'hidden';
 
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
-            // Einleitung
-            const eKey = "einleitung_de";
-            const eHtml = `<div data-block-key="${eKey}" class="${deClass} text-sm leading-relaxed" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${eKey}', this.innerHTML)">${getHighlight(topic.id, eKey) || topic.einleitung_de}</div>
-                           <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.einleitung_en}</p>
-                           <p class="${arClass} text-xs text-right mt-2 font-arabic" dir="rtl">${topic.einleitung_ar}</p>`;
-            container.innerHTML += buildCardWrapper("Einleitung", eHtml, topic.einleitung_de, 'einleitung_de');
+            // 1. EINLEITUNG
+            const einleitungKey = "einleitung_de";
+            const savedEinleitung = getHighlight(topic.id, einleitungKey);
+            const einleitungHtml = `
+                <div class="topic-illustration h-16 w-full mb-4 flex items-center justify-between opacity-90 border-b border-[var(--border)] pb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 flex-shrink-0 bg-[var(--accent-light)] rounded-xl p-2 border border-[var(--accent)]/10">
+                            ${CATEGORY_SVGS[topic.category] || CATEGORY_SVGS['Gesellschaft & Politik']}
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider bg-[var(--accent-light)] px-2 py-1 rounded-md">Kategorie</span>
+                            <h4 class="text-sm font-bold text-[var(--text-primary)] mt-1">${topic.category}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div data-block-key="${einleitungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${einleitungKey}', this.innerHTML)">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</div>
+                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.einleitung_en}</p>
+                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.einleitung_ar || ''}</p>
+            `;
+            const einleitungCard = document.createElement('div');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, topic.category, 'einleitung_de');
+            container.appendChild(einleitungCard);
 
-            // Pro & Contra Grid
-            const pcGrid = document.createElement('div');
-            pcGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
-            
-            let pContent = "";
-            topic.pro_de.forEach((val, i) => {
-                const k = `pro_de_${i}`;
-                pContent += `<div class="mb-3"><div data-block-key="${k}" class="text-sm" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${k}', this.innerHTML)">${getHighlight(topic.id, k) || val}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)]">${topic.pro_en ? topic.pro_en[i] : ''}</p></div>`;
+            const proContraParent = document.createElement('div');
+            proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+            // PRO SECTION
+            const proKey = "pro_de_0";
+            let proContent = "";
+            topic.pro_de.forEach((deVal, index) => {
+                const skey = `pro_de_${index}`;
+                const saved = getHighlight(topic.id, skey);
+                proContent += `
+                    <div class="mb-4 last:mb-0 relative">
+                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.pro_en ? topic.pro_en[index] : ''}</p>
+                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.pro_ar ? topic.pro_ar[index] : ''}</p>
+                    </div>
+                `;
             });
-            pcGrid.innerHTML += buildCardWrapper("Pro Argumente", pContent, topic.pro_de.join(". "), 'pro_de', true, 0);
+            const proCard = document.createElement('div');
+            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro) / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category, 'pro_de', true, 0);
+            proContraParent.appendChild(proCard);
 
-            let cContent = "";
-            topic.contra_de.forEach((val, i) => {
-                const k = `contra_de_${i}`;
-                cContent += `<div class="mb-3"><div data-block-key="${k}" class="text-sm" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${k}', this.innerHTML)">${getHighlight(topic.id, k) || val}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)]">${topic.contra_en ? topic.contra_en[i] : ''}</p></div>`;
+            // CONTRA SECTION
+            const contraKey = "contra_de_0";
+            let contraContent = "";
+            topic.contra_de.forEach((deVal, index) => {
+                const skey = `contra_de_${index}`;
+                const saved = getHighlight(topic.id, skey);
+                contraContent += `
+                    <div class="mb-4 last:mb-0 relative">
+                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.contra_en ? topic.contra_en[index] : ''}</p>
+                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.contra_ar ? topic.contra_ar[index] : ''}</p>
+                    </div>
+                `;
             });
-            pcGrid.innerHTML += buildCardWrapper("Contra Argumente", cContent, topic.contra_de.join(". "), 'contra_de', true, 0);
-            container.appendChild(pcGrid);
+            const contraCard = document.createElement('div');
+            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra) / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category, 'contra_de', true, 0);
+            proContraParent.appendChild(contraCard);
+            container.appendChild(proContraParent);
 
-            // Dialog
-            let dHtml = '<div class="space-y-2">';
-            topic.dialog.forEach((chat, i) => {
-                const k = `dialog_de_${i}`;
+            // 4. PERSÖNLICHE ERFAHRUNG
+            const erfahrungKey = "pers_erfahrung_de";
+            const savedErfahrung = getHighlight(topic.id, erfahrungKey);
+            const erfahrungHtml = `
+                <div data-block-key="${experimentKey = 'pers_erfahrung_de'}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
+                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.pers_erfahrung_en}</p>
+                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
+            `;
+            const erfahrungCard = document.createElement('div');
+            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category, 'pers_erfahrung_de');
+            container.appendChild(erfahrungCard);
+
+            // 5. DIALOG SIMULATION
+            let dialogHtml = '<div class="space-y-3">';
+            topic.dialog.forEach((chat, index) => {
+                const skey = `dialog_de_${index}`;
+                const saved = getHighlight(topic.id, skey);
                 const isA = chat.role.includes('A');
-                dHtml += `<div class="p-3 rounded-lg border ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-app)]'}">
-                    <span class="text-[9px] font-bold text-[var(--text-muted)]">${chat.role}</span>
-                    <div data-block-key="${k}" class="text-xs mt-1" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${k}', this.innerHTML)">${getHighlight(topic.id, k) || chat.de}</div>
-                </div>`;
+                dialogHtml += `
+                    <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
+                        <div data-block-key="${skey}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
+                        <p class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1">${chat.en}</p>
+                        <p class="${arClass} text-[11px] text-right font-medium font-arabic mt-1" dir="rtl">${chat.ar || ''}</p>
+                    </div>
+                `;
             });
-            dHtml += '</div>';
-            container.innerHTML += buildCardWrapper("Dialog Simulation", dHtml, topic.dialog.map(c=>c.de).join(". "), 'dialog', true, 0, 'de');
-            
-            // Schluss
-            const sKey = "schluss_de";
-            const sHtml = `<div data-block-key="${sKey}" class="${deClass} text-sm leading-relaxed" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${sKey}', this.innerHTML)">${getHighlight(topic.id, sKey) || topic.schluss_de}</div>`;
-            container.innerHTML += buildCardWrapper("Schlussfolgerung", sHtml, topic.schluss_de, 'schluss_de');
+            dialogHtml += '</div>';
+            const dialogCard = document.createElement('div');
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), topic.category, 'dialog', true, 0, 'de');
+            container.appendChild(dialogCard);
+
+            // 6. GEMEINSAME LÖSUNG
+            const schlussKey = "schluss_de";
+            const savedSchluss = getHighlight(topic.id, schlussKey);
+            const schlussHtml = `
+                <div data-block-key="${schlussKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${schlussKey}', this.innerHTML)">${isEditMode ? (savedSchluss || topic.schluss_de) : applyConnectorsHighlight(savedSchluss || topic.schluss_de)}</div>
+                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.schluss_en}</p>
+                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.schluss_ar || ''}</p>
+            `;
+            const schlussCard = document.createElement('div');
+            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, topic.category, 'schluss_de');
+            container.appendChild(schlussCard);
+
+            // 7. KEYWORDS
+            let kwBadges = "";
+            if (topic.keywords) {
+                const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
+                list.forEach(kw => {
+                    kwBadges += `<span class="px-2 py-1 text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded">${kw}</span>`;
+                });
+            }
+            const keywordsHtml = `
+                <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
+                <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
+                    <input type="text" class="w-full text-xs font-mono bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg p-2" value="${topic.keywords || ''}" />
+                </div>
+            `;
+            const keywordsCard = document.createElement('div');
+            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", "", topic.category, 'keywords');
+            container.appendChild(keywordsCard);
+
+            if (isEditMode) {
+                const kwInput = keywordsCard.querySelector('.keywords-edit input');
+                kwInput.addEventListener('blur', () => {
+                    TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
+                    saveEdits();
+                });
+            }
+            showResetButton();
         }
 
-        window.renderRedemittel = function() {
-            const container = document.getElementById('redemittel-container');
-            if (container.innerHTML.trim().length > 10) return; 
-            container.innerHTML = "";
-            for (const [category, phrases] of Object.entries(REDEMITTEL_DATA)) {
-                let listHtml = "";
-                phrases.forEach(p => {
-                    const safeP = p.replace(/"/g, '&quot;').replace(/'/g, "\\'");
-                    listHtml += `
-                        <div class="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 group">
-                            <span class="text-xs text-[var(--text-primary)] font-medium leading-relaxed">${p}</span>
-                            <button onclick="playAudioText('${safeP}')" class="p-1.5 rounded-md hover:bg-[var(--accent-light)] text-[var(--accent)]" title="Anhören">🔊</button>
-                        </div>`;
-                });
-                container.innerHTML += `
-                    <div class="bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-4">
-                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">${category}</h4>
-                        ${listHtml}
-                    </div>`;
-            }
-        };
-
-        window.initMindmap = function() {
-            if (TOPICS_DATA.length === 0) return;
-            const svg = d3.select("#mindmap-svg");
-            svg.selectAll("*").remove();
-            
-            const width = svg.node().clientWidth || 800;
-            const height = svg.node().clientHeight || 600;
-            const gContainer = svg.append("g").attr("class", "mindmap-container");
-
-            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => gContainer.attr("transform", event.transform));
-            svg.call(zoom);
-
-            const categories = {};
-            TOPICS_DATA.forEach(t => {
-                const cat = t.category || 'Allgemein';
-                if(!categories[cat]) categories[cat] = [];
-                categories[cat].push({ name: `T${t.id}: ${t.title_de}`, id: t.id, idx: TOPICS_DATA.indexOf(t) });
-            });
-
-            const rawData = {
-                name: "TELC B2", priority: "root",
-                children: Object.keys(categories).map(catName => ({
-                    name: catName, priority: 'category', children: categories[catName]
-                }))
+        function buildDynamicMindmapData() {
+            const categories = {
+                'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
+                'Arbeit & Karriere': { color: "#2563EB", children: [] },
+                'Umwelt & Mobilität': { color: "#7C3AED", children: [] },
+                'Gesellschaft & Politik': { color: "#DC2626", children: [] },
+                'Bildung & Technologie': { color: "#D97706", children: [] }
             };
 
-            const treemap = d3.tree().nodeSize([20, 180]);
+            TOPICS_DATA.forEach(topic => {
+                const cat = topic.category || 'Gesellschaft & Politik';
+                categories[cat].children.push({
+                    name: `T${topic.id}: ${topic.title_de}`,
+                    id: topic.id,
+                    idx: TOPICS_DATA.indexOf(topic)
+                });
+            });
+
+            return {
+                name: "TELC B2 Themen",
+                priority: "root",
+                children: Object.keys(categories).map(catName => ({
+                    name: catName,
+                    color: categories[catName].color,
+                    priority: 'category',
+                    children: categories[catName].children
+                }))
+            };
+        }
+
+        function initMindmap() {
+            if (TOPICS_DATA.length === 0) return;
+            let iCount = 0;
+
+            const svg = d3.select("#mindmap-svg");
+            svg.selectAll("*").remove();
+            const width = svg.node().clientWidth || 900;
+            const height = svg.node().clientHeight || 600;
+            
+            const rawData = buildDynamicMindmapData();
+            const gContainer = svg.append("g").attr("class", "mindmap-container");
+
+            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => { gContainer.attr("transform", event.transform); });
+            svg.call(zoom);
+
+            const treemap = d3.tree().nodeSize([16, 160]);
             let root = d3.hierarchy(rawData, d => d.children);
-            root.x0 = height / 2; root.y0 = 0;
+            root.x0 = height / 2;
+            root.y0 = 0;
+
+            root.children.forEach((d, i) => { if (i > 0) collapse(d); });
+            update(root);
+
+            function collapse(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            }
 
             function update(source) {
                 const treeData = treemap(root);
-                const nodes = treeData.descendants(), links = treeData.links();
-                nodes.forEach(d => d.y = d.depth * 200);
+                const nodes = treeData.descendants();
+                const links = treeData.links();
 
-                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = Math.random()));
-                const nodeEnter = node.enter().append('g').attr('class', 'mindmap-node cursor-pointer')
-                    .attr('transform', d => `translate(${source.y0},${source.x0})`)
-                    .on('click', (e, d) => {
-                        if (d.data.idx !== undefined) {
-                            activeIdx = d.data.idx; localStorage.setItem('b2_active_idx', activeIdx);
-                            renderSidebar(); renderActiveTopic(); switchTab('dashboard');
-                        } else {
-                            if (d.children) { d._children = d.children; d.children = null; } 
-                            else { d.children = d._children; d._children = null; }
-                            update(d);
-                        }
-                    });
+                nodes.forEach(d => { d.y = d.depth * 170; });
+
+                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = ++iCount));
+                const nodeEnter = node.enter().append('g').attr('class', 'mindmap-node cursor-pointer').attr('transform', d => `translate(${source.y0},${source.x0})`).on('click', clickNode);
 
                 nodeEnter.each(function(d) {
                     const el = d3.select(this);
-                    el.append('circle').attr('r', d.data.priority === 'root' ? 8 : (d.data.priority === 'category' ? 6 : 4))
-                      .attr('fill', 'var(--accent)').attr('stroke', '#fff').attr('stroke-width', 2);
-                    el.append('text').attr('dy', '.35em').attr('x', d.children || d._children ? -12 : 12)
-                      .attr('text-anchor', d.children || d._children ? 'end' : 'start')
-                      .attr('fill', 'var(--text-primary)').attr('font-size', d.data.priority ? '10px' : '9px').attr('font-weight', d.data.priority ? 'bold' : 'normal')
-                      .text(d.data.name.substring(0, 30));
+                    if (d.data.priority === 'root') {
+                        el.append('circle').attr('r', 8).attr('fill', 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 2);
+                        el.append('text').attr('dy', '.35em').attr('x', -14).attr('text-anchor', 'end').attr('fill', 'var(--text-primary)').attr('font-size', '9px').attr('font-weight', 'bold').text(d.data.name);
+                    } else if (d.data.priority === 'category') {
+                        el.append('circle').attr('r', 6).attr('fill', d.data.color).attr('stroke', '#ffffff').attr('stroke-width', 1.5);
+                        el.append('text').attr('dy', '.35em').attr('x', d => d.children || d._children ? -12 : 12).attr('text-anchor', d => d.children || d._children ? 'end' : 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').attr('font-weight', 'bold').text(d.data.name);
+                    } else {
+                        el.append('circle').attr('r', 3).attr('fill', d.parent.data.color || 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 1);
+                        el.append('text').attr('dy', '.35em').attr('x', 10).attr('text-anchor', 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').text(d.data.name.length > 25 ? d.data.name.substring(0, 23) + '...' : d.data.name);
+                    }
                 });
 
                 const nodeUpdate = nodeEnter.merge(node);
                 nodeUpdate.transition().duration(250).attr('transform', d => `translate(${d.y},${d.x})`);
 
-                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
-                const linkEnter = link.enter().insert('path', "g").attr('class', 'mindmap-link').attr('fill', 'none')
-                    .attr('stroke', 'var(--border)').attr('stroke-width', 1.5)
-                    .attr('d', d => `M ${source.y0} ${source.x0} C ${source.y0} ${source.x0}, ${source.y0} ${source.x0}, ${source.y0} ${source.x0}`);
+                nodeUpdate.select('circle')
+                    .attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)'))
+                    .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff');
 
-                linkEnter.merge(link).transition().duration(250)
-                    .attr('d', d => `M ${d.source.y} ${d.source.x} C ${(d.source.y + d.target.y) / 2} ${d.source.x}, ${(d.source.y + d.target.y) / 2} ${d.target.x}, ${d.target.y} ${d.target.x}`);
+                node.exit().transition().duration(250).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+
+                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
+                const linkEnter = link.enter().insert('path', "g").attr('class', 'mindmap-link').attr('fill', 'none').attr('stroke', 'var(--border)').attr('stroke-opacity', 0.4).attr('stroke-width', 1)
+                    .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
+
+                linkEnter.merge(link).transition().duration(250).attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)').attr('stroke-opacity', 0.6).attr('d', d => diagonal(d.source, d.target));
+                link.exit().transition().duration(250).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
 
                 nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+
+                function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+                function clickNode(event, d) {
+                    if (d.data.idx !== undefined) {
+                        activeIdx = d.data.idx;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        switchTab('dashboard');
+                    } else {
+                        if (d.children) { d._children = d.children; d.children = null; }
+                        else { d.children = d._children; d._children = null; }
+                        update(d);
+                    }
+                }
             }
-            
-            root.children.forEach(collapse);
-            function collapse(d) { if (d.children) { d._children = d.children; d._children.forEach(collapse); d.children = null; } }
-            update(root);
-            svg.call(zoom.transform, d3.zoomIdentity.translate(50, height / 2).scale(0.85));
-        };
-
-        window.setFilter = function(type) {
-            currentFilter = type;
-            renderSidebar();
-        };
-
-        function renderSidebar() {
-            const list = document.getElementById('topic-list');
-            list.innerHTML = "";
-            const term = document.getElementById('search-bar').value.toLowerCase();
-
-            TOPICS_DATA.forEach((t, i) => {
-                const isL = learnedList.includes(t.id);
-                if (currentFilter === 'learned' && !isL) return;
-                if (currentFilter === 'offen' && isL) return;
-                if (term && !t.title_de.toLowerCase().includes(term)) return;
-
-                const active = i === activeIdx;
-                list.innerHTML += `
-                    <button onclick="activeIdx=${i}; localStorage.setItem('b2_active_idx', ${i}); renderActiveTopic(); window.toggleSidebar();" 
-                        class="w-full text-left p-3 rounded-xl border flex gap-3 ${active ? 'bg-[var(--accent-light)] border-[var(--accent)]' : 'hover:bg-[var(--bg-card)]'}">
-                        <div class="text-lg">${TOPIC_ICONS[t.id] || "📌"}</div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-bold text-xs truncate ${active?'text-[var(--accent)]':'text-[var(--text-primary)]'}">${t.title_de}</p>
-                        </div>
-                    </button>`;
-            });
-            document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
+            svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
         }
 
-        // 7. Interactive PDF Generator (Raw String Injection bypasses display:none limits)
-        window.generatePDFBook = function() {
-            if(TOPICS_DATA.length === 0) return alert("Daten nicht geladen.");
-            
-            const btn = document.getElementById('menu-dropdown-btn');
-            const originalIcon = btn.innerHTML;
-            btn.innerHTML = `<span class="animate-pulse font-bold text-xs">⏳ Generiere...</span>`;
-            
-            let htmlString = `
-                <div style="padding: 40px; font-family: sans-serif; color: #1a1a1a;">
-                    <div style="text-align:center; margin-bottom: 60px; margin-top: 100px;">
-                        <h1 style="font-size: 32px; color: #2563EB; font-weight: 800;">TELC B2 Diskussionstrainer</h1>
-                        <h2 style="font-size: 18px; color: #666; font-weight: normal; margin-top: 10px;">Alle 52 Themen (inklusive persönlicher Markierungen)</h2>
-                    </div>
-            `;
-            
-            TOPICS_DATA.forEach(topic => {
-                const eid = topic.id;
-                htmlString += `
-                    <div style="page-break-before: always; padding-top: 20px;">
-                        <h3 style="font-size: 22px; color: #1a1a1a; border-bottom: 2px solid #2563EB; padding-bottom: 8px; margin-bottom: 20px;">Thema ${eid}: ${topic.title_de}</h3>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <strong style="color: #2563EB; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Einleitung</strong>
-                            <p style="font-size: 14px; line-height: 1.6; margin-top: 5px;">${getHighlight(eid, 'einleitung_de') || topic.einleitung_de}</p>
-                        </div>
+        function exportTopicsJSON() {
+            if (TOPICS_DATA.length === 0) return;
+            const cleanData = JSON.stringify(TOPICS_DATA, null, 2);
+            const blob = new Blob([cleanData], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "topics.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
-                        <div style="margin-bottom: 15px;">
-                            <strong style="color: #16A34A; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Pro Argumente</strong>
-                            <ul style="font-size: 14px; line-height: 1.6; margin-top: 5px; padding-left: 20px;">`;
-                topic.pro_de.forEach((p, i) => { htmlString += `<li style="margin-bottom: 6px;">${getHighlight(eid, `pro_de_${i}`) || p}</li>`; });
-                htmlString += `</ul>
-                        </div>
-
-                        <div style="margin-bottom: 15px;">
-                            <strong style="color: #DC2626; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Contra Argumente</strong>
-                            <ul style="font-size: 14px; line-height: 1.6; margin-top: 5px; padding-left: 20px;">`;
-                topic.contra_de.forEach((c, i) => { htmlString += `<li style="margin-bottom: 6px;">${getHighlight(eid, `contra_de_${i}`) || c}</li>`; });
-                htmlString += `</ul>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <strong style="color: #7C3AED; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Dialog Simulation</strong>
-                            <div style="font-size: 14px; line-height: 1.6; margin-top: 5px; background: #f9f9f9; padding: 15px; border-radius: 8px;">`;
-                topic.dialog.forEach((d, i) => { htmlString += `<p style="margin-bottom: 8px;"><b>${d.role}:</b> ${getHighlight(eid, `dialog_de_${i}`) || d.de}</p>`; });
-                htmlString += `</div>
-                        </div>
-                    </div>`;
-            });
-            htmlString += `</div>`;
-
-            const opt = {
-                margin:       [15, 15, 15, 15],
-                filename:     'TELC_B2_Diskussionen_Buch.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        async function importTopicsJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported) && imported.length > 0) {
+                        pushToHistory();
+                        TOPICS_DATA = imported;
+                        window.TOPICS_DATA = imported;
+                        localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
+                        if (currentUser) {
+                            for (const t of imported) {
+                                await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
+                            }
+                        }
+                        activeIdx = 0;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        alert("topics.json erfolgreich importiert!");
+                    }
+                } catch (err) { alert("Fehler beim Lesen der Datei: " + err.message); }
             };
+            reader.readAsText(file);
+        }
 
-            html2pdf().set(opt).from(htmlString).save().then(() => {
-                btn.innerHTML = originalIcon;
-                document.getElementById('menu-dropdown-content').classList.add('hidden');
-            });
+        document.getElementById('export-json-btn').onclick = exportTopicsJSON;
+
+        document.getElementById('learned-toggle').onclick = () => {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (learnedList.includes(topicId)) {
+                learnedList = learnedList.filter(id => id !== topicId);
+            } else {
+                learnedList.push(topicId);
+            }
+            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+            renderSidebar();
+            renderActiveTopic();
         };
 
-        // 8. Event Listeners
-        document.getElementById('edit-mode-toggle').onclick = () => {
+        document.getElementById('lang-view').addEventListener('change', (e) => {
+            activeView = e.target.value;
+            renderActiveTopic();
+        });
+
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        editModeToggle.onclick = () => {
             isEditMode = !isEditMode;
-            document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Modus: AN" : "Modus: AUS";
+            editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
+            editModeToggle.classList.toggle('text-white', isEditMode);
+            document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
             document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
             renderActiveTopic();
         };
 
-        document.getElementById('lang-view').onchange = (e) => { activeView = e.target.value; renderActiveTopic(); };
-        
-        document.getElementById('learned-toggle').onclick = () => {
-            if (!learnedList.includes(TOPICS_DATA[activeIdx].id)) learnedList.push(TOPICS_DATA[activeIdx].id);
-            else learnedList = learnedList.filter(id => id !== TOPICS_DATA[activeIdx].id);
-            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
-            renderSidebar(); renderActiveTopic();
-        };
+        document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
 
-        document.getElementById('search-bar').addEventListener('input', renderSidebar);
-
-        // Formatting mechanics
-        window.applySelectionFormat = function(type, value) {
-            if(!isEditMode) return;
-            const sel = window.getSelection();
-            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
-            let activeContainer = sel.anchorNode;
-            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
-                activeContainer = activeContainer.parentNode;
-            }
-            if (!activeContainer) return;
-            
-            if (type === 'bold') document.execCommand('bold');
-            else if (type === 'highlight') {
-                const span = document.createElement('span');
-                span.className = `hl-${value}`;
-                span.appendChild(sel.getRangeAt(0).extractContents());
-                sel.getRangeAt(0).insertNode(span);
-            } else if (type === 'circle') {
-                const span = document.createElement('span');
-                span.className = 'word-circle';
-                span.appendChild(sel.getRangeAt(0).extractContents());
-                sel.getRangeAt(0).insertNode(span);
-            }
-            
-            const blockKey = activeContainer.getAttribute('data-block-key');
-            window.saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
-        };
-
-        document.addEventListener('selectionchange', () => {
-            const sel = window.getSelection();
-            const toolbar = document.getElementById('formatting-toolbar');
-            if (!isEditMode || !sel || sel.isCollapsed) { toolbar.classList.add('hidden'); return; }
-            
-            const rect = sel.getRangeAt(0).getBoundingClientRect();
-            toolbar.style.top = `${rect.top + window.scrollY - 45}px`;
-            toolbar.style.left = `${rect.left + window.scrollX}px`;
-            toolbar.classList.remove('hidden');
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            document.getElementById('menu-icon').innerHTML = isHidden 
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
         });
 
-        // Initialize Data
         loadTopics();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then((reg) => {
+                        reg.addEventListener('updatefound', () => {
+                            const nw = reg.installing;
+                            nw.addEventListener('statechange', () => {
+                                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                                    const banner = document.createElement('div');
+                                    banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
+                                    banner.innerHTML = `<span>🔄 Neue App-Version offline verfügbar.</span><button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black">Aktualisieren</button>`;
+                                    document.body.appendChild(banner);
+                                }
+                            });
+                        });
+                    });
+            });
+        }
     </script>
 </body>
 </html>
