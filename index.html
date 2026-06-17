@@ -10,14 +10,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
-    <!-- PWA Meta Tags -->
+    <!-- PWA Meta Tags & Modern B2 Icon -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
-    <link class="apple-touch-icon" href="./icons/icon-192.png">
+    
+    <!-- Modern SVG Base64 Icon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzI1NjNFQiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzQwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMjQwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzI1NjNFQiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzQwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMjQwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
 
     <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -430,7 +433,10 @@
             
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Deutsch (DE)</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
+                        <button id="btn-auto-translate" onclick="autoTranslateBlock()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate (Free API)</button>
+                    </div>
                     <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
                 </div>
                 <div>
@@ -529,6 +535,18 @@
 
         let undoStack = [];
         let redoStack = [];
+        
+        // HACK FOR MOBILE AUDIO 
+        // Mobile browsers block speech synthesis if it's not initiated by a user gesture.
+        let audioUnlocked = false;
+        document.body.addEventListener('click', () => {
+            if (!audioUnlocked && 'speechSynthesis' in window) {
+                const dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0;
+                window.speechSynthesis.speak(dummy);
+                audioUnlocked = true;
+            }
+        }, { once: true });
 
         function pushToHistory() {
             if (undoStack.length > 50) {
@@ -662,7 +680,6 @@
             if (!container) return;
             container.innerHTML = "";
             
-            // Get all voices
             let voices = window.speechSynthesis.getVoices();
             availableGermanVoices = voices.filter(v => v.lang.startsWith('de'));
             
@@ -672,14 +689,14 @@
                 return;
             }
 
-            // Algorithm to sort voices: Prioritize Natural, Premium, Online over basic desktop voices
+            // Prioritize Natural, Premium, and Online voices
             availableGermanVoices.sort((a, b) => {
                 const getScore = (v) => {
                     let score = 0;
                     let name = v.name.toLowerCase();
                     if (name.includes('natural') || name.includes('premium')) score += 100;
                     if (name.includes('online')) score += 50;
-                    if (name.includes('google')) score += 30; // Google Android TTS is decent
+                    if (name.includes('google')) score += 30; 
                     if (name.includes('microsoft')) score += 10;
                     return score;
                 };
@@ -744,7 +761,6 @@
 
             currentlyPlayingBlockKey = blockKey;
             
-            // Clean HTML
             const tmp = document.createElement("div");
             tmp.innerHTML = textToSpeak;
             const cleanText = tmp.textContent || tmp.innerText || "";
@@ -766,17 +782,16 @@
 
         function testVoice(event, voiceName) {
             event.stopPropagation();
+            // Important: Call cancel, then speak immediately in the same call stack for mobile
             window.speechSynthesis.cancel();
             
-            // Timeout hack to prevent WebSpeech API crash in Chromium
-            setTimeout(() => {
-                const ut = new SpeechSynthesisUtterance("Das ist ein Test für die Sprachausgabe.");
-                ut.lang = 'de-DE';
-                const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
-                if (voiceObj) ut.voice = voiceObj;
-                window.currentUtterance = ut;
-                window.speechSynthesis.speak(ut);
-            }, 50);
+            const ut = new SpeechSynthesisUtterance("Das ist ein Test für die Sprachausgabe.");
+            ut.lang = 'de-DE';
+            const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
+            if (voiceObj) ut.voice = voiceObj;
+            
+            window.currentUtterance = ut; 
+            window.speechSynthesis.speak(ut);
         }
 
         function playBlockAudio(text, buttonEl) {
@@ -786,43 +801,38 @@
                 activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
             }
             
-            // Timeout hack to prevent WebSpeech API crash in Chromium
-            setTimeout(() => {
-                const speed = parseFloat(document.getElementById('voice-picker-speed').value);
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'de-DE';
-                utterance.rate = speed;
+            const speed = parseFloat(document.getElementById('voice-picker-speed').value) || 1.0;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = speed;
 
-                const savedVoiceName = localStorage.getItem('b2_selected_voice');
-                let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
-                
-                // Fallback to the highest scored voice in the array (Natural/Premium)
-                if (!voiceObj && availableGermanVoices.length > 0) {
-                    voiceObj = availableGermanVoices[0];
-                }
-                if (voiceObj) utterance.voice = voiceObj;
+            const savedVoiceName = localStorage.getItem('b2_selected_voice');
+            let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
+            
+            if (!voiceObj && availableGermanVoices.length > 0) {
+                voiceObj = availableGermanVoices.find(v => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('google')) || availableGermanVoices[0];
+            }
+            if (voiceObj) utterance.voice = voiceObj;
 
-                // Fix garbage collection bug
-                window.currentUtterance = utterance;
+            window.currentUtterance = utterance;
 
-                buttonEl.classList.add('animate-pulse', 'text-rose-600');
-                activeSpeakingButton = buttonEl;
+            buttonEl.classList.add('animate-pulse', 'text-rose-600');
+            activeSpeakingButton = buttonEl;
 
-                utterance.onend = () => {
-                    if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-                    activeSpeakingButton = null;
-                    window.currentUtterance = null;
-                };
+            utterance.onend = () => {
+                if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = null;
+                window.currentUtterance = null;
+            };
 
-                utterance.onerror = (e) => {
-                    console.error("SpeechSynthesis Error:", e);
-                    if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-                    activeSpeakingButton = null;
-                    window.currentUtterance = null;
-                };
-                
-                window.speechSynthesis.speak(utterance);
-            }, 50);
+            utterance.onerror = (e) => {
+                console.warn("TTS Error/Interruption:", e);
+                if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = null;
+                window.currentUtterance = null;
+            };
+            
+            window.speechSynthesis.speak(utterance);
         }
 
         function stopBlockAudio() {
@@ -1150,6 +1160,41 @@
         function closeBlockEditor() {
             document.getElementById('block-editor-modal').classList.add('hidden');
             activeEditBlockContext = null;
+        }
+
+        // ==========================================
+        //  AUTO TRANSLATE USING MYMEMORY FREE API
+        // ==========================================
+        async function autoTranslateBlock() {
+            const deText = document.getElementById('modal-edit-de').value.trim();
+            if (!deText) return;
+            
+            const btn = document.getElementById('btn-auto-translate');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Lädt...";
+            btn.disabled = true;
+
+            try {
+                // To English
+                const resEn = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`);
+                const dataEn = await resEn.json();
+                if(dataEn.responseData && dataEn.responseData.translatedText) {
+                    document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
+                }
+
+                // To Arabic
+                const resAr = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`);
+                const dataAr = await resAr.json();
+                if(dataAr.responseData && dataAr.responseData.translatedText) {
+                    document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
+                }
+            } catch (e) {
+                console.error("Translation error", e);
+                alert("Fehler bei der automatischen Übersetzung. Bitte Internetverbindung prüfen.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         function saveBlockEditor() {
