@@ -4,7 +4,7 @@ const STATIC_ASSETS = [
   './index.html',
   './topics.json',
   './manifest.json',
-  'https://cdn.tailwindcss.com' // Pre-cached so Tailwind works completely offline
+  'https://cdn.tailwindcss.com'
 ];
 
 // 1. Install Event: Populate static shell assets
@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Ignore non-GET, non-http, and Chrome/Browser Extensions requests
+  // Ignore non-GET, non-http, and browser extension requests
   if (request.method !== 'GET') return;
   if (!url.protocol.startsWith('http')) return;
 
@@ -54,7 +54,7 @@ async function staleWhileRevalidate(request) {
   // Trigger background fetch to update the cache bucket
   const networkFetch = fetchAndCache(request, cache);
 
-  // Return the instant cached copy if found, otherwise wait on the network fetch
+  // Return the cached copy immediately if found, otherwise wait on the network fetch
   return cachedResponse || networkFetch;
 }
 
@@ -63,12 +63,12 @@ async function fetchAndCache(request, cache) {
   try {
     const response = await fetch(request);
     
-    // Only save valid response streams to avoid caching empty errors
+    // Save valid response streams to avoid caching empty or corrupt errors
     if (response && response.status === 200 && response.type !== 'opaque') {
       await cache.put(request, response.clone());
     }
     return response;
   } catch (error) {
-    console.warn('[Service Worker] Fetch failed (possibly offline). Cache state used.', error);
+    console.warn('[Service Worker] Fetch failed (offline mode active). Cache used.', error);
   }
 }
