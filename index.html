@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
     
+    <!-- Google Fonts Import for Inter & Noto Sans Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
@@ -17,6 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
     <link class="apple-touch-icon" href="./icons/icon-192.png">
 
+    <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
@@ -51,25 +54,25 @@
         }
 
         [data-theme="dark"] {
-            --bg-app:        #111827;
-            --bg-card:       #1F2937;
-            --bg-sidebar:    #111827;
+            --bg-app:        #18181B; /* Zinc-900 for a softer, balanced background */
+            --bg-card:       #27272A; /* Zinc-800 for card contrast */
+            --bg-sidebar:    #18181B;
             --border:        rgba(255,255,255,0.08);
-            --text-primary:  #F9FAFB;
-            --text-muted:    #9CA3AF;
-            --text-faint:    #6B7280;
-            --accent:        #3B82F6;
-            --accent-light:  rgba(59,130,246,0.12);
-            --success:       #22C55E;
-            --success-light: rgba(34,197,94,0.12);
-            --danger:        #EF4444;
-            --danger-light:  rgba(239,68,68,0.12);
-            --amber:         #F59E0B;
-            --amber-light:   rgba(245,158,11,0.12);
-            --purple:        #A78BFA;
-            --purple-light:  rgba(167,139,250,0.12);
-            --shadow-sm:     0 1px 3px rgba(0,0,0,0.3);
-            --shadow-md:     0 4px 12px rgba(0,0,0,0.4);
+            --text-primary:  #E4E4E7; /* Zinc-200 for readable text */
+            --text-muted:    #A1A1AA; /* Zinc-400 */
+            --text-faint:    #52525B; /* Zinc-600 */
+            --accent:        #60A5FA; /* Blue-400 */
+            --accent-light:  rgba(96,165,250,0.15);
+            --success:       #4ADE80; /* Green-400 */
+            --success-light: rgba(74,222,128,0.15);
+            --danger:        #F87171; /* Red-400 */
+            --danger-light:  rgba(248,113,113,0.15);
+            --amber:         #FBBF24; /* Amber-400 */
+            --amber-light:   rgba(251,191,36,0.15);
+            --purple:        #A78BFA; /* Purple-400 */
+            --purple-light:  rgba(167,139,250,0.15);
+            --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
+            --shadow-md:     0 4px 8px rgba(0,0,0,0.6);
         }
 
         body {
@@ -93,19 +96,21 @@
             border-bottom: 2px solid #FACC15;
             display: inline-block;
         }
+        
+        /* Balanced pre-highlighted phrases in dark mode */
         [data-theme="dark"] .highlight {
-            background-color: #CA8A04;
-            color: #FEF9C3;
-            border-bottom-color: #EAB308;
+            background-color: rgba(250, 204, 21, 0.15); 
+            color: #FDE047;
+            border-bottom: 1.5px solid rgba(250, 204, 21, 0.4);
         }
 
         .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         .hl-orange { background-color: rgba(249, 115, 22, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         .hl-blue   { background-color: rgba(59, 130, 246, 0.4) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
         
-        [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
-        [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
-        [data-theme="dark"] .hl-blue { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
+        [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.2) !important; color: #FEF08A; }
+        [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.2) !important; color: #FED7AA; }
+        [data-theme="dark"] .hl-blue { background-color: rgba(59, 130, 246, 0.2) !important; color: #BFDBFE; }
 
         .word-circle {
             position: relative;
@@ -151,12 +156,14 @@
         }
     </style>
     
+    <!-- Firebase SDK compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="h-full flex flex-col overflow-hidden">
 
+    <!-- MASTER BAR -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
@@ -187,6 +194,7 @@
                 </button>
                 <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-64 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
                     
+                    <!-- Auth Module Inside Dropdown -->
                     <div id="auth-logged-out" class="p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--bg-app)] rounded-lg">
                         <div class="text-[10px] font-bold text-amber-500 mb-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Offline-Schnittstelle aktiv</div>
                         <select id="user-select" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 font-bold text-[var(--text-primary)]">
@@ -237,6 +245,7 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar Navigation -->
         <aside id="sidebar" class="w-80 fixed inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
@@ -267,7 +276,8 @@
             </div>
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                </nav>
+                <!-- Programmatic list rendering -->
+            </nav>
 
             <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2 hide-on-collapse">
                 <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
@@ -279,11 +289,13 @@
             </div>
         </aside>
 
+        <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
+            <!-- CONTROLS & SUBBAR -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
@@ -323,6 +335,7 @@
                 </div>
             </div>
 
+            <!-- TAB 1: DASHBOARD CONTAINER -->
             <div id="dashboard-tab-section" class="space-y-6">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
@@ -331,9 +344,11 @@
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    </div>
+                    <!-- Cards layout anchor -->
+                </div>
             </div>
 
+            <!-- TAB 2: MINDMAP CONTAINER -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
@@ -353,15 +368,20 @@
                 </div>
             </section>
 
+            <!-- TAB 3: REDEMITTEL CONTAINER -->
             <section id="redemittel-tab-section" class="hidden space-y-6">
-                </section>
+                <!-- Populated by JS -->
+            </section>
 
+            <!-- TAB 4: GRAMMAR CONTAINER -->
             <section id="grammar-tab-section" class="hidden space-y-6">
-                </section>
+                <!-- Populated by JS -->
+            </section>
 
         </main>
     </div>
 
+    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
@@ -375,13 +395,15 @@
         </button>
     </div>
 
+    <!-- DYNAMIC PER-BLOCK VOICE PICKER FLOATING POPOVER -->
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
-            </div>
+            <!-- Programmatic layout execution -->
+        </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between gap-2">
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
@@ -398,6 +420,7 @@
         </div>
     </div>
 
+    <!-- ADVANCED BLOCK CONTENT EDITOR MODAL -->
     <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
             <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
@@ -411,15 +434,15 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Deutsch (DE)</label>
-                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-zinc-400 focus:outline-none"></textarea>
+                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
                 </div>
                 <div>
                     <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
-                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-zinc-400 focus:outline-none"></textarea>
+                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
                 </div>
                 <div>
                     <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
-                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-zinc-400 focus:outline-none font-arabic"></textarea>
+                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none font-arabic"></textarea>
                 </div>
             </div>
 
@@ -430,6 +453,7 @@
         </div>
     </div>
 
+    <!-- MAIN APP STATE ENGINE -->
     <script>
         const TOPIC_ICONS = {
             1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
@@ -1206,7 +1230,11 @@
             panel.style.visibility = 'visible';
 
             currentlyPlayingBlockKey = blockKey;
-            const cleanText = textToSpeak.replace(/<\/?[^>]+(>|$)/g, "");
+            
+            // Extract pure text for speech synthesis without HTML entities/tags breaking the voice engine
+            const tmp = document.createElement("div");
+            tmp.innerHTML = textToSpeak;
+            const cleanText = tmp.textContent || tmp.innerText || "";
 
             document.getElementById('voice-picker-play').onclick = () => {
                 playBlockAudio(cleanText, event.currentTarget);
@@ -1274,15 +1302,18 @@
         function testVoice(event, voiceName) {
             event.stopPropagation();
             window.speechSynthesis.cancel();
-            const ut = new SpeechSynthesisUtterance("Vorschau");
+            const ut = new SpeechSynthesisUtterance("Vorschau der Stimme");
+            ut.lang = 'de-DE';
             const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
             if (voiceObj) ut.voice = voiceObj;
+            
+            // Prevent garbage collection
+            window.currentUtterance = ut;
             window.speechSynthesis.speak(ut);
         }
 
         function playBlockAudio(text, buttonEl) {
             window.speechSynthesis.cancel();
-            window.speechSynthesis.resume();
             
             if (activeSpeakingButton) {
                 activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
@@ -1295,16 +1326,35 @@
 
             const savedVoiceName = localStorage.getItem('b2_selected_voice');
             let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
-            if (!voiceObj && availableGermanVoices.length > 0) voiceObj = availableGermanVoices[0];
+            
+            if (!voiceObj && availableGermanVoices.length > 0) {
+                voiceObj = availableGermanVoices.find(v => v.name.includes('Microsoft')) || availableGermanVoices[0];
+            }
             if (voiceObj) utterance.voice = voiceObj;
+
+            // Assign to global variable to avoid garbage collection bug that causes silent cutoffs
+            window.currentUtterance = utterance;
 
             buttonEl.classList.add('animate-pulse', 'text-rose-600');
             activeSpeakingButton = buttonEl;
 
             utterance.onend = () => {
-                buttonEl.classList.remove('animate-pulse', 'text-rose-600');
+                if (activeSpeakingButton) {
+                    activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                }
                 activeSpeakingButton = null;
+                window.currentUtterance = null;
             };
+
+            utterance.onerror = (e) => {
+                console.error("SpeechSynthesis Error:", e);
+                if (activeSpeakingButton) {
+                    activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                }
+                activeSpeakingButton = null;
+                window.currentUtterance = null;
+            };
+            
             window.speechSynthesis.speak(utterance);
         }
 
