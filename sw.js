@@ -1,4 +1,3 @@
-
 const CACHE_NAME = 'b2trainer-v4';
 const OFFLINE_URL = './index.html';
 const PRECACHE_ASSETS = [
@@ -41,4 +40,3 @@ self.addEventListener('fetch', event => {
     })
   );
 });
-
