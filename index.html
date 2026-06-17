@@ -1,35 +1,1254 @@
-<!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TELC B2 Diskussionstrainer</title>
+<!DOCTYPE html>
+<html lang="de" class="h-full bg-slate-50 transition-colors duration-200">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TELC B2 Diskussionstrainer (Themen 1 - 52)</title>
     
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#4f46e5" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="B2 Trainer" />
-    <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
-  </head>
-  <body class="m-0 p-0 overflow-hidden">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="B2 Trainer">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3251/3251521.png">
 
-    <!-- PWA Worker Initiation -->
+    <!-- Tailwind CSS with custom configuration support -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((reg) => {
-              console.log('[PWA] Service Worker registered scope:', reg.scope);
-            })
-            .catch((err) => {
-              console.error('[PWA] Service Worker failed to register:', err);
-            });
-        });
-      }
+        tailwind.config = {
+            darkMode: 'class'
+        }
     </script>
-  </body>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        /* Universal Theme Variables */
+        :root, [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-muted: #64748b;
+            --border-primary: #e2e8f0;
+            --highlight-bg: #fef08a;
+            --highlight-text: #854d0e;
+            --highlight-border: #facc15;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-primary: #334155;
+            --highlight-bg: #ca8a04;
+            --highlight-text: #fef9c3;
+            --highlight-border: #eab308;
+        }
+
+        /* Standard Newspaper Cutout Highlighting */
+        .highlight {
+            background-color: var(--highlight-bg);
+            color: var(--highlight-text);
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 4px;
+            border-bottom: 2px solid var(--highlight-border);
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        /* Custom User Highlights classes */
+        .hl-yellow {
+            background-color: rgba(253, 224, 71, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .hl-orange {
+            background-color: rgba(249, 115, 22, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .hl-blue {
+            background-color: rgba(59, 130, 246, 0.4) !important;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        
+        /* Dark theme selection support */
+        .dark .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
+        .dark .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
+        .dark .hl-blue { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
+
+        /* Custom scrollbar configurations */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+    <!-- Firebase SDK Compat Core Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="h-full flex flex-col transition-colors duration-200">
+
+    <!-- MAIN DASHBOARD APP HEADER -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">TELC B2 Diskussionstrainer</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Teil 2: Diskussion · Komplettes Lern-Dashboard (Themen 1 – 52)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Learning Progress Visual Indicators -->
+            <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
+                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lernfortschritt:</span>
+                <div class="w-28 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <span id="progress-text" class="text-xs font-bold text-slate-700 dark:text-slate-300">Lade...</span>
+            </div>
+
+            <!-- Dark Theme Toggle Control -->
+            <button id="theme-toggle" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg id="theme-toggle-sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z"></path>
+                </svg>
+                <svg id="theme-toggle-moon-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- MOBILE NAV TRIGGER BUTTON -->
+        <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 active:scale-95 transition-transform duration-100">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <!-- APP SIDEBAR CONTROLS -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Inhaltsverzeichnis</h3>
+                <div class="relative">
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-inner" />
+                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <!-- List of loaded discussion topics -->
+            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-white dark:bg-slate-800 transition-colors">
+                <!-- Programmatically populated -->
+            </nav>
+
+            <!-- Collapsible Configuration Settings Area -->
+            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors">
+                <button id="sidebar-tools-toggle" class="w-full text-xs bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-between shadow-sm">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Optionen & Bearbeitung
+                    </span>
+                    <svg id="tools-chevron" class="w-4 h-4 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                
+                <div id="sidebar-tools-menu" class="hidden mt-2 space-y-2 pt-1 transition-all">
+                    <!-- Toggle Edit Configuration State -->
+                    <button id="edit-mode-toggle" class="w-full text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2.5 border border-slate-300 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <span>Bearbeitungsmodus: AUS</span>
+                    </button>
+                    <!-- Export current edited JSON array as topics.json -->
+                    <button id="export-json-btn" class="w-full text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-700 dark:text-indigo-200 dark:hover:bg-slate-600 text-indigo-700 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>topics.json exportieren</span>
+                    </button>
+                    <!-- Erase Local Custom Edits -->
+                    <button id="reset-edits-btn" class="w-full text-[11px] text-red-600 dark:text-red-400 hover:underline font-bold transition-all text-center block hidden py-1">
+                        Änderungen zurücksetzen
+                    </button>
+                    <!-- Trigger PWA Installation -->
+                    <button id="pwa-install-btn" class="hidden w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2.5 border border-emerald-500 shadow-sm transition-colors flex items-center justify-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>App installieren</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN SCROLLABLE WRAPPER -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
+
+            <!-- REALTIME DATABASE SYNCHRONIZATION CONTAINER -->
+            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200">
+                <!-- Logged Out Module -->
+                <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            Cloud-Arbeitsbereich inaktiv
+                        </h3>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Laden Sie Ihren Arbeitsbereich oder erstellen Sie hier ein neues Konto.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select id="user-select" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                                <option value="mohammed">Mohammed Jdeed</option>
+                                <option value="mai">Mai Hasan</option>
+                            </select>
+                            <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36 transition-colors">
+                            <button id="btn-login" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                                Arbeitsbereich laden
+                            </button>
+                            <button id="btn-signup" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
+                                Konto erstellen
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+                                <input type="checkbox" id="remember-me" checked class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-900 w-3.5 h-3.5">
+                                Angemeldet bleiben
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Logged In Module -->
+                <div id="auth-logged-in" class="hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 p-2.5 rounded-xl text-emerald-600 dark:text-emerald-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Cloud-Synchronisierung aktiv
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="user-display-name">Geladen: --</p>
+                        </div>
+                    </div>
+                    <button id="btn-logout" class="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all">
+                        Abmelden
+                    </button>
+                </div>
+            </div>
+
+            <!-- THEME VIEW & SYSTEM CONTROLLER BAR -->
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-colors duration-200">
+                <div>
+                    <span id="active-topic-num" class="inline-flex items-center py-1 px-3 rounded-md text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900 mb-2 uppercase tracking-wide">Thema --</span>
+                    <h2 id="active-topic-title-de" class="text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight">Wähle ein Thema aus</h2>
+                    <h3 id="active-topic-title-en" class="text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium">Select a topic from the sidebar</h3>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
+                    
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ansichtsmodus</span>
+                        <select id="lang-view" class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-colors">
+                            <option value="both">Bilinguale Ansicht (DE & EN)</option>
+                            <option value="de_ar">Bilinguale Ansicht (DE & AR)</option>
+                            <option value="all">Trilinguale Ansicht (DE, EN & AR)</option>
+                            <option value="de">Nur Deutsch (Prüfungsmodus)</option>
+                            <option value="en">Nur Englisch (Translation)</option>
+                            <option value="ar">Nur Arabisch (Translation)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Highlighting</span>
+                        <button id="toggle-highlights" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors">
+                            Hervorhebung: AN
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Audio</span>
+                        <button id="speech-btn" class="text-xs bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-200 dark:border-slate-700 shadow-sm transition-colors flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 5.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            Anhören
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lernstatus</span>
+                        <button id="learned-toggle" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-lg px-4 py-2 border border-emerald-200 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Als gelernt markieren
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SYSTEM EDITING BANNER (Only active during editing mode) -->
+            <div id="edit-tip-banner" class="hidden bg-indigo-50/50 dark:bg-indigo-950/25 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                <span class="text-indigo-500 text-lg">💡</span>
+                <p class="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
+                    <strong class="text-indigo-600 dark:text-indigo-400">Bearbeitungs-Tipp:</strong> Markieren Sie beliebigen Text in den bearbeitbaren Feldern, um das schwebende Menü anzuzeigen. Dort können Sie ausgewählte Abschnitte <strong class="font-extrabold">Fett</strong> machen oder mit den Farben <span class="text-yellow-600 dark:text-yellow-400 font-bold font-bold font-bold font-bold">Gelb</span>, <span class="text-orange-500 dark:text-orange-400 font-bold font-bold font-bold font-bold font-bold font-bold">Orange</span> und <span class="text-blue-500 dark:text-blue-400 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold">Blau</span> hervorheben.
+                </p>
+            </div>
+
+            <!-- DYNAMIC TARGET CARDS GRID -->
+            <div id="active-topic-container" class="space-y-6">
+                <!-- Programmatically populated -->
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
+    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5 dark:ring-white/5">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2.5 py-1 text-xs font-black text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors shadow-sm" title="Fett">
+            B
+        </button>
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400/40 hover:scale-110 active:scale-95 border border-yellow-400 transition-all shadow-inner" title="Gelb hervorheben"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-6 h-6 rounded-full bg-orange-400/40 hover:scale-110 active:scale-95 border border-orange-400 transition-all shadow-inner" title="Orange hervorheben"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400/40 hover:scale-110 active:scale-95 border border-blue-400 transition-all shadow-inner" title="Blau hervorheben"></button>
+        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 dark:hover:border-rose-900 transition-all" title="Formatierung aufheben">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- MAIN APP STATE ENGINE -->
+    <script>
+        const CONNECTORS = [
+            "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
+            "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
+            "Vielleicht können wir uns darauf einigen", "Zusammenfassend lässt sich sagen", 
+            "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
+        ];
+
+        // Preserved Firebase Configuration Details
+        const firebaseConfig = {
+          apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+          authDomain: "b2telc-6e061.firebaseapp.com",
+          databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "b2telc-6e061",
+          storageBucket: "b2telc-6e061.firebasestorage.app",
+          messagingSenderId: "593882455085",
+          appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+          measurementId: "G-SPHLVHRL6K"
+        };
+
+        // Initialize Firebase services
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Local State Variables
+        let TOPICS_DATA = [];
+        let activeIdx = 0;
+        let showHighlights = true;
+        let activeView = "both";
+        let isEditMode = false;
+        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        
+        let currentUser = null;
+        let editedTopicIds = [];
+
+        // Theme DOM references
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun-icon');
+        const moonIcon = document.getElementById('theme-toggle-moon-icon');
+
+        // Check cache and system preferences for dark mode fallback
+        let isDark = localStorage.getItem('theme_mode_1_52') === 'dark' || 
+                     (!('theme_mode_1_52' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        function applyTheme() {
+            const rootEl = document.documentElement;
+            if (isDark) {
+                rootEl.classList.add('dark');
+                rootEl.setAttribute('data-theme', 'dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                rootEl.classList.remove('dark');
+                rootEl.setAttribute('data-theme', 'light');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggle.onclick = () => {
+            isDark = !isDark;
+            localStorage.setItem('theme_mode_1_52', isDark ? 'dark' : 'light');
+            applyTheme();
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        applyTheme();
+
+        const toolsToggle = document.getElementById('sidebar-tools-toggle');
+        const toolsMenu = document.getElementById('sidebar-tools-menu');
+        const toolsChevron = document.getElementById('tools-chevron');
+
+        toolsToggle.onclick = () => {
+            const isHidden = toolsMenu.classList.contains('hidden');
+            if (isHidden) {
+                toolsMenu.classList.remove('hidden');
+                toolsChevron.classList.add('rotate-180');
+            } else {
+                toolsMenu.classList.add('hidden');
+                toolsChevron.classList.remove('rotate-180');
+            }
+        };
+
+        function closeSidebarMobile() {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
+                }
+            }
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-logged-out').classList.add('hidden');
+                document.getElementById('auth-logged-in').classList.remove('hidden');
+                
+                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
+                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Alle Änderungen werden automatisch in der Cloud gesichert.`;
+                
+                await loadTopics();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-logged-out').classList.remove('hidden');
+                document.getElementById('auth-logged-in').classList.add('hidden');
+                
+                await loadTopics();
+            }
+        });
+
+        document.getElementById('btn-login').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!password) {
+                alert("Bitte geben Sie das Passwort ein.");
+                return;
+            }
+
+            try {
+                const loginBtn = document.getElementById('btn-login');
+                loginBtn.disabled = true;
+                loginBtn.textContent = "Lädt...";
+
+                const persistence = rememberMe 
+                    ? firebase.auth.Auth.Persistence.LOCAL 
+                    : firebase.auth.Auth.Persistence.SESSION;
+                
+                await auth.setPersistence(persistence);
+                await auth.signInWithEmailAndPassword(email, password);
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Anmeldung fehlgeschlagen: " + err.message);
+            } finally {
+                const loginBtn = document.getElementById('btn-login');
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Arbeitsbereich laden";
+            }
+        };
+
+        document.getElementById('btn-signup').onclick = async () => {
+            const userKey = document.getElementById('user-select').value;
+            const password = document.getElementById('workspace-password').value;
+            const email = `${userKey}@b2telc.com`;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!password) {
+                alert("Bitte geben Sie ein Passwort für die Erstellung ein.");
+                return;
+            }
+            if (password.length < 6) {
+                alert("Das Passwort muss mindestens 6 Zeichen lang sein.");
+                return;
+            }
+
+            try {
+                const signupBtn = document.getElementById('btn-signup');
+                signupBtn.disabled = true;
+                signupBtn.textContent = "Erstellt...";
+
+                const persistence = rememberMe 
+                    ? firebase.auth.Auth.Persistence.LOCAL 
+                    : firebase.auth.Auth.Persistence.SESSION;
+                
+                await auth.setPersistence(persistence);
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert("Konto erfolgreich erstellt und Arbeitsbereich geladen!");
+                document.getElementById('workspace-password').value = "";
+            } catch (err) {
+                alert("Kontoerstellung fehlgeschlagen: " + err.message);
+            } finally {
+                const signupBtn = document.getElementById('btn-signup');
+                signupBtn.disabled = false;
+                signupBtn.textContent = "Konto erstellen";
+            }
+        };
+
+        document.getElementById('btn-logout').onclick = () => {
+            auth.signOut();
+        };
+
+        async function loadTopics() {
+            try {
+                const response = await fetch('topics.json');
+                if (!response.ok) {
+                    throw new Error('Netzwerk-Antwort war nicht in Ordnung');
+                }
+                let baseTopics = await response.json();
+                
+                editedTopicIds = [];
+
+                if (currentUser) {
+                    const snapshot = await db.collection('users')
+                                             .doc(currentUser.uid)
+                                             .collection('edited_topics')
+                                             .get();
+                    
+                    snapshot.forEach(doc => {
+                        const cloudTopic = doc.data();
+                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                        }
+                        editedTopicIds.push(parseInt(doc.id));
+                    });
+                } else {
+                    const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                    if (localEdits) {
+                        const parsedEdits = JSON.parse(localEdits);
+                        parsedEdits.forEach(localTopic => {
+                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            if (idx !== -1) {
+                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
+                                editedTopicIds.push(localTopic.id);
+                            }
+                        });
+                    }
+                }
+
+                TOPICS_DATA = baseTopics;
+                showResetButton();
+                renderSidebar();
+                renderActiveTopic();
+            } catch (error) {
+                console.error("Fehler beim Laden der Themen:", error);
+                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden der Spieldaten. Bitte stellen Sie sicher, dass die App über einen lokalen/Webserver geladen wird.</span>";
+            }
+        }
+
+        async function saveEdits() {
+            const activeTopic = TOPICS_DATA[activeIdx];
+            
+            if (!editedTopicIds.includes(activeTopic.id)) {
+                editedTopicIds.push(activeTopic.id);
+            }
+
+            if (currentUser) {
+                try {
+                    await db.collection('users')
+                            .doc(currentUser.uid)
+                            .collection('edited_topics')
+                            .doc(activeTopic.id.toString())
+                            .set(activeTopic);
+                } catch (err) {
+                    console.error("Fehler beim Speichern in Cloud:", err);
+                }
+            } else {
+                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            }
+            
+            showResetButton();
+            renderSidebar();
+        }
+
+        function showResetButton() {
+            const resetBtn = document.getElementById('reset-edits-btn');
+            const activeTopic = TOPICS_DATA[activeIdx];
+            if (activeTopic && editedTopicIds.includes(activeTopic.id)) {
+                resetBtn.classList.remove('hidden');
+            } else {
+                resetBtn.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('reset-edits-btn').onclick = async () => {
+            if (confirm("Möchten Sie alle Ihre vorgenommenen Änderungen verwerfen und die Originaldaten wiederherstellen?")) {
+                const activeTopic = TOPICS_DATA[activeIdx];
+                if (currentUser) {
+                    try {
+                        await db.collection('users')
+                                .doc(currentUser.uid)
+                                .collection('edited_topics')
+                                .doc(activeTopic.id.toString())
+                                .delete();
+                    } catch (err) {
+                        console.error("Fehler beim Löschen des Cloud-Dokuments:", err);
+                    }
+                } else {
+                    let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
+                    localEdits = localEdits.filter(t => t.id !== activeTopic.id);
+                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
+                }
+                await loadTopics();
+            }
+        };
+
+        function deClassTextOnly(htmlText) {
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+            return temp.textContent || temp.innerText || "";
+        }
+
+        function applyHighlights(htmlText) {
+            if (!showHighlights) return htmlText;
+            
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+
+            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
+
+            function highlightNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.nodeValue;
+                    let replaced = false;
+
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    let safeHTML = div.innerHTML;
+
+                    sorted.forEach(word => {
+                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
+                        if (regex.test(safeHTML)) {
+                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
+                            replaced = true;
+                        }
+                    });
+
+                    if (replaced) {
+                        const span = document.createElement('span');
+                        span.innerHTML = safeHTML;
+                        if (node.parentNode) {
+                            node.parentNode.replaceChild(span, node);
+                        }
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (!node.classList.contains('highlight')) {
+                        Array.from(node.childNodes).forEach(highlightNode);
+                    }
+                }
+            }
+
+            Array.from(temp.childNodes).forEach(highlightNode);
+            return temp.innerHTML;
+        }
+
+        function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
+            if (!element) return;
+            element.contentEditable = "true";
+            element.classList.add("border-b", "border-dashed", "border-indigo-400/50", "dark:border-indigo-500/50", "hover:bg-indigo-50/50", "dark:hover:bg-indigo-950/20", "transition-colors", "cursor-text", "focus:bg-transparent", "focus:outline-none");
+            element.addEventListener('blur', () => {
+                let newVal = element.innerHTML.trim();
+                if (isArray) {
+                    if (subKey) {
+                        if (!TOPICS_DATA[activeIdx][keyPath]) {
+                            TOPICS_DATA[activeIdx][keyPath] = [];
+                        }
+                        if (!TOPICS_DATA[activeIdx][keyPath][index]) {
+                            TOPICS_DATA[activeIdx][keyPath][index] = {};
+                        }
+                        TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
+                    } else {
+                        if (!TOPICS_DATA[activeIdx][keyPath]) {
+                            TOPICS_DATA[activeIdx][keyPath] = [];
+                        }
+                        TOPICS_DATA[activeIdx][keyPath][index] = newVal;
+                    }
+                } else {
+                    TOPICS_DATA[activeIdx][keyPath] = newVal;
+                }
+                saveEdits();
+            });
+        }
+
+        function applySelectionFormat(type, value) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+            const range = selection.getRangeAt(0);
+
+            if (type === 'bold') {
+                document.execCommand('bold', false, null);
+            } else if (type === 'highlight') {
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {
+                    document.execCommand('backColor', false, value === 'yellow' ? 'rgba(253, 224, 71, 0.4)' : (value === 'orange' ? 'rgba(249, 115, 22, 0.4)' : 'rgba(147, 197, 253, 0.4)'));
+                }
+            } else if (type === 'clear') {
+                document.execCommand('removeFormat', false, null);
+                document.execCommand('backColor', false, 'transparent');
+                
+                let node = selection.anchorNode;
+                while (node && node.nodeType !== Node.ELEMENT_NODE) {
+                    node = node.parentNode;
+                }
+                if (node && (node.className.includes('hl-yellow') || node.className.includes('hl-orange') || node.className.includes('hl-blue'))) {
+                    const parent = node.parentNode;
+                    while (node.firstChild) {
+                        parent.insertBefore(node.firstChild, node);
+                    }
+                    parent.removeChild(node);
+                }
+            }
+
+            let activeContainer = selection.anchorNode;
+            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+                activeContainer = activeContainer.parentNode;
+            }
+            if (activeContainer && activeContainer.hasAttribute('contenteditable')) {
+                activeContainer.dispatchEvent(new Event('blur'));
+            }
+
+            handleSelectionChange();
+        }
+
+        function handleSelectionChange() {
+            if (!isEditMode) {
+                hideToolbar();
+                return;
+            }
+
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+                hideToolbar();
+                return;
+            }
+
+            let parent = selection.anchorNode;
+            let isInsideEditable = false;
+            while (parent) {
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
+                    isInsideEditable = true;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+
+            if (!isInsideEditable) {
+                hideToolbar();
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('formatting-toolbar');
+
+            toolbar.classList.remove('hidden');
+
+            const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+
+            const top = rect.top + window.scrollY - toolbarHeight - 10;
+            const left = rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2);
+
+            toolbar.style.top = `${top}px`;
+            toolbar.style.left = `${left}px`;
+        }
+
+        function hideToolbar() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (toolbar) toolbar.classList.add('hidden');
+        }
+
+        document.addEventListener('selectionchange', handleSelectionChange);
+        window.addEventListener('resize', hideToolbar);
+        window.addEventListener('scroll', hideToolbar);
+
+        function renderSidebar() {
+            const listContainer = document.getElementById('topic-list');
+            listContainer.innerHTML = "";
+            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+
+            TOPICS_DATA.forEach((topic, index) => {
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
+                    return;
+                }
+
+                const isActive = index === activeIdx;
+                const isLearned = learnedList.includes(topic.id);
+
+                const tab = document.createElement('button');
+                tab.className = `w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 relative ${
+                    isActive 
+                    ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900 ring-2 ring-indigo-500/10' 
+                    : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                }`;
+
+                const icon = isLearned 
+                    ? `<span class="text-emerald-500 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></span>`
+                    : `<span class="text-slate-300 dark:text-slate-500 font-bold text-xs mt-1">${topic.id}</span>`;
+
+                tab.innerHTML = `
+                    ${icon}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold truncate ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}">${topic.title_de}</p>
+                        <p class="text-xs truncate text-slate-400 dark:text-slate-500 mt-0.5 italic">${topic.title_en}</p>
+                    </div>
+                `;
+
+                tab.onclick = () => {
+                    activeIdx = index;
+                    renderSidebar();
+                    renderActiveTopic();
+                    closeSidebarMobile();
+                };
+
+                listContainer.appendChild(tab);
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (TOPICS_DATA.length === 0) return;
+            const count = learnedList.length;
+            const percentage = (count / TOPICS_DATA.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${count} / ${TOPICS_DATA.length}`;
+        }
+
+        function renderActiveTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topic = TOPICS_DATA[activeIdx];
+            
+            document.getElementById('active-topic-num').textContent = `Thema ${topic.id}`;
+            document.getElementById('active-topic-title-de').textContent = topic.title_de;
+            document.getElementById('active-topic-title-en').textContent = topic.title_en;
+
+            if (isEditMode) {
+                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
+                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
+            } else {
+                document.getElementById('active-topic-title-de').contentEditable = "false";
+                document.getElementById('active-topic-title-en').contentEditable = "false";
+                document.getElementById('active-topic-title-de').className = "text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight";
+                document.getElementById('active-topic-title-en').className = "text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium";
+            }
+
+            const isLearned = learnedList.includes(topic.id);
+            const learnedBtn = document.getElementById('learned-toggle');
+            if (isLearned) {
+                learnedBtn.className = "text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors flex items-center gap-1.5";
+                learnedBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Gelernt`;
+            } else {
+                learnedBtn.className = "text-xs bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 shadow-sm";
+                learnedBtn.innerHTML = `<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Als gelernt markieren`;
+            }
+
+            const container = document.getElementById('active-topic-container');
+            container.innerHTML = "";
+
+            const deClass = (activeView === 'both' || activeView === 'de_ar' || activeView === 'all' || activeView === 'de') ? 'block' : 'hidden';
+            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? 'block' : 'hidden';
+            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? 'block' : 'hidden';
+
+            // 1. EINLEITUNG CARD
+            const einleitungCard = document.createElement('div');
+            einleitungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-indigo-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            einleitungCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-3">1. Einleitung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Introduction</span></h4>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-base leading-relaxed einleitung-de">${isEditMode ? topic.einleitung_de : applyHighlights(topic.einleitung_de)}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-sm mt-2 einleitung-en">${topic.einleitung_en}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-sm mt-2 text-right leading-relaxed einleitung-ar" dir="rtl">${topic.einleitung_ar || ''}</p>
+            `;
+            container.appendChild(einleitungCard);
+
+            if (isEditMode) {
+                makeEditable(einleitungCard.querySelector('.einleitung-de'), 'einleitung_de');
+                makeEditable(einleitungCard.querySelector('.einleitung-en'), 'einleitung_en');
+                makeEditable(einleitungCard.querySelector('.einleitung-ar'), 'einleitung_ar');
+            }
+
+            // 2. PRO & CONTRA CONTAINER (Grid system)
+            const proContraGrid = document.createElement('div');
+            proContraGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+            // PRO CARD
+            const proCard = document.createElement('div');
+            proCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-emerald-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
+            let proItems = "";
+            topic.pro_de.forEach((deText, index) => {
+                const enText = topic.pro_en ? topic.pro_en[index] : '';
+                const arText = topic.pro_ar ? topic.pro_ar[index] : '';
+                proItems += `
+                    <div class="mb-4 last:mb-0 pro-item-block" data-index="${index}">
+                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed pro-de">${isEditMode ? deText : applyHighlights(deText)}</p>
+                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 pro-en">${enText}</p>
+                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right pro-ar" dir="rtl">${arText}</p>
+                    </div>
+                `;
+            });
+            proCard.innerHTML = `
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">2. Dafür (Pro) / <span class="italic font-medium text-slate-400 dark:text-slate-500">Pros & Arguments</span></h4>
+                    <div class="space-y-3">${proItems}</div>
+                </div>
+            `;
+            proContraGrid.appendChild(proCard);
+
+            if (isEditMode) {
+                proCard.querySelectorAll('.pro-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.pro-de'), 'pro_de', true, idx);
+                    makeEditable(item.querySelector('.pro-en'), 'pro_en', true, idx);
+                    makeEditable(item.querySelector('.pro-ar'), 'pro_ar', true, idx);
+                });
+            }
+
+            // CONTRA CARD
+            const contraCard = document.createElement('div');
+            contraCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-rose-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
+            let contraItems = "";
+            topic.contra_de.forEach((deText, index) => {
+                const enText = topic.contra_en ? topic.contra_en[index] : '';
+                const arText = topic.contra_ar ? topic.contra_ar[index] : '';
+                contraItems += `
+                    <div class="mb-4 last:mb-0 contra-item-block" data-index="${index}">
+                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed contra-de">${isEditMode ? deText : applyHighlights(deText)}</p>
+                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 contra-en">${enText}</p>
+                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right contra-ar" dir="rtl">${arText}</p>
+                    </div>
+                `;
+            });
+            contraCard.innerHTML = `
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-3">3. Dagegen (Contra) / <span class="italic font-medium text-slate-400 dark:text-slate-500">Cons & Arguments</span></h4>
+                    <div class="space-y-3">${contraItems}</div>
+                </div>
+            `;
+            proContraGrid.appendChild(contraCard);
+            container.appendChild(proContraGrid);
+
+            if (isEditMode) {
+                contraCard.querySelectorAll('.contra-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.contra-de'), 'contra_de', true, idx);
+                    makeEditable(item.querySelector('.contra-en'), 'contra_en', true, idx);
+                    makeEditable(item.querySelector('.contra-ar'), 'contra_ar', true, idx);
+                });
+            }
+
+            // 3. PERSÖNLICHE ERFAHRUNG CARD
+            const erfahrungCard = document.createElement('div');
+            erfahrungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-amber-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            erfahrungCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">4. Persönliche Erfahrung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Personal Experience</span></h4>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed erfahrung-de">${isEditMode ? topic.pers_erfahrung_de : applyHighlights(topic.pers_erfahrung_de)}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 erfahrung-en">${topic.pers_erfahrung_en}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed erfahrung-ar" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
+            `;
+            container.appendChild(erfahrungCard);
+
+            if (isEditMode) {
+                makeEditable(erfahrungCard.querySelector('.erfahrung-de'), 'pers_erfahrung_de');
+                makeEditable(erfahrungCard.querySelector('.erfahrung-en'), 'pers_erfahrung_en');
+                makeEditable(erfahrungCard.querySelector('.erfahrung-ar'), 'pers_erfahrung_ar');
+            }
+
+            // 4. SIMULATION / DIALOG CARD
+            const simulationCard = document.createElement('div');
+            simulationCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-purple-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm space-y-4 transition-colors duration-200";
+            
+            let dialogHtml = "";
+            topic.dialog.forEach((chat, index) => {
+                const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
+                const roleColor = isA 
+                    ? "bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-300 shadow-sm" 
+                    : "bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 shadow-sm";
+                const alignment = isA ? "text-left animate-fadeInLeft" : "text-left md:translate-x-4 animate-fadeInRight";
+
+                dialogHtml += `
+                    <div class="p-4 rounded-xl border ${roleColor} ${alignment} transition-all max-w-[95%] dialog-item-block" data-index="${index}">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-1">${chat.role}</span>
+                        <p class="${deClass} text-sm font-semibold leading-relaxed dialog-de">${isEditMode ? chat.de : applyHighlights(chat.de)}</p>
+                        <p class="${enClass} text-xs italic text-slate-400 dark:text-slate-400 mt-1 dialog-en">${chat.en}</p>
+                        <p class="${arClass} text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 text-right leading-relaxed dialog-ar" dir="rtl">${chat.ar || ''}</p>
+                    </div>
+                `;
+            });
+
+            simulationCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">5. Simulation / Dialog / <span class="italic font-medium text-slate-400 dark:text-slate-500">Discussion Transcript</span></h4>
+                <div class="space-y-3.5">${dialogHtml}</div>
+            `;
+            container.appendChild(simulationCard);
+
+            if (isEditMode) {
+                simulationCard.querySelectorAll('.dialog-item-block').forEach(item => {
+                    const idx = parseInt(item.getAttribute('data-index'));
+                    makeEditable(item.querySelector('.dialog-de'), 'dialog', true, idx, 'de');
+                    makeEditable(item.querySelector('.dialog-en'), 'dialog', true, idx, 'en');
+                    makeEditable(item.querySelector('.dialog-ar'), 'dialog', true, idx, 'ar');
+                });
+            }
+
+            // 5. GEMEINSAME LÖSUNG CARD
+            const schlussCard = document.createElement('div');
+            schlussCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-yellow-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            schlussCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-3">6. Gemeinsame Lösung / Schlussfolgerung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Conclusion</span></h4>
+                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed schluss-de">${isEditMode ? topic.schluss_de : applyHighlights(topic.schluss_de)}</p>
+                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 schluss-en">${topic.schluss_en}</p>
+                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed schluss-ar" dir="rtl">${topic.schluss_ar || ''}</p>
+            `;
+            container.appendChild(schlussCard);
+
+            if (isEditMode) {
+                makeEditable(schlussCard.querySelector('.schluss-de'), 'schluss_de');
+                makeEditable(schlussCard.querySelector('.schluss-en'), 'schluss_en');
+                makeEditable(schlussCard.querySelector('.schluss-ar'), 'schluss_ar');
+            }
+
+            // 6. SCHLÜSSELWÖRTER CARD
+            let kwBadges = "";
+            if (topic.keywords) {
+                const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
+                list.forEach(kw => {
+                    kwBadges += `<span class="px-2.5 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-600 transition-colors">${kw}</span>`;
+                });
+            }
+
+            const keywordsCard = document.createElement('div');
+            keywordsCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
+            keywordsCard.innerHTML = `
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">7. Schlüsselwörter / <span class="italic font-medium text-slate-400 dark:text-slate-500">Keywords</span></h4>
+                <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
+                <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
+                    <input type="text" class="w-full text-xs font-mono bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg p-2" value="${topic.keywords || ''}" />
+                </div>
+            `;
+            container.appendChild(keywordsCard);
+
+            if (isEditMode) {
+                const kwInput = keywordsCard.querySelector('.keywords-edit input');
+                kwInput.addEventListener('blur', () => {
+                    TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
+                    saveEdits();
+                });
+            }
+        }
+
+        // Programmatic Text-to-Speech Engine
+        function playSpeech() {
+            if (TOPICS_DATA.length === 0) return;
+            const topic = TOPICS_DATA[activeIdx];
+            let blocks = [];
+            
+            blocks.push(topic.einleitung_de);
+            topic.pro_de.forEach(txt => blocks.push(deClassTextOnly(txt)));
+            topic.contra_de.forEach(txt => blocks.push(deClassTextOnly(txt)));
+            blocks.push(topic.pers_erfahrung_de);
+            topic.dialog.forEach(chat => blocks.push(`${chat.role}: ${chat.de}`));
+            blocks.push(topic.schluss_de);
+
+            const speechText = blocks.join(". ");
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop active speaking runs to prevent queue issues
+                const utterance = new SpeechSynthesisUtterance(speechText);
+                utterance.lang = 'de-DE';
+                utterance.rate = 0.95; 
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Die Sprachausgabe wird von Ihrem Browser nicht unterstützt.");
+            }
+        }
+
+        // Action Trigger to Export modified database array to topics.json File
+        function exportTopicsJSON() {
+            if (TOPICS_DATA.length === 0) return;
+            
+            // Clean HTML formatting tags from data if any remain
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TOPICS_DATA, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "topics.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Bind Export Action
+        document.getElementById('export-json-btn').onclick = () => {
+            exportTopicsJSON();
+        };
+
+        document.getElementById('learned-toggle').onclick = () => {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (learnedList.includes(topicId)) {
+                learnedList = learnedList.filter(id => id !== topicId);
+            } else {
+                learnedList.push(topicId);
+            }
+            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        document.getElementById('lang-view').addEventListener('change', (e) => {
+            activeView = e.target.value;
+            renderActiveTopic();
+        });
+
+        const highlightsBtn = document.getElementById('toggle-highlights');
+        highlightsBtn.onclick = () => {
+            showHighlights = !showHighlights;
+            highlightsBtn.textContent = showHighlights ? "Hervorhebung: AN" : "Hervorhebung: AUS";
+            highlightsBtn.className = showHighlights 
+                ? "text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors"
+                : "text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-300 dark:border-slate-600 transition-colors";
+            renderActiveTopic();
+        };
+
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        editModeToggle.onclick = () => {
+            isEditMode = !isEditMode;
+            editModeToggle.classList.toggle('bg-indigo-600', isEditMode);
+            editModeToggle.classList.toggle('text-white', isEditMode);
+            editModeToggle.classList.toggle('hover:bg-indigo-700', isEditMode);
+            editModeToggle.classList.toggle('bg-slate-200', !isEditMode);
+            editModeToggle.classList.toggle('dark:bg-slate-700', !isEditMode);
+            editModeToggle.classList.toggle('text-slate-700', !isEditMode);
+            editModeToggle.classList.toggle('dark:text-slate-200', !isEditMode);
+            
+            editModeToggle.querySelector('span').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            
+            const editTipBanner = document.getElementById('edit-tip-banner');
+            if (isEditMode) {
+                editTipBanner.classList.remove('hidden');
+                closeSidebarMobile();
+            } else {
+                editTipBanner.classList.add('hidden');
+                hideToolbar();
+            }
+
+            renderActiveTopic();
+        };
+
+        document.getElementById('search-bar').addEventListener('input', () => {
+            renderSidebar();
+        });
+
+        document.getElementById('speech-btn').onclick = () => {
+            playSpeech();
+        };
+
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            document.getElementById('menu-icon').innerHTML = isHidden 
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        });
+
+        // Initialize install prompt listener
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        const installBtn = document.getElementById('pwa-install-btn');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User installation decision: ${outcome}`);
+                deferredPrompt = null;
+                installBtn.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA app installed successfully!');
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.add('hidden');
+        });
+
+        loadTopics();
+    </script>
+
+    <!-- Unified PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('[PWA] Registered and active with scope:', reg.scope);
+                        
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[PWA] New version ready. Please refresh the page to update.');
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.error('[PWA] Registration failed:', err));
+            });
+        }
+    </script>
+</body>
 </html>
