@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
     
-    <!-- Google Fonts Import for Inter & Noto Sans Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +17,6 @@
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
     <link class="apple-touch-icon" href="./icons/icon-192.png">
 
-    <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
@@ -119,6 +116,14 @@
             margin: 0;
         }
 
+        /* Sidebar Toggle CSS */
+        #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
+        .sidebar-collapsed { width: 5.5rem !important; }
+        .sidebar-collapsed .hide-on-collapse { display: none !important; }
+        .sidebar-collapsed .topic-list-item { padding: 0.75rem 0.5rem; justify-content: center; min-height: unset; }
+        .sidebar-collapsed .topic-title { display: none; }
+        .sidebar-collapsed .sidebar-header-flex { flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
+
         .topic-list-item {
             min-height: 72px;
         }
@@ -146,29 +151,29 @@
         }
     </style>
     
-    <!-- Firebase SDK compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="h-full flex flex-col overflow-hidden">
 
-    <!-- MASTER BAR -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             </div>
             <div>
-                <h1 class="text-lg font-bold text-[var(--text-primary)]">TELC B2 Diskussionstrainer</h1>
-                <p class="text-xs text-[var(--text-muted)]">Interaktive Vorbereitung & Strukturierte Analyse (1 – 52)</p>
+                <h1 class="text-lg font-bold text-[var(--text-primary)]">TELC B2 Trainer</h1>
+                <p class="text-xs text-[var(--text-muted)]">Interaktive Vorbereitung & Strukturierte Analyse</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3 flex-wrap">
-            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
+            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] overflow-x-auto">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🧠 Mindmap</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📚 Grammatik</button>
             </div>
 
             <button id="theme-toggle" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors">
@@ -177,10 +182,30 @@
             </button>
 
             <div class="relative inline-block text-left">
-                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen">
+                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen & Konto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
+                <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-64 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
+                    
+                    <div id="auth-logged-out" class="p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--bg-app)] rounded-lg">
+                        <div class="text-[10px] font-bold text-amber-500 mb-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Offline-Schnittstelle aktiv</div>
+                        <select id="user-select" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 font-bold text-[var(--text-primary)]">
+                            <option value="mohammed">Mohammed Jdeed</option>
+                            <option value="mai">Mai Hasan</option>
+                        </select>
+                        <input type="password" id="workspace-password" placeholder="Passwort" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 text-[var(--text-primary)]">
+                        <div class="flex gap-1 pt-1">
+                            <button id="btn-login" class="flex-1 text-[10px] font-bold bg-[var(--accent)] hover:bg-blue-700 text-white rounded py-1.5 transition">Laden</button>
+                            <button id="btn-signup" class="flex-1 text-[10px] font-bold bg-[var(--success)] hover:bg-green-700 text-white rounded py-1.5 transition">Konto</button>
+                        </div>
+                    </div>
+
+                    <div id="auth-logged-in" class="hidden p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--success-light)] rounded-lg">
+                        <div class="text-[10px] font-bold text-[var(--success)] flex items-center gap-1">✓ Cloud-Synchronisierung aktiv</div>
+                        <div id="user-display-name" class="text-xs font-bold text-[var(--text-primary)] truncate">...</div>
+                        <button id="btn-logout" class="w-full text-[10px] font-bold border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)] rounded py-1.5 transition">Abmelden</button>
+                    </div>
+
                     <button id="edit-mode-toggle" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
                         <span>✏️</span><span id="edit-mode-status-text">Bearbeitungsmodus: AUS</span>
                     </button>
@@ -203,7 +228,7 @@
                     <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
                         <span>🧹</span><span>Änderungen zurücksetzen</span>
                     </button>
-                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center">
+                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center mt-2">
                         <span>📲</span><span>App installieren</span>
                     </button>
                 </div>
@@ -212,11 +237,17 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
-        <!-- Sidebar Navigation -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3">
+        <aside id="sidebar" class="w-80 fixed inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
+                <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
+                <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 hide-on-collapse">
                 <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Dein Fortschritt</span>
+                    <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Fortschritt</span>
                     <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
                 </div>
                 <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
@@ -228,21 +259,17 @@
                     <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Gelernt</button>
                     <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Offen</button>
                 </div>
-            </div>
 
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex flex-col gap-2">
-                <h3 class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Prüfungsthemen</h3>
-                <div class="relative">
+                <div class="relative mt-2">
                     <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all shadow-inner" />
                     <svg class="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                <!-- Programmatic list rendering -->
-            </nav>
+                </nav>
 
-            <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2">
+            <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2 hide-on-collapse">
                 <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
                     ↩️ Zurück
                 </button>
@@ -252,50 +279,12 @@
             </div>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <!-- WORKSPACE PANEL -->
-            <div id="workspace-panel" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)]">
-                <!-- Logged Out Module -->
-                <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h3 class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-[var(--amber)] animate-pulse"></span>
-                            Offline-Schnittstelle aktiv
-                        </h3>
-                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Änderungen werden lokal gesichert. Zur Cloud-Synchronisierung bitte einloggen.</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <select id="user-select" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)]">
-                            <option value="mohammed">Mohammed Jdeed</option>
-                            <option value="mai">Mai Hasan</option>
-                        </select>
-                        <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--text-primary)] w-28">
-                        <button id="btn-login" class="text-xs bg-[var(--accent)] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-[var(--accent)]/95 transition-all">Laden</button>
-                        <button id="btn-signup" class="text-xs bg-[var(--success)] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-[var(--success)]/95 transition-all">Konto</button>
-                    </div>
-                </div>
-                <!-- Logged In Module -->
-                <div id="auth-logged-in" class="hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-[var(--success-light)] border border-[var(--success)]/20 p-2 rounded-xl text-[var(--success)]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">Cloud-Synchronisierung aktiv</h3>
-                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5" id="user-display-name">Konto: --</p>
-                        </div>
-                    </div>
-                    <button id="btn-logout" class="text-xs bg-[var(--bg-app)] hover:bg-[var(--border)] text-[var(--text-primary)] font-bold px-3 py-1.5 rounded-lg border border-[var(--border)] transition-colors">Abmelden</button>
-                </div>
-            </div>
-
-            <!-- CONTROLS & SUBBAR -->
-            <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
                     <div>
@@ -334,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- TAB 1: DASHBOARD CONTAINER -->
             <div id="dashboard-tab-section" class="space-y-6">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
@@ -343,11 +331,9 @@
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    <!-- Cards layout anchor -->
-                </div>
+                    </div>
             </div>
 
-            <!-- TAB 2: MINDMAP CONTAINER -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
@@ -366,10 +352,16 @@
                     <svg id="mindmap-svg" class="w-full h-full cursor-grab active:cursor-grabbing"></svg>
                 </div>
             </section>
+
+            <section id="redemittel-tab-section" class="hidden space-y-6">
+                </section>
+
+            <section id="grammar-tab-section" class="hidden space-y-6">
+                </section>
+
         </main>
     </div>
 
-    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
@@ -383,15 +375,13 @@
         </button>
     </div>
 
-    <!-- DYNAMIC PER-BLOCK VOICE PICKER FLOATING POPOVER -->
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
-            <!-- Programmatic layout execution -->
-        </div>
+            </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between gap-2">
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
@@ -408,7 +398,6 @@
         </div>
     </div>
 
-    <!-- ADVANCED BLOCK CONTENT EDITOR MODAL -->
     <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
             <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
@@ -441,7 +430,6 @@
         </div>
     </div>
 
-    <!-- MAIN APP STATE ENGINE -->
     <script>
         const TOPIC_ICONS = {
             1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
@@ -552,7 +540,7 @@
             
             saveEditsSilent();
             renderSidebar();
-            renderActiveTopic();
+            if(activeTab === 'dashboard') renderActiveTopic();
         }
 
         function redo() {
@@ -574,7 +562,7 @@
             
             saveEditsSilent();
             renderSidebar();
-            renderActiveTopic();
+            if(activeTab === 'dashboard') renderActiveTopic();
         }
 
         async function saveEditsSilent() {
@@ -613,6 +601,12 @@
                 content.classList.add('hidden');
             }
         });
+
+        // Sidebar Toggle Logic
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+        sidebarToggleBtn.onclick = () => {
+            document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
+        };
 
         function saveHighlight(topicId, blockKey, htmlContent) {
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
@@ -667,31 +661,41 @@
             applyTheme();
             renderSidebar();
             if (activeTab === 'dashboard') renderActiveTopic();
-            else initMindmap();
+            else if (activeTab === 'mindmap') initMindmap();
+            else if (activeTab === 'redemittel') renderRedemittel();
+            else if (activeTab === 'grammar') renderGrammar();
         };
 
         applyTheme();
 
         function switchTab(tabId) {
             activeTab = tabId;
-            const dashBtn = document.getElementById('tab-dashboard-btn');
-            const mapBtn = document.getElementById('tab-mindmap-btn');
-            const dashSect = document.getElementById('dashboard-tab-section');
-            const mapSect = document.getElementById('mindmap-tab-section');
+            const btnClassActive = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
+            const btnClassInactive = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
 
+            ['dashboard', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
+                document.getElementById(`tab-${t}-btn`).className = (t === tabId) ? btnClassActive : btnClassInactive;
+                const section = document.getElementById(`${t}-tab-section`);
+                if (t === tabId) {
+                    section.classList.remove('hidden');
+                    section.classList.add(t === 'mindmap' ? 'flex' : 'block');
+                } else {
+                    section.classList.add('hidden');
+                    section.classList.remove('flex', 'block');
+                }
+            });
+
+            const controls = document.getElementById('dashboard-controls');
             if (tabId === 'dashboard') {
-                dashBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
-                mapBtn.className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
-                dashSect.classList.remove('hidden');
-                mapSect.classList.add('hidden');
+                controls.classList.remove('hidden');
                 renderActiveTopic();
             } else {
-                mapBtn.className = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm";
-                dashBtn.className = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]";
-                mapSect.classList.remove('hidden');
-                dashSect.classList.add('hidden');
-                setTimeout(initMindmap, 50);
+                controls.classList.add('hidden');
+                if (tabId === 'mindmap') setTimeout(initMindmap, 50);
+                if (tabId === 'redemittel') renderRedemittel();
+                if (tabId === 'grammar') renderGrammar();
             }
+
             closeSidebarMobile();
         }
 
@@ -711,7 +715,7 @@
                 document.getElementById('auth-logged-out').classList.add('hidden');
                 document.getElementById('auth-logged-in').classList.remove('hidden');
                 const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
-                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Synchronisiert`;
+                document.getElementById('user-display-name').textContent = `${name}`;
                 await loadTopics();
             } else {
                 currentUser = null;
@@ -800,7 +804,7 @@
                 if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
                 showResetButton();
                 renderSidebar();
-                renderActiveTopic();
+                if(activeTab === 'dashboard') renderActiveTopic();
             } catch (e) {
                 console.error("Fehler beim Laden der Themen:", e);
             }
@@ -1149,7 +1153,7 @@
                         ${badge}
                         <span class="text-base select-none">${emojiIcon}</span>
                     </div>
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-1 min-w-0 hide-on-collapse">
                         <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
                         <div class="flex items-center justify-between mt-1 gap-1">
                             <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
@@ -1218,13 +1222,6 @@
         function closeVoicePicker() {
             document.getElementById('voice-picker-panel').classList.add('hidden');
         }
-
-        document.addEventListener('click', (e) => {
-            const panel = document.getElementById('voice-picker-panel');
-            if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !e.target.closest('button')) {
-                closeVoicePicker();
-            }
-        });
 
         function populateVoicesList() {
             const container = document.getElementById('voice-list-container');
@@ -1407,15 +1404,18 @@
                 const skey = `pro_de_${index}`;
                 const saved = getHighlight(topic.id, skey);
                 proContent += `
-                    <div class="mb-4 last:mb-0 relative">
-                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.pro_en ? topic.pro_en[index] : ''}</p>
-                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.pro_ar ? topic.pro_ar[index] : ''}</p>
+                    <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
+                        <span class="text-[var(--success)] font-black text-lg leading-none mt-0.5">+</span>
+                        <div class="flex-1">
+                            <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                            <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.pro_en ? topic.pro_en[index] : ''}</p>
+                            <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.pro_ar ? topic.pro_ar[index] : ''}</p>
+                        </div>
                     </div>
                 `;
             });
             const proCard = document.createElement('div');
-            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro) / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category, 'pro_de', true, 0);
+            proCard.innerHTML = buildCardWrapper("2. Pro Argumente / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category, 'pro_de', true, 0);
             proContraParent.appendChild(proCard);
 
             // CONTRA SECTION
@@ -1425,15 +1425,18 @@
                 const skey = `contra_de_${index}`;
                 const saved = getHighlight(topic.id, skey);
                 contraContent += `
-                    <div class="mb-4 last:mb-0 relative">
-                        <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                        <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.contra_en ? topic.contra_en[index] : ''}</p>
-                        <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.contra_ar ? topic.contra_ar[index] : ''}</p>
+                    <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
+                        <span class="text-[var(--danger)] font-black text-lg leading-none mt-0.5">-</span>
+                        <div class="flex-1">
+                            <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                            <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.contra_en ? topic.contra_en[index] : ''}</p>
+                            <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.contra_ar ? topic.contra_ar[index] : ''}</p>
+                        </div>
                     </div>
                 `;
             });
             const contraCard = document.createElement('div');
-            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra) / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category, 'contra_de', true, 0);
+            contraCard.innerHTML = buildCardWrapper("3. Contra Argumente / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category, 'contra_de', true, 0);
             proContraParent.appendChild(contraCard);
             container.appendChild(proContraParent);
 
@@ -1441,7 +1444,7 @@
             const erfahrungKey = "pers_erfahrung_de";
             const savedErfahrung = getHighlight(topic.id, erfahrungKey);
             const erfahrungHtml = `
-                <div data-block-key="${experimentKey = 'pers_erfahrung_de'}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
+                <div data-block-key="${erfahrungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
                 <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.pers_erfahrung_en}</p>
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
@@ -1509,6 +1512,177 @@
             showResetButton();
         }
 
+        // REDEMITTEL SECTION DATA
+        const redemittelData = [
+            {
+                title: "1. Meinung äußern (Expressing Opinion)",
+                icon: "🗣️",
+                phrases: [
+                    { de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." },
+                    { de: "Ich bin der festen Überzeugung, dass...", en: "I strongly believe that...", ar: "أنا مقتنع تماماً بأن..." },
+                    { de: "Ich stehe auf dem Standpunkt, dass...", en: "I take the view that...", ar: "أرى أن / أقف عند وجهة النظر القائلة بأن..." },
+                    { de: "Ein weiteres wichtiges Argument ist...", en: "Another important argument is...", ar: "حجة أخرى مهمة هي..." }
+                ]
+            },
+            {
+                title: "2. Zustimmen (Agreeing)",
+                icon: "✅",
+                phrases: [
+                    { de: "Da stimme ich dir vollkommen zu.", en: "I completely agree with you there.", ar: "أتفق معك تماماً في ذلك." },
+                    { de: "Das ist ein berechtigter Punkt.", en: "That is a valid point.", ar: "هذه نقطة وجيهة." },
+                    { de: "Ganz genau, so sehe ich das auch.", en: "Exactly, that's how I see it too.", ar: "بالضبط، هكذا أرى الأمر أيضاً." }
+                ]
+            },
+            {
+                title: "3. Widersprechen (Disagreeing)",
+                icon: "❌",
+                phrases: [
+                    { de: "Das sehe ich ein bisschen anders.", en: "I see that a little differently.", ar: "أرى ذلك بشكل مختلف قليلاً." },
+                    { de: "Das mag stimmen, allerdings...", en: "That might be true, however...", ar: "قد يكون هذا صحيحاً، ومع ذلك..." },
+                    { de: "Dagegen könnte man einwenden, dass...", en: "On the other hand, one could object that...", ar: "في المقابل، يمكن الاعتراض بأن..." },
+                    { de: "Ich bezweifle, dass das wirklich funktioniert.", en: "I doubt that this really works.", ar: "أشك في أن هذا ينجح حقاً." }
+                ]
+            },
+            {
+                title: "4. Eigene Erfahrungen (Personal Experience)",
+                icon: "📖",
+                phrases: [
+                    { de: "Was meine persönlichen Erfahrungen betrifft...", en: "As for my personal experiences...", ar: "بالنسبة لتجاربي الشخصية..." },
+                    { de: "In meinem Heimatland ist es oft so, dass...", en: "In my home country, it is often the case that...", ar: "في بلدي الأم، غالباً ما يكون الأمر أن..." },
+                    { de: "Ich habe selbst erlebt, dass...", en: "I have experienced myself that...", ar: "لقد جربت وعشت بنفسي أن..." }
+                ]
+            },
+            {
+                title: "5. Zusammenfassen & Lösung (Conclusion)",
+                icon: "🤝",
+                phrases: [
+                    { de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." },
+                    { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "باختصار، يمكن القول..." },
+                    { de: "Als guten Kompromiss schlage ich vor...", en: "As a good compromise, I suggest...", ar: "كحل وسط جيد، أقترح..." }
+                ]
+            }
+        ];
+
+        function renderRedemittel() {
+            const container = document.getElementById('redemittel-tab-section');
+            container.innerHTML = `
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">🗣️ Redemittel für TELC B2 Diskussionen</h2>
+                    <p class="text-xs text-[var(--text-muted)] mt-1">Hier finden Sie die wichtigsten Ausdrücke (Redemittel) für den Diskussionsteil (Teil 2) der mündlichen Prüfung, inklusive Übersetzungen.</p>
+                </div>
+            `;
+
+            const grid = document.createElement('div');
+            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+            redemittelData.forEach(cat => {
+                let phrasesHtml = "";
+                cat.phrases.forEach(p => {
+                    phrasesHtml += `
+                        <div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
+                            <div class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div>
+                            <div class="text-[11px] italic text-[var(--text-muted)]">${p.en}</div>
+                            <div class="text-[11px] font-arabic font-medium text-right mt-0.5" dir="rtl">${p.ar}</div>
+                        </div>
+                    `;
+                });
+
+                grid.innerHTML += `
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
+                        <div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3">
+                            <span class="text-lg">${cat.icon}</span>
+                            <h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3>
+                        </div>
+                        ${phrasesHtml}
+                    </div>
+                `;
+            });
+            container.appendChild(grid);
+        }
+
+        // GRAMMATIK SECTION DATA
+        const grammarData = [
+            {
+                title: "1. Konjunktiv II (Höflichkeit & Irrealis)",
+                desc: "Besonders wichtig bei Kompromissen und höflichen Vorschlägen. Verwendet für irreale Bedingungen.",
+                examples: [
+                    "An deiner Stelle <strong>würde</strong> ich...",
+                    "Es <strong>wäre</strong> sinnvoller, wenn wir...",
+                    "Man <strong>könnte</strong> stattdessen vorschlagen, dass..."
+                ]
+            },
+            {
+                title: "2. Zweiteilige Konnektoren",
+                desc: "Zeigen ein hohes Sprachniveau (B2) und verbinden Argumente logisch und elegant miteinander.",
+                examples: [
+                    "<strong>Einerseits</strong> ist das praktisch, <strong>andererseits</strong> kostet es viel Zeit.",
+                    "Das ist <strong>zwar</strong> richtig, <strong>aber</strong> wir müssen auch bedenken, dass...",
+                    "Er ist <strong>nicht nur</strong> teuer, <strong>sondern auch</strong> umweltschädlich."
+                ]
+            },
+            {
+                title: "3. Verben mit Präpositionen",
+                desc: "Das korrekte Verwenden von Präpositionalobjekten ist ein Muss auf B2-Niveau.",
+                examples: [
+                    "Ich <strong>interessiere mich für</strong> dieses Thema.",
+                    "Wir müssen <strong>über</strong> die Kosten <strong>diskutieren</strong>.",
+                    "Das <strong>hängt von</strong> der jeweiligen Situation <strong>ab</strong>."
+                ]
+            },
+            {
+                title: "4. Passiv und Passiversatzformen",
+                desc: "Um Prozesse objektiv zu beschreiben, ohne die handelnde Person in den Vordergrund zu stellen.",
+                examples: [
+                    "Es <strong>muss</strong> dringend eine Lösung <strong>gefunden werden</strong>.",
+                    "Zusammenfassend <strong>lässt sich sagen</strong>, dass... (Passiversatz)",
+                    "Dieses Problem <strong>kann</strong> leicht <strong>gelöst werden</strong>."
+                ]
+            },
+            {
+                title: "5. Relativsätze zur genaueren Beschreibung",
+                desc: "Machen den Satzbau komplexer und präziser. Typisch für flüssige B2-Diskussionen.",
+                examples: [
+                    "Jugendliche, <strong>die</strong> viel Zeit online verbringen, sind oft...",
+                    "Das ist ein Argument, <strong>dem</strong> ich nicht zustimmen kann.",
+                    "Die Lösung, <strong>von der</strong> du sprichst, ist unrealistisch."
+                ]
+            }
+        ];
+
+        function renderGrammar() {
+            const container = document.getElementById('grammar-tab-section');
+            container.innerHTML = `
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik für Diskussionen</h2>
+                    <p class="text-xs text-[var(--text-muted)] mt-1">Die Prüfer achten darauf, dass Sie komplexe Satzstrukturen (B2-Niveau) verwenden, anstatt nur in einfachen Hauptsätzen zu sprechen.</p>
+                </div>
+            `;
+
+            const grid = document.createElement('div');
+            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+
+            grammarData.forEach(item => {
+                let examplesHtml = "<ul class='list-disc list-inside space-y-1 mt-2 text-xs text-[var(--text-primary)]'>";
+                item.examples.forEach(ex => {
+                    examplesHtml += `<li class="ml-2">${ex}</li>`;
+                });
+                examplesHtml += "</ul>";
+
+                grid.innerHTML += `
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
+                        <h3 class="text-sm font-bold text-[var(--accent)] border-b border-[var(--border)] pb-2">${item.title}</h3>
+                        <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">${item.desc}</p>
+                        <div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Beispiele</span>
+                            ${examplesHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            container.appendChild(grid);
+        }
+
+        // INITIALIZE MINDMAP
         function buildDynamicMindmapData() {
             const categories = {
                 'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
@@ -1700,7 +1874,7 @@
             editModeToggle.classList.toggle('text-white', isEditMode);
             document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
             document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
-            renderActiveTopic();
+            if (activeTab === 'dashboard') renderActiveTopic();
         };
 
         document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
