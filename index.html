@@ -54,22 +54,22 @@
         }
 
         [data-theme="dark"] {
-            --bg-app:        #18181B; /* Zinc-900 for a softer, balanced background */
-            --bg-card:       #27272A; /* Zinc-800 for card contrast */
+            --bg-app:        #18181B; 
+            --bg-card:       #27272A; 
             --bg-sidebar:    #18181B;
             --border:        rgba(255,255,255,0.08);
-            --text-primary:  #E4E4E7; /* Zinc-200 for readable text */
-            --text-muted:    #A1A1AA; /* Zinc-400 */
-            --text-faint:    #52525B; /* Zinc-600 */
-            --accent:        #60A5FA; /* Blue-400 */
+            --text-primary:  #E4E4E7; 
+            --text-muted:    #A1A1AA; 
+            --text-faint:    #52525B; 
+            --accent:        #60A5FA; 
             --accent-light:  rgba(96,165,250,0.15);
-            --success:       #4ADE80; /* Green-400 */
+            --success:       #4ADE80; 
             --success-light: rgba(74,222,128,0.15);
-            --danger:        #F87171; /* Red-400 */
+            --danger:        #F87171; 
             --danger-light:  rgba(248,113,113,0.15);
-            --amber:         #FBBF24; /* Amber-400 */
+            --amber:         #FBBF24; 
             --amber-light:   rgba(251,191,36,0.15);
-            --purple:        #A78BFA; /* Purple-400 */
+            --purple:        #A78BFA; 
             --purple-light:  rgba(167,139,250,0.15);
             --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
             --shadow-md:     0 4px 8px rgba(0,0,0,0.6);
@@ -97,7 +97,6 @@
             display: inline-block;
         }
         
-        /* Balanced pre-highlighted phrases in dark mode */
         [data-theme="dark"] .highlight {
             background-color: rgba(250, 204, 21, 0.15); 
             color: #FDE047;
@@ -121,7 +120,6 @@
             margin: 0;
         }
 
-        /* Sidebar Toggle CSS */
         #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
         .sidebar-collapsed { width: 5.5rem !important; }
         .sidebar-collapsed .hide-on-collapse { display: none !important; }
@@ -161,10 +159,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="h-full flex flex-col overflow-hidden">
+<body class="h-full flex flex-col overflow-x-hidden">
 
     <!-- MASTER BAR -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -194,7 +192,6 @@
                 </button>
                 <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-64 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
                     
-                    <!-- Auth Module Inside Dropdown -->
                     <div id="auth-logged-out" class="p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--bg-app)] rounded-lg">
                         <div class="text-[10px] font-bold text-amber-500 mb-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Offline-Schnittstelle aktiv</div>
                         <select id="user-select" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 font-bold text-[var(--text-primary)]">
@@ -399,7 +396,7 @@
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
-            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
+            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
             <!-- Programmatic layout execution -->
@@ -626,7 +623,6 @@
             }
         });
 
-        // Sidebar Toggle Logic
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
         sidebarToggleBtn.onclick = () => {
             document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
@@ -654,9 +650,190 @@
             }
         }
 
+        // ==========================================
+        //  REWRITTEN TTS (TEXT TO SPEECH) ALGORITHM
+        // ==========================================
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
         let currentlyPlayingBlockKey = null;
+
+        function populateVoicesList() {
+            const container = document.getElementById('voice-list-container');
+            if (!container) return;
+            container.innerHTML = "";
+            
+            // Get all voices
+            let voices = window.speechSynthesis.getVoices();
+            availableGermanVoices = voices.filter(v => v.lang.startsWith('de'));
+            
+            if (availableGermanVoices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = populateVoicesList;
+                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] p-2 italic'>Lade Stimmen...</div>";
+                return;
+            }
+
+            // Algorithm to sort voices: Prioritize Natural, Premium, Online over basic desktop voices
+            availableGermanVoices.sort((a, b) => {
+                const getScore = (v) => {
+                    let score = 0;
+                    let name = v.name.toLowerCase();
+                    if (name.includes('natural') || name.includes('premium')) score += 100;
+                    if (name.includes('online')) score += 50;
+                    if (name.includes('google')) score += 30; // Google Android TTS is decent
+                    if (name.includes('microsoft')) score += 10;
+                    return score;
+                };
+                return getScore(b) - getScore(a) || a.name.localeCompare(b.name);
+            });
+
+            const savedVoice = localStorage.getItem('b2_selected_voice') || '';
+
+            availableGermanVoices.forEach((voice, index) => {
+                const isSelected = voice.name === savedVoice || (savedVoice === '' && index === 0);
+                if (isSelected && savedVoice === '') {
+                    localStorage.setItem('b2_selected_voice', voice.name);
+                }
+                const row = document.createElement('div');
+                row.className = `flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-semibold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
+                
+                let badge = voice.name.toLowerCase().includes('natural') ? "<span class='text-[8px] bg-green-100 text-green-700 px-1 rounded font-bold'>Natural</span>" : 
+                            (voice.name.includes('Microsoft') ? "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>" : "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>");
+                
+                const cleanDisplayLabel = voice.name.replace("Microsoft ", "").replace(" Desktop", "").replace("Online (Natural)", "");
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-1.5 truncate max-w-[160px] select-none">
+                        ${badge}
+                        <span class="truncate" title="${voice.name}">${cleanDisplayLabel}</span>
+                    </div>
+                    <button class="px-2 py-1 text-[9px] bg-zinc-200 dark:bg-zinc-700 rounded-md font-bold hover:opacity-80 transition-opacity" onclick="testVoice(event, '${voice.name}')">Test</button>
+                `;
+                row.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        localStorage.setItem('b2_selected_voice', voice.name);
+                        populateVoicesList();
+                    }
+                };
+                container.appendChild(row);
+            });
+        }
+
+        function openVoicePicker(event, blockKey, textToSpeak) {
+            event.stopPropagation();
+            const panel = document.getElementById('voice-picker-panel');
+            
+            panel.classList.remove('hidden');
+            panel.style.visibility = 'hidden';
+            
+            const rect = event.currentTarget.getBoundingClientRect();
+            const popoverWidth = panel.offsetWidth || 256;
+            const popoverHeight = panel.offsetHeight || 285;
+
+            let top = rect.bottom + 8;
+            if (rect.bottom + popoverHeight > window.innerHeight) {
+                top = rect.top - popoverHeight - 8;
+            }
+            top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
+
+            let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+            left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
+
+            panel.style.top = `${top}px`;
+            panel.style.left = `${left}px`;
+            panel.style.visibility = 'visible';
+
+            currentlyPlayingBlockKey = blockKey;
+            
+            // Clean HTML
+            const tmp = document.createElement("div");
+            tmp.innerHTML = textToSpeak;
+            const cleanText = tmp.textContent || tmp.innerText || "";
+
+            document.getElementById('voice-picker-play').onclick = () => {
+                playBlockAudio(cleanText, event.currentTarget);
+            };
+            
+            document.getElementById('voice-picker-stop').onclick = () => {
+                stopBlockAudio();
+            };
+            
+            populateVoicesList();
+        }
+
+        function closeVoicePicker() {
+            document.getElementById('voice-picker-panel').classList.add('hidden');
+        }
+
+        function testVoice(event, voiceName) {
+            event.stopPropagation();
+            window.speechSynthesis.cancel();
+            
+            // Timeout hack to prevent WebSpeech API crash in Chromium
+            setTimeout(() => {
+                const ut = new SpeechSynthesisUtterance("Das ist ein Test für die Sprachausgabe.");
+                ut.lang = 'de-DE';
+                const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
+                if (voiceObj) ut.voice = voiceObj;
+                window.currentUtterance = ut;
+                window.speechSynthesis.speak(ut);
+            }, 50);
+        }
+
+        function playBlockAudio(text, buttonEl) {
+            window.speechSynthesis.cancel();
+            
+            if (activeSpeakingButton) {
+                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+            }
+            
+            // Timeout hack to prevent WebSpeech API crash in Chromium
+            setTimeout(() => {
+                const speed = parseFloat(document.getElementById('voice-picker-speed').value);
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'de-DE';
+                utterance.rate = speed;
+
+                const savedVoiceName = localStorage.getItem('b2_selected_voice');
+                let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
+                
+                // Fallback to the highest scored voice in the array (Natural/Premium)
+                if (!voiceObj && availableGermanVoices.length > 0) {
+                    voiceObj = availableGermanVoices[0];
+                }
+                if (voiceObj) utterance.voice = voiceObj;
+
+                // Fix garbage collection bug
+                window.currentUtterance = utterance;
+
+                buttonEl.classList.add('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = buttonEl;
+
+                utterance.onend = () => {
+                    if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                    activeSpeakingButton = null;
+                    window.currentUtterance = null;
+                };
+
+                utterance.onerror = (e) => {
+                    console.error("SpeechSynthesis Error:", e);
+                    if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                    activeSpeakingButton = null;
+                    window.currentUtterance = null;
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            }, 50);
+        }
+
+        function stopBlockAudio() {
+            window.speechSynthesis.cancel();
+            if (activeSpeakingButton) {
+                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton = null;
+            }
+        }
+        // ==========================================
+
 
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun-icon');
@@ -1203,167 +1380,6 @@
             const percentage = (learnedList.length / TOPICS_DATA.length) * 100;
             document.getElementById('progress-bar').style.width = `${percentage}%`;
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
-        }
-
-        function openVoicePicker(event, blockKey, textToSpeak) {
-            event.stopPropagation();
-            const panel = document.getElementById('voice-picker-panel');
-            
-            panel.classList.remove('hidden');
-            panel.style.visibility = 'hidden';
-            
-            const rect = event.currentTarget.getBoundingClientRect();
-            const popoverWidth = panel.offsetWidth || 256;
-            const popoverHeight = panel.offsetHeight || 285;
-
-            let top = rect.bottom + 8;
-            if (rect.bottom + popoverHeight > window.innerHeight) {
-                top = rect.top - popoverHeight - 8;
-            }
-            top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
-
-            let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
-            left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
-
-            panel.style.top = `${top}px`;
-            panel.style.left = `${left}px`;
-            panel.style.visibility = 'visible';
-
-            currentlyPlayingBlockKey = blockKey;
-            
-            // Extract pure text for speech synthesis without HTML entities/tags breaking the voice engine
-            const tmp = document.createElement("div");
-            tmp.innerHTML = textToSpeak;
-            const cleanText = tmp.textContent || tmp.innerText || "";
-
-            document.getElementById('voice-picker-play').onclick = () => {
-                playBlockAudio(cleanText, event.currentTarget);
-            };
-            
-            document.getElementById('voice-picker-stop').onclick = () => {
-                stopBlockAudio();
-            };
-            
-            populateVoicesList();
-        }
-
-        function closeVoicePicker() {
-            document.getElementById('voice-picker-panel').classList.add('hidden');
-        }
-
-        function populateVoicesList() {
-            const container = document.getElementById('voice-list-container');
-            if (!container) return;
-            container.innerHTML = "";
-            availableGermanVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
-            
-            if (availableGermanVoices.length === 0) {
-                window.speechSynthesis.onvoiceschanged = populateVoicesList;
-                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] p-2 italic'>Sprachdateien werden analysiert...</div>";
-                return;
-            }
-
-            availableGermanVoices.sort((a,b) => {
-                const aMs = a.name.includes('Microsoft') ? 0 : 1;
-                const bMs = b.name.includes('Microsoft') ? 0 : 1;
-                return aMs - bMs || a.name.localeCompare(b.name);
-            });
-
-            const savedVoice = localStorage.getItem('b2_selected_voice') || '';
-
-            availableGermanVoices.forEach((voice, index) => {
-                const isSelected = voice.name === savedVoice || (savedVoice === '' && index === 0);
-                if (isSelected && savedVoice === '') {
-                    localStorage.setItem('b2_selected_voice', voice.name);
-                }
-                const row = document.createElement('div');
-                row.className = `flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-semibold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
-                
-                let badge = voice.name.includes('Microsoft') ? "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>" : "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>";
-                const cleanDisplayLabel = voice.name.replace("Microsoft ", "").replace(" Desktop", "").replace("Natural - ", "");
-
-                row.innerHTML = `
-                    <div class="flex items-center gap-1.5 truncate max-w-[160px] select-none">
-                        ${badge}
-                        <span class="truncate" title="${voice.name}">${cleanDisplayLabel}</span>
-                    </div>
-                    <button class="px-2 py-1 text-[9px] bg-zinc-200 dark:bg-zinc-700 rounded-md font-bold hover:opacity-80 transition-opacity" onclick="testVoice(event, '${voice.name}')">Test</button>
-                `;
-                row.onclick = (e) => {
-                    if (e.target.tagName !== 'BUTTON') {
-                        localStorage.setItem('b2_selected_voice', voice.name);
-                        populateVoicesList();
-                    }
-                };
-                container.appendChild(row);
-            });
-        }
-
-        function testVoice(event, voiceName) {
-            event.stopPropagation();
-            window.speechSynthesis.cancel();
-            const ut = new SpeechSynthesisUtterance("Vorschau der Stimme");
-            ut.lang = 'de-DE';
-            const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
-            if (voiceObj) ut.voice = voiceObj;
-            
-            // Prevent garbage collection
-            window.currentUtterance = ut;
-            window.speechSynthesis.speak(ut);
-        }
-
-        function playBlockAudio(text, buttonEl) {
-            window.speechSynthesis.cancel();
-            
-            if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-            }
-            
-            const speed = parseFloat(document.getElementById('voice-picker-speed').value);
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'de-DE';
-            utterance.rate = speed;
-
-            const savedVoiceName = localStorage.getItem('b2_selected_voice');
-            let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
-            
-            if (!voiceObj && availableGermanVoices.length > 0) {
-                voiceObj = availableGermanVoices.find(v => v.name.includes('Microsoft')) || availableGermanVoices[0];
-            }
-            if (voiceObj) utterance.voice = voiceObj;
-
-            // Assign to global variable to avoid garbage collection bug that causes silent cutoffs
-            window.currentUtterance = utterance;
-
-            buttonEl.classList.add('animate-pulse', 'text-rose-600');
-            activeSpeakingButton = buttonEl;
-
-            utterance.onend = () => {
-                if (activeSpeakingButton) {
-                    activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-                }
-                activeSpeakingButton = null;
-                window.currentUtterance = null;
-            };
-
-            utterance.onerror = (e) => {
-                console.error("SpeechSynthesis Error:", e);
-                if (activeSpeakingButton) {
-                    activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-                }
-                activeSpeakingButton = null;
-                window.currentUtterance = null;
-            };
-            
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function stopBlockAudio() {
-            window.speechSynthesis.cancel();
-            if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-                activeSpeakingButton = null;
-            }
         }
 
         function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category, rawPath, isArray = false, arrayIdx = null, subKey = null) {
