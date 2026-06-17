@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2 Trainer — TELC B2 Diskussionstrainer</title>
+    <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,9 +15,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
-    
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
+    <link class="apple-touch-icon" href="./icons/icon-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -110,7 +108,6 @@
             display: inline;
         }
 
-        /* Edit Mode Styling */
         .edit-mode-active [contenteditable="true"] {
             border-bottom: 1px dashed var(--text-faint);
             outline: none;
@@ -140,9 +137,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="h-full flex flex-col overflow-x-hidden">
+<body class="h-full flex flex-col overflow-hidden">
 
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 z-40 shadow-sm transition-colors duration-200">
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -212,13 +209,16 @@
                     <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
                         <span>🧹</span><span>Änderungen zurücksetzen</span>
                     </button>
+                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center mt-2">
+                        <span>📲</span><span>App installieren</span>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
+        <aside id="sidebar" class="w-80 fixed inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
@@ -308,7 +308,7 @@
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Sie können nun in jeden Text klicken, um ihn zu bearbeiten. Wenn Sie den deutschen Text ändern, werden Englisch und Arabisch automatisch im Hintergrund mitübersetzt. Benutzen Sie das Stiftsymbol (✏️), um den Text manuell im erweiterten Editor zu bearbeiten.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Klicken Sie direkt in den Text, um ihn zu bearbeiten. Änderungen im Deutschen übersetzen sich automatisch. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
@@ -359,7 +359,7 @@
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
-            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
+            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
             </div>
@@ -511,31 +511,37 @@
             return tmp.textContent || tmp.innerText || "";
         }
 
-        // Helper: Get value dynamically from nested object using a compound key
+        // ==========================================
+        //  FIXED: SAFER GETTER/SETTER TO PREVENT CRASH
+        // ==========================================
         function getTopicValue(topic, compoundKey) {
-            const parts = compoundKey.split('_');
-            if (parts[0] === 'dialog') {
+            if (!topic) return "";
+            if (compoundKey.startsWith('dialog_')) {
+                const parts = compoundKey.split('_'); 
                 const lang = parts[1];
                 const idx = parseInt(parts[2]);
-                return topic.dialog[idx] ? topic.dialog[idx][lang] : "";
-            } else if (parts.length === 3) {
+                return topic.dialog && topic.dialog[idx] ? topic.dialog[idx][lang] : "";
+            } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
+                const parts = compoundKey.split('_');
                 const arrName = parts[0] + '_' + parts[1];
                 const idx = parseInt(parts[2]);
-                return topic[arrName] ? topic[arrName][idx] : "";
+                return topic[arrName] && topic[arrName][idx] !== undefined ? topic[arrName][idx] : "";
             } else {
                 return topic[compoundKey] || "";
             }
         }
 
-        // Helper: Set value dynamically
         function setTopicValue(topic, compoundKey, value) {
-            const parts = compoundKey.split('_');
-            if (parts[0] === 'dialog') {
+            if (!topic) return;
+            if (compoundKey.startsWith('dialog_')) {
+                const parts = compoundKey.split('_');
                 const lang = parts[1];
                 const idx = parseInt(parts[2]);
+                if(!topic.dialog) topic.dialog = [];
                 if(!topic.dialog[idx]) topic.dialog[idx] = {};
                 topic.dialog[idx][lang] = value;
-            } else if (parts.length === 3) {
+            } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
+                const parts = compoundKey.split('_');
                 const arrName = parts[0] + '_' + parts[1];
                 const idx = parseInt(parts[2]);
                 if(!topic[arrName]) topic[arrName] = [];
@@ -610,7 +616,6 @@
             }
         }
 
-        // Event Listeners for UI
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
@@ -655,7 +660,7 @@
         }
 
         // ==========================================
-        //  TTS (TEXT TO SPEECH) ALGORITHM - FIXED
+        //  TTS (TEXT TO SPEECH) ALGORITHM
         // ==========================================
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
@@ -723,7 +728,6 @@
         function openVoicePicker(event, encodedText) {
             event.stopPropagation();
             
-            // Store globally to prevent closure loss
             globalAudioBtn = event.currentTarget; 
             globalAudioText = decodeURIComponent(encodedText);
             
@@ -749,7 +753,6 @@
             populateVoicesList();
         }
 
-        // Attached exactly once, uses global variables mapped when picker was opened
         document.getElementById('voice-picker-play').onclick = () => {
             playBlockAudio(globalAudioText, globalAudioBtn);
         };
@@ -825,7 +828,6 @@
                 activeSpeakingButton = null;
             }
         }
-        // ==========================================
 
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun-icon');
@@ -1274,7 +1276,7 @@
                         ${badge}
                         <span class="text-base select-none">${emojiIcon}</span>
                     </div>
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-1 min-w-0 hide-on-collapse">
                         <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
                         <div class="flex items-center justify-between mt-1 gap-1">
                             <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
@@ -1302,14 +1304,13 @@
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
-        // ==========================================
-        //  ADVANCED MODAL EDITOR 
-        // ==========================================
         function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
             const topic = TOPICS_DATA[activeIdx];
             activeEditBlockContext = { keyPath, isArray, index, subKey };
 
-            let textDE = ""; let textEN = ""; let textAR = "";
+            let textDE = "";
+            let textEN = "";
+            let textAR = "";
 
             if (isArray) {
                 if (subKey) {
@@ -1778,7 +1779,112 @@
             svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
         }
 
+        function exportTopicsJSON() {
+            if (TOPICS_DATA.length === 0) return;
+            const cleanData = JSON.stringify(TOPICS_DATA, null, 2);
+            const blob = new Blob([cleanData], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "topics.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        async function importTopicsJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported) && imported.length > 0) {
+                        pushToHistory();
+                        TOPICS_DATA = imported;
+                        window.TOPICS_DATA = imported;
+                        localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
+                        if (currentUser) {
+                            for (const t of imported) {
+                                await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
+                            }
+                        }
+                        activeIdx = 0;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        alert("topics.json erfolgreich importiert!");
+                    }
+                } catch (err) { alert("Fehler beim Lesen der Datei: " + err.message); }
+            };
+            reader.readAsText(file);
+        }
+
+        document.getElementById('export-json-btn').onclick = exportTopicsJSON;
+
+        document.getElementById('learned-toggle').onclick = () => {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (learnedList.includes(topicId)) {
+                learnedList = learnedList.filter(id => id !== topicId);
+            } else {
+                learnedList.push(topicId);
+            }
+            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+            renderSidebar();
+            renderActiveTopic();
+        };
+
+        document.getElementById('lang-view').addEventListener('change', (e) => {
+            activeView = e.target.value;
+            renderActiveTopic();
+        });
+
+        const editModeToggle = document.getElementById('edit-mode-toggle');
+        editModeToggle.onclick = () => {
+            isEditMode = !isEditMode;
+            editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
+            editModeToggle.classList.toggle('text-white', isEditMode);
+            document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
+            document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
+            renderActiveTopic();
+        };
+
+        document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
+
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            document.getElementById('menu-icon').innerHTML = isHidden 
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        });
+
         loadTopics();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then((reg) => {
+                        reg.addEventListener('updatefound', () => {
+                            const nw = reg.installing;
+                            nw.addEventListener('statechange', () => {
+                                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                                    const banner = document.createElement('div');
+                                    banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
+                                    banner.innerHTML = `<span>🔄 Neue App-Version offline verfügbar.</span><button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black">Aktualisieren</button>`;
+                                    document.body.appendChild(banner);
+                                }
+                            });
+                        });
+                    });
+            });
+        }
     </script>
 </body>
 </html>
