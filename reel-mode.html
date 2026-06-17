@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-zinc-950 text-zinc-100">
 <head>
@@ -70,35 +69,52 @@
 
         <!-- Subtitles Translation dynamic block container -->
         <div id="translation-caption-container" class="px-4 py-3 bg-blue-950/40 border-t border-gray-800 text-center min-h-[64px] max-h-[120px] overflow-y-auto flex items-center justify-center transition-all">
-            <p id="translation-subtitle" class="text-xs italic text-blue-200 leading-relaxed font-semibold">Bilingualer Untertitel erscheint hier beim Abspielen...</p>
+            <p id="translation-subtitle" class="text-xs italic text-blue-200 leading-relaxed font-semibold">Tippe auf den Text oder starte die Wiedergabe...</p>
         </div>
 
         <!-- Controls panel -->
-        <footer class="p-4 bg-gray-900/95 border-t border-gray-800 space-y-3 z-10">
+        <footer class="p-4 bg-gray-900/95 border-t border-gray-800 space-y-3.5 z-10">
+            <!-- Sliders for Speed and Pitch controls -->
+            <div class="grid grid-cols-2 gap-3 text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+                <div class="space-y-1">
+                    <div class="flex justify-between">
+                        <span>Geschwindigkeit</span>
+                        <span id="speed-label" class="text-blue-400">1.0x</span>
+                    </div>
+                    <input type="range" id="speed-slider" min="0.6" max="1.5" step="0.1" value="1.0" oninput="changeSpeedViaSlider(this.value)" class="w-full accent-blue-600 bg-gray-800 rounded-lg appearance-none h-1" />
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between">
+                        <span>Tonhöhe</span>
+                        <span id="pitch-label" class="text-blue-400">1.0</span>
+                    </div>
+                    <input type="range" id="pitch-slider" min="0.5" max="1.5" step="0.1" value="1.0" oninput="changePitchViaSlider(this.value)" class="w-full accent-blue-600 bg-gray-800 rounded-lg appearance-none h-1" />
+                </div>
+            </div>
+
             <div class="flex items-center justify-between gap-2">
-                <button id="playback-trigger" onclick="togglePlayback()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold text-xs shadow-md transition-all">
+                <button id="playback-trigger" onclick="togglePlayback()" class="flex-[2] flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold text-xs shadow-md transition-all">
                     <span id="trigger-icon">▶</span>
-                    <span id="trigger-text">Simulation starten</span>
+                    <span id="trigger-text">Wiedergabe</span>
                 </button>
 
-                <select id="translation-selector" onchange="changeSubtitleLang()" class="text-xs bg-gray-800 border border-gray-700 rounded-xl px-2.5 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                <select id="translation-selector" onchange="changeSubtitleLang()" class="flex-1 text-xs bg-gray-800 border border-gray-700 rounded-xl px-2 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer text-center">
                     <option value="en">Subtitle: EN</option>
                     <option value="ar">Subtitle: AR</option>
-                    <option value="none">Keine Untertitel</option>
+                    <option value="none">Keine</option>
                 </select>
-                
-                <select id="speed-selector" onchange="changeSpeed()" class="text-xs bg-gray-800 border border-gray-700 rounded-xl px-2 py-2.5 font-bold text-zinc-200 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                    <option value="0.8">0.8x</option>
-                    <option value="0.9">0.9x</option>
-                    <option value="1.0" selected>1.0x</option>
-                    <option value="1.1">1.1x</option>
-                    <option value="1.2">1.2x</option>
+            </div>
+
+            <!-- Voice Selection UI -->
+            <div class="relative w-full">
+                <select id="voice-selector" onchange="changeVoice(this.value)" class="w-full text-[10px] bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 font-bold text-zinc-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer truncate">
+                    <option value="">Lade Systemstimmen...</option>
                 </select>
             </div>
             
             <div class="flex items-center justify-between text-[9px] text-gray-500 font-bold px-1 uppercase tracking-wider">
-                <span>Swipe / Wischen zum Navigieren</span>
-                <span>Auto-Scroll: Aktiv</span>
+                <span>Swipe für nächste Karte</span>
+                <span>Wische / klicke zum Navigieren</span>
             </div>
         </footer>
     </div>
@@ -120,12 +136,14 @@
         let currentSpeakerLine = -1;
         let isPlaying = false;
         let playbackSpeed = 1.0;
+        let playbackPitch = 1.0;
         let subtitleLang = 'en';
+        let availableGermanVoices = [];
 
         async function initializeReelEngine() {
             let loaded = false;
             
-            // 1. Try parent context
+            // 1. Try directly matching parent variables (only if safe)
             try {
                 if (window.parent && window.parent.TOPICS_DATA && window.parent.TOPICS_DATA.length > 0) {
                     topicsList = window.parent.TOPICS_DATA;
@@ -133,44 +151,92 @@
                     loaded = true;
                 }
             } catch (err) {
-                console.warn("Konnte nicht direkt auf das Elternfenster zugreifen (möglicherweise Cross-Origin):", err);
+                console.warn("Möglicher Cross-Origin-Sicherheitsblock. Verwende lokalen Fallback.");
             }
 
-            // 2. Try LocalStorage (same origin fallback)
+            // 2. Fallback to LocalStorage database edits
             if (!loaded) {
                 const localEdits = localStorage.getItem('edited_topics_data_1_52');
                 if (localEdits) {
-                    topicsList = JSON.parse(localEdits);
-                    loaded = true;
+                    try {
+                        topicsList = JSON.parse(localEdits);
+                        loaded = true;
+                    } catch(e) {}
                 }
             }
 
-            // 3. Try Direct Fetch
+            // 3. Fallback to direct topics.json fetch [1]
             if (!loaded) {
                 try {
                     const response = await fetch('topics.json');
                     topicsList = await response.json();
                     loaded = true;
                 } catch(e) {
-                    console.error("Datenfehler: topics.json konnte nicht geladen werden.", e);
+                    console.error("Kritischer Fehler: topics.json konnte nicht geladen werden.", e);
                 }
             }
 
-            // Fallback parameters evaluation
             if (loaded) {
                 const params = new URLSearchParams(window.location.search);
                 activeIdx = parseInt(params.get('idx')) || parseInt(localStorage.getItem('b2_active_idx')) || 0;
                 if (activeIdx >= topicsList.length) activeIdx = 0;
             }
 
+            populateVoices();
             loadActiveTopic();
+        }
+
+        // Voice API Populating specifically for MS / Google [6]
+        function populateVoices() {
+            const selector = document.getElementById('voice-selector');
+            if (!selector) return;
+            selector.innerHTML = "";
+
+            availableGermanVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
+            
+            if (availableGermanVoices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = populateVoices;
+                selector.innerHTML = "<option value=''>Systemstimmen werden ermittelt...</option>";
+                return;
+            }
+
+            // Prioritize Microsoft natural online voices [6]
+            availableGermanVoices.sort((a, b) => {
+                const aMs = a.name.includes('Microsoft') ? 0 : 1;
+                const bMs = b.name.includes('Microsoft') ? 0 : 1;
+                const aGoogle = a.name.includes('Google') ? 0 : 1;
+                const bGoogle = b.name.includes('Google') ? 0 : 1;
+                return aMs - bMs || aGoogle - bGoogle || a.name.localeCompare(b.name);
+            });
+
+            const savedVoice = localStorage.getItem('b2_selected_voice') || '';
+
+            availableGermanVoices.forEach((voice, index) => {
+                const isSelected = voice.name === savedVoice || (savedVoice === '' && index === 0);
+                if (isSelected && savedVoice === '') {
+                    localStorage.setItem('b2_selected_voice', voice.name);
+                }
+                const opt = document.createElement('option');
+                opt.value = voice.name;
+                opt.textContent = (voice.name.includes('Microsoft') ? '✨ ' : '👤 ') + voice.name;
+                opt.selected = isSelected;
+                selector.appendChild(opt);
+            });
+        }
+
+        function changeVoice(voiceName) {
+            localStorage.setItem('b2_selected_voice', voiceName);
+            if (isPlaying && currentSpeakerLine >= 0) {
+                jumpToSpeakerLine(currentSpeakerLine);
+            }
         }
 
         function loadActiveTopic() {
             if (topicsList.length === 0) return;
             activeTopic = topicsList[activeIdx];
             
-            // Sync with parent environment if accessible
+            localStorage.setItem('b2_active_idx', activeIdx);
+            
             try {
                 if (window.parent && typeof window.parent.activeIdx !== 'undefined') {
                     window.parent.activeIdx = activeIdx;
@@ -179,12 +245,8 @@
                         window.parent.renderActiveTopic();
                     }
                 }
-            } catch (e) {
-                // Non-accessible parent fallback: preserve local storage index sync
-                localStorage.setItem('b2_active_idx', activeIdx);
-            }
+            } catch (e) {}
 
-            // Bind metadata displays
             document.getElementById('topic-badge').textContent = `Thema ${activeTopic.id} / ${topicsList.length}`;
             document.getElementById('topic-title').textContent = activeTopic.title_de;
             document.getElementById('reel-illustration').innerHTML = CATEGORY_SVGS[activeTopic.category] || CATEGORY_SVGS['Gesellschaft & Politik'];
@@ -258,7 +320,6 @@
             scrollBubbleIntoView(currentSpeakerLine);
             updateProgressBar();
 
-            // Handle captions
             if (subtitleLang === 'en') {
                 updateCaptionContainer(item.en || '');
             } else if (subtitleLang === 'ar') {
@@ -271,12 +332,11 @@
             const utterance = new SpeechSynthesisUtterance(item.de);
             utterance.lang = 'de-DE';
             utterance.rate = playbackSpeed;
+            utterance.pitch = playbackPitch;
 
-            // Robust local voice evaluation using sharing localStorage variables
             const savedVoice = localStorage.getItem('b2_selected_voice');
-            const voices = window.speechSynthesis.getVoices();
-            const matchedObj = voices.find(v => v.name === savedVoice);
-            if (matchedObj) utterance.voice = matchedObj;
+            const voiceObj = availableGermanVoices.find(v => v.name === savedVoice);
+            if (voiceObj) utterance.voice = voiceObj;
 
             utterance.onend = () => {
                 if (isPlaying) {
@@ -328,7 +388,7 @@
 
         function updateCaptionContainer(text, isRTL = false) {
             const textEl = document.getElementById('translation-subtitle');
-            textEl.textContent = text || "Bilingualer Untertitel erscheint hier beim Abspielen...";
+            textEl.textContent = text || "Tippe auf den Text oder starte die Wiedergabe...";
             if (isRTL) {
                 textEl.className = "text-xs font-bold text-amber-300 text-right leading-relaxed w-full font-arabic";
                 textEl.dir = "rtl";
@@ -369,14 +429,22 @@
                 button.className = "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs shadow-md transition-all";
             } else {
                 icon.textContent = '▶';
-                text.textContent = (currentSpeakerLine > 0) ? 'Fortsetzen' : 'Simulation starten';
+                text.textContent = (currentSpeakerLine > 0) ? 'Fortsetzen' : 'Starten';
                 button.className = "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold text-xs shadow-md transition-all";
             }
         }
 
-        function changeSpeed() {
-            const selector = document.getElementById('speed-selector');
-            playbackSpeed = parseFloat(selector.value);
+        function changeSpeedViaSlider(val) {
+            playbackSpeed = parseFloat(val);
+            document.getElementById('speed-label').textContent = `${playbackSpeed.toFixed(1)}x`;
+            if (isPlaying && currentSpeakerLine >= 0) {
+                jumpToSpeakerLine(currentSpeakerLine);
+            }
+        }
+
+        function changePitchViaSlider(val) {
+            playbackPitch = parseFloat(val);
+            document.getElementById('pitch-label').textContent = playbackPitch.toFixed(1);
             if (isPlaying && currentSpeakerLine >= 0) {
                 jumpToSpeakerLine(currentSpeakerLine);
             }
