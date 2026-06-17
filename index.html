@@ -308,7 +308,7 @@
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Sie können nun in jeden Text klicken, um ihn zu bearbeiten. Wenn Sie den deutschen Text ändern, werden Englisch und Arabisch automatisch im Hintergrund mitübersetzt.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Sie können nun in jeden Text klicken, um ihn zu bearbeiten. Wenn Sie den deutschen Text ändern, werden Englisch und Arabisch automatisch im Hintergrund mitübersetzt. Benutzen Sie das Stiftsymbol (✏️), um den Text manuell im erweiterten Editor zu bearbeiten.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
@@ -375,6 +375,41 @@
             <div class="flex gap-2">
                 <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white font-bold text-xs shadow-sm shadow-[var(--accent)]/20">Vorlesen</button>
                 <button id="voice-picker-stop" class="flex-1 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs">Stopp</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
+            <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">✏️</span>
+                    <h3 class="text-sm font-bold text-[var(--text-primary)]">Block bearbeiten</h3>
+                </div>
+                <button onclick="closeBlockEditor()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
+                        <button id="btn-auto-translate" onclick="autoTranslateBlock()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate</button>
+                    </div>
+                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
+                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
+                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none font-arabic"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeBlockEditor()" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all">Abbrechen</button>
+                <button onclick="saveBlockEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-[var(--bg-card)] hover:opacity-90 transition-all">Sichern</button>
             </div>
         </div>
     </div>
@@ -453,11 +488,11 @@
         let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
         let currentUser = null;
         let editedTopicIds = [];
+        let activeEditBlockContext = null;
 
         let undoStack = [];
         let redoStack = [];
-
-        // HACK FOR MOBILE AUDIO 
+        
         let audioUnlocked = false;
         document.body.addEventListener('click', () => {
             if (!audioUnlocked && 'speechSynthesis' in window) {
@@ -688,7 +723,6 @@
         function openVoicePicker(event, encodedText) {
             event.stopPropagation();
             
-            // Store globally to prevent closure loss
             globalAudioBtn = event.currentTarget; 
             globalAudioText = decodeURIComponent(encodedText);
             
@@ -714,7 +748,6 @@
             populateVoicesList();
         }
 
-        // Attached exactly once, uses global variables mapped when picker was opened
         document.getElementById('voice-picker-play').onclick = () => {
             playBlockAudio(globalAudioText, globalAudioBtn);
         };
@@ -1057,11 +1090,9 @@
             let plainText = element.innerText || element.textContent;
 
             if (isGerman) {
-                // Save the German text (preserving highlights/HTML)
                 saveHighlight(topicId, compoundKey, newHtml);
                 setTopicValue(topic, compoundKey, newHtml);
 
-                // Auto-Translate Engine
                 if (plainText.length > 2) {
                     const enKey = compoundKey.replace('_de', '_en');
                     const arKey = compoundKey.replace('_de', '_ar');
@@ -1088,15 +1119,14 @@
                         if(enEl) enEl.innerText = transEn;
                         if(arEl) arEl.innerText = transAr;
                     } catch(e) {
-                        console.warn("Auto-translate failed. Rate limit?", e);
-                        if(enEl) enEl.innerText = getTopicValue(topic, enKey); // Revert on fail
+                        console.warn("Auto-translate failed.", e);
+                        if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
                         if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
                     }
                 }
             } else {
-                // Manual Edits on EN/AR
                 setTopicValue(topic, compoundKey, plainText);
-                element.innerText = plainText; // Clean any corrupted HTML injected by user
+                element.innerText = plainText; 
             }
 
             saveEditsSilent();
@@ -1114,7 +1144,7 @@
 
             if (!activeContainer) return;
             const blockKey = activeContainer.getAttribute('data-block-key');
-            if (!blockKey) return; // Only format German elements
+            if (!blockKey) return; 
 
             pushToHistory();
 
@@ -1270,8 +1300,122 @@
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
-        function buildCardWrapper(title, contentHtml, blockKey, textToSpeakHtml) {
-            // Secure passing text to avoid any HTML injection in the onclick string
+        function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
+            const topic = TOPICS_DATA[activeIdx];
+            activeEditBlockContext = { keyPath, isArray, index, subKey };
+
+            let textDE = "";
+            let textEN = "";
+            let textAR = "";
+
+            if (isArray) {
+                if (subKey) {
+                    textDE = topic[keyPath]?.[index]?.[subKey] || "";
+                    textEN = topic[keyPath + '_en']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['en'] || "";
+                    textAR = topic[keyPath + '_ar']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['ar'] || "";
+                } else {
+                    textDE = topic[keyPath]?.[index] || "";
+                    textEN = topic[keyPath.replace('_de', '_en')]?.[index] || "";
+                    textAR = topic[keyPath.replace('_de', '_ar')]?.[index] || "";
+                }
+            } else {
+                textDE = topic[keyPath] || "";
+                textEN = topic[keyPath.replace('_de', '_en')] || "";
+                textAR = topic[keyPath.replace('_de', '_ar')] || "";
+            }
+
+            document.getElementById('modal-edit-de').value = textDE;
+            document.getElementById('modal-edit-en').value = textEN;
+            document.getElementById('modal-edit-ar').value = textAR;
+
+            document.getElementById('block-editor-modal').classList.remove('hidden');
+        }
+
+        function closeBlockEditor() {
+            document.getElementById('block-editor-modal').classList.add('hidden');
+            activeEditBlockContext = null;
+        }
+
+        async function autoTranslateBlock() {
+            const deText = document.getElementById('modal-edit-de').value.trim();
+            if (!deText) return;
+            
+            const btn = document.getElementById('btn-auto-translate');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Lädt...";
+            btn.disabled = true;
+
+            try {
+                const resEn = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`);
+                const dataEn = await resEn.json();
+                if(dataEn.responseData && dataEn.responseData.translatedText) {
+                    document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
+                }
+
+                const resAr = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`);
+                const dataAr = await resAr.json();
+                if(dataAr.responseData && dataAr.responseData.translatedText) {
+                    document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
+                }
+            } catch (e) {
+                alert("Fehler bei der automatischen Übersetzung. Bitte Internetverbindung prüfen.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function saveBlockEditor() {
+            if (!activeEditBlockContext) return;
+            const { keyPath, isArray, index, subKey } = activeEditBlockContext;
+            const topic = TOPICS_DATA[activeIdx];
+
+            const valDE = document.getElementById('modal-edit-de').value.trim();
+            const valEN = document.getElementById('modal-edit-en').value.trim();
+            const valAR = document.getElementById('modal-edit-ar').value.trim();
+
+            pushToHistory();
+
+            if (isArray) {
+                if (subKey) {
+                    if (!topic[keyPath]) topic[keyPath] = [];
+                    if (!topic[keyPath][index]) topic[keyPath][index] = {};
+                    topic[keyPath][index][subKey] = valDE;
+
+                    if (subKey === 'de') {
+                        topic[keyPath][index]['en'] = valEN;
+                        topic[keyPath][index]['ar'] = valAR;
+                    }
+                } else {
+                    const deKey = keyPath;
+                    const enKey = keyPath.replace('_de', '_en');
+                    const arKey = keyPath.replace('_de', '_ar');
+
+                    if (!topic[deKey]) topic[deKey] = [];
+                    if (!topic[enKey]) topic[enKey] = [];
+                    if (!topic[arKey]) topic[arKey] = [];
+
+                    topic[deKey][index] = valDE;
+                    topic[enKey][index] = valEN;
+                    topic[arKey][index] = valAR;
+                }
+            } else {
+                const deKey = keyPath;
+                const enKey = keyPath.replace('_de', '_en');
+                const arKey = keyPath.replace('_de', '_ar');
+
+                topic[deKey] = valDE;
+                topic[enKey] = valEN;
+                topic[arKey] = valAR;
+            }
+
+            saveEdits();
+            closeBlockEditor();
+            renderActiveTopic();
+        }
+
+        function buildCardWrapper(title, contentHtml, blockKey, textToSpeakHtml, rawPath, isArray = false, arrayIdx = null, subKey = null) {
+            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
             const plainTextForAudio = stripHtml(textToSpeakHtml);
             const encodedText = encodeURIComponent(plainTextForAudio);
             
@@ -1283,7 +1427,10 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
+                            <button data-text="${encodedText}" onclick="openVoicePicker(event, '${encodedText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
+                            <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
+                                ✏️ Bearbeiten
+                            </button>
                         </div>
                     </div>
                     ${contentHtml}
@@ -1299,6 +1446,17 @@
             document.getElementById('active-topic-title-de').textContent = topic.title_de;
             document.getElementById('active-topic-title-en').textContent = topic.title_en;
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
+
+            const rootEl = document.documentElement;
+            if (isEditMode) {
+                rootEl.classList.add('edit-mode-active');
+                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
+                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
+            } else {
+                rootEl.classList.remove('edit-mode-active');
+                document.getElementById('active-topic-title-de').contentEditable = "false";
+                document.getElementById('active-topic-title-en').contentEditable = "false";
+            }
 
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
@@ -1340,7 +1498,7 @@
                 <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
             `;
             const einleitungCard = document.createElement('div');
-            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe]);
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
             container.appendChild(einleitungCard);
 
             const proContraParent = document.createElement('div');
@@ -1367,7 +1525,7 @@
                 `;
             });
             const proCard = document.createElement('div');
-            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio);
+            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio, 'pro_de', true, 0);
             proContraParent.appendChild(proCard);
 
             // --- 3. CONTRA SECTION ---
@@ -1391,7 +1549,7 @@
                 `;
             });
             const contraCard = document.createElement('div');
-            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra)", contraContent, "contra_section", fullContraTextForAudio);
+            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra)", contraContent, "contra_section", fullContraTextForAudio, 'contra_de', true, 0);
             proContraParent.appendChild(contraCard);
             container.appendChild(proContraParent);
 
@@ -1407,7 +1565,7 @@
                 <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
             `;
             const erfahrungCard = document.createElement('div');
-            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe]);
+            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
             container.appendChild(erfahrungCard);
 
             // --- 5. DIALOG SIMULATION ---
@@ -1432,7 +1590,7 @@
             });
             dialogHtml += '</div>';
             const dialogCard = document.createElement('div');
-            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio);
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio, 'dialog', true, 0, 'de');
             container.appendChild(dialogCard);
 
             // --- 6. GEMEINSAME LÖSUNG ---
@@ -1447,7 +1605,7 @@
                 <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
             `;
             const schlussCard = document.createElement('div');
-            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung", schlussHtml, schlDe, savedSchl || topic[schlDe]);
+            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung", schlussHtml, schlDe, savedSchl || topic[schlDe], 'schluss_de');
             container.appendChild(schlussCard);
 
             // --- 7. KEYWORDS ---
@@ -1465,7 +1623,7 @@
                 </div>
             `;
             const keywordsCard = document.createElement('div');
-            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", topic.keywords || "");
+            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter", keywordsHtml, "keywords_block", topic.keywords || "", 'keywords');
             container.appendChild(keywordsCard);
 
             if (isEditMode) {
@@ -1523,7 +1681,122 @@
             container.appendChild(grid);
         }
 
+        function buildDynamicMindmapData() {
+            const categories = {
+                'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
+                'Arbeit & Karriere': { color: "#2563EB", children: [] },
+                'Umwelt & Mobilität': { color: "#7C3AED", children: [] },
+                'Gesellschaft & Politik': { color: "#DC2626", children: [] },
+                'Bildung & Technologie': { color: "#D97706", children: [] }
+            };
+            TOPICS_DATA.forEach(topic => {
+                const cat = topic.category || 'Gesellschaft & Politik';
+                categories[cat].children.push({ name: `T${topic.id}: ${topic.title_de}`, id: topic.id, idx: TOPICS_DATA.indexOf(topic) });
+            });
+            return {
+                name: "TELC B2 Themen", priority: "root",
+                children: Object.keys(categories).map(catName => ({ name: catName, color: categories[catName].color, priority: 'category', children: categories[catName].children }))
+            };
+        }
+
+        function initMindmap() {
+            if (TOPICS_DATA.length === 0) return;
+            let iCount = 0;
+            const svg = d3.select("#mindmap-svg");
+            svg.selectAll("*").remove();
+            const width = svg.node().clientWidth || 900;
+            const height = svg.node().clientHeight || 600;
+            
+            const rawData = buildDynamicMindmapData();
+            const gContainer = svg.append("g").attr("class", "mindmap-container");
+            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => { gContainer.attr("transform", event.transform); });
+            svg.call(zoom);
+
+            const treemap = d3.tree().nodeSize([16, 160]);
+            let root = d3.hierarchy(rawData, d => d.children);
+            root.x0 = height / 2; root.y0 = 0;
+            root.children.forEach((d, i) => { if (i > 0) collapse(d); });
+            update(root);
+
+            function collapse(d) {
+                if (d.children) { d._children = d.children; d._children.forEach(collapse); d.children = null; }
+            }
+
+            function update(source) {
+                const treeData = treemap(root);
+                const nodes = treeData.descendants();
+                const links = treeData.links();
+                nodes.forEach(d => { d.y = d.depth * 170; });
+                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = ++iCount));
+                const nodeEnter = node.enter().append('g').attr('class', 'mindmap-node cursor-pointer').attr('transform', d => `translate(${source.y0},${source.x0})`).on('click', clickNode);
+
+                nodeEnter.each(function(d) {
+                    const el = d3.select(this);
+                    if (d.data.priority === 'root') {
+                        el.append('circle').attr('r', 8).attr('fill', 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 2);
+                        el.append('text').attr('dy', '.35em').attr('x', -14).attr('text-anchor', 'end').attr('fill', 'var(--text-primary)').attr('font-size', '9px').attr('font-weight', 'bold').text(d.data.name);
+                    } else if (d.data.priority === 'category') {
+                        el.append('circle').attr('r', 6).attr('fill', d.data.color).attr('stroke', '#ffffff').attr('stroke-width', 1.5);
+                        el.append('text').attr('dy', '.35em').attr('x', d => d.children || d._children ? -12 : 12).attr('text-anchor', d => d.children || d._children ? 'end' : 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').attr('font-weight', 'bold').text(d.data.name);
+                    } else {
+                        el.append('circle').attr('r', 3).attr('fill', d.parent.data.color || 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 1);
+                        el.append('text').attr('dy', '.35em').attr('x', 10).attr('text-anchor', 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').text(d.data.name.length > 25 ? d.data.name.substring(0, 23) + '...' : d.data.name);
+                    }
+                });
+
+                const nodeUpdate = nodeEnter.merge(node);
+                nodeUpdate.transition().duration(250).attr('transform', d => `translate(${d.y},${d.x})`);
+                nodeUpdate.select('circle').attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)')).attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff');
+                node.exit().transition().duration(250).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+
+                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
+                const linkEnter = link.enter().insert('path', "g").attr('class', 'mindmap-link').attr('fill', 'none').attr('stroke', 'var(--border)').attr('stroke-opacity', 0.4).attr('stroke-width', 1)
+                    .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
+
+                linkEnter.merge(link).transition().duration(250).attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)').attr('stroke-opacity', 0.6).attr('d', d => diagonal(d.source, d.target));
+                link.exit().transition().duration(250).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
+                nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+                function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+                function clickNode(event, d) {
+                    if (d.data.idx !== undefined) {
+                        activeIdx = d.data.idx;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        switchTab('dashboard');
+                    } else {
+                        if (d.children) { d._children = d.children; d.children = null; }
+                        else { d.children = d._children; d._children = null; }
+                        update(d);
+                    }
+                }
+            }
+            svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
+        }
+
         loadTopics();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then((reg) => {
+                        reg.addEventListener('updatefound', () => {
+                            const nw = reg.installing;
+                            nw.addEventListener('statechange', () => {
+                                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                                    const banner = document.createElement('div');
+                                    banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
+                                    banner.innerHTML = `<span>🔄 Neue App-Version offline verfügbar.</span><button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black">Aktualisieren</button>`;
+                                    document.body.appendChild(banner);
+                                }
+                            });
+                        });
+                    });
+            });
+        }
     </script>
 </body>
 </html>
