@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-zinc-950 text-zinc-100">
 <head>
@@ -121,6 +122,27 @@
 
     <!-- SPEECH PLAYBACK ENGINE SCRIPT -->
     <script>
+        const TOPIC_CATEGORIES_LOOKUP = {
+            1: 'Freizeit & Gesundheit', 2: 'Bildung & Technologie', 3: 'Gesellschaft & Politik',
+            4: 'Freizeit & Gesundheit', 5: 'Freizeit & Gesundheit', 6: 'Umwelt & Mobilität',
+            7: 'Arbeit & Karriere', 8: 'Umwelt & Mobilität', 9: 'Bildung & Technologie',
+            10: 'Arbeit & Karriere', 11: 'Umwelt & Mobilität', 12: 'Gesellschaft & Politik',
+            13: 'Freizeit & Gesundheit', 14: 'Bildung & Technologie', 15: 'Bildung & Technologie',
+            16: 'Bildung & Technologie', 17: 'Bildung & Technologie', 18: 'Freizeit & Gesundheit',
+            19: 'Bildung & Technologie', 20: 'Freizeit & Gesundheit', 21: 'Freizeit & Gesundheit',
+            22: 'Bildung & Technologie', 23: 'Gesellschaft & Politik', 24: 'Bildung & Technologie',
+            25: 'Bildung & Technologie', 26: 'Freizeit & Gesundheit', 27: 'Freizeit & Gesundheit',
+            28: 'Freizeit & Gesundheit', 29: 'Freizeit & Gesundheit', 30: 'Gesellschaft & Politik',
+            31: 'Gesellschaft & Politik', 32: 'Gesellschaft & Politik', 33: 'Gesellschaft & Politik',
+            34: 'Freizeit & Gesundheit', 35: 'Arbeit & Karriere', 36: 'Arbeit & Karriere',
+            37: 'Arbeit & Karriere', 38: 'Bildung & Technologie', 39: 'Bildung & Technologie',
+            40: 'Bildung & Technologie', 41: 'Bildung & Technologie', 42: 'Arbeit & Karriere',
+            43: 'Gesellschaft & Politik', 44: 'Bildung & Technologie', 45: 'Bildung & Technologie',
+            46: 'Umwelt & Mobilität', 47: 'Gesellschaft & Politik', 48: 'Bildung & Technologie',
+            49: 'Gesellschaft & Politik', 50: 'Bildung & Technologie', 51: 'Gesellschaft & Politik',
+            52: 'Gesellschaft & Politik'
+        };
+
         const CATEGORY_SVGS = {
             'Freizeit & Gesundheit': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><path d="M14 20c2-4 6-6 6-6s4 2 6 6" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="20" r="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M55 20h10M60 15v10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>`,
             'Arbeit & Karriere': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="24" height="18" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M16 16h8M16 20h6M16 24h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/><path d="M48 28V16l10-4v16" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="22" width="4" height="6" fill="#7C3AED"/></svg>`,
@@ -177,6 +199,11 @@
             }
 
             if (loaded) {
+                // Map fallback categories to avoid category cluttering inside Reel mode [1]
+                topicsList.forEach(t => {
+                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
+                });
+
                 const params = new URLSearchParams(window.location.search);
                 activeIdx = parseInt(params.get('idx')) || parseInt(localStorage.getItem('b2_active_idx')) || 0;
                 if (activeIdx >= topicsList.length) activeIdx = 0;
@@ -467,12 +494,6 @@
         function prevTopic() {
             if (topicsList.length === 0) return;
             activeIdx = (activeIdx - 1 + topicsList.length) % topicsList.length;
-            loadActiveTopic();
-        }
-
-        function nextTopic() {
-            if (topicsList.length === 0) return;
-            activeIdx = (activeIdx + 1) % topicsList.length;
             loadActiveTopic();
         }
 
