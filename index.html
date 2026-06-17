@@ -1,19 +1,9 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full bg-slate-50 transition-colors duration-200" data-theme="light">
+<html lang="de" class="h-full bg-zinc-950 text-zinc-100 transition-colors duration-200" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TELC B2 Diskussionstrainer (Themen 1 - 52)</title>
-    
-    <!-- PWA Meta Tags -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="B2 Trainer">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3251/3251521.png">
-
-    <!-- Tailwind CSS with custom configuration support -->
+    <title>TELC B2 Diskussionstrainer - Professional Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,1018 +12,659 @@
     </script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-        }
-        
-        /* Universal Theme Variables */
         :root, [data-theme="light"] {
             --bg-primary: #f8fafc;
             --bg-card: #ffffff;
             --text-primary: #0f172a;
             --text-muted: #64748b;
             --border-primary: #e2e8f0;
-            --highlight-bg: #fef08a;
-            --highlight-text: #854d0e;
-            --highlight-border: #facc15;
+            --glow-color: rgba(99, 102, 241, 0.15);
+            --glow-border: #6366f1;
         }
-        
         [data-theme="dark"] {
-            --bg-primary: #0f172a;
-            --bg-card: #1e293b;
-            --text-primary: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-primary: #334155;
-            --highlight-bg: #ca8a04;
-            --highlight-text: #fef9c3;
-            --highlight-border: #eab308;
+            --bg-primary: #09090b;
+            --bg-card: #18181b;
+            --text-primary: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-primary: #27272a;
+            --glow-color: rgba(162, 155, 254, 0.25);
+            --glow-border: #a29bfe;
         }
 
-        /* Active word boundary highlighting */
-        .tts-word-active {
-            border-radius: 4px;
-            background-color: rgba(162, 155, 254, 0.25);
-            transition: background-color 150ms ease;
-        }
-        [data-theme="light"] .tts-word-active {
-            background-color: rgba(95, 79, 207, 0.12);
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
         }
 
-        /* Standard Newspaper Cutout Highlighting */
-        .highlight {
-            background-color: var(--highlight-bg);
-            color: var(--highlight-text);
-            font-weight: 700;
-            padding: 1px 4px;
-            border-radius: 4px;
-            border-bottom: 2px solid var(--highlight-border);
-            display: inline-block;
-            transition: all 0.2s ease;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
         }
-
-        /* Custom User Highlights classes */
-        .hl-yellow {
-            background-color: rgba(253, 224, 71, 0.4) !important;
-            border-radius: 4px;
-            padding: 1px 3px;
-        }
-        .hl-orange {
-            background-color: rgba(249, 115, 22, 0.4) !important;
-            border-radius: 4px;
-            padding: 1px 3px;
-        }
-        .hl-blue {
-            background-color: rgba(59, 130, 246, 0.4) !important;
-            border-radius: 4px;
-            padding: 1px 3px;
-        }
-        
-        /* Dark theme selection support */
-        .dark .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
-        .dark .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
-        .dark .hl-blue { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
-
-        /* Custom scrollbar configurations */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
+        .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3f3f46;
             border-radius: 9999px;
         }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
+
+        .card-active {
+            animation: cardSlideUp 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        @keyframes cardSlideUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Hand-drawn pencil circle styling */
-        .highlight-circle {
-            animation: drawCircle 650ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        .tts-word {
+            transition: all 150ms ease;
+            padding: 0 1px;
+            border-radius: 3px;
         }
-        @media print {
-            .highlight-circle {
-                display: none !important;
-            }
+
+        /* Glowing text effect when reading out loud */
+        .tts-word-active {
+            background-color: var(--glow-color);
+            box-shadow: 0 0 8px var(--glow-color);
+            border-bottom: 2px solid var(--glow-border);
+            color: inherit;
+        }
+
+        /* Red handdrawn pencil animation */
+        .highlight-circle {
+            animation: drawCircle 500ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        @keyframes drawCircle {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Smooth pulsing background for central nodes */
+        .pulse-node {
+            animation: softPulse 3s infinite ease-in-out;
+        }
+        @keyframes softPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(99, 102, 241, 0.4); }
         }
     </style>
-    <!-- Firebase SDK Compat Core Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="h-full flex flex-col transition-colors duration-200">
+<body class="h-full w-full flex flex-col md:flex-row overflow-hidden transition-colors duration-200">
 
-    <!-- MAIN DASHBOARD APP HEADER -->
-    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
-        <div class="flex items-center gap-3">
-            <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md cursor-pointer" onclick="showMindMap()">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            </div>
+    <!-- Sidebar / Topic Selector and Mind Map view -->
+    <aside class="w-full md:w-80 bg-zinc-900 dark:bg-zinc-950 border-r border-zinc-800 flex flex-col h-1/3 md:h-full z-20">
+        <div class="p-4 border-b border-zinc-800 flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    TELC B2 Diskussionstrainer
-                    <button onclick="showMindMap()" class="px-2.5 py-1 rounded-lg text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-extrabold hover:scale-105 transition-all">🗺️ Mind-Map</button>
+                <h1 class="text-base font-black tracking-tight text-white flex items-center gap-1.5">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-indigo-400"></i>
+                    B2 Diskussionstrainer
                 </h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Teil 2: Diskussion · Komplettes Lern-Dashboard (Themen 1 – 52)</p>
+                <p class="text-[10px] text-zinc-400 font-medium">Mündliche Prüfung · Teil 2</p>
+            </div>
+            <!-- Toggle Mode view button -->
+            <button onclick="toggleMindMapView()" id="view-toggle-btn" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-1">
+                <i data-lucide="network" class="w-3.5 h-3.5"></i>
+                <span>Mind Map</span>
+            </button>
+        </div>
+
+        <!-- Scrollable topic list -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2" id="sidebar-topic-list">
+            <!-- Populated dynamically -->
+        </div>
+    </aside>
+
+    <!-- Main Workspace Container -->
+    <main class="flex-1 relative flex flex-col justify-between overflow-hidden bg-zinc-950">
+        
+        <!-- TOP CONTROL & INDICATOR BAR -->
+        <div class="p-4 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between z-10">
+            <div class="flex items-center gap-2">
+                <span id="topic-badge" class="px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold tracking-wider">Thema</span>
+                <h2 id="topic-title" class="text-sm font-bold text-white max-w-[220px] md:max-w-md truncate">Lade...</h2>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <!-- Highlight Circle Pencil Tool Toggle -->
+                <button onclick="togglePencilTool()" id="pencil-tool-btn" class="p-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-white transition-all flex items-center gap-1.5" title="Manueller roter Zeichenstift">
+                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                    <span class="text-xs hidden sm:inline">Stift-Modus: <span id="pencil-status" class="text-rose-400 font-extrabold">Aus</span></span>
+                </button>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-all">
+                    <i data-lucide="sun-moon" class="w-4 h-4"></i>
+                </button>
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <!-- Learning Progress Visual Indicators -->
-            <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
-                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lernfortschritt:</span>
-                <div class="w-28 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-                    <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-                <span id="progress-text" class="text-xs font-bold text-slate-700 dark:text-slate-300">Lade...</span>
-            </div>
+        <!-- CENTER REEL CANVAS AREA -->
+        <div id="workspace-viewport" class="flex-1 relative flex items-center justify-center p-4 overflow-hidden">
+            
+            <!-- REEL MODE VIEW -->
+            <div id="reel-mode-container" class="w-full max-w-md h-full max-h-[620px] bg-zinc-900 dark:bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col justify-between overflow-hidden shadow-2xl relative transition-all duration-300">
+                <!-- Horizontal Progress indicator on top -->
+                <div id="top-progress" class="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300" style="width: 0%"></div>
 
-            <!-- Interactive Reel Mode Button -->
-            <button onclick="openReel()" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-950/45 text-indigo-600 dark:text-indigo-400 font-bold text-xs transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
-                <span>🎬 Reel-Modus</span>
-            </button>
-
-            <!-- Dark Theme Toggle Control -->
-            <button id="theme-toggle" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <svg id="theme-toggle-sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z"></path>
-                </svg>
-                <svg id="theme-toggle-moon-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                </svg>
-            </button>
-        </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden relative">
-
-        <!-- MOBILE NAV TRIGGER BUTTON -->
-        <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 active:scale-95 transition-transform duration-100">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-
-        <!-- APP SIDEBAR CONTROLS -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
-            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors flex flex-col gap-2">
-                <button onclick="showMindMap()" class="w-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 py-2 px-3 rounded-lg border border-indigo-200 dark:border-indigo-900 hover:bg-indigo-100 transition-all flex items-center justify-center gap-1.5">
-                    <i data-lucide="map" class="w-4 h-4"></i>
-                    Themen Mind-Map anzeigen
-                </button>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-1">Inhaltsverzeichnis</h3>
-                <div class="relative">
-                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-inner" />
-                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-            </div>
-
-            <!-- List of loaded discussion topics -->
-            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-white dark:bg-slate-800 transition-colors">
-                <!-- Programmatically populated -->
-            </nav>
-
-            <!-- Collapsible Configuration Settings Area -->
-            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors">
-                <button id="sidebar-tools-toggle" class="w-full text-xs bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-between shadow-sm">
-                    <span class="flex items-center gap-1.5">
-                        <i data-lucide="settings" class="w-4 h-4 text-indigo-500"></i>
-                        Optionen & Bearbeitung
-                    </span>
-                    <i id="tools-chevron" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
-                </button>
-                
-                <div id="sidebar-tools-menu" class="hidden mt-2 space-y-2 pt-1 transition-all">
-                    <!-- Toggle Edit Configuration State -->
-                    <button id="edit-mode-toggle" class="w-full text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2.5 border border-slate-300 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i>
-                        <span>Bearbeitungsmodus: AUS</span>
-                    </button>
-                    <!-- Persistent Undo Button -->
-                    <button id="undo-btn" class="w-full text-xs bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/25 dark:text-amber-200 text-amber-800 font-bold rounded-lg px-4 py-2.5 border border-amber-200 dark:border-amber-900 transition-colors flex items-center justify-center gap-1.5 shadow-sm" onclick="undoLastEdit()">
-                        <i data-lucide="undo" class="w-4 h-4"></i>
-                        <span>Letzten Schritt zurück (Ctrl+Z)</span>
-                    </button>
-                    <!-- Export current edited JSON array as topics.json -->
-                    <button id="export-json-btn" class="w-full text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-700 dark:text-indigo-200 dark:hover:bg-slate-600 text-indigo-700 font-bold rounded-lg px-4 py-2.5 border border-slate-200 dark:border-slate-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                        <i data-lucide="download" class="w-4 h-4"></i>
-                        <span>topics.json exportieren</span>
-                    </button>
-
-                    <!-- Import & Export Backup Interface Row -->
-                    <div class="border-t border-slate-200 dark:border-slate-700/60 pt-2.5 mt-1 space-y-2">
-                        <span class="text-[10px] font-black tracking-wider text-slate-400 dark:text-slate-500 uppercase block">Manuelles Backup & Import</span>
-                        <div class="grid grid-cols-2 gap-1.5">
-                            <button onclick="exportBackupData()" class="text-[10px] text-center bg-white dark:bg-slate-800 hover:bg-indigo-50 text-indigo-700 dark:text-indigo-300 font-extrabold border border-indigo-200 dark:border-indigo-900 rounded-lg py-2 transition-all flex items-center justify-center gap-1">
-                                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i>
-                                Sichern
-                            </button>
-                            <button onclick="triggerImportFileInput()" class="text-[10px] text-center bg-white dark:bg-slate-800 hover:bg-indigo-50 text-indigo-700 dark:text-indigo-300 font-extrabold border border-indigo-200 dark:border-indigo-900 rounded-lg py-2 transition-all flex items-center justify-center gap-1">
-                                <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
-                                Importieren
-                            </button>
-                        </div>
-                        <input type="file" id="import-file-input" accept=".json" class="hidden" onchange="importBackupData(event)">
+                <!-- Active card visual stack -->
+                <div id="reel-card-container" class="flex-1 relative flex flex-col justify-center px-6 py-4 overflow-hidden">
+                    <div id="active-reel-card" class="w-full h-full rounded-2xl p-5 flex flex-col justify-between border border-zinc-800/80 overflow-y-auto custom-scrollbar card-active relative">
+                        <!-- Content populated dynamically -->
                     </div>
+                </div>
 
-                    <!-- Erase Local Custom Edits -->
-                    <button id="reset-edits-btn" class="w-full text-[11px] text-red-600 dark:text-red-400 hover:underline font-bold transition-all text-center block hidden py-1">
-                        Änderungen zurücksetzen
-                    </button>
-                    <!-- Trigger PWA Installation -->
-                    <button id="pwa-install-btn" class="hidden w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2.5 border border-emerald-500 shadow-sm transition-colors flex items-center justify-center gap-1.5">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span>App installieren</span>
-                    </button>
+                <!-- Live Subtitles / Feed Overlay -->
+                <div id="translation-caption-container" class="px-5 py-3 bg-zinc-950 border-t border-zinc-800/60 text-center min-h-[65px] flex items-center justify-center">
+                    <p id="translation-subtitle" class="text-xs italic text-indigo-200 leading-relaxed font-semibold">Wähle ein Thema zum Starten</p>
                 </div>
             </div>
-        </aside>
 
-        <!-- MAIN SCROLLABLE WRAPPER -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6">
-
-            <!-- REALTIME DATABASE SYNCHRONIZATION CONTAINER -->
-            <div id="workspace-panel" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm transition-colors duration-200">
-                <!-- Logged Out Module -->
-                <div id="auth-logged-out" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- MIND MAP VIEW (Hidden by default, overlays workspace when toggled) -->
+            <div id="mind-map-container" class="hidden absolute inset-0 bg-zinc-950 p-6 overflow-auto custom-scrollbar flex-col justify-start z-30">
+                <div class="mb-4 flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                            Cloud-Arbeitsbereich inaktiv
-                        </h3>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Laden Sie Ihren Arbeitsbereich oder erstellen Sie hier ein neues Konto.</p>
+                        <h3 class="text-lg font-black text-white">Mundlich Prüfung Mind Map</h3>
+                        <p class="text-xs text-zinc-400">Verbinde und navigiere die B2 Themen intelligent</p>
                     </div>
-                    <div class="flex flex-col gap-3">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <select id="user-select" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
-                                <option value="mohammed">Mohammed Jdeed</option>
-                                <option value="mai">Mai Hasan</option>
-                            </select>
-                            <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36 transition-colors">
-                            <button id="btn-login" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
-                                Arbeitsbereich laden
-                            </button>
-                            <button id="btn-signup" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all duration-150 active:scale-95">
-                                Konto erstellen
-                            </button>
-                        </div>
-                        <div class="flex items-center justify-end">
-                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-[10px] text-slate-500 dark:text-slate-400 font-bold">
-                                <input type="checkbox" id="remember-me" checked class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-900 w-3.5 h-3.5">
-                                Angemeldet bleiben
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Logged In Module -->
-                <div id="auth-logged-in" class="hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 p-2.5 rounded-xl text-emerald-600 dark:text-emerald-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Cloud-Synchronisierung aktiv
-                            </h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="user-display-name">Geladen: --</p>
-                        </div>
-                    </div>
-                    <button id="btn-logout" class="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all">
-                        Abmelden
-                    </button>
-                </div>
-            </div>
-
-            <!-- THEME VIEW & SYSTEM CONTROLLER BAR -->
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-colors duration-200">
-                <div>
-                    <span id="active-topic-num" class="inline-flex items-center py-1 px-3 rounded-md text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900 mb-2 uppercase tracking-wide">Thema --</span>
-                    <h2 id="active-topic-title-de" class="text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight">Wähle ein Thema aus</h2>
-                    <h3 id="active-topic-title-en" class="text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium">Select a topic from the sidebar</h3>
+                    <button onclick="toggleMindMapView()" class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold transition-all">Zurück zu Reels</button>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors">
-                    
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ansichtsmodus</span>
-                        <select id="lang-view" class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-colors">
-                            <option value="both">Bilinguale Ansicht (DE & EN)</option>
-                            <option value="de_ar">Bilinguale Ansicht (DE & AR)</option>
-                            <option value="all">Trilinguale Ansicht (DE, EN & AR)</option>
-                            <option value="de">Nur Deutsch (Prüfungsmodus)</option>
-                            <option value="en">Nur Englisch (Translation)</option>
-                            <option value="ar">Nur Arabisch (Translation)</option>
-                        </select>
+                <!-- Responsive Grid representing the Mind Map layout to ensure zero layout overlaps -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto my-auto relative">
+                    <!-- Central Hub Node -->
+                    <div class="col-span-1 md:col-span-2 flex justify-center mb-4">
+                        <div class="pulse-node bg-indigo-900/40 border-2 border-indigo-500 p-5 rounded-2xl text-center max-w-xs z-10">
+                            <span class="text-[10px] uppercase font-black tracking-widest text-indigo-400">Prüfungsfokus</span>
+                            <h4 class="text-md font-extrabold text-white">TELC B2 Mundtlich Teil 2</h4>
+                            <p class="text-xs text-zinc-300 mt-1">Präsentieren, Argumentieren & Kompromiss finden</p>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Highlighting</span>
-                        <button id="toggle-highlights" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors">
-                            Hervorhebung: AN
-                        </button>
+                    <!-- Category: Arbeit & Karriere -->
+                    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
+                        <div class="flex items-center gap-2 pb-2 border-b border-zinc-800">
+                            <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="briefcase" class="w-4 h-4"></i></span>
+                            <h4 class="font-extrabold text-sm text-zinc-200">Arbeit & Karriere</h4>
+                        </div>
+                        <div class="flex flex-col gap-2" id="mindmap-cat-career">
+                            <!-- Populated with beautiful wrapped boxes -->
+                        </div>
                     </div>
 
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Lernstatus</span>
-                        <button id="learned-toggle" class="text-xs bg-emerald-550 hover:bg-emerald-600 text-emerald-850 dark:text-emerald-250 font-bold rounded-lg px-4 py-2 border border-emerald-200 dark:border-emerald-900 transition-colors flex items-center gap-1.5 shadow-sm">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            Als gelernt markieren
-                        </button>
+                    <!-- Category: Freizeit & Gesundheit -->
+                    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
+                        <div class="flex items-center gap-2 pb-2 border-b border-zinc-800">
+                            <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="heart" class="w-4 h-4"></i></span>
+                            <h4 class="font-extrabold text-sm text-zinc-200">Freizeit & Gesundheit</h4>
+                        </div>
+                        <div class="flex flex-col gap-2" id="mindmap-cat-health">
+                            <!-- Populated -->
+                        </div>
                     </div>
 
+                    <!-- Category: Umwelt & Mobilität -->
+                    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
+                        <div class="flex items-center gap-2 pb-2 border-b border-zinc-800">
+                            <span class="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400"><i data-lucide="leaf" class="w-4 h-4"></i></span>
+                            <h4 class="font-extrabold text-sm text-zinc-200">Umwelt & Mobilität</h4>
+                        </div>
+                        <div class="flex flex-col gap-2" id="mindmap-cat-environment">
+                            <!-- Populated -->
+                        </div>
+                    </div>
+
+                    <!-- Category: Medien & Gesellschaft -->
+                    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
+                        <div class="flex items-center gap-2 pb-2 border-b border-zinc-800">
+                            <span class="p-1.5 rounded-lg bg-purple-500/10 text-purple-400"><i data-lucide="message-square-code" class="w-4 h-4"></i></span>
+                            <h4 class="font-extrabold text-sm text-zinc-200">Medien & Gesellschaft</h4>
+                        </div>
+                        <div class="flex flex-col gap-2" id="mindmap-cat-media">
+                            <!-- Populated -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Sleek Upgraded Audio Controls Bar -->
-            <div id="speech-bar" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 md:p-5 shadow-sm transition-all flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <div class="bg-indigo-50 dark:bg-indigo-950 p-2.5 rounded-xl border border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400">
-                        <i data-lucide="volume-2" class="w-5 h-5"></i>
+        </div>
+
+        <!-- FOOTER: GLOBAL CONTROLS -->
+        <footer class="p-4 bg-zinc-900/90 border-t border-zinc-800 space-y-3 z-10">
+            <!-- TTS Slider row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-zinc-950/40 p-2.5 rounded-xl border border-zinc-800">
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Geschwindigkeit</span>
+                        <span id="speed-val" class="font-bold text-white">1.0x</span>
                     </div>
-                    <div class="flex-1">
-                        <h4 class="text-xs font-black tracking-wider text-slate-400 dark:text-slate-500 uppercase">Text-to-Speech Vorlesen</h4>
-                        <div class="flex items-center gap-2 mt-0.5">
-                            <select id="tts-audio-lang-selector" onchange="changeTtsLang()" class="text-[11px] font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md px-1.5 py-0.5 text-slate-700 dark:text-slate-300">
-                                <option value="de">Deutsch (DE)</option>
-                                <option value="en">English (EN)</option>
-                                <option value="ar">العربية (AR)</option>
-                            </select>
-                            <select id="voice-selector" class="text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 font-semibold text-slate-700 dark:text-slate-200 max-w-[200px]">
-                                <!-- System Voices Loaded Dynamically -->
-                            </select>
-                        </div>
-                    </div>
+                    <input type="range" id="speed-slider" min="0.7" max="1.5" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-1/2 h-1 bg-zinc-800 rounded-lg cursor-pointer accent-indigo-500">
                 </div>
 
-                <!-- Sliders for Speed/Pitch -->
-                <div class="flex flex-wrap items-center gap-4 w-full md:w-auto text-xs">
-                    <div class="space-y-1 w-full sm:w-[130px]">
-                        <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                            <span>Geschwindigkeit</span>
-                            <span id="speed-val">1.0x</span>
-                        </div>
-                        <input type="range" id="speed-slider" min="0.7" max="1.5" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                <!-- Auto-Play Controls -->
+                <div class="flex items-center justify-between border-t sm:border-t-0 sm:border-l border-zinc-800 pt-2 sm:pt-0 sm:pl-3">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Auto-Play Reels</span>
+                        <span id="autoplay-status-text" class="font-bold text-rose-400 text-[11px]">Aus</span>
                     </div>
-                    <div class="space-y-1 w-full sm:w-[130px]">
-                        <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                            <span>Tonhöhe</span>
-                            <span id="pitch-val">1.0</span>
-                        </div>
-                        <input type="range" id="pitch-slider" min="0.8" max="1.2" step="0.1" value="1.0" oninput="updateAudioParams()" class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="autoplay-toggle" onchange="toggleAutoPlay()" class="sr-only peer">
+                        <div class="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white"></div>
+                    </label>
                 </div>
+            </div>
 
-                <!-- Action controllers -->
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <button onclick="toggleSpeechPlayback()" id="tts-playback-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/10 transition-all active:scale-95">
-                        <i id="tts-play-icon" data-lucide="play" class="w-4 h-4"></i>
-                        <span id="tts-play-text">Vorlesen</span>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <!-- Playback Core Buttons -->
+                <div class="flex-1 flex gap-2">
+                    <button onclick="togglePlayback()" id="playback-btn" class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/10 transition-all active:scale-95">
+                        <i id="playback-icon" data-lucide="play" class="w-4 h-4"></i>
+                        <span id="playback-text">Wiedergabe</span>
                     </button>
-                    <button onclick="stopSpeechPlayback()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all active:scale-95" title="Stoppen">
+                    <button onclick="stopPlayback()" class="p-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all" title="Stoppen">
                         <i data-lucide="square" class="w-4 h-4"></i>
                     </button>
                 </div>
+
+                <!-- Subtitles configuration -->
+                <div class="flex gap-2">
+                    <select id="translation-selector" onchange="changeSubtitleLang()" class="text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-2.5 py-3 font-bold text-zinc-200 cursor-pointer">
+                        <option value="en">Subtitle: EN</option>
+                        <option value="ar">Subtitle: AR</option>
+                        <option value="none">Keine Untertitel</option>
+                    </select>
+                    <select id="lang-selector" onchange="changeTtsLang()" class="text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-2.5 py-3 font-bold text-zinc-200 cursor-pointer">
+                        <option value="de" selected>TTS: DE</option>
+                        <option value="en">TTS: EN</option>
+                    </select>
+                    <select id="voice-selector" onchange="selectTtsVoice()" class="max-w-[120px] text-xs bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-3 font-bold text-zinc-200 cursor-pointer">
+                        <!-- Loaded dynamically -->
+                    </select>
+                </div>
             </div>
-
-            <!-- SYSTEM EDITING BANNER -->
-            <div id="edit-tip-banner" class="hidden bg-indigo-50/50 dark:bg-indigo-950/25 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-4 flex items-center gap-3 shadow-sm">
-                <span class="text-indigo-500 text-lg">💡</span>
-                <p class="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
-                    <strong class="text-indigo-600 dark:text-indigo-400">Bearbeitungs-Tipp:</strong> Markieren Sie beliebigen Text in den bearbeitbaren Feldern, um das schwebende Menü anzuzeigen. Dort können Sie ausgewählte Abschnitte <strong class="font-extrabold">Fett</strong> machen oder mit den Farben <span class="text-yellow-600 dark:text-yellow-400 font-bold">Gelb</span>, <span class="text-orange-500 dark:text-orange-400 font-bold">Orange</span> und <span class="text-blue-500 dark:text-blue-400 font-bold">Blau</span> hervorheben.
-                </p>
+            
+            <div class="flex items-center justify-between text-[10px] text-zinc-500 font-extrabold px-1 uppercase tracking-wider">
+                <span class="flex items-center gap-1"><i data-lucide="arrow-up-down" class="w-3 h-3"></i> Benutze Buttons oder wische zum Navigieren</span>
+                <span id="reel-indicator" class="text-indigo-400">Karte 1 von 7</span>
             </div>
+        </footer>
+    </main>
 
-            <!-- DYNAMIC TARGET CARDS GRID -->
-            <div id="active-topic-container" class="space-y-6">
-                <!-- Programmatically populated -->
-            </div>
+    <!-- Transition Flash Overlay -->
+    <div id="transition-flash" class="fixed inset-0 bg-white pointer-events-none z-50 opacity-0"></div>
 
-        </main>
-    </div>
-
-    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
-    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5 dark:ring-white/5">
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2.5 py-1 text-xs font-black text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors shadow-sm" title="Fett">
-            B
-        </button>
-        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400/40 hover:scale-110 active:scale-95 border border-yellow-400 transition-all shadow-inner" title="Gelb hervorheben"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'orange')" class="w-6 h-6 rounded-full bg-orange-400/40 hover:scale-110 active:scale-95 border border-orange-400 transition-all shadow-inner" title="Orange hervorheben"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400/40 hover:scale-110 active:scale-95 border border-blue-400 transition-all shadow-inner" title="Blau hervorheben"></button>
-        <div class="h-5 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 dark:hover:border-rose-900 transition-all" title="Formatierung aufheben">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-        </button>
-    </div>
-
-    <!-- REEL MODE MODAL OVERLAY -->
-    <div id="reel-overlay" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center transition-all duration-300">
-        <iframe id="reel-iframe" class="w-full h-full border-none" src="about:blank"></iframe>
-        <button onclick="closeReel()" class="absolute top-5 right-5 z-50 bg-white/10 dark:bg-black/40 hover:bg-rose-600 dark:hover:bg-rose-600 border border-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-md" title="Reel-Modus schließen">
-            ✕
-        </button>
-    </div>
-
-    <!-- MAIN APP STATE ENGINE -->
     <script>
-        const CONNECTORS = [
-            "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
-            "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
-            "Vielleicht können wir uns darauf einigen", "Zusammenfassend lässt sich sagen", 
-            "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
+        // High-Quality B2 Exam Topics Database
+        const TOPICS_DATA = [
+            {
+                id: 1,
+                category: "health",
+                title_de: "Rauchen in Deutschland: Steuern erhöhen?",
+                einleitung_de: "Der Text beschreibt das Thema Rauchen in Deutschland. Es gibt eine Diskussion: Ist der Rückgang der Raucherzahlen ein Erfolg der Politik, oder gibt es neue Gefahren durch verändertes Rauchen?",
+                einleitung_en: "The text describes the topic of smoking in Germany. There is a debate: Is the decline in smoker numbers a success of politics, or are there new dangers due to changed smoking habits?",
+                einleitung_ar: "يصف النص موضوع التدخين في ألمانيا. هناك نقاش: هل انخفاض أعداد المدخنين نجاح للسياسة، أم أن هناك أخطاراً جديدة بسبب تغير عادات التدخين؟",
+                pro_de: [
+                    "Höhere Steuern schrecken vor allem Jugendliche nachweislich ab.",
+                    "Die Einnahmen können direkt in das Gesundheitssystem fließen."
+                ],
+                pro_en: ["Higher taxes are proven to deter young people.", "Revenues can flow directly into the health system."],
+                pro_ar: ["أثبتت الضرائب المرتفعة أنها تمنع الشباب من التدخين.", "يمكن أن تتدفق العائدات مباشرة إلى النظام الصحي."],
+                contra_de: [
+                    "Steuern fördern den illegalen Schmuggel von Zigaretten.",
+                    "Sucht lässt sich nicht rein finanziell bekämpfen."
+                ],
+                contra_en: ["Taxes encourage illegal smuggling of cigarettes.", "Addiction cannot be fought purely financially."],
+                contra_ar: ["الضرائب تشجع على التهريب غير القانوني للسجائر.", "لا يمكن محاربة الإدمان من الناحية المالية البحتة."],
+                pers_erfahrung_de: "In meinem Heimatland rauchen viele Menschen in Cafés, aber die Politik reguliert dies immer stärker. Ich persönlich habe nie geraucht.",
+                pers_erfahrung_en: "In my home country, many people smoke in cafes, but policy is regulating this more and more. Personally, I have never smoked.",
+                pers_erfahrung_ar: "في بلدي الأصلي، يدخن الكثير من الناس في المقاهي، لكن السياسات تنظم هذا الأمر بشكل متزايد. أنا شخصياً لم أدخن أبداً.",
+                schluss_de: "Wir sollten uns darauf einigen, dass Verbote sinnvoll sind, aber Bildung wichtiger ist.",
+                schluss_en: "We should agree that bans are useful, but education is more important.",
+                schluss_ar: "ينبغي لنا أن نتفق على أن قرارات الحظر مفيدة، ولكن التعليم أكثر أهمية.",
+                dialog: [
+                    { role: "Schülerin A", de: "Ich denke, eine Steuererhöhung ist dringend notwendig.", en: "I think a tax increase is urgently needed.", ar: "أعتقد أن زيادة الضرائب ضرورية بشكل عاجل." },
+                    { role: "Schüler B", de: "Da stimme ich dir nur teilweise zu, da der Schwarzmarkt wachsen könnte.", en: "I only partially agree with you, as the black market could grow.", ar: "أوافقك الرأي جزئياً فقط، حيث يمكن أن ينمو السوق السوداء." }
+                ],
+                keywords: "Tabaksteuer, Gesundheitsschutz, Suchtprävention, Werbeverbot, Genussmittel"
+            },
+            {
+                id: 7,
+                category: "career",
+                title_de: "Arbeiten bis zum Umfallen: Burnout vermeiden?",
+                einleitung_de: "Dieses Thema erörtert die Balance zwischen Karriereanspruch und physischer Belastbarkeit. Wo ziehen wir Grenzen in einer digitalen Arbeitswelt?",
+                einleitung_en: "This topic discusses the balance between career ambitions and physical resilience. Where do we draw lines in a digital work environment?",
+                einleitung_ar: "يناقش هذا الموضوع التوازن بين الطموح المهني والقدرة على التحمل البدني. أين نضع الحدود في عالم العمل الرقمي؟",
+                pro_de: [
+                    "Gesetzliche Begrenzungen der Erreichbarkeit schützen die Gesundheit.",
+                    "Regelmäßige Pausen steigern langfristig die Produktivität."
+                ],
+                pro_en: ["Legal limits on availability protect health.", "Regular breaks increase productivity in the long term."],
+                pro_ar: ["الحدود القانونية للتواجد تحمي الصحة.", "الفترات المنتظمة تزيد من الإنتاجية على المدى الطويل."],
+                contra_de: [
+                    "In globalen Märkten ist Flexibilität rund um die Uhr unverzichtbar.",
+                    "Jeder Arbeitnehmer sollte eigenverantwortlich Grenzen setzen."
+                ],
+                contra_en: ["In global markets, 24/7 flexibility is indispensable.", "Every employee should set boundaries responsibly."],
+                contra_ar: ["في الأسواق العالمية، تعد المرونة على مدار الساعة طوال أيام الأسبوع أمراً لا غنى عنه.", "يجب على كل موظف وضع حدود بمسؤولية."],
+                pers_erfahrung_de: "Ich habe im Bekanntenkreis erlebt, dass ständige Erreichbarkeit krank macht. Seitdem schalte ich mein Arbeitshandy abends konsequent aus.",
+                pers_erfahrung_en: "I've seen among friends that constant availability makes you sick. Since then, I consistently turn off my work phone at night.",
+                pers_erfahrung_ar: "لقد رأيت بين الأصدقاء أن التواجد المستمر يمرضك. منذ ذلك الحين، أقوم بإيقاف تشغيل هاتف العمل الخاص بي باستمرار في المساء.",
+                schluss_de: "Zusammenfassend ist Eigenverantwortung gut, doch klare Arbeitsschutzgesetze sind das Fundament.",
+                schluss_en: "In summary, personal responsibility is good, but clear labor protection laws are the foundation.",
+                schluss_ar: "باختصار، المسؤولية الشخصية جيدة، لكن قوانين حماية العمل الواضحة هي الأساس.",
+                dialog: [
+                    { role: "Schüler A", de: "Der Arbeitgeber muss strenger kontrolliert werden.", en: "The employer must be monitored more strictly.", ar: "يجب مراقبة صاحب العمل بشكل أكثر صرامة." },
+                    { role: "Schüler B", de: "Aber Flexibilität bringt auch Freiheit für den Arbeitnehmer.", en: "But flexibility also brings freedom for the employee.", ar: "لكن المرونة تجلب أيضاً الحرية للموظف." }
+                ],
+                keywords: "Work-Life-Balance, Burnout, Arbeitsschutz, Erreichbarkeit, Leistungsdruck"
+            },
+            {
+                id: 10,
+                category: "career",
+                title_de: "Trinkgeld-Pflicht in der Gastronomie?",
+                einleitung_de: "Sollte Trinkgeld ein fester Bestandteil der Rechnung sein, oder bleibt es eine freiwillige Anerkennung für guten Service?",
+                einleitung_en: "Should tipping be a fixed part of the bill, or does it remain a voluntary recognition for good service?",
+                einleitung_ar: "هل يجب أن تكون الإكرامية جزءاً ثابتاً من الفاتورة، أم تظل تقديراً اختيارياً للخدمة الجيدة؟",
+                pro_de: [
+                    "Ein festes Trinkgeld sichert faire Löhne für Servicekräfte.",
+                    "Es nimmt Kunden den Druck, über die richtige Summe nachzudenken."
+                ],
+                pro_en: ["A fixed tip ensures fair wages for service staff.", "It takes the pressure off customers to think about the right amount."],
+                pro_ar: ["تضمن الإكرامية الثابتة أجوراً عادلة لموظفي الخدمة.", "إنها تخفف الضغط عن العملاء للتفكير في المبلغ المناسب."],
+                contra_de: [
+                    "Freiwilliges Trinkgeld belohnt Spitzenqualität gezielt.",
+                    "Restaurants könnten so niedrige Grundgehälter rechtfertigen."
+                ],
+                contra_en: ["Voluntary tipping rewards top quality specifically.", "Restaurants could justify low basic salaries this way."],
+                contra_ar: ["الإكرامية الاختيارية تكافئ الجودة العالية بشكل محدد.", "يمكن للمطاعم تبرير الرواتب الأساسية المنخفضة بهذه الطريقة."],
+                pers_erfahrung_de: "Ich gebe fast immer 10 Prozent Trinkgeld, es sei denn, der Service war wirklich unhöflich. Das gehört für mich zum Respekt.",
+                pers_erfahrung_en: "I almost always tip 10 percent unless the service was really rude. For me, that is part of respect.",
+                pers_erfahrung_ar: "أنا دائماً أعطي إكرامية بنسبة 10 في المئة تقريباً، إلا إذا كانت الخدمة وقحة حقاً. بالنسبة لي، هذا جزء من الاحترام.",
+                schluss_de: "Wir einigen uns darauf, dass freiwilliges Trinkgeld am besten ist, wenn der Grundlohn fair ist.",
+                schluss_en: "We agree that voluntary tipping is best when the base wage is fair.",
+                schluss_ar: "نحن نتفق على أن الإكرامية الاختيارية هي الأفضل عندما يكون الأجر الأساسي عادلاً.",
+                dialog: [
+                    { role: "Schüler A", de: "Servicekräfte arbeiten hart und verdienen diese Sicherheit.", en: "Service staff work hard and deserve this security.", ar: "يعمل موظفو الخدمة بجد ويستحقون هذا الأمان." },
+                    { role: "Schüler B", de: "Stimmt, aber die Bezahlung ist Pflicht der Restaurantbesitzer, nicht der Gäste.", en: "True, but payment is the responsibility of restaurant owners, not the guests.", ar: "صحيح، لكن الدفع مسؤولية أصحاب المطاعم، وليس الضيوف." }
+                ],
+                keywords: "Zusatzeinkommen, Servicequalität, Mindestlohn, Anerkennung, Dienstleistung"
+            },
+            {
+                id: 12,
+                category: "environment",
+                title_de: "Tempolimit auf deutschen Autobahnen?",
+                einleitung_de: "Ein Dauerbrenner-Thema in der Klimadebatte: Schützt ein Tempolimit die Umwelt und senkt Unfälle, oder schränkt es die Freiheit der Fahrer ein?",
+                einleitung_en: "A perennial topic in the climate debate: Does a speed limit protect the environment and reduce accidents, or does it restrict the freedom of drivers?",
+                einleitung_ar: "موضوع دائم في نقاش المناخ: هل يحمي تحديد السرعة البيئة ويقلل من الحوادث، أم أنه يحد من حرية السائقين؟",
+                pro_de: [
+                    "Es senkt den CO2-Ausstoß und schützt das Klima sofort.",
+                    "Der Verkehrsfluss wird harmonischer und Staus sinken."
+                ],
+                pro_en: ["It lowers CO2 emissions and protects the climate immediately.", "Traffic flow becomes more harmonious and traffic jams decrease."],
+                pro_ar: ["يقلل من انبعاثات ثاني أكسيد الكربون ويحمي المناخ على الفور.", "يصبح تدفق حركة المرور أكثر انسجاماً وتقل الاختناقات المرورية."],
+                contra_de: [
+                    "Moderne Fahrzeuge sind auch bei hoher Geschwindigkeit sicher.",
+                    "Die zeitliche Ersparnis ist ein Wirtschaftsfaktor für Pendler."
+                ],
+                contra_en: ["Modern vehicles are safe even at high speeds.", "Time saving is an economic factor for commuters."],
+                contra_ar: ["المركبات الحديثة آمنة حتى في السرعات العالية.", "توفير الوقت هو عامل اقتصادي للمتنقلين."],
+                pers_erfahrung_de: "Ich fahre gerne schnell, sehe aber im Ausland, dass entspanntes Gleiten bei 120 km/h viel stressfreier ist.",
+                pers_erfahrung_en: "I like driving fast, but I see abroad that relaxed cruising at 120 km/h is much less stressful.",
+                pers_erfahrung_ar: "أحب القيادة بسرعة، لكني أرى في الخارج أن القيادة المريحة بسرعة 120 كم/ساعة تكون أقل إرهاقاً بكثير.",
+                schluss_de: "Ein generelles Tempolimit scheint unvermeidlich, um globale Klimaziele zu erreichen.",
+                schluss_en: "A general speed limit seems inevitable to achieve global climate targets.",
+                schluss_ar: "يبدو أن تحديد السرعة بشكل عام أمر لا مفر منه لتحقيق أهداف المناخ العالمية.",
+                dialog: [
+                    { role: "Schüler A", de: "Sicherheit und Umweltschutz gehen immer vor.", en: "Safety and environmental protection always come first.", ar: "السلامة وحماية البيئة تأتي دائماً في المقام الأول." },
+                    { role: "Schüler B", de: "Trotzdem sollten wir auf Eigenverantwortung und Innovation setzen.", en: "Nevertheless, we should rely on personal responsibility and innovation.", ar: "ومع ذلك، ينبغي لنا أن نعتمد على المسؤولية الشخصية والابتكار." }
+                ],
+                keywords: "Klimaschutz, Verkehrssicherheit, CO2-Reduzierung, Individualverkehr, Richtgeschwindigkeit"
+            }
         ];
 
-        // Firebase Configuration
-        const firebaseConfig = {
-          apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
-          authDomain: "b2telc-6e061.firebaseapp.com",
-          databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "b2telc-6e061",
-          storageBucket: "b2telc-6e061.firebasestorage.app",
-          messagingSenderId: "593882455085",
-          appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
-          measurementId: "G-SPHLVHRL6K"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Local State Variables
-        let TOPICS_DATA = [];
-        let activeIdx = -1; // Default to Mind-Map (-1) on start
-        let showHighlights = true;
-        let activeView = "both";
-        let isEditMode = false;
-        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        let activeIdx = 0;
+        let currentSlide = 0;
+        const TOTAL_SLIDES = 7;
         
-        let currentUser = null;
-        let editedTopicIds = [];
+        let isPlaying = false;
+        let isAutoPlayEnabled = false;
+        let isPencilToolActive = false;
 
-        // TTS control parameters
-        let isTtsPlaying = false;
         let synth = window.speechSynthesis;
-        let speechSegmentsList = [];
-        let currentSegmentIdx = 0;
         let activeUtterance = null;
         let lastActiveSpan = null;
-        let ttsSpeed = 1.0;
-        let ttsPitch = 1.0;
+        let autoPlayTimer = null;
+
+        let playbackSpeed = 1.0;
         let ttsLang = 'de';
-        let currentSelectedVoice = null;
+        let subtitleLang = 'en';
         let voicesList = [];
+        let currentSelectedVoice = null;
 
-        // Theme DOM references
-        const themeToggle = document.getElementById('theme-toggle');
-        const sunIcon = document.getElementById('theme-toggle-sun-icon');
-        const moonIcon = document.getElementById('theme-toggle-moon-icon');
-
-        let isDark = localStorage.getItem('theme_mode_1_52') === 'dark' || 
-                     (!('theme_mode_1_52' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-        function applyTheme() {
-            const rootEl = document.documentElement;
-            if (isDark) {
-                rootEl.classList.add('dark');
-                rootEl.setAttribute('data-theme', 'dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            } else {
-                rootEl.classList.remove('dark');
-                rootEl.setAttribute('data-theme', 'light');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            }
-        }
-
-        themeToggle.onclick = () => {
-            isDark = !isDark;
-            localStorage.setItem('theme_mode_1_52', isDark ? 'dark' : 'light');
-            applyTheme();
+        // Initialize App
+        function init() {
             renderSidebar();
-            renderActiveTopic();
-        };
-
-        applyTheme();
-
-        const toolsToggle = document.getElementById('sidebar-tools-toggle');
-        const toolsMenu = document.getElementById('sidebar-tools-menu');
-        const toolsChevron = document.getElementById('tools-chevron');
-
-        toolsToggle.onclick = () => {
-            const isHidden = toolsMenu.classList.contains('hidden');
-            if (isHidden) {
-                toolsMenu.classList.remove('hidden');
-                toolsChevron.classList.add('rotate-180');
-            } else {
-                toolsMenu.classList.add('hidden');
-                toolsChevron.classList.remove('rotate-180');
-            }
-        };
-
-        function closeSidebarMobile() {
-            if (window.innerWidth < 1024) {
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
-                    sidebar.classList.add('-translate-x-full');
-                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
-                }
-            }
-        }
-
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-logged-out').classList.add('hidden');
-                document.getElementById('auth-logged-in').classList.remove('hidden');
-                
-                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
-                document.getElementById('user-display-name').textContent = `Nutzer: ${name} · Alle Änderungen werden in der Cloud gesichert.`;
-                
-                await loadTopics();
-            } else {
-                currentUser = null;
-                document.getElementById('auth-logged-out').classList.remove('hidden');
-                document.getElementById('auth-logged-in').classList.add('hidden');
-                
-                await loadTopics();
-            }
-        });
-
-        document.getElementById('btn-login').onclick = async () => {
-            const userKey = document.getElementById('user-select').value;
-            const password = document.getElementById('workspace-password').value;
-            const email = `${userKey}@b2telc.com`;
-            const rememberMe = document.getElementById('remember-me').checked;
-
-            if (!password) {
-                alert("Bitte geben Sie das Passwort ein.");
-                return;
-            }
-
-            try {
-                const loginBtn = document.getElementById('btn-login');
-                loginBtn.disabled = true;
-                loginBtn.textContent = "Lädt...";
-
-                const persistence = rememberMe 
-                    ? firebase.auth.Auth.Persistence.LOCAL 
-                    : firebase.auth.Auth.Persistence.SESSION;
-                
-                await auth.setPersistence(persistence);
-                await auth.signInWithEmailAndPassword(email, password);
-                document.getElementById('workspace-password').value = "";
-            } catch (err) {
-                alert("Anmeldung fehlgeschlagen: " + err.message);
-            } finally {
-                const loginBtn = document.getElementById('btn-login');
-                loginBtn.disabled = false;
-                loginBtn.textContent = "Arbeitsbereich laden";
-            }
-        };
-
-        document.getElementById('btn-signup').onclick = async () => {
-            const userKey = document.getElementById('user-select').value;
-            const password = document.getElementById('workspace-password').value;
-            const email = `${userKey}@b2telc.com`;
-            const rememberMe = document.getElementById('remember-me').checked;
-
-            if (!password) {
-                alert("Bitte geben Sie ein Passwort für die Erstellung ein.");
-                return;
-            }
-            if (password.length < 6) {
-                alert("Das Passwort muss mindestens 6 Zeichen lang sein.");
-                return;
-            }
-
-            try {
-                const signupBtn = document.getElementById('btn-signup');
-                signupBtn.disabled = true;
-                signupBtn.textContent = "Erstellt...";
-
-                const persistence = rememberMe 
-                    ? firebase.auth.Auth.Persistence.LOCAL 
-                    : firebase.auth.Auth.Persistence.SESSION;
-                
-                await auth.setPersistence(persistence);
-                await auth.createUserWithEmailAndPassword(email, password);
-                alert("Konto erfolgreich erstellt und Arbeitsbereich geladen!");
-                document.getElementById('workspace-password').value = "";
-            } catch (err) {
-                alert("Kontoerstellung fehlgeschlagen: " + err.message);
-            } finally {
-                const signupBtn = document.getElementById('btn-signup');
-                signupBtn.disabled = false;
-                signupBtn.textContent = "Konto erstellen";
-            }
-        };
-
-        document.getElementById('btn-logout').onclick = () => {
-            auth.signOut();
-        };
-
-        async function loadTopics() {
-            try {
-                const response = await fetch('topics.json');
-                if (!response.ok) {
-                    throw new Error('Netzwerk-Antwort war nicht in Ordnung');
-                }
-                let baseTopics = await response.json();
-                
-                editedTopicIds = [];
-
-                if (currentUser) {
-                    const snapshot = await db.collection('users')
-                                             .doc(currentUser.uid)
-                                             .collection('edited_topics')
-                                             .get();
-                    
-                    snapshot.forEach(doc => {
-                        const cloudTopic = doc.data();
-                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
-                        if (idx !== -1) {
-                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
-                        }
-                        editedTopicIds.push(parseInt(doc.id));
-                    });
-                } else {
-                    const localEdits = localStorage.getItem('edited_topics_data_1_52');
-                    if (localEdits) {
-                        const parsedEdits = JSON.parse(localEdits);
-                        parsedEdits.forEach(localTopic => {
-                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
-                            if (idx !== -1) {
-                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
-                                editedTopicIds.push(localTopic.id);
-                            }
-                        });
-                    }
-                }
-
-                TOPICS_DATA = baseTopics;
-                showResetButton();
-                renderSidebar();
-                renderActiveTopic();
-            } catch (error) {
-                console.error("Fehler beim Laden der Themen:", error);
-                document.getElementById('active-topic-title-de').innerHTML = "<span class='text-red-500 dark:text-red-400'>Fehler beim Laden der Spieldaten. Bitte stellen Sie sicher, dass die App über einen Webserver geladen wird.</span>";
-            }
-        }
-
-        // Persistent Edit Undo System (Requirement 2)
-        function pushToUndoStack() {
-            let undoStack = JSON.parse(localStorage.getItem('undo_stack_1_52')) || [];
-            undoStack.push(JSON.parse(JSON.stringify(TOPICS_DATA)));
-            if (undoStack.length > 25) {
-                undoStack.shift(); // Limit system memory footprint
-            }
-            localStorage.setItem('undo_stack_1_52', JSON.stringify(undoStack));
-        }
-
-        function undoLastEdit() {
-            let undoStack = JSON.parse(localStorage.getItem('undo_stack_1_52')) || [];
-            if (undoStack.length === 0) {
-                showToast("Keine weiteren Schritte zum Rückgängigmachen!", true);
-                return;
-            }
-            const previousState = undoStack.pop();
-            TOPICS_DATA = previousState;
-            localStorage.setItem('undo_stack_1_52', JSON.stringify(undoStack));
+            renderMindMap();
+            loadTopic(0);
             
-            // Sync with local disk / cloud
-            if (currentUser) {
-                saveEdits();
-            } else {
-                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+            if (synth) {
+                synth.onvoiceschanged = () => populateVoices();
+                populateVoices();
             }
-            
-            renderSidebar();
-            renderActiveTopic();
-            showToast("🔄 Letzten Schritt rückgängig gemacht!");
+            lucide.createIcons();
         }
 
-        // Global key binder for Ctrl+Z
-        window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                e.preventDefault();
-                undoLastEdit();
-            }
-        });
-
-        async function saveEdits() {
-            const activeTopic = TOPICS_DATA[activeIdx];
-            if (!activeTopic) return;
-            
-            if (!editedTopicIds.includes(activeTopic.id)) {
-                editedTopicIds.push(activeTopic.id);
-            }
-
-            if (currentUser) {
-                try {
-                    await db.collection('users')
-                            .doc(currentUser.uid)
-                            .collection('edited_topics')
-                            .doc(activeTopic.id.toString())
-                            .set(activeTopic);
-                } catch (err) {
-                    console.error("Fehler beim Speichern in Cloud:", err);
-                }
-            } else {
-                localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
-            }
-            
-            showResetButton();
-            renderSidebar();
-        }
-
-        function showResetButton() {
-            const resetBtn = document.getElementById('reset-edits-btn');
-            if (activeIdx === -1) {
-                resetBtn.classList.add('hidden');
-                return;
-            }
-            const activeTopic = TOPICS_DATA[activeIdx];
-            if (activeTopic && editedTopicIds.includes(activeTopic.id)) {
-                resetBtn.classList.remove('hidden');
-            } else {
-                resetBtn.classList.add('hidden');
-            }
-        }
-
-        document.getElementById('reset-edits-btn').onclick = async () => {
-            if (confirm("Möchten Sie alle Ihre vorgenommenen Änderungen verwerfen und die Originaldaten wiederherstellen?")) {
-                const activeTopic = TOPICS_DATA[activeIdx];
-                if (currentUser) {
-                    try {
-                        await db.collection('users')
-                                .doc(currentUser.uid)
-                                .collection('edited_topics')
-                                .doc(activeTopic.id.toString())
-                                .delete();
-                    } catch (err) {
-                        console.error("Fehler beim Löschen des Cloud-Dokuments:", err);
-                    }
-                } else {
-                    let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
-                    localEdits = localEdits.filter(t => t.id !== activeTopic.id);
-                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
-                }
-                await loadTopics();
-            }
-        };
-
-        function deClassTextOnly(htmlText) {
-            const temp = document.createElement("div");
-            temp.innerHTML = htmlText;
-            return temp.textContent || temp.innerText || "";
-        }
-
-        // Bug Fix Highlighting: check for empty text (Requirement 3)
-        function applyHighlights(htmlText) {
-            if (!htmlText || !htmlText.trim()) return htmlText || "";
-            if (!showHighlights) return htmlText;
-            
-            const temp = document.createElement("div");
-            temp.innerHTML = htmlText;
-
-            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
-
-            function highlightNode(node) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    let text = node.nodeValue;
-                    if (!text || !text.trim()) return;
-
-                    let replaced = false;
-                    const div = document.createElement('div');
-                    div.textContent = text;
-                    let safeHTML = div.innerHTML;
-
-                    sorted.forEach(word => {
-                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
-                        if (regex.test(safeHTML)) {
-                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
-                            replaced = true;
-                        }
-                    });
-
-                    if (replaced) {
-                        const span = document.createElement('span');
-                        span.innerHTML = safeHTML;
-                        if (node.parentNode) {
-                            node.parentNode.replaceChild(span, node);
-                        }
-                    }
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    if (!node.classList.contains('highlight')) {
-                        Array.from(node.childNodes).forEach(highlightNode);
-                    }
-                }
-            }
-
-            Array.from(temp.childNodes).forEach(highlightNode);
-            return temp.innerHTML;
-        }
-
-        function makeEditable(element, keyPath, isArray = false, index = null, subKey = null) {
-            if (!element) return;
-            element.contentEditable = "true";
-            element.classList.add("border-b", "border-dashed", "border-indigo-400/50", "dark:border-indigo-500/50", "hover:bg-indigo-50/50", "dark:hover:bg-indigo-950/20", "transition-colors", "cursor-text", "focus:bg-transparent", "focus:outline-none");
-            element.addEventListener('focus', () => {
-                pushToUndoStack(); // Capture state before modifying
-            });
-            element.addEventListener('blur', () => {
-                let newVal = element.innerHTML.trim();
-                if (isArray) {
-                    if (subKey) {
-                        if (!TOPICS_DATA[activeIdx][keyPath]) {
-                            TOPICS_DATA[activeIdx][keyPath] = [];
-                        }
-                        if (!TOPICS_DATA[activeIdx][keyPath][index]) {
-                            TOPICS_DATA[activeIdx][keyPath][index] = {};
-                        }
-                        TOPICS_DATA[activeIdx][keyPath][index][subKey] = newVal;
-                    } else {
-                        if (!TOPICS_DATA[activeIdx][keyPath]) {
-                            TOPICS_DATA[activeIdx][keyPath] = [];
-                        }
-                        TOPICS_DATA[activeIdx][keyPath][index] = newVal;
-                    }
-                } else {
-                    TOPICS_DATA[activeIdx][keyPath] = newVal;
-                }
-                saveEdits();
-            });
-        }
-
-        function applySelectionFormat(type, value) {
-            pushToUndoStack();
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
-
-            const range = selection.getRangeAt(0);
-
-            if (type === 'bold') {
-                document.execCommand('bold', false, null);
-            } else if (type === 'highlight') {
-                const span = document.createElement('span');
-                span.className = `hl-${value}`;
-                try {
-                    const contents = range.extractContents();
-                    span.appendChild(contents);
-                    range.insertNode(span);
-                } catch (e) {
-                    document.execCommand('backColor', false, value === 'yellow' ? 'rgba(253, 224, 71, 0.4)' : (value === 'orange' ? 'rgba(249, 115, 22, 0.4)' : 'rgba(147, 197, 253, 0.4)'));
-                }
-            } else if (type === 'clear') {
-                document.execCommand('removeFormat', false, null);
-                document.execCommand('backColor', false, 'transparent');
-                
-                let node = selection.anchorNode;
-                while (node && node.nodeType !== Node.ELEMENT_NODE) {
-                    node = node.parentNode;
-                }
-                if (node && (node.className.includes('hl-yellow') || node.className.includes('hl-orange') || node.className.includes('hl-blue'))) {
-                    const parent = node.parentNode;
-                    while (node.firstChild) {
-                        parent.insertBefore(node.firstChild, node);
-                    }
-                    parent.removeChild(node);
-                }
-            }
-
-            let activeContainer = selection.anchorNode;
-            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
-                activeContainer = activeContainer.parentNode;
-            }
-            if (activeContainer && activeContainer.hasAttribute('contenteditable')) {
-                activeContainer.dispatchEvent(new Event('blur'));
-            }
-
-            handleSelectionChange();
-        }
-
-        function handleSelectionChange() {
-            if (!isEditMode) {
-                hideToolbar();
-                return;
-            }
-
-            const selection = window.getSelection();
-            if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
-                hideToolbar();
-                return;
-            }
-
-            let parent = selection.anchorNode;
-            let isInsideEditable = false;
-            while (parent) {
-                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
-                    isInsideEditable = true;
-                    break;
-                }
-                parent = parent.parentNode;
-            }
-
-            if (!isInsideEditable) {
-                hideToolbar();
-                return;
-            }
-
-            const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
-            const toolbar = document.getElementById('formatting-toolbar');
-
-            toolbar.classList.remove('hidden');
-
-            const toolbarWidth = toolbar.offsetWidth || 180;
-            const toolbarHeight = toolbar.offsetHeight || 42;
-
-            const top = rect.top + window.scrollY - toolbarHeight - 10;
-            const left = rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2);
-
-            toolbar.style.top = `${top}px`;
-            toolbar.style.left = `${left}px`;
-        }
-
-        function hideToolbar() {
-            const toolbar = document.getElementById('formatting-toolbar');
-            if (toolbar) toolbar.classList.add('hidden');
-        }
-
-        document.addEventListener('selectionchange', handleSelectionChange);
-        window.addEventListener('resize', hideToolbar);
-        window.addEventListener('scroll', hideToolbar);
-
+        // Render Topics into the left sidebar
         function renderSidebar() {
-            const listContainer = document.getElementById('topic-list');
-            listContainer.innerHTML = "";
-            const searchVal = document.getElementById('search-bar').value.toLowerCase();
-
-            TOPICS_DATA.forEach((topic, index) => {
-                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
-                    return;
-                }
-
+            const list = document.getElementById('sidebar-topic-list');
+            list.innerHTML = "";
+            TOPICS_DATA.forEach((t, index) => {
                 const isActive = index === activeIdx;
-                const isLearned = learnedList.includes(topic.id);
-
-                const tab = document.createElement('button');
-                tab.className = `w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 relative ${
+                const card = document.createElement('button');
+                card.onclick = () => loadTopic(index);
+                card.className = `w-full p-3 rounded-xl text-left border transition-all ${
                     isActive 
-                    ? 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900 ring-2 ring-indigo-500/10' 
-                    : 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                    ? 'bg-indigo-600/10 border-indigo-500 text-white shadow-md' 
+                    : 'bg-zinc-950/40 border-zinc-800 text-zinc-300 hover:bg-zinc-900/60'
                 }`;
-
-                const themeInfo = getTopicThemeInfo(topic.id, topic.title_de);
-                const icon = isLearned 
-                    ? `<span class="text-emerald-500 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></span>`
-                    : `<span class="text-slate-300 dark:text-slate-500 font-extrabold text-xs mt-1 w-5">${topic.id}</span>`;
-
-                tab.innerHTML = `
-                    ${icon}
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold truncate ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}">${themeInfo.emoji} ${topic.title_de}</p>
-                        <p class="text-xs truncate text-slate-400 dark:text-slate-500 mt-0.5 italic">${topic.title_en}</p>
+                card.innerHTML = `
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-zinc-800 text-indigo-400">
+                            Thema ${t.id}
+                        </span>
+                        <span class="text-[9px] text-zinc-500 uppercase font-bold">${t.category}</span>
                     </div>
+                    <p class="text-xs font-bold leading-tight line-clamp-2">${t.title_de}</p>
                 `;
+                list.appendChild(card);
+            });
+        }
 
-                tab.onclick = () => {
-                    activeIdx = index;
-                    renderSidebar();
-                    renderActiveTopic();
-                    closeSidebarMobile();
-                };
+        // Render Interactive Mind Map Categories beautifully
+        function renderMindMap() {
+            const categories = {
+                career: document.getElementById('mindmap-cat-career'),
+                health: document.getElementById('mindmap-cat-health'),
+                environment: document.getElementById('mindmap-cat-environment'),
+                media: document.getElementById('mindmap-cat-media')
+            };
 
-                listContainer.appendChild(tab);
+            // Clear categories
+            Object.values(categories).forEach(el => { if (el) el.innerHTML = ""; });
+
+            TOPICS_DATA.forEach((t, index) => {
+                const targetDiv = categories[t.category];
+                if (targetDiv) {
+                    const bubble = document.createElement('button');
+                    bubble.onclick = () => {
+                        loadTopic(index);
+                        toggleMindMapView();
+                    };
+                    bubble.className = "p-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-indigo-500 text-left transition-all hover:scale-[1.02] active:scale-95";
+                    bubble.innerHTML = `
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[8px] font-extrabold text-indigo-400 uppercase">Thema ${t.id}</span>
+                            <i data-lucide="arrow-right" class="w-3 h-3 text-zinc-500"></i>
+                        </div>
+                        <p class="text-xs font-bold leading-tight text-zinc-100">${t.title_de}</p>
+                    `;
+                    targetDiv.appendChild(bubble);
+                }
             });
 
-            updateProgress();
+            // Fallback for empty categories
+            Object.entries(categories).forEach(([key, el]) => {
+                if (el && el.children.length === 0) {
+                    el.innerHTML = `<p class="text-[10px] text-zinc-600 italic">Noch keine Themen eingepflegt</p>`;
+                }
+            });
         }
 
-        function updateProgress() {
-            if (TOPICS_DATA.length === 0) return;
-            const count = learnedList.length;
-            const percentage = (count / TOPICS_DATA.length) * 100;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-text').textContent = `${count} / ${TOPICS_DATA.length}`;
+        // Populate System Voices
+        function populateVoices() {
+            if (!synth) return;
+            const selectEl = document.getElementById('voice-selector');
+            voicesList = synth.getVoices();
+            
+            let filtered = voicesList.filter(v => v.lang.toLowerCase().startsWith(ttsLang));
+            if (filtered.length === 0) filtered = voicesList;
+
+            // Prioritize high quality neural/natural voices
+            filtered.sort((a, b) => {
+                const aNat = a.name.includes("Neural") || a.name.includes("Natural") || a.name.includes("Google");
+                const bNat = b.name.includes("Neural") || b.name.includes("Natural") || b.name.includes("Google");
+                return (aNat && !bNat) ? -1 : (!aNat && bNat) ? 1 : a.name.localeCompare(b.name);
+            });
+
+            selectEl.innerHTML = "";
+            filtered.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.name;
+                const cloudIcon = v.name.includes("Neural") || v.name.includes("Google") ? "✨" : "💻";
+                opt.textContent = `${cloudIcon} ${v.name.split(' ')[0] || v.name}`;
+                selectEl.appendChild(opt);
+            });
+
+            currentSelectedVoice = filtered[0] || null;
         }
 
-        // Natural Handdrawn Pencil Ellipse Stroke Algorithm (Requirement 4)
-        function wrapWithCircle(element, colorHex) {
+        function selectTtsVoice() {
+            const selectEl = document.getElementById('voice-selector');
+            currentSelectedVoice = voicesList.find(v => v.name === selectEl.value);
+            if (isPlaying) restartTtsSegment();
+        }
+
+        function changeTtsLang() {
+            ttsLang = document.getElementById('lang-selector').value;
+            populateVoices();
+            if (isPlaying) restartTtsSegment();
+        }
+
+        function updateAudioParams() {
+            playbackSpeed = parseFloat(document.getElementById('speed-slider').value);
+            document.getElementById('speed-val').textContent = `${playbackSpeed.toFixed(1)}x`;
+            if (isPlaying) restartTtsSegment();
+        }
+
+        function toggleAutoPlay() {
+            isAutoPlayEnabled = document.getElementById('autoplay-toggle').checked;
+            const statusEl = document.getElementById('autoplay-status-text');
+            if (isAutoPlayEnabled) {
+                statusEl.textContent = "Aktiv";
+                statusEl.className = "font-bold text-emerald-400 text-[11px]";
+            } else {
+                statusEl.textContent = "Aus";
+                statusEl.className = "font-bold text-rose-400 text-[11px]";
+                if (autoPlayTimer) clearTimeout(autoPlayTimer);
+            }
+        }
+
+        function togglePencilTool() {
+            isPencilToolActive = !isPencilToolActive;
+            const statusEl = document.getElementById('pencil-status');
+            const btn = document.getElementById('pencil-tool-btn');
+            if (isPencilToolActive) {
+                statusEl.textContent = "Aktiv";
+                statusEl.className = "text-emerald-400 font-extrabold";
+                btn.classList.add('border-indigo-500', 'bg-indigo-600/10');
+            } else {
+                statusEl.textContent = "Aus";
+                statusEl.className = "text-rose-400 font-extrabold";
+                btn.classList.remove('border-indigo-500', 'bg-indigo-600/10');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', target);
+            if (target === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+        }
+
+        function toggleMindMapView() {
+            const map = document.getElementById('mind-map-container');
+            const isHidden = map.classList.contains('hidden');
+            if (isHidden) {
+                map.classList.remove('hidden');
+                map.classList.add('flex');
+            } else {
+                map.classList.add('hidden');
+                map.classList.remove('flex');
+            }
+            lucide.createIcons();
+        }
+
+        // Return vector art illustrating each specific B2 theme
+        function getThemeSvgIllustration(topicId) {
+            switch(topicId) {
+                case 1: // Smoking
+                    return `
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 opacity-75">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#ef4444" stroke-width="4"/>
+                        <line x1="20" y1="20" x2="80" y2="80" stroke="#ef4444" stroke-width="6"/>
+                        <rect x="25" y="45" width="40" height="10" rx="2" fill="#e2e8f0"/>
+                        <rect x="65" y="45" width="15" height="10" rx="1" fill="#f59e0b"/>
+                        <path d="M 30 35 Q 35 25 32 15 M 40 35 Q 45 25 42 15" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>`;
+                case 7: // Stressed / Burnout clock
+                    return `
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 opacity-75">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" stroke-width="4"/>
+                        <line x1="50" y1="50" x2="50" y2="25" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+                        <line x1="50" y1="50" x2="70" y2="60" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M 15 25 L 30 10 M 85 25 L 70 10" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                        <circle cx="50" cy="50" r="5" fill="#ef4444"/>
+                    </svg>`;
+                case 10: // Tipping coin jar
+                    return `
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 opacity-75">
+                        <path d="M 35 30 L 65 30 L 65 80 Q 65 85 60 85 L 40 85 Q 35 85 35 80 Z" fill="none" stroke="#10b981" stroke-width="4"/>
+                        <line x1="30" y1="30" x2="70" y2="30" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+                        <circle cx="50" cy="18" r="6" fill="#f59e0b"/>
+                        <path d="M 50 24 L 50 38" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                    </svg>`;
+                case 12: // Speed Limit Autobahn
+                    return `
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 opacity-75">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#3b82f6" stroke-width="5"/>
+                        <line x1="25" y1="75" x2="75" y2="25" stroke="#3b82f6" stroke-width="6"/>
+                        <text x="50" y="58" font-size="24" font-weight="900" fill="#3b82f6" text-anchor="middle" font-family="sans-serif">120</text>
+                    </svg>`;
+                default:
+                    return `
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 opacity-50">
+                        <path d="M 30 25 L 70 25 L 70 75 L 30 75 Z" fill="none" stroke="#6366f1" stroke-width="4"/>
+                        <line x1="38" y1="38" x2="62" y2="38" stroke="#6366f1" stroke-width="2"/>
+                        <line x1="38" y1="50" x2="62" y2="50" stroke="#6366f1" stroke-width="2"/>
+                        <line x1="38" y1="62" x2="54" y2="62" stroke="#6366f1" stroke-width="2"/>
+                    </svg>`;
+            }
+        }
+
+        // Highlight circle logic (Manual mode)
+        function wrapWithManualCircle(element, colorHex) {
             if (!element) return;
             removeCircle(element);
 
@@ -1048,31 +679,29 @@
 
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svg.setAttribute("class", "highlight-circle absolute pointer-events-none z-10 overflow-visible");
-            svg.style.width = (W + 28) + "px";
-            svg.style.height = (H + 24) + "px";
-            svg.style.top = (element.offsetTop - 12) + "px";
-            svg.style.left = (element.offsetLeft - 14) + "px";
+            svg.style.width = (W + 20) + "px";
+            svg.style.height = (H + 16) + "px";
+            svg.style.top = (element.offsetTop - 8) + "px";
+            svg.style.left = (element.offsetLeft - 10) + "px";
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             
-            // Build wobbly organic coordinate sequence simulating hand pencil movement
-            const cx = W / 2 + 14;
-            const cy = H / 2 + 12;
-            const rx = W / 2 + 10;
-            const ry = H / 2 + 8;
+            const cx = W / 2 + 10;
+            const cy = H / 2 + 8;
+            const rx = W / 2 + 6;
+            const ry = H / 2 + 5;
             
             let pathPoints = [];
-            const numSegments = 32;
-            const totalAngle = 2 * Math.PI + 0.45; // loop spiral slightly over 360 deg
+            const numSegments = 24;
+            const totalAngle = 2 * Math.PI + 0.3; // wobbly spiral overlap
             
             for (let i = 0; i <= numSegments; i++) {
                 const angle = (i / numSegments) * totalAngle;
-                const wobble = Math.sin(angle * 5) * 1.5 + Math.cos(angle * 10) * 0.5;
+                const wobble = Math.sin(angle * 5) * 1.2;
                 const radiusX = rx + wobble;
                 const radiusY = ry + wobble;
-                
-                const x = cx + radiusX * Math.cos(angle) + (Math.random() * 1.2 - 0.6);
-                const y = cy + radiusY * Math.sin(angle) + (Math.random() * 1.2 - 0.6);
+                const x = cx + radiusX * Math.cos(angle) + (Math.random() * 0.8 - 0.4);
+                const y = cy + radiusY * Math.sin(angle) + (Math.random() * 0.8 - 0.4);
                 
                 if (i === 0) {
                     pathPoints.push(`M ${x.toFixed(1)} ${y.toFixed(1)}`);
@@ -1083,26 +712,23 @@
             
             path.setAttribute("d", pathPoints.join(" "));
             path.setAttribute("stroke", colorHex);
-            path.setAttribute("stroke-width", "2.2");
+            path.setAttribute("stroke-width", "2");
             path.setAttribute("fill", "none");
             path.setAttribute("stroke-linecap", "round");
-            path.setAttribute("stroke-linejoin", "round");
-            path.style.opacity = "0.85";
-            path.style.filter = "drop-shadow(0px 1px 1.5px rgba(0,0,0,0.15))";
-
-            path.style.strokeDasharray = "500";
-            path.style.strokeDashoffset = "500";
+            path.style.opacity = "0.9";
+            path.style.strokeDasharray = "350";
+            path.style.strokeDashoffset = "350";
             
             svg.appendChild(path);
             element.parentNode.insertBefore(svg, element.nextSibling);
             element.highlightCircleSvg = svg;
 
             path.animate([
-                { strokeDashoffset: "500" },
+                { strokeDashoffset: "350" },
                 { strokeDashoffset: "0" }
             ], {
-                duration: 650,
-                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                duration: 450,
+                easing: 'ease-out',
                 fill: 'forwards'
             });
         }
@@ -1115,41 +741,13 @@
                 }
                 element.highlightCircleSvg = null;
             }
-            let next = element.nextSibling;
-            if (next && next.classList && next.classList.contains('highlight-circle')) {
-                next.parentNode.removeChild(next);
-            }
         }
 
-        function getColorForContext(contextType) {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            switch(contextType) {
-                case 'tts':
-                    return isDark ? '#a29bfe' : '#5f4fcf';
-                case 'keyword':
-                    return isDark ? '#fdcb6e' : '#c9860c';
-                case 'pro':
-                    return isDark ? '#00cec9' : '#007a73';
-                case 'contra':
-                    return isDark ? '#ff7675' : '#c0392b';
-                case 'dialog_a':
-                    return isDark ? '#74b9ff' : '#2980b9';
-                case 'dialog_b':
-                    return isDark ? '#fd79a8' : '#a8315e';
-                default:
-                    return isDark ? '#a29bfe' : '#5f4fcf';
-            }
-        }
-
-        // Split raw text strings cleanly into click-responsive spans (Requirements 3 & 4)
+        // Convert plaintext to span tags with robust safety checks
         function textToWordSpans(text, contextType) {
-            if (!text) return "";
-            const div = document.createElement('div');
-            div.innerHTML = text;
-            const plainText = div.textContent || div.innerText || "";
-            if (!plainText.trim()) return ""; // Requirement 3
-            
-            const words = plainText.split(/(\s+)/);
+            if (!text || !text.trim()) return "";
+            const plain = text.replace(/<[^>]*>/g, ''); // strip HTML tags
+            const words = plain.split(/(\s+)/);
             let html = "";
             let charIdx = 0;
             
@@ -1165,548 +763,307 @@
             return html;
         }
 
-        // Programmatic Thematic Category Mapping (Requirements 5 & 7)
-        function getTopicThemeInfo(id, title) {
-            const t = title.toLowerCase();
-            if (t.includes("arbeit") || t.includes("beruf") || t.includes("karriere") || t.includes("job") || t.includes("homeoffice") || t.includes("geld") || t.includes("gehalt") || t.includes("kollegen") || t.includes("arbeitsplatz")) {
-                return { category: "Arbeit & Karriere", color: "amber", icon: "briefcase", emoji: "💼" };
-            }
-            if (t.includes("umwelt") || t.includes("klima") || t.includes("natur") || t.includes("müll") || t.includes("energie") || t.includes("fleisch") || t.includes("verkehr") || t.includes("auto") || t.includes("tier")) {
-                return { category: "Umwelt & Mobilität", color: "emerald", icon: "leaf", emoji: "🌱" };
-            }
-            if (t.includes("schule") || t.includes("lernen") || t.includes("studium") || t.includes("universität") || t.includes("sprache") || t.includes("bildung") || t.includes("unterricht")) {
-                return { category: "Bildung & Lernen", color: "indigo", icon: "graduation-cap", emoji: "🎓" };
-            }
-            if (t.includes("internet") || t.includes("medien") || t.includes("computer") || t.includes("künstliche") || t.includes("handy") || t.includes("digital") || t.includes("soziale netzwerke")) {
-                return { category: "Technologie & Medien", color: "blue", icon: "cpu", emoji: "💻" };
-            }
-            return { category: "Freizeit & Gesundheit", color: "rose", icon: "heart", emoji: "🏖️" };
-        }
-
-        // Show themes in blocks (Mind Map Mode - Requirement 5 & 7)
-        function showMindMap() {
-            activeIdx = -1;
-            renderSidebar();
-            
-            document.getElementById('active-topic-num').textContent = "🗺️ Themen-Mind-Map";
-            document.getElementById('active-topic-title-de').textContent = "Übersicht aller 52 Diskussionsthemen";
-            document.getElementById('active-topic-title-en').textContent = "Thematic interactive block roadmap of discussions";
-            
-            showResetButton();
-
-            const container = document.getElementById('active-topic-container');
-            container.innerHTML = "";
-
-            // Group topics into categories
-            const categories = {
-                "Arbeit & Karriere": [],
-                "Umwelt & Mobilität": [],
-                "Bildung & Lernen": [],
-                "Technologie & Medien": [],
-                "Freizeit & Gesundheit": []
-            };
-
-            TOPICS_DATA.forEach((topic, index) => {
-                const info = getTopicThemeInfo(topic.id, topic.title_de);
-                if (categories[info.category]) {
-                    categories[info.category].push({ topic, index, info });
-                } else {
-                    categories["Freizeit & Gesundheit"].push({ topic, index, info });
-                }
-            });
-
-            // Create Visual Block Mind Map Container
-            const mindMapGrid = document.createElement('div');
-            mindMapGrid.className = "space-y-8 animate-fadeIn";
-
-            for (const [catName, items] of Object.entries(categories)) {
-                if (items.length === 0) continue;
-                
-                const sampleInfo = items[0].info;
-                let colorClass = "border-amber-500 bg-amber-50/20 text-amber-800 dark:text-amber-300 dark:bg-amber-950/20";
-                if (sampleInfo.color === 'emerald') colorClass = "border-emerald-500 bg-emerald-50/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-950/20";
-                if (sampleInfo.color === 'indigo') colorClass = "border-indigo-500 bg-indigo-50/20 text-indigo-800 dark:text-indigo-300 dark:bg-indigo-950/20";
-                if (sampleInfo.color === 'blue') colorClass = "border-blue-500 bg-blue-50/20 text-blue-800 dark:text-blue-300 dark:bg-blue-950/20";
-                if (sampleInfo.color === 'rose') colorClass = "border-rose-500 bg-rose-50/20 text-rose-800 dark:text-rose-300 dark:bg-rose-950/20";
-
-                const section = document.createElement('div');
-                section.className = `p-5 rounded-2xl border ${colorClass} transition-colors duration-200`;
-                
-                let blocksHtml = "";
-                items.forEach(item => {
-                    const isLearned = learnedList.includes(item.topic.id);
-                    const learnedClass = isLearned 
-                        ? "bg-emerald-600 border-emerald-500 text-white shadow-md transform scale-102" 
-                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 text-slate-800 dark:text-slate-100 hover:scale-[1.03]";
-
-                    blocksHtml += `
-                        <button onclick="loadTopicDirect(${item.index})" class="p-3.5 rounded-xl border text-left text-xs font-bold transition-all relative ${learnedClass} flex flex-col justify-between h-24 shadow-sm select-none">
-                            <div class="flex items-start justify-between w-full">
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest ${isLearned ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400'}">THEMA ${item.topic.id}</span>
-                                <span class="text-base">${isLearned ? '✓' : item.info.emoji}</span>
-                            </div>
-                            <p class="font-extrabold tracking-tight line-clamp-2 leading-tight mt-2 w-full text-[12px]">${item.topic.title_de}</p>
-                        </button>
-                    `;
-                });
-
-                section.innerHTML = `
-                    <h3 class="text-sm font-black uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="text-lg">${sampleInfo.emoji}</span> ${catName} (${items.length} Themen)
-                    </h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                        ${blocksHtml}
-                    </div>
-                `;
-                mindMapGrid.appendChild(section);
-            }
-            container.appendChild(mindMapGrid);
-            lucide.createIcons();
-        }
-
-        function loadTopicDirect(idx) {
+        // Switch Active Topic
+        function loadTopic(idx) {
+            if (idx < 0 || idx >= TOPICS_DATA.length) return;
             activeIdx = idx;
+            currentSlide = 0;
+            
             renderSidebar();
-            renderActiveTopic();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            resetPlaybackState();
+            renderActiveSlide();
+            updateGlobalMeta();
         }
 
-        function renderActiveTopic() {
-            if (activeIdx === -1) {
-                showMindMap();
+        function updateGlobalMeta() {
+            const topic = TOPICS_DATA[activeIdx];
+            document.getElementById('topic-badge').textContent = `Thema ${topic.id}`;
+            document.getElementById('topic-title').textContent = topic.title_de;
+            document.getElementById('reel-indicator').textContent = `Karte ${currentSlide + 1} von ${TOTAL_SLIDES}`;
+
+            const percent = ((currentSlide + 1) / TOTAL_SLIDES) * 100;
+            document.getElementById('top-progress').style.width = `${percent}%`;
+        }
+
+        // Assemble content slides dynamically based on the current active indices
+        function renderActiveSlide() {
+            const topic = TOPICS_DATA[activeIdx];
+            const card = document.getElementById('active-reel-card');
+            
+            // Re-apply entry animation
+            card.className = "w-full h-full rounded-2xl p-5 flex flex-col justify-between border border-zinc-800/80 overflow-y-auto custom-scrollbar card-active relative";
+
+            // Card Background aesthetics
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            card.style.background = isDark ? "rgba(24, 24, 27, 0.95)" : "rgba(255, 255, 255, 0.98)";
+
+            const art = getThemeSvgIllustration(topic.id);
+
+            switch(currentSlide) {
+                case 0: // Intro
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-400 uppercase">1. Einleitung</span>
+                                    <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Thema vorstellen</h3>
+                                </div>
+                                ${art}
+                            </div>
+                            <div class="my-auto py-4">
+                                <p id="tts-content-container" class="text-sm md:text-base font-semibold leading-relaxed text-zinc-100 border-l-2 border-indigo-500 pl-3">${textToWordSpans(topic.einleitung_de, 'intro')}</p>
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Tippe auf Wörter, um sie zu markieren.</div>
+                        </div>
+                    `;
+                    break;
+                case 1: // Pro
+                    let proHtml = "";
+                    topic.pro_de.forEach(p => {
+                        proHtml += `
+                            <div class="p-3 bg-zinc-950/40 rounded-xl border border-zinc-800 flex gap-2">
+                                <span class="text-emerald-400 font-extrabold">✓</span>
+                                <p class="text-xs font-semibold text-zinc-200 leading-normal">${textToWordSpans(p, 'pro')}</p>
+                            </div>
+                        `;
+                    });
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-400 uppercase">2. Pro-Argumente</span>
+                                <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Dafür-Argumentation</h3>
+                            </div>
+                            <div id="tts-content-container" class="space-y-2 my-auto">
+                                ${proHtml}
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Sichere Argumentationsstrukturen nutzen.</div>
+                        </div>
+                    `;
+                    break;
+                case 2: // Contra
+                    let contraHtml = "";
+                    topic.contra_de.forEach(c => {
+                        contraHtml += `
+                            <div class="p-3 bg-zinc-950/40 rounded-xl border border-zinc-800 flex gap-2">
+                                <span class="text-rose-400 font-extrabold">✗</span>
+                                <p class="text-xs font-semibold text-zinc-200 leading-normal">${textToWordSpans(c, 'contra')}</p>
+                            </div>
+                        `;
+                    });
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-400 uppercase">3. Contra-Argumente</span>
+                                <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Dagegen-Argumentation</h3>
+                            </div>
+                            <div id="tts-content-container" class="space-y-2 my-auto">
+                                ${contraHtml}
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Einwände geschickt formulieren.</div>
+                        </div>
+                    `;
+                    break;
+                case 3: // Personal
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 uppercase">4. Eigene Erfahrung</span>
+                                <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Subjektiver Standpunkt</h3>
+                            </div>
+                            <div class="my-auto">
+                                <p id="tts-content-container" class="text-xs md:text-sm font-medium leading-relaxed text-zinc-200 border-l-2 border-amber-500 pl-3">${textToWordSpans(topic.pers_erfahrung_de, 'personal')}</p>
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Zeigt persönliche Reflexion und Relevanz.</div>
+                        </div>
+                    `;
+                    break;
+                case 4: // Dialog
+                    let dialogHtml = "";
+                    topic.dialog.forEach(chat => {
+                        const isA = chat.role.includes("A");
+                        dialogHtml += `
+                            <div class="p-2.5 rounded-xl border ${isA ? 'bg-indigo-950/20 border-indigo-900/60' : 'bg-zinc-950/60 border-zinc-800'}">
+                                <span class="text-[8px] font-extrabold text-zinc-400 block mb-0.5">${chat.role}</span>
+                                <p class="text-xs font-semibold leading-relaxed text-zinc-100">${textToWordSpans(chat.de, 'dialog')}</p>
+                            </div>
+                        `;
+                    });
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-purple-500/20 text-purple-400 uppercase">5. Dialogübung</span>
+                                <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Interaktion simulieren</h3>
+                            </div>
+                            <div id="tts-content-container" class="space-y-2 my-auto max-h-[300px] overflow-y-auto custom-scrollbar">
+                                ${dialogHtml}
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Wechselgespräch mit dem Partner üben.</div>
+                        </div>
+                    `;
+                    break;
+                case 5: // Schluss
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-500/20 text-cyan-400 uppercase">6. Schlussfolgerung</span>
+                                <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Einigung erzielen</h3>
+                            </div>
+                            <div class="my-auto">
+                                <p id="tts-content-container" class="text-xs md:text-sm font-semibold leading-relaxed text-zinc-200 border-l-2 border-cyan-500 pl-3">${textToWordSpans(topic.schluss_de, 'schluss')}</p>
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Einen Kompromiss herbeiführen.</div>
+                        </div>
+                    `;
+                    break;
+                case 6: // Keywords
+                    let kwBadges = "";
+                    topic.keywords.split(',').forEach(kw => {
+                        kwBadges += `
+                            <button onclick="tapKeyword(this)" class="px-3 py-1.5 text-xs font-semibold bg-zinc-950/80 border border-zinc-800 hover:border-indigo-500 text-zinc-300 rounded-lg transition-all">
+                                ${kw.trim()}
+                            </button>
+                        `;
+                    });
+                    card.innerHTML = `
+                        <div class="flex-1 flex flex-col justify-between h-full">
+                            <div>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-pink-500/20 text-pink-400 uppercase">7. Wortschatz</span>
+                                <h3 class="text-base font-black text-white dark:text-zinc-100 mt-1">Schlüsselbegriffe</h3>
+                            </div>
+                            <div class="flex flex-wrap gap-2 my-auto justify-center">
+                                ${kwBadges}
+                            </div>
+                            <div class="text-[9px] text-zinc-500">Wichtige Vokabeln für die B2 Prüfung.</div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            renderCaptionLine();
+        }
+
+        // Tap Keyword (Mindmap sub bubble)
+        function tapKeyword(el) {
+            if (isPencilToolActive) {
+                if (el.highlightCircleSvg) {
+                    removeCircle(el);
+                } else {
+                    wrapWithManualCircle(el, '#ef4444');
+                }
+            } else {
+                // Subtle standard animation
+                el.animate([
+                    { transform: 'scale(1)' },
+                    { transform: 'scale(1.08)' },
+                    { transform: 'scale(1)' }
+                ], { duration: 300 });
+            }
+        }
+
+        // Subtitle rendering dynamically mapped to English/Arabic translation databases
+        function renderCaptionLine() {
+            const subEl = document.getElementById('translation-subtitle');
+            if (subtitleLang === 'none') {
+                subEl.textContent = "";
                 return;
             }
-            if (TOPICS_DATA.length === 0) return;
-            const topic = TOPICS_DATA[activeIdx];
-            
-            document.getElementById('active-topic-num').textContent = `Thema ${topic.id}`;
-            document.getElementById('active-topic-title-de').textContent = topic.title_de;
-            document.getElementById('active-topic-title-en').textContent = topic.title_en;
 
-            if (isEditMode) {
-                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
-                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
-            } else {
-                document.getElementById('active-topic-title-de').contentEditable = "false";
-                document.getElementById('active-topic-title-en').contentEditable = "false";
-                document.getElementById('active-topic-title-de').className = "text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight";
-                document.getElementById('active-topic-title-en').className = "text-sm italic text-slate-400 dark:text-slate-500 mt-1 font-medium";
-            }
+            const t = TOPICS_DATA[activeIdx];
+            let text = "";
+            let isRTL = subtitleLang === 'ar';
 
-            const isLearned = learnedList.includes(topic.id);
-            const learnedBtn = document.getElementById('learned-toggle');
-            if (isLearned) {
-                learnedBtn.className = "text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors flex items-center gap-1.5";
-                learnedBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Gelernt`;
-            } else {
-                learnedBtn.className = "text-xs bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 shadow-sm";
-                learnedBtn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Als gelernt markieren`;
-            }
+            if (currentSlide === 0) text = isRTL ? t.einleitung_ar : t.einleitung_en;
+            else if (currentSlide === 1) text = isRTL ? t.pro_ar.join(" · ") : t.pro_en.join(" · ");
+            else if (currentSlide === 2) text = isRTL ? t.contra_ar.join(" · ") : t.contra_en.join(" · ");
+            else if (currentSlide === 3) text = isRTL ? t.pers_erfahrung_ar : t.pers_erfahrung_en;
+            else if (currentSlide === 4) text = isRTL ? "الحوار التدريبي" : "Dialog Practice Feed";
+            else if (currentSlide === 5) text = isRTL ? t.schluss_ar : t.schluss_en;
+            else text = isRTL ? "مفردات هامة" : "Important Exam Vocabulary";
 
-            const container = document.getElementById('active-topic-container');
-            container.innerHTML = "";
-
-            const deClass = (activeView === 'both' || activeView === 'de_ar' || activeView === 'all' || activeView === 'de') ? 'block' : 'hidden';
-            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? 'block' : 'hidden';
-            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? 'block' : 'hidden';
-
-            // 1. EINLEITUNG CARD
-            const einleitungCard = document.createElement('div');
-            einleitungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-indigo-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
-            einleitungCard.setAttribute("data-context", "tts");
-            
-            const einleitungTextDE = isEditMode ? topic.einleitung_de : textToWordSpans(topic.einleitung_de, 'tts');
-            const einleitungTextEN = isEditMode ? topic.einleitung_en : textToWordSpans(topic.einleitung_en, 'tts');
-            const einleitungTextAR = isEditMode ? topic.einleitung_ar : textToWordSpans(topic.einleitung_ar, 'tts');
-
-            einleitungCard.innerHTML = `
-                <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-3">1. Einleitung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Introduction</span></h4>
-                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-base leading-relaxed einleitung-de" id="speech-segment-einleitung-de">${einleitungTextDE}</p>
-                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-sm mt-2 einleitung-en" id="speech-segment-einleitung-en">${einleitungTextEN}</p>
-                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-sm mt-2 text-right leading-relaxed einleitung-ar" id="speech-segment-einleitung-ar" dir="rtl">${einleitungTextAR || ''}</p>
-            `;
-            container.appendChild(einleitungCard);
-
-            if (isEditMode) {
-                makeEditable(einleitungCard.querySelector('.einleitung-de'), 'einleitung_de');
-                makeEditable(einleitungCard.querySelector('.einleitung-en'), 'einleitung_en');
-                makeEditable(einleitungCard.querySelector('.einleitung-ar'), 'einleitung_ar');
-            }
-
-            // 2. PRO & CONTRA CONTAINER (Grid system)
-            const proContraGrid = document.createElement('div');
-            proContraGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-
-            // PRO CARD
-            const proCard = document.createElement('div');
-            proCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-emerald-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
-            proCard.setAttribute("data-context", "pro");
-            let proItems = "";
-            topic.pro_de.forEach((deText, index) => {
-                const enText = topic.pro_en ? topic.pro_en[index] : '';
-                const arText = topic.pro_ar ? topic.pro_ar[index] : '';
-                
-                const spanifiedDE = isEditMode ? deText : textToWordSpans(deText, 'pro');
-                const spanifiedEN = isEditMode ? enText : textToWordSpans(enText, 'pro');
-                const spanifiedAR = isEditMode ? arText : textToWordSpans(arText, 'pro');
-
-                proItems += `
-                    <div class="mb-4 last:mb-0 pro-item-block" data-index="${index}">
-                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed pro-de" id="speech-segment-pro-de-${index}">${spanifiedDE}</p>
-                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 pro-en" id="speech-segment-pro-en-${index}">${spanifiedEN}</p>
-                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right pro-ar" id="speech-segment-pro-ar-${index}" dir="rtl">${spanifiedAR || ''}</p>
-                    </div>
-                `;
-            });
-            proCard.innerHTML = `
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">2. Dafür (Pro) / <span class="italic font-medium text-slate-400 dark:text-slate-500">Pros & Arguments</span></h4>
-                    <div class="space-y-3">${proItems}</div>
-                </div>
-            `;
-            proContraGrid.appendChild(proCard);
-
-            if (isEditMode) {
-                proCard.querySelectorAll('.pro-item-block').forEach(item => {
-                    const idx = parseInt(item.getAttribute('data-index'));
-                    makeEditable(item.querySelector('.pro-de'), 'pro_de', true, idx);
-                    makeEditable(item.querySelector('.pro-en'), 'pro_en', true, idx);
-                    makeEditable(item.querySelector('.pro-ar'), 'pro_ar', true, idx);
-                });
-            }
-
-            // CONTRA CARD
-            const contraCard = document.createElement('div');
-            contraCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-rose-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm flex flex-col justify-between transition-colors duration-200";
-            contraCard.setAttribute("data-context", "contra");
-            let contraItems = "";
-            topic.contra_de.forEach((deText, index) => {
-                const enText = topic.contra_en ? topic.contra_en[index] : '';
-                const arText = topic.contra_ar ? topic.contra_ar[index] : '';
-
-                const spanifiedDE = isEditMode ? deText : textToWordSpans(deText, 'contra');
-                const spanifiedEN = isEditMode ? enText : textToWordSpans(enText, 'contra');
-                const spanifiedAR = isEditMode ? arText : textToWordSpans(arText, 'contra');
-
-                contraItems += `
-                    <div class="mb-4 last:mb-0 contra-item-block" data-index="${index}">
-                        <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed contra-de" id="speech-segment-contra-de-${index}">${spanifiedDE}</p>
-                        <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-1 contra-en" id="speech-segment-contra-en-${index}">${spanifiedEN}</p>
-                        <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-1 text-right contra-ar" id="speech-segment-contra-ar-${index}" dir="rtl">${spanifiedAR || ''}</p>
-                    </div>
-                `;
-            });
-            contraCard.innerHTML = `
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-3">3. Dagegen (Contra) / <span class="italic font-medium text-slate-400 dark:text-slate-500">Cons & Arguments</span></h4>
-                    <div class="space-y-3">${contraItems}</div>
-                </div>
-            `;
-            proContraGrid.appendChild(contraCard);
-            container.appendChild(proContraGrid);
-
-            if (isEditMode) {
-                contraCard.querySelectorAll('.contra-item-block').forEach(item => {
-                    const idx = parseInt(item.getAttribute('data-index'));
-                    makeEditable(item.querySelector('.contra-de'), 'contra_de', true, idx);
-                    makeEditable(item.querySelector('.contra-en'), 'contra_en', true, idx);
-                    makeEditable(item.querySelector('.contra-ar'), 'contra_ar', true, idx);
-                });
-            }
-
-            // 3. PERSÖNLICHE ERFAHRUNG CARD
-            const erfahrungCard = document.createElement('div');
-            erfahrungCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-amber-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
-            erfahrungCard.setAttribute("data-context", "tts");
-
-            const erfahrungTextDE = isEditMode ? topic.pers_erfahrung_de : textToWordSpans(topic.pers_erfahrung_de, 'tts');
-            const erfahrungTextEN = isEditMode ? topic.pers_erfahrung_en : textToWordSpans(topic.pers_erfahrung_en, 'tts');
-            const erfahrungTextAR = isEditMode ? topic.pers_erfahrung_ar : textToWordSpans(topic.pers_erfahrung_ar, 'tts');
-
-            erfahrungCard.innerHTML = `
-                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">4. Persönliche Erfahrung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Personal Experience</span></h4>
-                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed erfahrung-de" id="speech-segment-erfahrung-de">${erfahrungTextDE}</p>
-                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 erfahrung-en" id="speech-segment-erfahrung-en">${erfahrungTextEN}</p>
-                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed erfahrung-ar" id="speech-segment-erfahrung-ar" dir="rtl">${erfahrungTextAR || ''}</p>
-            `;
-            container.appendChild(erfahrungCard);
-
-            if (isEditMode) {
-                makeEditable(erfahrungCard.querySelector('.erfahrung-de'), 'pers_erfahrung_de');
-                makeEditable(erfahrungCard.querySelector('.erfahrung-en'), 'pers_erfahrung_en');
-                makeEditable(erfahrungCard.querySelector('.erfahrung-ar'), 'pers_erfahrung_ar');
-            }
-
-            // 4. SIMULATION / DIALOG CARD
-            const simulationCard = document.createElement('div');
-            simulationCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-purple-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm space-y-4 transition-colors duration-200";
-            
-            let dialogHtml = "";
-            topic.dialog.forEach((chat, index) => {
-                const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
-                const roleColor = isA 
-                    ? "bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-300 shadow-sm" 
-                    : "bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 shadow-sm";
-                const alignment = isA ? "text-left animate-fadeInLeft" : "text-left md:translate-x-4 animate-fadeInRight";
-
-                const spanifiedDE = isEditMode ? chat.de : textToWordSpans(chat.de, isA ? 'dialog_a' : 'dialog_b');
-                const spanifiedEN = isEditMode ? chat.en : textToWordSpans(chat.en, isA ? 'dialog_a' : 'dialog_b');
-                const spanifiedAR = isEditMode ? chat.ar : textToWordSpans(chat.ar, isA ? 'dialog_a' : 'dialog_b');
-
-                dialogHtml += `
-                    <div class="p-4 rounded-xl border ${roleColor} ${alignment} transition-all max-w-[95%] dialog-item-block" data-index="${index}" data-context="${isA ? 'dialog_a' : 'dialog_b'}">
-                        <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-1">${chat.role}</span>
-                        <p class="${deClass} text-sm font-semibold leading-relaxed dialog-de" id="speech-segment-dialog-de-${index}">${spanifiedDE}</p>
-                        <p class="${enClass} text-xs italic text-slate-400 dark:text-slate-400 mt-1 dialog-en" id="speech-segment-dialog-en-${index}">${spanifiedEN}</p>
-                        <p class="${arClass} text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 text-right leading-relaxed dialog-ar" id="speech-segment-dialog-ar-${index}" dir="rtl">${spanifiedAR || ''}</p>
-                    </div>
-                `;
-            });
-
-            simulationCard.innerHTML = `
-                <h4 class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3">5. Simulation / Dialog / <span class="italic font-medium text-slate-400 dark:text-slate-500">Discussion Transcript</span></h4>
-                <div class="space-y-3.5">${dialogHtml}</div>
-            `;
-            container.appendChild(simulationCard);
-
-            if (isEditMode) {
-                simulationCard.querySelectorAll('.dialog-item-block').forEach(item => {
-                    const idx = parseInt(item.getAttribute('data-index'));
-                    makeEditable(item.querySelector('.dialog-de'), 'dialog', true, idx, 'de');
-                    makeEditable(item.querySelector('.dialog-en'), 'dialog', true, idx, 'en');
-                    makeEditable(item.querySelector('.dialog-ar'), 'dialog', true, idx, 'ar');
-                });
-            }
-
-            // 5. GEMEINSAME LÖSUNG CARD
-            const schlussCard = document.createElement('div');
-            schlussCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-yellow-500 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
-            schlussCard.setAttribute("data-context", "tts");
-
-            const schlussTextDE = isEditMode ? topic.schluss_de : textToWordSpans(topic.schluss_de, 'tts');
-            const schlussTextEN = isEditMode ? topic.schluss_en : textToWordSpans(topic.schluss_en, 'tts');
-            const schlussTextAR = isEditMode ? topic.schluss_ar : textToWordSpans(topic.schluss_ar, 'tts');
-
-            schlussCard.innerHTML = `
-                <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-3">6. Gemeinsame Lösung / Schlussfolgerung / <span class="italic font-medium text-slate-400 dark:text-slate-500">Conclusion</span></h4>
-                <p class="${deClass} text-slate-700 dark:text-slate-200 font-semibold text-sm leading-relaxed schluss-de" id="speech-segment-schluss-de">${schlussTextDE}</p>
-                <p class="${enClass} text-slate-400 dark:text-slate-400 italic text-xs mt-2 schluss-en" id="speech-segment-schluss-en">${schlussTextEN}</p>
-                <p class="${arClass} text-slate-600 dark:text-slate-300 font-medium text-xs mt-2 text-right leading-relaxed schluss-ar" id="speech-segment-schluss-ar" dir="rtl">${schlussTextAR || ''}</p>
-            `;
-            container.appendChild(schlussCard);
-
-            if (isEditMode) {
-                makeEditable(schlussCard.querySelector('.schluss-de'), 'schluss_de');
-                makeEditable(schlussCard.querySelector('.schluss-en'), 'schluss_en');
-                makeEditable(schlussCard.querySelector('.schluss-ar'), 'schluss_ar');
-            }
-
-            // 6. SCHLÜSSELWÖRTER CARD
-            let kwBadges = "";
-            if (topic.keywords) {
-                const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
-                list.forEach(kw => {
-                    kwBadges += `<span class="px-2.5 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-600 transition-colors">${kw}</span>`;
-                });
-            }
-
-            const keywordsCard = document.createElement('div');
-            keywordsCard.className = "bg-white dark:bg-slate-800 border-l-4 border-l-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm transition-colors duration-200";
-            keywordsCard.innerHTML = `
-                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">7. Schlüsselwörter / <span class="italic font-medium text-slate-400 dark:text-slate-500">Keywords</span></h4>
-                <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
-                <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
-                    <input type="text" class="w-full text-xs font-mono bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 rounded-lg p-2" value="${topic.keywords || ''}" />
-                </div>
-            `;
-            container.appendChild(keywordsCard);
-
-            if (isEditMode) {
-                const kwInput = keywordsCard.querySelector('.keywords-edit input');
-                kwInput.addEventListener('blur', () => {
-                    pushToUndoStack();
-                    TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
-                    saveEdits();
-                });
-            }
-
-            lucide.createIcons();
-            populateVoiceSelector();
+            subEl.textContent = text;
+            subEl.dir = isRTL ? "rtl" : "ltr";
+            subEl.className = isRTL 
+                ? "text-sm text-amber-300 font-bold leading-normal text-center" 
+                : "text-xs italic text-indigo-200 leading-relaxed font-semibold";
         }
 
-        // Feature: Natural/Neural Voice matching from Edge (Requirement 6)
-        function populateVoiceSelector() {
-            if (!synth) return;
-            const selectEl = document.getElementById('voice-selector');
-            if (!selectEl) return;
-
-            voicesList = synth.getVoices();
-            let filtered = voicesList.filter(v => v.lang.toLowerCase().startsWith(ttsLang));
-            if (filtered.length === 0) {
-                filtered = voicesList;
-            }
-
-            // Sort natural / neural voices on top
-            filtered.sort((a, b) => {
-                const aNat = a.name.includes("Neural") || a.name.includes("Natural") || a.name.includes("Google");
-                const bNat = b.name.includes("Neural") || b.name.includes("Natural") || b.name.includes("Google");
-                if (aNat && !bNat) return -1;
-                if (!aNat && bNat) return 1;
-                return a.name.localeCompare(b.name);
-            });
-
-            selectEl.innerHTML = "";
-            filtered.forEach(voice => {
-                const opt = document.createElement('option');
-                opt.value = voice.name;
-                const isNatural = voice.name.includes("Neural") || voice.name.includes("Natural") || voice.name.includes("Google");
-                const labelIcon = isNatural ? "✨" : (voice.localService ? "💻" : "🌐");
-                opt.textContent = `${labelIcon} ${voice.name}`;
-                selectEl.appendChild(opt);
-            });
-
-            currentSelectedVoice = filtered[0] || null;
-            if (currentSelectedVoice) {
-                selectEl.value = currentSelectedVoice.name;
-            }
+        function changeSubtitleLang() {
+            subtitleLang = document.getElementById('translation-selector').value;
+            renderCaptionLine();
         }
 
-        function changeTtsLang() {
-            ttsLang = document.getElementById('tts-audio-lang-selector').value;
-            populateVoiceSelector();
-            if (isTtsPlaying) {
-                restartSpeechSynthesis();
+        // Handle Click interactions inside Slide (Highlight manual circle logic)
+        document.addEventListener('click', (e) => {
+            const word = e.target.closest('.tts-word');
+            if (word) {
+                if (isPencilToolActive) {
+                    if (word.highlightCircleSvg) {
+                        removeCircle(word);
+                    } else {
+                        wrapWithManualCircle(word, '#ef4444');
+                    }
+                }
             }
-        }
+        });
 
-        function updateAudioParams() {
-            ttsSpeed = parseFloat(document.getElementById('speed-slider').value);
-            ttsPitch = parseFloat(document.getElementById('pitch-slider').value);
-            document.getElementById('speed-val').textContent = `${ttsSpeed.toFixed(1)}x`;
-            document.getElementById('pitch-val').textContent = `${ttsPitch.toFixed(1)}`;
-            if (isTtsPlaying) {
-                restartSpeechSynthesis();
-            }
-        }
-
-        function toggleSpeechPlayback() {
-            if (isTtsPlaying) {
+        // Speech & Audio Synthesis Engine
+        function togglePlayback() {
+            if (isPlaying) {
                 synth.pause();
-                isTtsPlaying = false;
-                document.getElementById('tts-play-icon').setAttribute('data-lucide', 'play');
-                document.getElementById('tts-play-text').textContent = "Vorlesen";
+                isPlaying = false;
+                document.getElementById('playback-icon').setAttribute('data-lucide', 'play');
+                document.getElementById('playback-text').textContent = "Fortsetzen";
                 lucide.createIcons();
             } else {
                 if (synth.paused) {
                     synth.resume();
-                    isTtsPlaying = true;
-                    document.getElementById('tts-play-icon').setAttribute('data-lucide', 'pause');
-                    document.getElementById('tts-play-text').textContent = "Pausieren";
+                    isPlaying = true;
+                    document.getElementById('playback-icon').setAttribute('data-lucide', 'pause');
+                    document.getElementById('playback-text').textContent = "Pausieren";
                     lucide.createIcons();
                 } else {
-                    buildSpeechSegments();
-                    currentSegmentIdx = 0;
-                    startSpeechSegment(0);
+                    startSpeechSynthesis();
                 }
             }
         }
 
-        function stopSpeechPlayback() {
-            resetSpeechState();
-        }
-
-        function restartSpeechSynthesis() {
-            if (isTtsPlaying) {
+        function restartTtsSegment() {
+            if (isPlaying) {
                 synth.cancel();
-                startSpeechSegment(currentSegmentIdx);
+                startSpeechSynthesis();
             }
         }
 
-        function buildSpeechSegments() {
-            speechSegmentsList = [];
-            const topic = TOPICS_DATA[activeIdx];
-            if (!topic) return;
-
-            const einleitungEl = document.querySelector(`#speech-segment-einleitung-${ttsLang}`);
-            if (einleitungEl) {
-                speechSegmentsList.push({ element: einleitungEl, contextType: 'tts' });
-            }
-
-            topic.pro_de.forEach((_, idx) => {
-                const proEl = document.querySelector(`#speech-segment-pro-${ttsLang}-${idx}`);
-                if (proEl) speechSegmentsList.push({ element: proEl, contextType: 'pro' });
-            });
-
-            topic.contra_de.forEach((_, idx) => {
-                const contraEl = document.querySelector(`#speech-segment-contra-${ttsLang}-${idx}`);
-                if (contraEl) speechSegmentsList.push({ element: contraEl, contextType: 'contra' });
-            });
-
-            const erfahrungEl = document.querySelector(`#speech-segment-erfahrung-${ttsLang}`);
-            if (erfahrungEl) {
-                speechSegmentsList.push({ element: erfahrungEl, contextType: 'tts' });
-            }
-
-            topic.dialog.forEach((chat, idx) => {
-                const isA = chat.role === "Schüler A" || chat.role === "Schülerin A";
-                const dEl = document.querySelector(`#speech-segment-dialog-${ttsLang}-${idx}`);
-                if (dEl) {
-                    speechSegmentsList.push({ element: dEl, contextType: isA ? 'dialog_a' : 'dialog_b' });
-                }
-            });
-
-            const schlussEl = document.querySelector(`#speech-segment-schluss-${ttsLang}`);
-            if (schlussEl) {
-                speechSegmentsList.push({ element: schlussEl, contextType: 'tts' });
-            }
-        }
-
-        function startSpeechSegment(idx) {
-            if (idx >= speechSegmentsList.length) {
-                resetSpeechState();
-                return;
-            }
-
-            currentSegmentIdx = idx;
-            const segment = speechSegmentsList[idx];
-            const container = segment.element;
-            if (!container) {
-                startSpeechSegment(idx + 1);
-                return;
-            }
-
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        function startSpeechSynthesis() {
+            const container = document.getElementById('tts-content-container');
+            if (!container) return;
 
             const spans = container.querySelectorAll('.tts-word');
-            if (spans.length === 0) {
-                startSpeechSegment(idx + 1);
-                return;
-            }
+            if (spans.length === 0) return;
 
-            let rawString = "";
-            spans.forEach(span => {
-                const text = span.textContent || span.innerText || "";
-                span.setAttribute('data-start', rawString.length);
-                rawString.length += text.length;
-                span.setAttribute('data-end', rawString.length);
-                rawString += " ";
-                rawString.length += 1;
+            resetUtterances();
+
+            // Index span positions
+            let textString = "";
+            spans.forEach(s => {
+                const cleanText = s.textContent.trim();
+                s.setAttribute('data-start', textString.length);
+                textString += cleanText;
+                s.setAttribute('data-end', textString.length);
+                textString += " ";
             });
 
-            activeUtterance = new SpeechSynthesisUtterance(container.textContent || container.innerText || "");
-            activeUtterance.lang = ttsLang === 'de' ? 'de-DE' : (ttsLang === 'en' ? 'en-US' : 'ar-SA');
-            activeUtterance.rate = ttsSpeed;
-            activeUtterance.pitch = ttsPitch;
+            activeUtterance = new SpeechSynthesisUtterance(container.textContent || container.innerText);
+            activeUtterance.lang = ttsLang === 'de' ? 'de-DE' : 'en-US';
+            activeUtterance.rate = playbackSpeed;
 
-            const voiceSelect = document.getElementById('voice-selector');
-            if (voiceSelect && voiceSelect.value) {
-                const voice = voicesList.find(v => v.name === voiceSelect.value);
-                if (voice) activeUtterance.voice = voice;
+            if (currentSelectedVoice) {
+                activeUtterance.voice = currentSelectedVoice;
             }
 
-            activeUtterance.onboundary = (event) => {
-                if (event.name === 'word') {
-                    const charIndex = event.charIndex;
+            activeUtterance.onboundary = (e) => {
+                if (e.name === 'word') {
+                    const charIndex = e.charIndex;
                     let matchedSpan = null;
 
                     spans.forEach(s => {
@@ -1720,11 +1077,8 @@
                     if (matchedSpan) {
                         if (lastActiveSpan) {
                             lastActiveSpan.classList.remove('tts-word-active');
-                            removeCircle(lastActiveSpan);
                         }
-
                         matchedSpan.classList.add('tts-word-active');
-                        wrapWithCircle(matchedSpan, getColorForContext(segment.contextType));
                         lastActiveSpan = matchedSpan;
                         matchedSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     }
@@ -1732,284 +1086,112 @@
             };
 
             activeUtterance.onend = () => {
-                if (lastActiveSpan) {
-                    lastActiveSpan.classList.remove('tts-word-active');
-                    removeCircle(lastActiveSpan);
-                    lastActiveSpan = null;
+                resetPlaybackState();
+                
+                // Auto-Play Trigger
+                if (isAutoPlayEnabled) {
+                    autoPlayTimer = setTimeout(() => {
+                        goToNextCard();
+                        startSpeechSynthesis();
+                    }, 1200);
                 }
-                startSpeechSegment(idx + 1);
             };
 
             activeUtterance.onerror = (e) => {
-                if (e.error !== 'interrupted') {
-                    startSpeechSegment(idx + 1);
-                }
+                if (e.error !== 'interrupted') resetPlaybackState();
             };
 
-            isTtsPlaying = true;
-            document.getElementById('tts-play-icon').setAttribute('data-lucide', 'pause');
-            document.getElementById('tts-play-text').textContent = "Pausieren";
+            isPlaying = true;
+            document.getElementById('playback-icon').setAttribute('data-lucide', 'pause');
+            document.getElementById('playback-text').textContent = "Pausieren";
             lucide.createIcons();
-
             synth.speak(activeUtterance);
         }
 
-        function resetSpeechState() {
+        function resetUtterances() {
             synth.cancel();
             if (activeUtterance) {
                 activeUtterance.onboundary = null;
                 activeUtterance.onend = null;
                 activeUtterance.onerror = null;
             }
-            isTtsPlaying = false;
-            document.getElementById('tts-play-icon').setAttribute('data-lucide', 'play');
-            document.getElementById('tts-play-text').textContent = "Vorlesen";
+        }
+
+        function resetPlaybackState() {
+            resetUtterances();
+            if (autoPlayTimer) clearTimeout(autoPlayTimer);
+
+            isPlaying = false;
+            document.getElementById('playback-icon').setAttribute('data-lucide', 'play');
+            document.getElementById('playback-text').textContent = "Simulation starten";
             lucide.createIcons();
 
             if (lastActiveSpan) {
                 lastActiveSpan.classList.remove('tts-word-active');
-                removeCircle(lastActiveSpan);
                 lastActiveSpan = null;
             }
 
-            speechSegmentsList.forEach(seg => {
-                if (seg.element) {
-                    const spans = seg.element.querySelectorAll('.tts-word');
-                    spans.forEach(s => {
-                        s.classList.remove('tts-word-active');
-                        removeCircle(s);
-                    });
-                }
-            });
-        }
-
-        if (synth) {
-            synth.onvoiceschanged = () => {
-                populateVoiceSelector();
-            };
-            populateVoiceSelector();
-        }
-
-        // Backup Export & Import implementations (Requirement 1)
-        function exportBackupData() {
-            if (TOPICS_DATA.length === 0) return;
-
-            const backupObj = {
-                version: "1.0",
-                exportDate: new Date().toISOString(),
-                topics: TOPICS_DATA,
-                progress: learnedList
-            };
-
-            const dateStr = new Date().toISOString().slice(0, 10);
-            const filename = `b2-trainer-backup-${dateStr}.json`;
-
-            const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            showToast("✅ Backup erfolgreich exportiert!");
-        }
-
-        function triggerImportFileInput() {
-            document.getElementById('import-file-input').click();
-        }
-
-        function importBackupData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed && Array.isArray(parsed.topics)) {
-                        const isValid = parsed.topics.every(t => typeof t.id !== 'undefined' && t.title_de);
-                        if (isValid) {
-                            pushToUndoStack(); // Save for undo
-                            TOPICS_DATA = parsed.topics;
-                            activeIdx = -1; // Show Mind Map with new topics
-                            
-                            if (Array.isArray(parsed.progress)) {
-                                learnedList = parsed.progress;
-                            }
-
-                            showResetButton();
-                            renderSidebar();
-                            renderActiveTopic();
-                            showToast(`✅ ${parsed.topics.length} Themen erfolgreich importiert!`);
-                        } else {
-                            showToast("❌ Datei enthält ungültige Themenstruktur.", true);
-                        }
-                    } else {
-                        showToast("❌ Ungültiges Backup-Format.", true);
-                    }
-                } catch(err) {
-                    console.error("JSON Import Error: ", err);
-                    showToast("❌ Import fehlgeschlagen: Fehlerhafte Datei.", true);
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = ""; 
-        }
-
-        function showToast(message, isError = false) {
-            let toast = document.getElementById('app-toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'app-toast';
-                document.body.appendChild(toast);
+            const container = document.getElementById('tts-content-container');
+            if (container) {
+                container.querySelectorAll('.tts-word').forEach(s => s.classList.remove('tts-word-active'));
             }
-            toast.textContent = message;
-            if (isError) {
-                toast.className = "fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-lg transition-all duration-300 transform translate-y-0 opacity-100 font-bold text-xs bg-rose-600 text-white flex items-center gap-2 border border-rose-500 animate-bounce";
+        }
+
+        function stopPlayback() {
+            resetPlaybackState();
+        }
+
+        // Horizontal Slide Navigation
+        function goToNextCard() {
+            if (currentSlide < TOTAL_SLIDES - 1) {
+                currentSlide++;
+                renderActiveSlide();
+                updateGlobalMeta();
             } else {
-                toast.className = "fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-lg transition-all duration-300 transform translate-y-0 opacity-100 font-bold text-xs bg-emerald-600 text-white flex items-center gap-2 border border-emerald-500";
-            }
-
-            setTimeout(() => {
-                toast.className = "fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-lg transition-all duration-300 transform translate-y-10 opacity-0 font-bold text-xs";
-            }, 3000);
-        }
-
-        // Action Trigger to Export modified database array to topics.json File
-        function exportTopicsJSON() {
-            if (TOPICS_DATA.length === 0) return;
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TOPICS_DATA, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "topics.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        // Bind Export Action
-        document.getElementById('export-json-btn').onclick = () => {
-            exportTopicsJSON();
-        };
-
-        document.getElementById('learned-toggle').onclick = () => {
-            if (activeIdx === -1 || TOPICS_DATA.length === 0) return;
-            const topicId = TOPICS_DATA[activeIdx].id;
-            if (learnedList.includes(topicId)) {
-                learnedList = learnedList.filter(id => id !== topicId);
-            } else {
-                learnedList.push(topicId);
-            }
-            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
-            renderSidebar();
-            renderActiveTopic();
-        };
-
-        document.getElementById('lang-view').addEventListener('change', (e) => {
-            activeView = e.target.value;
-            renderActiveTopic();
-        });
-
-        const highlightsBtn = document.getElementById('toggle-highlights');
-        highlightsBtn.onclick = () => {
-            showHighlights = !showHighlights;
-            highlightsBtn.textContent = showHighlights ? "Hervorhebung: AN" : "Hervorhebung: AUS";
-            highlightsBtn.className = showHighlights 
-                ? "text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2 shadow-sm transition-colors"
-                : "text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-lg px-4 py-2 border border-slate-300 dark:border-slate-600 transition-colors";
-            renderActiveTopic();
-        };
-
-        const editModeToggle = document.getElementById('edit-mode-toggle');
-        editModeToggle.onclick = () => {
-            isEditMode = !isEditMode;
-            editModeToggle.classList.toggle('bg-indigo-600', isEditMode);
-            editModeToggle.classList.toggle('text-white', isEditMode);
-            editModeToggle.classList.toggle('hover:bg-indigo-700', isEditMode);
-            editModeToggle.classList.toggle('bg-slate-200', !isEditMode);
-            editModeToggle.classList.toggle('dark:bg-slate-700', !isEditMode);
-            editModeToggle.classList.toggle('text-slate-700', !isEditMode);
-            editModeToggle.classList.toggle('dark:text-slate-200', !isEditMode);
-            
-            editModeToggle.querySelector('span').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
-            
-            const editTipBanner = document.getElementById('edit-tip-banner');
-            if (isEditMode) {
-                editTipBanner.classList.remove('hidden');
-                closeSidebarMobile();
-            } else {
-                editTipBanner.classList.add('hidden');
-                hideToolbar();
-            }
-
-            renderActiveTopic();
-        };
-
-        document.getElementById('search-bar').addEventListener('input', () => {
-            renderSidebar();
-        });
-
-        const sidebar = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobile-nav-toggle');
-        mobileToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            const isHidden = sidebar.classList.contains('-translate-x-full');
-            document.getElementById('menu-icon').innerHTML = isHidden 
-                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
-                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
-        });
-
-        // Overlay & Reel-Modus Methods
-        function openReel() {
-            const overlay = document.getElementById('reel-overlay');
-            const iframe = document.getElementById('reel-iframe');
-            overlay.classList.remove('hidden');
-            iframe.src = './reel-mode.html';
-        }
-
-        function closeReel() {
-            const overlay = document.getElementById('reel-overlay');
-            const iframe = document.getElementById('reel-iframe');
-            
-            try {
-                if (iframe.contentWindow && iframe.contentWindow.speechSynthesis) {
-                    iframe.contentWindow.speechSynthesis.cancel();
+                // Loop around to next topic if autoplay is on
+                if (activeIdx < TOPICS_DATA.length - 1) {
+                    activeIdx++;
+                    currentSlide = 0;
+                    loadTopic(activeIdx);
                 }
-            } catch(e) {}
-            
-            overlay.classList.add('hidden');
-            iframe.src = 'about:blank';
+            }
         }
 
-        // Initialize install prompt listener
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            const installBtn = document.getElementById('pwa-install-btn');
-            if (installBtn) installBtn.classList.remove('hidden');
-        });
-
-        const installBtn = document.getElementById('pwa-install-btn');
-        if (installBtn) {
-            installBtn.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User installation decision: ${outcome}`);
-                deferredPrompt = null;
-                installBtn.classList.add('hidden');
-            });
+        function goToPrevCard() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderActiveSlide();
+                updateGlobalMeta();
+            }
         }
 
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA app installed successfully!');
-            const installBtn = document.getElementById('pwa-install-btn');
-            if (installBtn) installBtn.classList.add('hidden');
+        // Swipe & Arrow Key support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') goToNextCard();
+            if (e.key === 'ArrowLeft') goToPrevCard();
         });
 
-        loadTopics();
+        // Touch swipe variables
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const container = document.getElementById('reel-card-container');
+        
+        container.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        container.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const diff = touchStartX - touchEndX;
+            if (diff > 80) goToNextCard(); // Swipe Left
+            if (diff < -80) goToPrevCard(); // Swipe Right
+        }
+
+        init();
     </script>
 </body>
 </html>
