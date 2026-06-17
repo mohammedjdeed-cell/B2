@@ -6,8 +6,8 @@
   "categories": ["education", "utilities", "books"],
   "lang": "de",
   "dir": "ltr",
-  "scope": "./",
-  "start_url": "./index.html?source=pwa",
+  "scope": "/",
+  "start_url": "/index.html?source=pwa",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#F8FAFC",
@@ -37,15 +37,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Themenübersicht",
-      "short_name": "Themen",
-      "description": "Öffne die Liste aller 52 Prüfungsthemen",
-      "url": "./index.html?action=view-topics",
-      "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/3251/3251521.png", "sizes": "192x192" }]
     }
   ]
 }
