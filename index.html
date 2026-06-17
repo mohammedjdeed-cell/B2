@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
+    <title>B2 Trainer — TELC B2 Diskussionstrainer</title>
     
-    <!-- Google Fonts Import for Inter & Noto Sans Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,17 +16,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
     
-    <!-- Modern SVG Base64 Icon (Speech Bubble with B2) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
 
-    <!-- Tailwind CSS & D3.js -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class'
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
     
     <style>
@@ -48,15 +42,11 @@
             --danger-light:  #FEF2F2;
             --amber:         #D97706;
             --amber-light:   #FFFBEB;
-            --purple:        #7C3AED;
-            --purple-light:  #F5F3FF;
             --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
             --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
             --radius-card:   14px;
-            --radius-btn:    8px;
         }
 
-        /* Beautiful, balanced dark mode contrast */
         [data-theme="dark"] {
             --bg-app:        #121214; 
             --bg-card:       #18181B; 
@@ -73,25 +63,22 @@
             --danger-light:  rgba(248,113,113,0.12);
             --amber:         #FBBF24; 
             --amber-light:   rgba(251,191,36,0.12);
-            --purple:        #A78BFA; 
-            --purple-light:  rgba(167,139,250,0.12);
             --shadow-sm:     0 1px 2px rgba(0,0,0,0.4);
             --shadow-md:     0 4px 12px rgba(0,0,0,0.5);
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--bg-app);
             color: var(--text-primary);
         }
 
-        [dir="rtl"], [lang="ar"], .ar-text {
-            font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+        [dir="rtl"], .ar-text {
+            font-family: 'Noto Sans Arabic', system-ui, sans-serif;
             direction: rtl;
             text-align: right;
         }
 
-        /* Pre-highlighted Connectors Styling */
         .highlight {
             background-color: #FEF08A;
             color: #854D0E;
@@ -102,75 +89,60 @@
             display: inline-block;
         }
         
-        /* Balanced pre-highlighted phrases in dark mode */
         [data-theme="dark"] .highlight {
             background-color: rgba(250, 204, 21, 0.15); 
             color: #FDE047;
             border-bottom: 1.5px solid rgba(250, 204, 21, 0.4);
         }
 
-        /* Custom drawn highlights via the toolbar */
-        .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
-        .hl-orange { background-color: rgba(249, 115, 22, 0.45) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
-        .hl-blue   { background-color: rgba(59, 130, 246, 0.4) !important; border-radius: 2px; padding: 0px 1px; margin: 0; display: inline; }
+        .hl-yellow { background-color: rgba(253, 224, 71, 0.45) !important; border-radius: 2px; padding: 0px 1px; display: inline; }
+        .hl-orange { background-color: rgba(249, 115, 22, 0.45) !important; border-radius: 2px; padding: 0px 1px; display: inline; }
+        .hl-blue   { background-color: rgba(59, 130, 246, 0.4) !important; border-radius: 2px; padding: 0px 1px; display: inline; }
         
         [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.2) !important; color: #FEF08A; }
         [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.2) !important; color: #FED7AA; }
         [data-theme="dark"] .hl-blue { background-color: rgba(59, 130, 246, 0.2) !important; color: #BFDBFE; }
 
         .word-circle {
-            position: relative;
-            display: inline;
             border: 1.5px solid #EF4444;
             border-radius: 4px;
             padding: 0px 2px;
-            margin: 0;
+            display: inline;
         }
 
-        /* Sidebar Toggle CSS */
+        /* Edit Mode Styling */
+        .edit-mode-active [contenteditable="true"] {
+            border-bottom: 1px dashed var(--text-faint);
+            outline: none;
+            transition: all 0.2s;
+            cursor: text;
+        }
+        .edit-mode-active [contenteditable="true"]:focus {
+            background-color: var(--bg-app);
+            border-bottom: 1px solid var(--accent);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
         #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
         .sidebar-collapsed { width: 5.5rem !important; }
         .sidebar-collapsed .hide-on-collapse { display: none !important; }
-        .sidebar-collapsed .topic-list-item { padding: 0.75rem 0.5rem; justify-content: center; min-height: unset; }
+        .sidebar-collapsed .topic-list-item { padding: 0.75rem 0.5rem; justify-content: center; }
         .sidebar-collapsed .topic-title { display: none; }
         .sidebar-collapsed .sidebar-header-flex { flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
-
-        .topic-list-item {
-            min-height: 72px;
-        }
-        .topic-list-item .topic-title {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: normal;
-            font-size: 13px;
-            line-height: 1.4;
-            min-height: 36px;
-        }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
-
-        .mindmap-node rect {
-            transition: all 0.2s ease;
-        }
-        .mindmap-node:hover rect {
-            fill: var(--accent-light);
-            filter: brightness(0.98);
-        }
     </style>
     
-    <!-- Firebase SDK compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="h-full flex flex-col overflow-x-hidden">
 
-    <!-- MASTER BAR (No longer sticky so it scrolls out of view) -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 relative z-40 shadow-sm transition-colors duration-200">
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -195,11 +167,10 @@
             </button>
 
             <div class="relative inline-block text-left">
-                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen & Konto">
+                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
                 <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-64 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
-                    
                     <div id="auth-logged-out" class="p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--bg-app)] rounded-lg">
                         <div class="text-[10px] font-bold text-amber-500 mb-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Offline-Schnittstelle aktiv</div>
                         <select id="user-select" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 font-bold text-[var(--text-primary)]">
@@ -241,16 +212,12 @@
                     <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
                         <span>🧹</span><span>Änderungen zurücksetzen</span>
                     </button>
-                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center mt-2">
-                        <span>📲</span><span>App installieren</span>
-                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
-        <!-- Sidebar Navigation -->
         <aside id="sidebar" class="w-80 fixed inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
@@ -281,8 +248,7 @@
             </div>
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                <!-- Programmatic list rendering -->
-            </nav>
+                </nav>
 
             <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2 hide-on-collapse">
                 <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
@@ -294,13 +260,11 @@
             </div>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <!-- CONTROLS & SUBBAR -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
@@ -340,20 +304,17 @@
                 </div>
             </div>
 
-            <!-- TAB 1: DASHBOARD CONTAINER -->
             <div id="dashboard-tab-section" class="space-y-6">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus:</strong> Markieren Sie beliebigen Text in den Cards, um die Textformatierung (Fett, Farbe oder Einkreisen) zu starten. Benutzen Sie das Stiftsymbol (✏️) an den Blöcken für strukturelle Änderungen.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Sie können nun in jeden Text klicken, um ihn zu bearbeiten. Wenn Sie den deutschen Text ändern, werden Englisch und Arabisch automatisch im Hintergrund mitübersetzt.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    <!-- Cards layout anchor -->
-                </div>
+                    </div>
             </div>
 
-            <!-- TAB 2: MINDMAP CONTAINER -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
@@ -373,20 +334,15 @@
                 </div>
             </section>
 
-            <!-- TAB 3: REDEMITTEL CONTAINER -->
             <section id="redemittel-tab-section" class="hidden space-y-6">
-                <!-- Populated by JS -->
-            </section>
+                </section>
 
-            <!-- TAB 4: GRAMMAR CONTAINER -->
             <section id="grammar-tab-section" class="hidden space-y-6">
-                <!-- Populated by JS -->
-            </section>
+                </section>
 
         </main>
     </div>
 
-    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
@@ -400,15 +356,13 @@
         </button>
     </div>
 
-    <!-- DYNAMIC PER-BLOCK VOICE PICKER FLOATING POPOVER -->
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
-            <!-- Programmatic layout execution -->
-        </div>
+            </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between gap-2">
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
@@ -425,43 +379,6 @@
         </div>
     </div>
 
-    <!-- ADVANCED BLOCK CONTENT EDITOR MODAL -->
-    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
-            <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg">✏️</span>
-                    <h3 class="text-sm font-bold text-[var(--text-primary)]">Block bearbeiten</h3>
-                </div>
-                <button onclick="closeBlockEditor()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm">✕</button>
-            </div>
-            
-            <div class="space-y-3">
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
-                        <button id="btn-auto-translate" onclick="autoTranslateBlock()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate</button>
-                    </div>
-                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
-                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
-                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none font-arabic"></textarea>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
-                <button onclick="closeBlockEditor()" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all">Abbrechen</button>
-                <button onclick="saveBlockEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-[var(--bg-card)] hover:opacity-90 transition-all">Sichern</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP STATE ENGINE -->
     <script>
         const TOPIC_ICONS = {
             1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
@@ -536,13 +453,11 @@
         let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
         let currentUser = null;
         let editedTopicIds = [];
-        let activeEditBlockContext = null;
 
         let undoStack = [];
         let redoStack = [];
-        
+
         // HACK FOR MOBILE AUDIO 
-        // Mobile browsers block speech synthesis if it's not initiated by a user gesture.
         let audioUnlocked = false;
         document.body.addEventListener('click', () => {
             if (!audioUnlocked && 'speechSynthesis' in window) {
@@ -553,10 +468,50 @@
             }
         }, { once: true });
 
-        function pushToHistory() {
-            if (undoStack.length > 50) {
-                undoStack.shift();
+        // Helper: Strip HTML tags effectively to fix corrupted English/Arabic texts
+        function stripHtml(html) {
+            if (!html) return "";
+            let tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        // Helper: Get value dynamically from nested object using a compound key
+        function getTopicValue(topic, compoundKey) {
+            const parts = compoundKey.split('_');
+            if (parts[0] === 'dialog') {
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
+                return topic.dialog[idx] ? topic.dialog[idx][lang] : "";
+            } else if (parts.length === 3) {
+                const arrName = parts[0] + '_' + parts[1];
+                const idx = parseInt(parts[2]);
+                return topic[arrName] ? topic[arrName][idx] : "";
+            } else {
+                return topic[compoundKey] || "";
             }
+        }
+
+        // Helper: Set value dynamically
+        function setTopicValue(topic, compoundKey, value) {
+            const parts = compoundKey.split('_');
+            if (parts[0] === 'dialog') {
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
+                if(!topic.dialog[idx]) topic.dialog[idx] = {};
+                topic.dialog[idx][lang] = value;
+            } else if (parts.length === 3) {
+                const arrName = parts[0] + '_' + parts[1];
+                const idx = parseInt(parts[2]);
+                if(!topic[arrName]) topic[arrName] = [];
+                topic[arrName][idx] = value;
+            } else {
+                topic[compoundKey] = value;
+            }
+        }
+
+        function pushToHistory() {
+            if (undoStack.length > 50) undoStack.shift();
             const stateSnapshot = {
                 topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
@@ -614,29 +569,21 @@
                 try {
                     const activeTopic = TOPICS_DATA[activeIdx];
                     await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
-                } catch(e) {
-                    console.error("Fehler bei der Cloud-Synchronisation:", e);
-                }
+                } catch(e) { console.error("Fehler:", e); }
             } else {
                 localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
             }
         }
 
+        // Event Listeners for UI
         document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-                e.preventDefault();
-                undo();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
-                e.preventDefault();
-                redo();
-            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
         });
 
         function toggleMenuDropdown(event) {
             event.stopPropagation();
-            const content = document.getElementById('menu-dropdown-content');
-            content.classList.toggle('hidden');
+            document.getElementById('menu-dropdown-content').classList.toggle('hidden');
         }
 
         document.addEventListener('click', (e) => {
@@ -646,8 +593,7 @@
             }
         });
 
-        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
-        sidebarToggleBtn.onclick = () => {
+        document.getElementById('sidebar-toggle-btn').onclick = () => {
             document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
         };
 
@@ -664,7 +610,7 @@
         function clearAllHighlightsForTopic() {
             if (TOPICS_DATA.length === 0) return;
             const topicId = TOPICS_DATA[activeIdx].id;
-            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen und Einkreisungen für dieses Thema unwiderruflich löschen?")) {
+            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
                 if (highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
                     localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
@@ -674,18 +620,18 @@
         }
 
         // ==========================================
-        //  REWRITTEN TTS (TEXT TO SPEECH) ALGORITHM
+        //  TTS (TEXT TO SPEECH) ALGORITHM - FIXED
         // ==========================================
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
-        let currentlyPlayingBlockKey = null;
+        let globalAudioText = "";
+        let globalAudioBtn = null;
 
         function populateVoicesList() {
             const container = document.getElementById('voice-list-container');
             if (!container) return;
             container.innerHTML = "";
             
-            // Get all voices
             let voices = window.speechSynthesis.getVoices();
             availableGermanVoices = voices.filter(v => v.lang.startsWith('de'));
             
@@ -695,14 +641,12 @@
                 return;
             }
 
-            // Algorithm to sort voices: Prioritize Natural, Premium, Online over basic desktop voices
             availableGermanVoices.sort((a, b) => {
                 const getScore = (v) => {
-                    let score = 0;
-                    let name = v.name.toLowerCase();
+                    let score = 0; let name = v.name.toLowerCase();
                     if (name.includes('natural') || name.includes('premium')) score += 100;
                     if (name.includes('online')) score += 50;
-                    if (name.includes('google')) score += 30; // Google Android TTS is decent
+                    if (name.includes('google')) score += 30; 
                     if (name.includes('microsoft')) score += 10;
                     return score;
                 };
@@ -741,22 +685,23 @@
             });
         }
 
-        function openVoicePicker(event, blockKey) {
+        function openVoicePicker(event, encodedText) {
             event.stopPropagation();
-            const triggerBtn = event.currentTarget; // STORE THIS EXPLICITLY TO FIX THE NULL CRASH!
-            const panel = document.getElementById('voice-picker-panel');
             
+            // Store globally to prevent closure loss
+            globalAudioBtn = event.currentTarget; 
+            globalAudioText = decodeURIComponent(encodedText);
+            
+            const panel = document.getElementById('voice-picker-panel');
             panel.classList.remove('hidden');
             panel.style.visibility = 'hidden';
             
-            const rect = triggerBtn.getBoundingClientRect();
+            const rect = globalAudioBtn.getBoundingClientRect();
             const popoverWidth = panel.offsetWidth || 256;
             const popoverHeight = panel.offsetHeight || 285;
 
             let top = rect.bottom + 8;
-            if (rect.bottom + popoverHeight > window.innerHeight) {
-                top = rect.top - popoverHeight - 8;
-            }
+            if (rect.bottom + popoverHeight > window.innerHeight) { top = rect.top - popoverHeight - 8; }
             top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
 
             let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
@@ -766,26 +711,17 @@
             panel.style.left = `${left}px`;
             panel.style.visibility = 'visible';
 
-            currentlyPlayingBlockKey = blockKey;
-            
-            // Get clean text strictly from data-attribute to avoid parsing issues
-            const encodedText = triggerBtn.getAttribute('data-text') || "";
-            let textToSpeak = decodeURIComponent(encodedText);
-            const tmp = document.createElement("div");
-            tmp.innerHTML = textToSpeak;
-            const cleanText = tmp.textContent || tmp.innerText || "";
-
-            // Use the stored reference 'triggerBtn'
-            document.getElementById('voice-picker-play').onclick = () => {
-                playBlockAudio(cleanText, triggerBtn);
-            };
-            
-            document.getElementById('voice-picker-stop').onclick = () => {
-                stopBlockAudio();
-            };
-            
             populateVoicesList();
         }
+
+        // Attached exactly once, uses global variables mapped when picker was opened
+        document.getElementById('voice-picker-play').onclick = () => {
+            playBlockAudio(globalAudioText, globalAudioBtn);
+        };
+        
+        document.getElementById('voice-picker-stop').onclick = () => {
+            stopBlockAudio();
+        };
 
         function closeVoicePicker() {
             document.getElementById('voice-picker-panel').classList.add('hidden');
@@ -819,13 +755,11 @@
             const savedVoiceName = localStorage.getItem('b2_selected_voice');
             let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
             
-            // Fallback to the highest scored voice in the array (Natural/Premium)
             if (!voiceObj && availableGermanVoices.length > 0) {
-                voiceObj = availableGermanVoices[0];
+                voiceObj = availableGermanVoices.find(v => v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('google')) || availableGermanVoices[0];
             }
             if (voiceObj) utterance.voice = voiceObj;
 
-            // Fix garbage collection bug
             window.currentUtterance = utterance;
 
             if (buttonEl) {
@@ -857,7 +791,6 @@
             }
         }
         // ==========================================
-
 
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun-icon');
@@ -910,17 +843,15 @@
                 }
             });
 
-            const controls = document.getElementById('dashboard-controls');
             if (tabId === 'dashboard') {
-                controls.classList.remove('hidden');
                 renderActiveTopic();
-            } else {
-                controls.classList.add('hidden');
-                if (tabId === 'mindmap') setTimeout(initMindmap, 50);
-                if (tabId === 'redemittel') renderRedemittel();
-                if (tabId === 'grammar') renderGrammar();
+            } else if (tabId === 'mindmap') {
+                setTimeout(initMindmap, 50);
+            } else if (tabId === 'redemittel') {
+                renderRedemittel();
+            } else if (tabId === 'grammar') {
+                renderGrammar();
             }
-
             closeSidebarMobile();
         }
 
@@ -955,18 +886,12 @@
             const password = document.getElementById('workspace-password').value;
             const email = `${userKey}@b2telc.com`;
 
-            if (!password) {
-                alert("Bitte geben Sie das Passwort ein.");
-                return;
-            }
-
+            if (!password) { alert("Bitte geben Sie das Passwort ein."); return; }
             try {
                 await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 await auth.signInWithEmailAndPassword(email, password);
                 document.getElementById('workspace-password').value = "";
-            } catch (err) {
-                alert("Fehler: " + err.message);
-            }
+            } catch (err) { alert("Fehler: " + err.message); }
         };
 
         document.getElementById('btn-signup').onclick = async () => {
@@ -974,18 +899,12 @@
             const password = document.getElementById('workspace-password').value;
             const email = `${userKey}@b2telc.com`;
 
-            if (!password || password.length < 6) {
-                alert("Passwort muss mindestens 6 Zeichen lang sein.");
-                return;
-            }
-
+            if (!password || password.length < 6) { alert("Passwort muss mindestens 6 Zeichen lang sein."); return; }
             try {
                 await auth.createUserWithEmailAndPassword(email, password);
                 alert("Konto registriert.");
                 document.getElementById('workspace-password').value = "";
-            } catch (err) {
-                alert("Fehler bei Registrierung: " + err.message);
-            }
+            } catch (err) { alert("Fehler bei Registrierung: " + err.message); }
         };
 
         document.getElementById('btn-logout').onclick = () => { auth.signOut(); };
@@ -1045,9 +964,7 @@
             if (currentUser) {
                 try {
                     await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
-                } catch (e) {
-                    console.error("Cloud-Sync-Fehler:", e);
-                }
+                } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
             } else {
                 localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
             }
@@ -1124,140 +1041,65 @@
             return temp.innerHTML;
         }
 
-        function makeEditable(element, keyPath) {
-            if (!element) return;
-            element.contentEditable = "true";
-            element.setAttribute('autocapitalize', 'none');
-            element.setAttribute('autocorrect', 'off');
-            element.setAttribute('spellcheck', 'false');
-            element.classList.add("border-b", "border-dashed", "border-zinc-400", "cursor-text");
-            element.addEventListener('focus', () => { pushToHistory(); });
-            element.addEventListener('blur', () => {
-                let newVal = element.innerHTML.trim();
-                const activeTopic = TOPICS_DATA[activeIdx];
-                activeTopic[keyPath] = newVal;
-                saveEdits();
-            });
-        }
-
-        function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
-            const topic = TOPICS_DATA[activeIdx];
-            activeEditBlockContext = { keyPath, isArray, index, subKey };
-
-            let textDE = "";
-            let textEN = "";
-            let textAR = "";
-
-            if (isArray) {
-                if (subKey) {
-                    textDE = topic[keyPath]?.[index]?.[subKey] || "";
-                    textEN = topic[keyPath + '_en']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['en'] || "";
-                    textAR = topic[keyPath + '_ar']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['ar'] || "";
-                } else {
-                    textDE = topic[keyPath]?.[index] || "";
-                    textEN = topic[keyPath.replace('_de', '_en')]?.[index] || "";
-                    textAR = topic[keyPath.replace('_de', '_ar')]?.[index] || "";
-                }
-            } else {
-                textDE = topic[keyPath] || "";
-                textEN = topic[keyPath.replace('_de', '_en')] || "";
-                textAR = topic[keyPath.replace('_de', '_ar')] || "";
-            }
-
-            document.getElementById('modal-edit-de').value = textDE;
-            document.getElementById('modal-edit-en').value = textEN;
-            document.getElementById('modal-edit-ar').value = textAR;
-
-            document.getElementById('block-editor-modal').classList.remove('hidden');
-        }
-
-        function closeBlockEditor() {
-            document.getElementById('block-editor-modal').classList.add('hidden');
-            activeEditBlockContext = null;
-        }
-
         // ==========================================
-        //  AUTO TRANSLATE USING MYMEMORY FREE API
+        //  REAL-TIME INLINE EDIT & AUTO-TRANSLATE
         // ==========================================
-        async function autoTranslateBlock() {
-            const deText = document.getElementById('modal-edit-de').value.trim();
-            if (!deText) return;
+        async function handleInlineEdit(element, topicId, lang, compoundKey) {
+            if (!isEditMode) return;
             
-            const btn = document.getElementById('btn-auto-translate');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "⏳ Lädt...";
-            btn.disabled = true;
-
-            try {
-                // To English
-                const resEn = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`);
-                const dataEn = await resEn.json();
-                if(dataEn.responseData && dataEn.responseData.translatedText) {
-                    document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
-                }
-
-                // To Arabic
-                const resAr = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`);
-                const dataAr = await resAr.json();
-                if(dataAr.responseData && dataAr.responseData.translatedText) {
-                    document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
-                }
-            } catch (e) {
-                console.error("Translation error", e);
-                alert("Fehler bei der automatischen Übersetzung. Bitte Internetverbindung prüfen.");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        function saveBlockEditor() {
-            if (!activeEditBlockContext) return;
-            const { keyPath, isArray, index, subKey } = activeEditBlockContext;
-            const topic = TOPICS_DATA[activeIdx];
-
-            const valDE = document.getElementById('modal-edit-de').value.trim();
-            const valEN = document.getElementById('modal-edit-en').value.trim();
-            const valAR = document.getElementById('modal-edit-ar').value.trim();
+            const topic = TOPICS_DATA.find(t => t.id === topicId);
+            if (!topic) return;
 
             pushToHistory();
 
-            if (isArray) {
-                if (subKey) {
-                    if (!topic[keyPath]) topic[keyPath] = [];
-                    if (!topic[keyPath][index]) topic[keyPath][index] = {};
-                    topic[keyPath][index][subKey] = valDE;
+            const isGerman = (lang === 'de');
+            let newHtml = element.innerHTML.trim();
+            let plainText = element.innerText || element.textContent;
 
-                    if (subKey === 'de') {
-                        topic[keyPath][index]['en'] = valEN;
-                        topic[keyPath][index]['ar'] = valAR;
+            if (isGerman) {
+                // Save the German text (preserving highlights/HTML)
+                saveHighlight(topicId, compoundKey, newHtml);
+                setTopicValue(topic, compoundKey, newHtml);
+
+                // Auto-Translate Engine
+                if (plainText.length > 2) {
+                    const enKey = compoundKey.replace('_de', '_en');
+                    const arKey = compoundKey.replace('_de', '_ar');
+                    
+                    const enEl = document.getElementById(`en-${compoundKey}`);
+                    const arEl = document.getElementById(`ar-${compoundKey}`);
+
+                    if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse">⏳ Übersetze...</span>`;
+                    if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse">⏳ جاري الترجمة...</span>`;
+
+                    try {
+                        const [resEn, resAr] = await Promise.all([
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
+                        ]);
+                        const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
+
+                        const transEn = dataEn.responseData?.translatedText || "";
+                        const transAr = dataAr.responseData?.translatedText || "";
+
+                        setTopicValue(topic, enKey, transEn);
+                        setTopicValue(topic, arKey, transAr);
+
+                        if(enEl) enEl.innerText = transEn;
+                        if(arEl) arEl.innerText = transAr;
+                    } catch(e) {
+                        console.warn("Auto-translate failed. Rate limit?", e);
+                        if(enEl) enEl.innerText = getTopicValue(topic, enKey); // Revert on fail
+                        if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
                     }
-                } else {
-                    const deKey = keyPath;
-                    const enKey = keyPath.replace('_de', '_en');
-                    const arKey = keyPath.replace('_de', '_ar');
-
-                    if (!topic[deKey]) topic[deKey] = [];
-                    if (!topic[enKey]) topic[enKey] = [];
-                    if (!topic[arKey]) topic[arKey] = [];
-
-                    topic[deKey][index] = valDE;
-                    topic[enKey][index] = valEN;
-                    topic[arKey][index] = valAR;
                 }
             } else {
-                const deKey = keyPath;
-                const enKey = keyPath.replace('_de', '_en');
-                const arKey = keyPath.replace('_de', '_ar');
-
-                topic[deKey] = valDE;
-                topic[enKey] = valEN;
-                topic[arKey] = valAR;
+                // Manual Edits on EN/AR
+                setTopicValue(topic, compoundKey, plainText);
+                element.innerText = plainText; // Clean any corrupted HTML injected by user
             }
 
-            saveEdits();
-            closeBlockEditor();
-            renderActiveTopic();
+            saveEditsSilent();
         }
 
         function applySelectionFormat(type, value) {
@@ -1272,7 +1114,7 @@
 
             if (!activeContainer) return;
             const blockKey = activeContainer.getAttribute('data-block-key');
-            if (!blockKey) return;
+            if (!blockKey) return; // Only format German elements
 
             pushToHistory();
 
@@ -1285,9 +1127,7 @@
                     const contents = range.extractContents();
                     span.appendChild(contents);
                     range.insertNode(span);
-                } catch (e) {
-                    document.execCommand('backColor', false, '#FEF08A');
-                }
+                } catch (e) { document.execCommand('backColor', false, '#FEF08A'); }
             } else if (type === 'circle') {
                 const span = document.createElement('span');
                 span.className = 'word-circle';
@@ -1313,9 +1153,7 @@
             spans.forEach(span => {
                 if (selection.containsNode(span, true)) {
                     const parent = span.parentNode;
-                    while (span.firstChild) {
-                        parent.insertBefore(span.firstChild, span);
-                    }
+                    while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
                     parent.removeChild(span);
                 }
             });
@@ -1327,28 +1165,19 @@
         }
 
         function handleSelectionChange() {
-            if (!isEditMode) {
-                hideToolbar();
-                return;
-            }
+            if (!isEditMode) { hideToolbar(); return; }
             const selection = window.getSelection();
-            if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
-                hideToolbar();
-                return;
-            }
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) { hideToolbar(); return; }
+            
             let parent = selection.anchorNode;
             let isInsideEditable = false;
             while (parent) {
-                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
-                    isInsideEditable = true;
-                    break;
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
+                    isInsideEditable = true; break;
                 }
                 parent = parent.parentNode;
             }
-            if (!isInsideEditable) {
-                hideToolbar();
-                return;
-            }
+            if (!isInsideEditable) { hideToolbar(); return; }
 
             const range = selection.getRangeAt(0);
             const rect = range.getBoundingClientRect();
@@ -1441,9 +1270,10 @@
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
-        function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category, rawPath, isArray = false, arrayIdx = null, subKey = null) {
-            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
-            const encodedText = encodeURIComponent(textToSpeak || "");
+        function buildCardWrapper(title, contentHtml, blockKey, textToSpeakHtml) {
+            // Secure passing text to avoid any HTML injection in the onclick string
+            const plainTextForAudio = stripHtml(textToSpeakHtml);
+            const encodedText = encodeURIComponent(plainTextForAudio);
             
             return `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
@@ -1453,10 +1283,7 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button data-text="${encodedText}" onclick="openVoicePicker(event, '${blockKey}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
-                            <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
-                                ✏️ Bearbeiten
-                            </button>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
                         </div>
                     </div>
                     ${contentHtml}
@@ -1472,14 +1299,6 @@
             document.getElementById('active-topic-title-de').textContent = topic.title_de;
             document.getElementById('active-topic-title-en').textContent = topic.title_en;
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
-
-            if (isEditMode) {
-                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
-                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
-            } else {
-                document.getElementById('active-topic-title-de').contentEditable = "false";
-                document.getElementById('active-topic-title-en').contentEditable = "false";
-            }
 
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
@@ -1498,9 +1317,12 @@
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
-            // 1. EINLEITUNG
-            const einleitungKey = "einleitung_de";
-            const savedEinleitung = getHighlight(topic.id, einleitungKey);
+            // --- 1. EINLEITUNG ---
+            const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
+            const savedEinl = getHighlight(topic.id, einlDe);
+            const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
+            const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
+
             const einleitungHtml = `
                 <div class="topic-illustration h-16 w-full mb-4 flex items-center justify-between opacity-90 border-b border-[var(--border)] pb-3">
                     <div class="flex items-center gap-3">
@@ -1513,105 +1335,122 @@
                         </div>
                     </div>
                 </div>
-                <div data-block-key="${einleitungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${einleitungKey}', this.innerHTML)">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.einleitung_en}</p>
-                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.einleitung_ar || ''}</p>
+                <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
+                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
             `;
             const einleitungCard = document.createElement('div');
-            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, topic.category, 'einleitung_de');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe]);
             container.appendChild(einleitungCard);
 
             const proContraParent = document.createElement('div');
             proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
-            // PRO SECTION
-            const proKey = "pro_de_0";
+            // --- 2. PRO SECTION ---
             let proContent = "";
+            let fullProTextForAudio = "";
             topic.pro_de.forEach((deVal, index) => {
-                const skey = `pro_de_${index}`;
-                const saved = getHighlight(topic.id, skey);
+                const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`; const skeyAr = `pro_ar_${index}`;
+                const saved = getHighlight(topic.id, skeyDe);
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
+                fullProTextForAudio += (saved || deVal) + ". ";
                 proContent += `
                     <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                         <span class="text-[var(--success)] font-black text-lg leading-none mt-0.5">+</span>
                         <div class="flex-1">
-                            <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                            <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.pro_en ? topic.pro_en[index] : ''}</p>
-                            <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.pro_ar ? topic.pro_ar[index] : ''}</p>
+                            <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                            <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
+                            <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
                         </div>
                     </div>
                 `;
             });
             const proCard = document.createElement('div');
-            proCard.innerHTML = buildCardWrapper("2. Pro Argumente / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category, 'pro_de', true, 0);
+            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio);
             proContraParent.appendChild(proCard);
 
-            // CONTRA SECTION
-            const contraKey = "contra_de_0";
+            // --- 3. CONTRA SECTION ---
             let contraContent = "";
+            let fullContraTextForAudio = "";
             topic.contra_de.forEach((deVal, index) => {
-                const skey = `contra_de_${index}`;
-                const saved = getHighlight(topic.id, skey);
+                const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`; const skeyAr = `contra_ar_${index}`;
+                const saved = getHighlight(topic.id, skeyDe);
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
+                fullContraTextForAudio += (saved || deVal) + ". ";
                 contraContent += `
                     <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                         <span class="text-[var(--danger)] font-black text-lg leading-none mt-0.5">-</span>
                         <div class="flex-1">
-                            <div data-block-key="${skey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                            <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${topic.contra_en ? topic.contra_en[index] : ''}</p>
-                            <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${topic.contra_ar ? topic.contra_ar[index] : ''}</p>
+                            <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                            <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
+                            <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
                         </div>
                     </div>
                 `;
             });
             const contraCard = document.createElement('div');
-            contraCard.innerHTML = buildCardWrapper("3. Contra Argumente / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category, 'contra_de', true, 0);
+            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra)", contraContent, "contra_section", fullContraTextForAudio);
             proContraParent.appendChild(contraCard);
             container.appendChild(proContraParent);
 
-            // 4. PERSÖNLICHE ERFAHRUNG
-            const erfahrungKey = "pers_erfahrung_de";
-            const savedErfahrung = getHighlight(topic.id, erfahrungKey);
+            // --- 4. PERSÖNLICHE ERFAHRUNG ---
+            const erfDe = "pers_erfahrung_de"; const erfEn = "pers_erfahrung_en"; const erfAr = "pers_erfahrung_ar";
+            const savedErf = getHighlight(topic.id, erfDe);
+            const cleanErfEn = stripHtml(getTopicValue(topic, erfEn));
+            const cleanErfAr = stripHtml(getTopicValue(topic, erfAr));
+
             const erfahrungHtml = `
-                <div data-block-key="${erfahrungKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${erfahrungKey}', this.innerHTML)">${isEditMode ? (savedErfahrung || topic.pers_erfahrung_de) : applyConnectorsHighlight(savedErfahrung || topic.pers_erfahrung_de)}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.pers_erfahrung_en}</p>
-                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
+                <div data-block-key="${erfDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${erfDe}')">${isEditMode ? (savedErf || topic[erfDe]) : applyConnectorsHighlight(savedErf || topic[erfDe])}</div>
+                <p id="en-${erfDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${erfEn}')">${cleanErfEn}</p>
+                <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
             `;
             const erfahrungCard = document.createElement('div');
-            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category, 'pers_erfahrung_de');
+            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe]);
             container.appendChild(erfahrungCard);
 
-            // 5. DIALOG SIMULATION
+            // --- 5. DIALOG SIMULATION ---
             let dialogHtml = '<div class="space-y-3">';
+            let fullDialogTextForAudio = "";
             topic.dialog.forEach((chat, index) => {
-                const skey = `dialog_de_${index}`;
-                const saved = getHighlight(topic.id, skey);
+                const skeyDe = `dialog_de_${index}`; const skeyEn = `dialog_en_${index}`; const skeyAr = `dialog_ar_${index}`;
+                const saved = getHighlight(topic.id, skeyDe);
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
                 const isA = chat.role.includes('A');
+                fullDialogTextForAudio += chat.role + ": " + (saved || chat.de) + ". ";
+                
                 dialogHtml += `
                     <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
-                        <div data-block-key="${skey}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${skey}', this.innerHTML)">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
-                        <p class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1">${chat.en}</p>
-                        <p class="${arClass} text-[11px] text-right font-medium font-arabic mt-1" dir="rtl">${chat.ar || ''}</p>
+                        <div data-block-key="${skeyDe}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
+                        <p id="en-${skeyDe}" class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
+                        <p id="ar-${skeyDe}" class="${arClass} text-[11px] text-right font-medium font-arabic mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
                     </div>
                 `;
             });
             dialogHtml += '</div>';
             const dialogCard = document.createElement('div');
-            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), topic.category, 'dialog', true, 0, 'de');
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio);
             container.appendChild(dialogCard);
 
-            // 6. GEMEINSAME LÖSUNG
-            const schlussKey = "schluss_de";
-            const savedSchluss = getHighlight(topic.id, schlussKey);
+            // --- 6. GEMEINSAME LÖSUNG ---
+            const schlDe = "schluss_de"; const schlEn = "schluss_en"; const schlAr = "schluss_ar";
+            const savedSchl = getHighlight(topic.id, schlDe);
+            const cleanSchlEn = stripHtml(getTopicValue(topic, schlEn));
+            const cleanSchlAr = stripHtml(getTopicValue(topic, schlAr));
+
             const schlussHtml = `
-                <div data-block-key="${schlussKey}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="saveHighlight('${topic.id}', '${schlussKey}', this.innerHTML)">${isEditMode ? (savedSchluss || topic.schluss_de) : applyConnectorsHighlight(savedSchluss || topic.schluss_de)}</div>
-                <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.schluss_en}</p>
-                <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.schluss_ar || ''}</p>
+                <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
+                <p id="en-${schlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${schlEn}')">${cleanSchlEn}</p>
+                <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
             `;
             const schlussCard = document.createElement('div');
-            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, topic.category, 'schluss_de');
+            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung", schlussHtml, schlDe, savedSchl || topic[schlDe]);
             container.appendChild(schlussCard);
 
-            // 7. KEYWORDS
+            // --- 7. KEYWORDS ---
             let kwBadges = "";
             if (topic.keywords) {
                 const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
@@ -1626,68 +1465,25 @@
                 </div>
             `;
             const keywordsCard = document.createElement('div');
-            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", "", topic.category, 'keywords');
+            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", topic.keywords || "");
             container.appendChild(keywordsCard);
 
             if (isEditMode) {
                 const kwInput = keywordsCard.querySelector('.keywords-edit input');
                 kwInput.addEventListener('blur', () => {
                     TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
-                    saveEdits();
+                    saveEditsSilent();
                 });
             }
             showResetButton();
         }
 
-        // REDEMITTEL SECTION DATA
+        // REDEMITTEL & GRAMMATIK
         const redemittelData = [
-            {
-                title: "1. Meinung äußern (Expressing Opinion)",
-                icon: "🗣️",
-                phrases: [
-                    { de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." },
-                    { de: "Ich bin der festen Überzeugung, dass...", en: "I strongly believe that...", ar: "أنا مقتنع تماماً بأن..." },
-                    { de: "Ich stehe auf dem Standpunkt, dass...", en: "I take the view that...", ar: "أرى أن / أقف عند وجهة النظر القائلة بأن..." },
-                    { de: "Ein weiteres wichtiges Argument ist...", en: "Another important argument is...", ar: "حجة أخرى مهمة هي..." }
-                ]
-            },
-            {
-                title: "2. Zustimmen (Agreeing)",
-                icon: "✅",
-                phrases: [
-                    { de: "Da stimme ich dir vollkommen zu.", en: "I completely agree with you there.", ar: "أتفق معك تماماً في ذلك." },
-                    { de: "Das ist ein berechtigter Punkt.", en: "That is a valid point.", ar: "هذه نقطة وجيهة." },
-                    { de: "Ganz genau, so sehe ich das auch.", en: "Exactly, that's how I see it too.", ar: "بالضبط، هكذا أرى الأمر أيضاً." }
-                ]
-            },
-            {
-                title: "3. Widersprechen (Disagreeing)",
-                icon: "❌",
-                phrases: [
-                    { de: "Das sehe ich ein bisschen anders.", en: "I see that a little differently.", ar: "أرى ذلك بشكل مختلف قليلاً." },
-                    { de: "Das mag stimmen, allerdings...", en: "That might be true, however...", ar: "قد يكون هذا صحيحاً، ومع ذلك..." },
-                    { de: "Dagegen könnte man einwenden, dass...", en: "On the other hand, one could object that...", ar: "في المقابل، يمكن الاعتراض بأن..." },
-                    { de: "Ich bezweifle, dass das wirklich funktioniert.", en: "I doubt that this really works.", ar: "أشك في أن هذا ينجح حقاً." }
-                ]
-            },
-            {
-                title: "4. Eigene Erfahrungen (Personal Experience)",
-                icon: "📖",
-                phrases: [
-                    { de: "Was meine persönlichen Erfahrungen betrifft...", en: "As for my personal experiences...", ar: "بالنسبة لتجاربي الشخصية..." },
-                    { de: "In meinem Heimatland ist es oft so, dass...", en: "In my home country, it is often the case that...", ar: "في بلدي الأم، غالباً ما يكون الأمر أن..." },
-                    { de: "Ich habe selbst erlebt, dass...", en: "I have experienced myself that...", ar: "لقد جربت وعشت بنفسي أن..." }
-                ]
-            },
-            {
-                title: "5. Zusammenfassen & Lösung (Conclusion)",
-                icon: "🤝",
-                phrases: [
-                    { de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." },
-                    { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "باختصار، يمكن القول..." },
-                    { de: "Als guten Kompromiss schlage ich vor...", en: "As a good compromise, I suggest...", ar: "كحل وسط جيد، أقترح..." }
-                ]
-            }
+            { title: "1. Meinung äußern", icon: "🗣️", phrases: [{ de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." }, { de: "Ich bin der festen Überzeugung, dass...", en: "I strongly believe that...", ar: "أنا مقتنع تماماً بأن..." }, { de: "Ein weiteres wichtiges Argument ist...", en: "Another important argument is...", ar: "حجة أخرى مهمة هي..." }] },
+            { title: "2. Zustimmen", icon: "✅", phrases: [{ de: "Da stimme ich dir vollkommen zu.", en: "I completely agree with you there.", ar: "أتفق معك تماماً في ذلك." }, { de: "Das ist ein berechtigter Punkt.", en: "That is a valid point.", ar: "هذه نقطة وجيهة." }] },
+            { title: "3. Widersprechen", icon: "❌", phrases: [{ de: "Das sehe ich ein bisschen anders.", en: "I see that a little differently.", ar: "أرى ذلك بشكل مختلف قليلاً." }, { de: "Dagegen könnte man einwenden, dass...", en: "On the other hand, one could object that...", ar: "في المقابل، يمكن الاعتراض بأن..." }] },
+            { title: "4. Zusammenfassen", icon: "🤝", phrases: [{ de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." }, { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "باختصار، يمكن القول..." }] }
         ];
 
         function renderRedemittel() {
@@ -1695,349 +1491,39 @@
             container.innerHTML = `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">🗣️ Redemittel für TELC B2 Diskussionen</h2>
-                    <p class="text-xs text-[var(--text-muted)] mt-1">Hier finden Sie die wichtigsten Ausdrücke (Redemittel) für den Diskussionsteil (Teil 2) der mündlichen Prüfung, inklusive Übersetzungen.</p>
                 </div>
             `;
-
-            const grid = document.createElement('div');
-            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-
+            const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
             redemittelData.forEach(cat => {
                 let phrasesHtml = "";
                 cat.phrases.forEach(p => {
-                    phrasesHtml += `
-                        <div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <div class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div>
-                            <div class="text-[11px] italic text-[var(--text-muted)]">${p.en}</div>
-                            <div class="text-[11px] font-arabic font-medium text-right mt-0.5" dir="rtl">${p.ar}</div>
-                        </div>
-                    `;
+                    phrasesHtml += `<div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0"><div class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div><div class="text-[11px] italic text-[var(--text-muted)]">${p.en}</div><div class="text-[11px] font-arabic font-medium text-right mt-0.5" dir="rtl">${p.ar}</div></div>`;
                 });
-
-                grid.innerHTML += `
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
-                        <div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3">
-                            <span class="text-lg">${cat.icon}</span>
-                            <h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3>
-                        </div>
-                        ${phrasesHtml}
-                    </div>
-                `;
+                grid.innerHTML += `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]"><div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3"><span class="text-lg">${cat.icon}</span><h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3></div>${phrasesHtml}</div>`;
             });
             container.appendChild(grid);
         }
 
-        // GRAMMATIK SECTION DATA
         const grammarData = [
-            {
-                title: "1. Konjunktiv II (Höflichkeit & Irrealis)",
-                desc: "Besonders wichtig bei Kompromissen und höflichen Vorschlägen. Verwendet für irreale Bedingungen.",
-                examples: [
-                    "An deiner Stelle <strong>würde</strong> ich...",
-                    "Es <strong>wäre</strong> sinnvoller, wenn wir...",
-                    "Man <strong>könnte</strong> stattdessen vorschlagen, dass..."
-                ]
-            },
-            {
-                title: "2. Zweiteilige Konnektoren",
-                desc: "Zeigen ein hohes Sprachniveau (B2) und verbinden Argumente logisch und elegant miteinander.",
-                examples: [
-                    "<strong>Einerseits</strong> ist das praktisch, <strong>andererseits</strong> kostet es viel Zeit.",
-                    "Das ist <strong>zwar</strong> richtig, <strong>aber</strong> wir müssen auch bedenken, dass...",
-                    "Er ist <strong>nicht nur</strong> teuer, <strong>sondern auch</strong> umweltschädlich."
-                ]
-            },
-            {
-                title: "3. Verben mit Präpositionen",
-                desc: "Das korrekte Verwenden von Präpositionalobjekten ist ein Muss auf B2-Niveau.",
-                examples: [
-                    "Ich <strong>interessiere mich für</strong> dieses Thema.",
-                    "Wir müssen <strong>über</strong> die Kosten <strong>diskutieren</strong>.",
-                    "Das <strong>hängt von</strong> der jeweiligen Situation <strong>ab</strong>."
-                ]
-            },
-            {
-                title: "4. Passiv und Passiversatzformen",
-                desc: "Um Prozesse objektiv zu beschreiben, ohne die handelnde Person in den Vordergrund zu stellen.",
-                examples: [
-                    "Es <strong>muss</strong> dringend eine Lösung <strong>gefunden werden</strong>.",
-                    "Zusammenfassend <strong>lässt sich sagen</strong>, dass... (Passiversatz)",
-                    "Dieses Problem <strong>kann</strong> leicht <strong>gelöst werden</strong>."
-                ]
-            },
-            {
-                title: "5. Relativsätze zur genaueren Beschreibung",
-                desc: "Machen den Satzbau komplexer und präziser. Typisch für flüssige B2-Diskussionen.",
-                examples: [
-                    "Jugendliche, <strong>die</strong> viel Zeit online verbringen, sind oft...",
-                    "Das ist ein Argument, <strong>dem</strong> ich nicht zustimmen kann.",
-                    "Die Lösung, <strong>von der</strong> du sprichst, ist unrealistisch."
-                ]
-            }
+            { title: "1. Konjunktiv II", desc: "Besonders wichtig bei Kompromissen.", examples: ["An deiner Stelle <strong>würde</strong> ich...", "Es <strong>wäre</strong> sinnvoller, wenn wir..."] },
+            { title: "2. Zweiteilige Konnektoren", desc: "Verbinden Argumente logisch und elegant.", examples: ["<strong>Einerseits</strong> ist das praktisch, <strong>andererseits</strong> kostet es viel Zeit.", "Er ist <strong>nicht nur</strong> teuer, <strong>sondern auch</strong> umweltschädlich."] },
+            { title: "3. Verben mit Präpositionen", desc: "Korrektes Verwenden ist ein B2 Muss.", examples: ["Wir müssen <strong>über</strong> die Kosten <strong>diskutieren</strong>.", "Das <strong>hängt von</strong> der Situation <strong>ab</strong>."] }
         ];
 
         function renderGrammar() {
             const container = document.getElementById('grammar-tab-section');
-            container.innerHTML = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
-                    <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik für Diskussionen</h2>
-                    <p class="text-xs text-[var(--text-muted)] mt-1">Die Prüfer achten darauf, dass Sie komplexe Satzstrukturen (B2-Niveau) verwenden, anstatt nur in einfachen Hauptsätzen zu sprechen.</p>
-                </div>
-            `;
-
-            const grid = document.createElement('div');
-            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-
+            container.innerHTML = `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6"><h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2></div>`;
+            const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
             grammarData.forEach(item => {
                 let examplesHtml = "<ul class='list-disc list-inside space-y-1 mt-2 text-xs text-[var(--text-primary)]'>";
-                item.examples.forEach(ex => {
-                    examplesHtml += `<li class="ml-2">${ex}</li>`;
-                });
+                item.examples.forEach(ex => { examplesHtml += `<li class="ml-2">${ex}</li>`; });
                 examplesHtml += "</ul>";
-
-                grid.innerHTML += `
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
-                        <h3 class="text-sm font-bold text-[var(--accent)] border-b border-[var(--border)] pb-2">${item.title}</h3>
-                        <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">${item.desc}</p>
-                        <div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Beispiele</span>
-                            ${examplesHtml}
-                        </div>
-                    </div>
-                `;
+                grid.innerHTML += `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]"><h3 class="text-sm font-bold text-[var(--accent)] border-b border-[var(--border)] pb-2">${item.title}</h3><p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">${item.desc}</p><div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]"><span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Beispiele</span>${examplesHtml}</div></div>`;
             });
             container.appendChild(grid);
         }
 
-        // INITIALIZE MINDMAP
-        function buildDynamicMindmapData() {
-            const categories = {
-                'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
-                'Arbeit & Karriere': { color: "#2563EB", children: [] },
-                'Umwelt & Mobilität': { color: "#7C3AED", children: [] },
-                'Gesellschaft & Politik': { color: "#DC2626", children: [] },
-                'Bildung & Technologie': { color: "#D97706", children: [] }
-            };
-
-            TOPICS_DATA.forEach(topic => {
-                const cat = topic.category || 'Gesellschaft & Politik';
-                categories[cat].children.push({
-                    name: `T${topic.id}: ${topic.title_de}`,
-                    id: topic.id,
-                    idx: TOPICS_DATA.indexOf(topic)
-                });
-            });
-
-            return {
-                name: "TELC B2 Themen",
-                priority: "root",
-                children: Object.keys(categories).map(catName => ({
-                    name: catName,
-                    color: categories[catName].color,
-                    priority: 'category',
-                    children: categories[catName].children
-                }))
-            };
-        }
-
-        function initMindmap() {
-            if (TOPICS_DATA.length === 0) return;
-            let iCount = 0;
-
-            const svg = d3.select("#mindmap-svg");
-            svg.selectAll("*").remove();
-            const width = svg.node().clientWidth || 900;
-            const height = svg.node().clientHeight || 600;
-            
-            const rawData = buildDynamicMindmapData();
-            const gContainer = svg.append("g").attr("class", "mindmap-container");
-
-            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => { gContainer.attr("transform", event.transform); });
-            svg.call(zoom);
-
-            const treemap = d3.tree().nodeSize([16, 160]);
-            let root = d3.hierarchy(rawData, d => d.children);
-            root.x0 = height / 2;
-            root.y0 = 0;
-
-            root.children.forEach((d, i) => { if (i > 0) collapse(d); });
-            update(root);
-
-            function collapse(d) {
-                if (d.children) {
-                    d._children = d.children;
-                    d._children.forEach(collapse);
-                    d.children = null;
-                }
-            }
-
-            function update(source) {
-                const treeData = treemap(root);
-                const nodes = treeData.descendants();
-                const links = treeData.links();
-
-                nodes.forEach(d => { d.y = d.depth * 170; });
-
-                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = ++iCount));
-                const nodeEnter = node.enter().append('g').attr('class', 'mindmap-node cursor-pointer').attr('transform', d => `translate(${source.y0},${source.x0})`).on('click', clickNode);
-
-                nodeEnter.each(function(d) {
-                    const el = d3.select(this);
-                    if (d.data.priority === 'root') {
-                        el.append('circle').attr('r', 8).attr('fill', 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 2);
-                        el.append('text').attr('dy', '.35em').attr('x', -14).attr('text-anchor', 'end').attr('fill', 'var(--text-primary)').attr('font-size', '9px').attr('font-weight', 'bold').text(d.data.name);
-                    } else if (d.data.priority === 'category') {
-                        el.append('circle').attr('r', 6).attr('fill', d.data.color).attr('stroke', '#ffffff').attr('stroke-width', 1.5);
-                        el.append('text').attr('dy', '.35em').attr('x', d => d.children || d._children ? -12 : 12).attr('text-anchor', d => d.children || d._children ? 'end' : 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').attr('font-weight', 'bold').text(d.data.name);
-                    } else {
-                        el.append('circle').attr('r', 3).attr('fill', d.parent.data.color || 'var(--accent)').attr('stroke', '#ffffff').attr('stroke-width', 1);
-                        el.append('text').attr('dy', '.35em').attr('x', 10).attr('text-anchor', 'start').attr('fill', 'var(--text-primary)').attr('font-size', '8px').text(d.data.name.length > 25 ? d.data.name.substring(0, 23) + '...' : d.data.name);
-                    }
-                });
-
-                const nodeUpdate = nodeEnter.merge(node);
-                nodeUpdate.transition().duration(250).attr('transform', d => `translate(${d.y},${d.x})`);
-
-                nodeUpdate.select('circle')
-                    .attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)'))
-                    .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff');
-
-                node.exit().transition().duration(250).attr('transform', d => `translate(${source.y},${source.x})`).remove();
-
-                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
-                const linkEnter = link.enter().insert('path', "g").attr('class', 'mindmap-link').attr('fill', 'none').attr('stroke', 'var(--border)').attr('stroke-opacity', 0.4).attr('stroke-width', 1)
-                    .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
-
-                linkEnter.merge(link).transition().duration(250).attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)').attr('stroke-opacity', 0.6).attr('d', d => diagonal(d.source, d.target));
-                link.exit().transition().duration(250).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
-
-                nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
-
-                function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
-
-                function clickNode(event, d) {
-                    if (d.data.idx !== undefined) {
-                        activeIdx = d.data.idx;
-                        localStorage.setItem('b2_active_idx', activeIdx);
-                        renderSidebar();
-                        renderActiveTopic();
-                        switchTab('dashboard');
-                    } else {
-                        if (d.children) { d._children = d.children; d.children = null; }
-                        else { d.children = d._children; d._children = null; }
-                        update(d);
-                    }
-                }
-            }
-            svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
-        }
-
-        function exportTopicsJSON() {
-            if (TOPICS_DATA.length === 0) return;
-            const cleanData = JSON.stringify(TOPICS_DATA, null, 2);
-            const blob = new Blob([cleanData], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "topics.json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        async function importTopicsJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported) && imported.length > 0) {
-                        pushToHistory();
-                        TOPICS_DATA = imported;
-                        window.TOPICS_DATA = imported;
-                        localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
-                        if (currentUser) {
-                            for (const t of imported) {
-                                await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
-                            }
-                        }
-                        activeIdx = 0;
-                        localStorage.setItem('b2_active_idx', activeIdx);
-                        renderSidebar();
-                        renderActiveTopic();
-                        alert("topics.json erfolgreich importiert!");
-                    }
-                } catch (err) { alert("Fehler beim Lesen der Datei: " + err.message); }
-            };
-            reader.readAsText(file);
-        }
-
-        document.getElementById('export-json-btn').onclick = exportTopicsJSON;
-
-        document.getElementById('learned-toggle').onclick = () => {
-            if (TOPICS_DATA.length === 0) return;
-            const topicId = TOPICS_DATA[activeIdx].id;
-            if (learnedList.includes(topicId)) {
-                learnedList = learnedList.filter(id => id !== topicId);
-            } else {
-                learnedList.push(topicId);
-            }
-            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
-            renderSidebar();
-            renderActiveTopic();
-        };
-
-        document.getElementById('lang-view').addEventListener('change', (e) => {
-            activeView = e.target.value;
-            renderActiveTopic();
-        });
-
-        const editModeToggle = document.getElementById('edit-mode-toggle');
-        editModeToggle.onclick = () => {
-            isEditMode = !isEditMode;
-            editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
-            editModeToggle.classList.toggle('text-white', isEditMode);
-            document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
-            document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
-            if (activeTab === 'dashboard') renderActiveTopic();
-        };
-
-        document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
-
-        const sidebar = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobile-nav-toggle');
-        mobileToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            const isHidden = sidebar.classList.contains('-translate-x-full');
-            document.getElementById('menu-icon').innerHTML = isHidden 
-                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
-                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
-        });
-
         loadTopics();
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: './' })
-                    .then((reg) => {
-                        reg.addEventListener('updatefound', () => {
-                            const nw = reg.installing;
-                            nw.addEventListener('statechange', () => {
-                                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                                    const banner = document.createElement('div');
-                                    banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
-                                    banner.innerHTML = `<span>🔄 Neue App-Version offline verfügbar.</span><button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black">Aktualisieren</button>`;
-                                    document.body.appendChild(banner);
-                                }
-                            });
-                        });
-                    });
-            });
-        }
     </script>
 </body>
 </html>
