@@ -1,11 +1,11 @@
-const CACHE_NAME = 'b2-trainer-v1';
+const CACHE_NAME = 'b2-trainer-v2';
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './reel-mode.html', // Offline-Caching für das neue Reel-Overlay
   './topics.json',
   './manifest.json',
-  'https://cdn.tailwindcss.com' // Pre-cached so Tailwind works completely offline
+  'https://cdn.tailwindcss.com',
+  'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js' // Cached to keep dynamic icons working offline
 ];
 
 // 1. Install Event: Populate static shell assets
@@ -34,7 +34,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch Event Routing
+// 3. Fetch Event Routing (Stale-While-Revalidate Strategy)
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
@@ -43,7 +43,6 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   if (!url.protocol.startsWith('http')) return;
 
-  // Intercept and handle with SWR Strategy
   event.respondWith(staleWhileRevalidate(request));
 });
 
@@ -55,7 +54,7 @@ async function staleWhileRevalidate(request) {
   // Trigger background fetch to update the cache bucket
   const networkFetch = fetchAndCache(request, cache);
 
-  // Return the instant cached copy if found, otherwise wait on the network fetch
+  // Return instant cached copy if found, otherwise wait on network fetch
   return cachedResponse || networkFetch;
 }
 
