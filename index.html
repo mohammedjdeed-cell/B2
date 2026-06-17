@@ -218,7 +218,7 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
-        <aside id="sidebar" class="w-80 fixed inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
@@ -359,7 +359,7 @@
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
-            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
+            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
             </div>
@@ -723,6 +723,7 @@
         function openVoicePicker(event, encodedText) {
             event.stopPropagation();
             
+            // Store globally to prevent closure loss
             globalAudioBtn = event.currentTarget; 
             globalAudioText = decodeURIComponent(encodedText);
             
@@ -748,6 +749,7 @@
             populateVoicesList();
         }
 
+        // Attached exactly once, uses global variables mapped when picker was opened
         document.getElementById('voice-picker-play').onclick = () => {
             playBlockAudio(globalAudioText, globalAudioBtn);
         };
@@ -1272,7 +1274,7 @@
                         ${badge}
                         <span class="text-base select-none">${emojiIcon}</span>
                     </div>
-                    <div class="flex-1 min-w-0 hide-on-collapse">
+                    <div class="flex-1 min-w-0">
                         <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
                         <div class="flex items-center justify-between mt-1 gap-1">
                             <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
@@ -1300,13 +1302,14 @@
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
+        // ==========================================
+        //  ADVANCED MODAL EDITOR 
+        // ==========================================
         function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
             const topic = TOPICS_DATA[activeIdx];
             activeEditBlockContext = { keyPath, isArray, index, subKey };
 
-            let textDE = "";
-            let textEN = "";
-            let textAR = "";
+            let textDE = ""; let textEN = ""; let textAR = "";
 
             if (isArray) {
                 if (subKey) {
@@ -1324,9 +1327,9 @@
                 textAR = topic[keyPath.replace('_de', '_ar')] || "";
             }
 
-            document.getElementById('modal-edit-de').value = textDE;
-            document.getElementById('modal-edit-en').value = textEN;
-            document.getElementById('modal-edit-ar').value = textAR;
+            document.getElementById('modal-edit-de').value = stripHtml(textDE);
+            document.getElementById('modal-edit-en').value = stripHtml(textEN);
+            document.getElementById('modal-edit-ar').value = stripHtml(textAR);
 
             document.getElementById('block-editor-modal').classList.remove('hidden');
         }
@@ -1776,27 +1779,6 @@
         }
 
         loadTopics();
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: './' })
-                    .then((reg) => {
-                        reg.addEventListener('updatefound', () => {
-                            const nw = reg.installing;
-                            nw.addEventListener('statechange', () => {
-                                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                                    const banner = document.createElement('div');
-                                    banner.className = "fixed bottom-0 left-0 right-0 bg-[#2563EB] text-white p-3 flex justify-between items-center z-50 font-bold text-xs";
-                                    banner.innerHTML = `<span>🔄 Neue App-Version offline verfügbar.</span><button onclick="location.reload()" class="bg-white text-[#2563EB] px-3 py-1.5 rounded font-black">Aktualisieren</button>`;
-                                    document.body.appendChild(banner);
-                                }
-                            });
-                        });
-                    });
-            });
-        }
     </script>
 </body>
 </html>
