@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
     <meta charset="UTF-8">
@@ -112,20 +113,20 @@
         [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
         [data-theme="dark"] .hl-blue   { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
 
-        /* Hand-drawn circle styling */
+        /* Naturally hand-drawn red circle styling */
         .word-circle {
             position: relative;
             display: inline;
-            color: inherit;
-            padding: 1px 4px;
-            border-radius: 50%;
-            outline: 2px solid #DC2626;
-            outline-offset: 2px;
+            border: 2px solid #DC2626;
+            border-radius: 53% 47% 45% 55% / 40% 58% 42% 60%;
+            padding: 2px 6px;
+            margin: 0 2px;
+            transform: rotate(-1.5deg);
             animation: circle-draw 0.4s ease-out;
         }
         @keyframes circle-draw {
-            from { outline-color: transparent; outline-offset: 8px; }
-            to   { outline-color: #DC2626;     outline-offset: 2px; }
+            from { border-color: transparent; transform: scale(0.9) rotate(-5deg); }
+            to   { border-color: #DC2626; transform: scale(1) rotate(-1.5deg); }
         }
 
         /* Sidebar Item Title clamp */
@@ -223,8 +224,12 @@
                     <button id="edit-mode-toggle" class="w-full text-xs bg-slate-200 dark:bg-slate-700 text-[var(--text-primary)] font-bold rounded-lg py-2 transition-colors">
                         Bearbeitungsmodus: AUS
                     </button>
+                    <input type="file" id="import-json-input" class="hidden" accept=".json" onchange="importTopicsJSON(event)" />
+                    <button onclick="document.getElementById('import-json-input').click()" class="w-full text-xs bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] font-bold rounded-lg py-2 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        📥 topics.json importieren
+                    </button>
                     <button id="export-json-btn" class="w-full text-xs bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] font-bold rounded-lg py-2 transition-colors">
-                        topics.json exportieren
+                        📤 topics.json exportieren
                     </button>
                     <button id="reset-edits-btn" class="w-full text-[10px] text-[var(--danger)] hover:underline font-bold transition-all text-center block hidden py-1">
                         Änderungen zurücksetzen
@@ -301,9 +306,16 @@
                     </div>
 
                     <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Lernzustand</span>
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">Lernzustand</span>
                         <button id="learned-toggle" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm">
                             Als gelernt markieren
+                        </button>
+                    </div>
+                    
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">Aktion</span>
+                        <button onclick="clearAllHighlightsForTopic()" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm flex items-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
+                            🧹 Zurücksetzen
                         </button>
                     </div>
                 </div>
@@ -326,14 +338,15 @@
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
-                        <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Mindmap — Prüfungsstruktur</h3>
-                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Visualisierung prioritärer Elemente und Redemittel der TELC B2 Diskussion.</p>
+                        <h3 class="text-sm font-bold text-[var(--text-primary)]">🧠 Interaktive Mindmap — Alle 52 Themen nach Kategorien</h3>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Navigieren Sie durch Klicken auf die Blätter direkt zu den jeweiligen Themen im Dashboard.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 text-[9px] font-bold">
-                        <span class="px-2 py-1 rounded bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400">🔴 PRÜFUNGSKRITISCH</span>
-                        <span class="px-2 py-1 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400">🟡 WICHTIG</span>
-                        <span class="px-2 py-1 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">🟢 HILFREICH</span>
-                        <span class="px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-400">🟣 ERWEITERT</span>
+                        <span class="px-2 py-1 rounded bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400">🟢 GESUNDHEIT</span>
+                        <span class="px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-400">🔵 ARBEIT</span>
+                        <span class="px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-400">🟣 MOBILITÄT</span>
+                        <span class="px-2 py-1 rounded bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-400">🔴 POLITIK</span>
+                        <span class="px-2 py-1 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400">🟡 TECHNOLOGIE</span>
                     </div>
                 </div>
                 <div class="flex-1 border border-[var(--border)] rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900 relative min-h-[350px]">
@@ -405,57 +418,6 @@
             'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
         };
 
-        const MINDMAP_DATA = {
-            name: "TELC B2 Diskussion",
-            priority: "root",
-            children: [
-                {
-                    name: "PRÜFUNGSKRITISCH",
-                    priority: "critical",
-                    color: "#DC2626",
-                    children: [
-                        { name: "Einleitung formulieren", detail: "Thema einleiten und Struktur abgrenzen." },
-                        { name: "Dafür-Argumente", detail: "Pro-Thesen stark begründen." },
-                        { name: "Dagegen-Argumente", detail: "Feinfühlig Gegenpositionen anführen." },
-                        { name: "Eigene Meinung", detail: "Klar Stellung beziehen." },
-                        { name: "Schlussfolgerung", detail: "Zusammenfassendes Fazit ziehen." }
-                    ]
-                },
-                {
-                    name: "WICHTIG",
-                    priority: "high",
-                    color: "#D97706",
-                    children: [
-                        { name: "Persönliche Erfahrung", detail: "Eigene Erlebnisse schildern." },
-                        { name: "Konnektoren", detail: "Satzglieder strukturiert verknüpfen." },
-                        { name: "Kompromiss anbieten", detail: "Zusammenarbeit im Gespräch fördern." },
-                        { name: "Nachfragen höflich", detail: "Partner aktiv ins Boot holen." },
-                        { name: "Zustimmen / Widersprechen", detail: "Meinung des Gegenübers bewerten." }
-                    ]
-                },
-                {
-                    name: "HILFREICH",
-                    priority: "medium",
-                    color: "#16A34A",
-                    children: [
-                        { name: "Redemittel Diskussion", detail: "Standardfloskeln nutzen." },
-                        { name: "Themenbereich Gesundheit", detail: "Großer thematischer Block." },
-                        { name: "Themenbereich Arbeit", detail: "Berufliche Fragestellungen." },
-                        { name: "Simulation Dialog", detail: "Sprechzeit aktiv steuern." }
-                    ]
-                },
-                {
-                    name: "ERWEITERT",
-                    priority: "low",
-                    color: "#7C3AED",
-                    children: [
-                        { name: "Statistiken zitieren", detail: "Faktenbasierte Stützung." },
-                        { name: "Hypothetisch sprechen", detail: "Szenarien konjunktivisch aufzeigen." }
-                    ]
-                }
-            ]
-        };
-
         const firebaseConfig = {
             apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
             authDomain: "b2telc-6e061.firebaseapp.com",
@@ -474,7 +436,7 @@
         // Local State Management
         let TOPICS_DATA = [];
         window.TOPICS_DATA = [];
-        let activeIdx = 0;
+        let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
         let showHighlights = true;
         let activeView = "both";
         let isEditMode = false;
@@ -503,9 +465,21 @@
             }
         }
 
+        function clearAllHighlightsForTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = TOPICS_DATA[activeIdx].id;
+            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen und Einkreisungen für dieses Thema unwiderruflich löschen?")) {
+                if (highlightsStore[topicId]) {
+                    delete highlightsStore[topicId];
+                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                    renderActiveTopic();
+                }
+            }
+        }
+
         // Active Voice API Variables
         let availableGermanVoices = [];
-        let activeVoicePlayback = null;
+        let activeSpeakingButton = null;
         let currentlyPlayingBlockKey = null;
 
         // Theme management
@@ -680,11 +654,12 @@
 
                 TOPICS_DATA = baseTopics;
                 window.TOPICS_DATA = baseTopics;
+                if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
                 showResetButton();
                 renderSidebar();
                 renderActiveTopic();
             } catch (e) {
-                console.error("Fehler beim Laden:", e);
+                console.error("Fehler beim Laden der Themen:", e);
             }
         }
 
@@ -923,6 +898,7 @@
 
                 tab.onclick = () => {
                     activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
                     if (activeTab === 'dashboard') renderActiveTopic();
                     closeSidebarMobile();
@@ -974,29 +950,45 @@
 
         function populateVoicesList() {
             const container = document.getElementById('voice-list-container');
+            if (!container) return;
             container.innerHTML = "";
             availableGermanVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('de'));
             
             if (availableGermanVoices.length === 0) {
                 window.speechSynthesis.onvoiceschanged = populateVoicesList;
+                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] italic p-2'>Systemstimmen werden ermittelt...</div>";
                 return;
             }
 
             availableGermanVoices.sort((a,b) => {
                 const aMs = a.name.includes('Microsoft') ? 0 : 1;
                 const bMs = b.name.includes('Microsoft') ? 0 : 1;
-                return aMs - bMs || a.name.localeCompare(b.name);
+                const aGoogle = a.name.includes('Google') ? 0 : 1;
+                const bGoogle = b.name.includes('Google') ? 0 : 1;
+                return aMs - bMs || aGoogle - bGoogle || a.name.localeCompare(b.name);
             });
 
             const savedVoice = localStorage.getItem('b2_selected_voice') || '';
 
-            availableGermanVoices.forEach((voice) => {
-                const isSelected = voice.name === savedVoice;
+            availableGermanVoices.forEach((voice, index) => {
+                const isSelected = voice.name === savedVoice || (savedVoice === '' && index === 0);
+                if (isSelected && savedVoice === '') {
+                    localStorage.setItem('b2_selected_voice', voice.name);
+                }
                 const row = document.createElement('div');
-                row.className = `flex items-center justify-between p-1 rounded cursor-pointer ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-bold' : 'hover:bg-[var(--bg-app)]'}`;
+                row.className = `flex items-center justify-between p-1.5 rounded cursor-pointer ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-bold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
+                
+                let badge = "";
+                if (voice.name.includes('Microsoft')) badge = "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded'>MS</span>";
+                else if (voice.name.includes('Google')) badge = "<span class='text-[8px] bg-green-100 text-green-700 px-1 rounded'>Google</span>";
+                else badge = "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded'>System</span>";
+
                 row.innerHTML = `
-                    <span class="truncate max-w-[180px]">${voice.name}</span>
-                    <button class="px-1 text-[9px] bg-slate-200 dark:bg-slate-700 rounded hover:opacity-80" onclick="testVoice(event, '${voice.name}')">Test</button>
+                    <div class="flex items-center gap-1.5 truncate max-w-[170px]">
+                        ${badge}
+                        <span class="truncate">${voice.name}</span>
+                    </div>
+                    <button class="px-1.5 py-0.5 text-[10px] bg-slate-200 dark:bg-slate-700 rounded hover:opacity-80" onclick="testVoice(event, '${voice.name}')">Test</button>
                 `;
                 row.onclick = (e) => {
                     if (e.target.tagName !== 'BUTTON') {
@@ -1113,9 +1105,16 @@
             const einleitungKey = "einleitung_de";
             const savedEinleitung = getHighlight(topic.id, einleitungKey);
             const einleitungHtml = `
-                <div class="topic-illustration h-14 w-full mb-3 flex items-center justify-start opacity-80 border-b border-[var(--border)] pb-2">
-                    ${CATEGORY_SVGS[topic.category] || CATEGORY_SVGS['Gesellschaft & Politik']}
-                    <span class="text-xs font-bold text-[var(--text-muted)] ml-3">${topic.category || 'Allgemeines Thema'}</span>
+                <div class="topic-illustration h-16 w-full mb-4 flex items-center justify-between opacity-90 border-b border-[var(--border)] pb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 flex-shrink-0 bg-[var(--accent-light)] rounded-xl p-2 border border-[var(--accent)]/10">
+                            ${CATEGORY_SVGS[topic.category] || CATEGORY_SVGS['Gesellschaft & Politik']}
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider bg-[var(--accent-light)] px-2 py-1 rounded-md">Kategorie</span>
+                            <h4 class="text-sm font-bold text-[var(--text-primary)] mt-1">${topic.category || 'Allgemeines Thema'}</h4>
+                        </div>
+                    </div>
                 </div>
                 <p data-block-key="${einleitungKey}" class="${deClass} text-sm font-bold text-[var(--text-primary)] leading-relaxed">${isEditMode ? (savedEinleitung || topic.einleitung_de) : applyConnectorsHighlight(savedEinleitung || topic.einleitung_de)}</p>
                 <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-2">${topic.einleitung_en}</p>
@@ -1135,7 +1134,6 @@
 
             // PRO SECTION
             const proKey = "pro_de_0";
-            const savedPro = getHighlight(topic.id, proKey);
             let proContent = "";
             topic.pro_de.forEach((deVal, index) => {
                 const skey = `pro_de_${index}`;
@@ -1162,7 +1160,6 @@
 
             // CONTRA SECTION
             const contraKey = "contra_de_0";
-            const savedContra = getHighlight(topic.id, contraKey);
             let contraContent = "";
             topic.contra_de.forEach((deVal, index) => {
                 const skey = `contra_de_${index}`;
@@ -1274,21 +1271,60 @@
             showResetButton();
         }
 
-        // D3.JS FORCE DIRECTED MINDMAP IMPLEMENTATION
+        // D3.JS FORCE DIRECTED MINDMAP IMPLEMENTATION (Dynamically mapping 52 topics grouped by categories)
+        function buildDynamicMindmapData() {
+            const categories = {
+                'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
+                'Arbeit & Karriere': { color: "#2563EB", children: [] },
+                'Umwelt & Mobilität': { color: "#7C3AED", children: [] },
+                'Gesellschaft & Politik': { color: "#DC2626", children: [] },
+                'Bildung & Technologie': { color: "#D97706", children: [] }
+            };
+
+            TOPICS_DATA.forEach(topic => {
+                const cat = topic.category || 'Gesellschaft & Politik';
+                if (!categories[cat]) {
+                    categories[cat] = { color: "#6B7280", children: [] };
+                }
+                categories[cat].children.push({
+                    name: `T${topic.id}: ${topic.title_de}`,
+                    id: topic.id,
+                    idx: TOPICS_DATA.indexOf(topic),
+                    detail: topic.title_en
+                });
+            });
+
+            const children = Object.keys(categories).map(catName => ({
+                name: catName,
+                color: categories[catName].color,
+                priority: 'category',
+                children: categories[catName].children
+            }));
+
+            return {
+                name: "TELC B2 Themen",
+                priority: "root",
+                children: children
+            };
+        }
+
         function initMindmap() {
+            if (TOPICS_DATA.length === 0) return;
             const svg = d3.select("#mindmap-svg");
             svg.selectAll("*").remove();
             
             const width = svg.node().clientWidth || 800;
             const height = svg.node().clientHeight || 500;
-            const root = d3.hierarchy(MINDMAP_DATA);
+            
+            const data = buildDynamicMindmapData();
+            const root = d3.hierarchy(data);
             const nodes = root.descendants();
             const links = root.links();
 
             const container = svg.append("g").attr("class", "mindmap-container");
 
             const zoom = d3.zoom()
-                .scaleExtent([0.2, 4])
+                .scaleExtent([0.1, 3])
                 .on("zoom", (event) => {
                     container.attr("transform", event.transform);
                 });
@@ -1296,12 +1332,15 @@
             svg.call(zoom);
 
             const simulation = d3.forceSimulation(nodes)
-                .force("link", d3.forceLink(links).id(d => d.id).distance(d => d.source.data.priority === 'root' ? 140 : 100).strength(0.7))
-                .force("charge", d3.forceManyBody().strength(-350))
+                .force("link", d3.forceLink(links).id(d => d.id).distance(d => {
+                    if (d.source.data.priority === 'root') return 180;
+                    return 120;
+                }).strength(0.85))
+                .force("charge", d3.forceManyBody().strength(-300))
                 .force("center", d3.forceCenter(width / 2, height / 2))
-                .force("collision", d3.forceCollide().radius(d => d.data.priority === 'root' ? 70 : 55).strength(1.0))
-                .force("x", d3.forceX(width / 2).strength(0.05))
-                .force("y", d3.forceY(height / 2).strength(0.05));
+                .force("collision", d3.forceCollide().radius(d => d.data.priority === 'root' ? 85 : (d.data.priority === 'category' ? 65 : 45)).strength(1.0))
+                .force("x", d3.forceX(width / 2).strength(0.06))
+                .force("y", d3.forceY(height / 2).strength(0.06));
 
             const link = container.append("g")
                 .selectAll("path")
@@ -1310,7 +1349,7 @@
                 .attr("stroke-width", 2)
                 .attr("fill", "none")
                 .attr("stroke", d => d.target.data.color || d.target.parent.data.color || "var(--border)")
-                .attr("stroke-opacity", 0.6);
+                .attr("stroke-opacity", 0.5);
 
             const node = container.append("g")
                 .selectAll("g")
@@ -1325,7 +1364,7 @@
                 const el = d3.select(this);
                 if (d.data.priority === 'root') {
                     el.append("circle")
-                        .attr("r", 32)
+                        .attr("r", 36)
                         .attr("fill", "var(--accent)")
                         .attr("stroke", "#ffffff")
                         .attr("stroke-width", 2.5);
@@ -1336,10 +1375,10 @@
                         .attr("font-size", "10px")
                         .attr("font-weight", "bold")
                         .text(d.data.name);
-                } else if (d.children) {
+                } else if (d.data.priority === 'category') {
                     el.append("circle")
-                        .attr("r", 18)
-                        .attr("fill", d.data.color || "var(--bg-card)")
+                        .attr("r", 22)
+                        .attr("fill", d.data.color)
                         .attr("stroke", "var(--border)")
                         .attr("stroke-width", 1.5);
                     el.append("text")
@@ -1348,9 +1387,10 @@
                         .attr("fill", "#ffffff")
                         .attr("font-size", "7px")
                         .attr("font-weight", "bold")
-                        .text(d.data.name.substring(0, 10));
+                        .text(d.data.name.split(" & ")[0]); // simple truncate label
                 } else {
-                    const textWidth = Math.max(100, d.data.name.length * 6.5);
+                    // Topic leaf node
+                    const textWidth = Math.max(120, d.data.name.length * 6);
                     el.append("rect")
                         .attr("x", -textWidth / 2)
                         .attr("y", -16)
@@ -1359,22 +1399,34 @@
                         .attr("rx", 6)
                         .attr("fill", "var(--bg-card)")
                         .attr("stroke", d.parent.data.color || "var(--border)")
-                        .attr("stroke-width", 1.5);
+                        .attr("stroke-width", 1.5)
+                        .attr("class", "cursor-pointer");
                     el.append("text")
                         .attr("text-anchor", "middle")
                         .attr("dy", "-2px")
                         .attr("fill", "var(--text-primary)")
-                        .attr("font-size", "9px")
+                        .attr("font-size", "8px")
                         .attr("font-weight", "bold")
-                        .text(d.data.name);
+                        .text(d.data.name.substring(0, 24) + (d.data.name.length > 24 ? '...' : ''));
                     el.append("text")
                         .attr("text-anchor", "middle")
                         .attr("dy", "9px")
                         .attr("fill", "var(--text-muted)")
                         .attr("font-size", "7px")
-                        .text(d.data.detail ? d.data.detail.substring(0, 22) + '...' : '');
+                        .text(d.data.detail ? d.data.detail.substring(0, 26) + '...' : '');
                 }
-                el.append("title").text(d.data.name + (d.data.detail ? ": " + d.data.detail : ""));
+                el.append("title").text(d.data.name + (d.data.detail ? "\n" + d.data.detail : ""));
+            });
+
+            // Click to select and jump to topic
+            node.on("click", (event, d) => {
+                if (d.data.id) {
+                    activeIdx = d.data.idx;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    switchTab('dashboard');
+                }
             });
 
             simulation.on("tick", () => {
@@ -1408,6 +1460,40 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        // IMPORT CUSTOMIZED topics.json
+        async function importTopicsJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported) && imported.length > 0) {
+                        TOPICS_DATA = imported;
+                        window.TOPICS_DATA = imported;
+                        localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
+                        
+                        if (currentUser) {
+                            alert("Importiert. Speichere in der Cloud...");
+                            for (const t of imported) {
+                                await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
+                            }
+                        }
+                        activeIdx = 0;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        alert("topics.json erfolgreich importiert!");
+                    } else {
+                        alert("Ungültiges Dateiformat. Muss ein Array von Themen sein.");
+                    }
+                } catch (err) {
+                    alert("Fehler beim Lesen der Datei: " + err.message);
+                }
+            };
+            reader.readAsText(file);
         }
 
         document.getElementById('export-json-btn').onclick = exportTopicsJSON;
@@ -1459,7 +1545,8 @@
             const overlay = document.getElementById('reel-overlay');
             const iframe = document.getElementById('reel-iframe');
             overlay.classList.remove('hidden');
-            iframe.src = './reel-mode.html';
+            localStorage.setItem('b2_active_idx', activeIdx);
+            iframe.src = `./reel-mode.html?idx=${activeIdx}`;
         }
 
         function closeReel() {
@@ -1527,5 +1614,4 @@
     </script>
 </body>
 </html>
-
 
