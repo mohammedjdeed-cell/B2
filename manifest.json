@@ -7,10 +7,10 @@
   "lang": "de",
   "dir": "ltr",
   "scope": "/",
-  "start_url": "/index.html?source=pwa",
+  "start_url": "./index.html?source=pwa",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F8FAFC",
+  "background_color": "#09090b",
   "theme_color": "#4f46e5",
   "prefer_related_applications": false,
   "icons": [
@@ -41,10 +41,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Themenübersicht",
-      "short_name": "Themen",
-      "description": "Öffne die Liste aller 52 Prüfungsthemen",
-      "url": "/index.html?action=view-topics",
+      "name": "Prüfungstraining starten",
+      "short_name": "Training",
+      "description": "Öffne das interaktive B2 Diskussionstraining",
+      "url": "./index.html?action=start-training",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ],
