@@ -112,14 +112,14 @@
         [data-theme="dark"] .hl-orange { background-color: rgba(249, 115, 22, 0.25) !important; color: #ffedd5; }
         [data-theme="dark"] .hl-blue   { background-color: rgba(59, 130, 246, 0.25) !important; color: #dbeafe; }
 
-        /* Naturally hand-drawn red circle styling [3] */
+        /* Authentic, natural hand-drawn red circle styling */
         .word-circle {
             position: relative;
             display: inline-block;
-            border: 2px solid #DC2626;
-            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* organic sketchy organic loop */
-            padding: 1px 6px;
-            margin: 0 2px;
+            color: inherit;
+            padding: 2px 8px;
+            border: 2px solid #DC2626; /* deep red-600 */
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* natural sketchy organic loop */
             transform: rotate(-1deg);
             animation: circle-draw 0.35s ease-out;
         }
@@ -147,15 +147,6 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
-
-        /* Custom styling for sleek mind map rendering */
-        .mindmap-node rect {
-            transition: all 0.2s ease;
-        }
-        .mindmap-node:hover rect {
-            fill: var(--accent-light);
-            filter: brightness(0.98);
-        }
     </style>
     
     <!-- Firebase SDK compat -->
@@ -248,9 +239,6 @@
                     </button>
                     <button id="reset-edits-btn" class="w-full text-[10px] text-[var(--danger)] hover:underline font-bold transition-all text-center block hidden py-1">
                         Änderungen zurücksetzen
-                    </button>
-                    <button id="pwa-install-btn" class="hidden w-full text-xs bg-[var(--success)] hover:bg-[var(--success)]/90 text-white font-bold rounded-lg py-2 transition-all">
-                        App auf Gerät installieren
                     </button>
                 </div>
             </div>
@@ -380,9 +368,8 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-105 border border-blue-400" title="Blau"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="w-5 h-5 rounded-full bg-transparent hover:scale-105 border-2 border-red-600 flex items-center justify-center text-[10px] text-red-600 font-bold" title="Einkreisen">○</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <!-- Modernized inline minimalist SVG Trash icon -->
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all" title="Formatierung aufheben">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1 text-[var(--text-muted)] hover:text-rose-600 hover:bg-rose-50 rounded" title="Zurücksetzen">
+            🗑️
         </button>
     </div>
 
@@ -427,34 +414,63 @@
             "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
         ];
 
-        // Explicit fallback categorizations to bypass empty categorizations in raw JSON file [1]
-        const TOPIC_CATEGORIES_LOOKUP = {
-            1: 'Freizeit & Gesundheit', 2: 'Bildung & Technologie', 3: 'Gesellschaft & Politik',
-            4: 'Freizeit & Gesundheit', 5: 'Freizeit & Gesundheit', 6: 'Umwelt & Mobilität',
-            7: 'Arbeit & Karriere', 8: 'Umwelt & Mobilität', 9: 'Bildung & Technologie',
-            10: 'Arbeit & Karriere', 11: 'Umwelt & Mobilität', 12: 'Gesellschaft & Politik',
-            13: 'Freizeit & Gesundheit', 14: 'Bildung & Technologie', 15: 'Bildung & Technologie',
-            16: 'Bildung & Technologie', 17: 'Bildung & Technologie', 18: 'Freizeit & Gesundheit',
-            19: 'Bildung & Technologie', 20: 'Freizeit & Gesundheit', 21: 'Freizeit & Gesundheit',
-            22: 'Bildung & Technologie', 23: 'Gesellschaft & Politik', 24: 'Bildung & Technologie',
-            25: 'Bildung & Technologie', 26: 'Freizeit & Gesundheit', 27: 'Freizeit & Gesundheit',
-            28: 'Freizeit & Gesundheit', 29: 'Freizeit & Gesundheit', 30: 'Gesellschaft & Politik',
-            31: 'Gesellschaft & Politik', 32: 'Gesellschaft & Politik', 33: 'Gesellschaft & Politik',
-            34: 'Freizeit & Gesundheit', 35: 'Arbeit & Karriere', 36: 'Arbeit & Karriere',
-            37: 'Arbeit & Karriere', 38: 'Bildung & Technologie', 39: 'Bildung & Technologie',
-            40: 'Bildung & Technologie', 41: 'Bildung & Technologie', 42: 'Arbeit & Karriere',
-            43: 'Gesellschaft & Politik', 44: 'Bildung & Technologie', 45: 'Bildung & Technologie',
-            46: 'Umwelt & Mobilität', 47: 'Gesellschaft & Politik', 48: 'Bildung & Technologie',
-            49: 'Gesellschaft & Politik', 50: 'Bildung & Technologie', 51: 'Gesellschaft & Politik',
-            52: 'Gesellschaft & Politik'
-        };
-
         const CATEGORY_SVGS = {
             'Freizeit & Gesundheit': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><path d="M14 20c2-4 6-6 6-6s4 2 6 6" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="20" r="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M55 20h10M60 15v10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>`,
             'Arbeit & Karriere': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="24" height="18" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M16 16h8M16 20h6M16 24h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/><path d="M48 28V16l10-4v16" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="22" width="4" height="6" fill="#7C3AED"/></svg>`,
             'Umwelt & Mobilität': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><path d="M10 28c0-8 6-16 14-16s14 8 14 16" stroke="#16A34A" stroke-width="1.5" fill="none"/><circle cx="24" cy="18" r="4" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><rect x="45" y="20" width="24" height="10" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><circle cx="50" cy="32" r="3" fill="#2563EB"/><circle cx="65" cy="32" r="3" fill="#2563EB"/></svg>`,
             'Gesellschaft & Politik': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="12" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/><path d="M14 24c0-4 2-8 6-8s6 4 6 8" fill="#7C3AED" opacity="0.3"/><circle cx="20" cy="16" r="3" fill="#7C3AED"/><path d="M48 28l8-12 8 12" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 28h8" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/></svg>`,
             'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        };
+
+        const MINDMAP_DATA = {
+            name: "TELC B2 Diskussion",
+            priority: "root",
+            children: [
+                {
+                    name: "PRÜFUNGSKRITISCH",
+                    priority: "critical",
+                    color: "#DC2626",
+                    children: [
+                        { name: "Einleitung formulieren", detail: "Thema einleiten und Struktur abgrenzen." },
+                        { name: "Dafür-Argumente", detail: "Pro-Thesen stark begründen." },
+                        { name: "Dagegen-Argumente", detail: "Feinfühlig Gegenpositionen anführen." },
+                        { name: "Eigene Meinung", detail: "Klar Stellung beziehen." },
+                        { name: "Schlussfolgerung", detail: "Zusammenfassendes Fazit ziehen." }
+                    ]
+                },
+                {
+                    name: "WICHTIG",
+                    priority: "high",
+                    color: "#D97706",
+                    children: [
+                        { name: "Persönliche Erfahrung", detail: "Eigene Erlebnisse schildern." },
+                        { name: "Konnektoren", detail: "Satzglieder strukturiert verknüpfen." },
+                        { name: "Kompromiss anbieten", detail: "Zusammenarbeit im Gespräch fördern." },
+                        { name: "Nachfragen höflich", detail: "Partner aktiv ins Boot holen." },
+                        { name: "Zustimmen / Widersprechen", detail: "Meinung des Gegenübers bewerten." }
+                    ]
+                },
+                {
+                    name: "HILFREICH",
+                    priority: "medium",
+                    color: "#16A34A",
+                    children: [
+                        { name: "Redemittel Diskussion", detail: "Standardfloskeln nutzen." },
+                        { name: "Themenbereich Gesundheit", detail: "Großer thematischer Block." },
+                        { name: "Themenbereich Arbeit", detail: "Berufliche Fragestellungen." },
+                        { name: "Simulation Dialog", detail: "Sprechzeit aktiv steuern." }
+                    ]
+                },
+                {
+                    name: "ERWEITERT",
+                    priority: "low",
+                    color: "#7C3AED",
+                    children: [
+                        { name: "Statistiken zitieren", detail: "Faktenbasierte Stützung." },
+                        { name: "Hypothetisch sprechen", detail: "Szenarien konjunktivisch aufzeigen." }
+                    ]
+                }
+            ]
         };
 
         const firebaseConfig = {
@@ -567,63 +583,16 @@
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
-        // Deep-cleaning formatting reset [4]
-        function cleanBlockContent(keyPath, isArray = false, index = null, subKey = null) {
-            pushToHistory();
-            const activeTopic = TOPICS_DATA[activeIdx];
-            let rawText = "";
-            
-            if (isArray) {
-                if (subKey) {
-                    rawText = activeTopic[keyPath][index][subKey];
-                } else {
-                    rawText = activeTopic[keyPath][index];
-                }
-            } else {
-                rawText = activeTopic[keyPath];
-            }
-            
-            // Strip HTML tags
-            const temp = document.createElement("div");
-            temp.innerHTML = rawText;
-            const cleanText = temp.textContent || temp.innerText || "";
-            
-            if (isArray) {
-                if (subKey) {
-                    activeTopic[keyPath][index][subKey] = cleanText;
-                } else {
-                    activeTopic[keyPath][index] = cleanText;
-                }
-            } else {
-                activeTopic[keyPath] = cleanText;
-            }
-            
-            // Wipe from highlightsStore
-            const blockKey = isArray ? (subKey ? `${keyPath}_de_${index}` : `${keyPath}_${index}`) : keyPath;
-            if (highlightsStore[activeTopic.id]) {
-                delete highlightsStore[activeTopic.id][blockKey];
+        function deleteHighlight(topicId, blockKey) {
+            if (highlightsStore[topicId] && highlightsStore[topicId][blockKey]) {
+                delete highlightsStore[topicId][blockKey];
                 localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
-            }
-            
-            saveEditsSilent();
-            renderActiveTopic();
-        }
-
-        function clearAllHighlightsForTopic() {
-            if (TOPICS_DATA.length === 0) return;
-            const topicId = TOPICS_DATA[activeIdx].id;
-            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen und Einkreisungen für dieses Thema unwiderruflich löschen?")) {
-                if (highlightsStore[topicId]) {
-                    delete highlightsStore[topicId];
-                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
-                    renderActiveTopic();
-                }
+                renderActiveTopic();
             }
         }
 
         // Active Voice API Variables
         let availableGermanVoices = [];
-        let activeSpeakingButton = null;
         let currentlyPlayingBlockKey = null;
 
         // Theme management
@@ -795,11 +764,6 @@
                         });
                     }
                 }
-
-                // Map fallback categories to avoid category cluttering [1]
-                baseTopics.forEach(t => {
-                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
-                });
 
                 TOPICS_DATA = baseTopics;
                 window.TOPICS_DATA = baseTopics;
@@ -1239,9 +1203,7 @@
             }
         }
 
-        function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category, rawPath, isArray = false, arrayIdx = null, subKey = null) {
-            // Elegant modern reset trigger using unformatting logic [4]
-            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
+        function buildCardWrapper(title, contentHtml, blockKey, textToSpeak, category) {
             return `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
                     <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
@@ -1251,9 +1213,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="openVoicePicker(event, '${blockKey}', \`${textToSpeak.replace(/"/g, '&quot;')}\`)" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
-                            <button onclick="cleanBlockContent(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-faint)] hover:text-rose-600 hover:bg-rose-50 transition-all ${isEditMode ? 'block' : 'hidden'}" title="Formatierungen zurücksetzen [4]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
+                            <button onclick="deleteHighlight(${TOPICS_DATA[activeIdx].id}, '${blockKey}')" class="p-1 rounded text-xs text-[var(--text-faint)] hover:text-rose-600 transition-all ${isEditMode ? 'block' : 'hidden'}" title="Formatierungen zurücksetzen">🧹</button>
                         </div>
                     </div>
                     ${contentHtml}
@@ -1317,7 +1277,7 @@
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.einleitung_ar || ''}</p>
             `;
             const einleitungCard = document.createElement('div');
-            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, topic.category, 'einleitung_de');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einleitungKey, topic.einleitung_de, topic.category);
             container.appendChild(einleitungCard);
 
             if (isEditMode) {
@@ -1337,7 +1297,7 @@
                 const enVal = topic.pro_en ? topic.pro_en[index] : '';
                 const arVal = topic.pro_ar ? topic.pro_ar[index] : '';
                 proContent += `
-                    <div class="mb-4 last:mb-0 relative">
+                    <div class="mb-4 last:mb-0">
                         <p data-block-key="${skey}" class="${deClass} text-sm font-bold text-[var(--text-primary)] leading-relaxed">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</p>
                         <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${enVal}</p>
                         <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${arVal}</p>
@@ -1345,7 +1305,7 @@
                 `;
             });
             const proCard = document.createElement('div');
-            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro) / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category, 'pro_de', true, 0);
+            proCard.innerHTML = buildCardWrapper("2. Dafür (Pro) / Arguments", proContent, proKey, topic.pro_de.join(". "), topic.category);
             proContraParent.appendChild(proCard);
 
             if (isEditMode) {
@@ -1363,7 +1323,7 @@
                 const enVal = topic.contra_en ? topic.contra_en[index] : '';
                 const arVal = topic.contra_ar ? topic.contra_ar[index] : '';
                 contraContent += `
-                    <div class="mb-4 last:mb-0 relative">
+                    <div class="mb-4 last:mb-0">
                         <p data-block-key="${skey}" class="${deClass} text-sm font-bold text-[var(--text-primary)] leading-relaxed">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</p>
                         <p class="${enClass} text-xs italic text-[var(--text-muted)] mt-1">${enVal}</p>
                         <p class="${arClass} text-xs text-right mt-1 font-medium font-arabic" dir="rtl">${arVal}</p>
@@ -1371,7 +1331,7 @@
                 `;
             });
             const contraCard = document.createElement('div');
-            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra) / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category, 'contra_de', true, 0);
+            contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra) / Arguments", contraContent, contraKey, topic.contra_de.join(". "), topic.category);
             proContraParent.appendChild(contraCard);
             container.appendChild(proContraParent);
 
@@ -1390,7 +1350,7 @@
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.pers_erfahrung_ar || ''}</p>
             `;
             const erfahrungCard = document.createElement('div');
-            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category, 'pers_erfahrung_de');
+            erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung / Experiences", erfahrungHtml, erfahrungKey, topic.pers_erfahrung_de, topic.category);
             container.appendChild(erfahrungCard);
 
             if (isEditMode) {
@@ -1414,7 +1374,7 @@
             });
             dialogHtml += '</div>';
             const dialogCard = document.createElement('div');
-            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), topic.category, 'dialog', true, 0, 'de');
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation / Transcript", dialogHtml, "dialog_de_0", topic.dialog.map(c => `${c.role}: ${c.de}`).join(". "), topic.category);
             container.appendChild(dialogCard);
 
             if (isEditMode) {
@@ -1432,7 +1392,7 @@
                 <p class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic" dir="rtl">${topic.schluss_ar || ''}</p>
             `;
             const schlussCard = document.createElement('div');
-            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, topic.category, 'schluss_de');
+            schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung / Conclusion", schlussHtml, schlussKey, topic.schluss_de, topic.category);
             container.appendChild(schlussCard);
 
             if (isEditMode) {
@@ -1454,7 +1414,7 @@
                 </div>
             `;
             const keywordsCard = document.createElement('div');
-            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", "", topic.category, 'keywords');
+            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter / Keywords", keywordsHtml, "keywords_block", "", topic.category);
             container.appendChild(keywordsCard);
 
             if (isEditMode) {
@@ -1467,7 +1427,7 @@
             showResetButton();
         }
 
-        // D3.JS FORCE DIRECTED MINDMAP IMPLEMENTATION (Collapsible Sleek Horizontal Tree) [8]
+        // D3.JS FORCE DIRECTED MINDMAP IMPLEMENTATION (Dynamically mapping 52 topics grouped by categories)
         function buildDynamicMindmapData() {
             const categories = {
                 'Freizeit & Gesundheit': { color: "#16A34A", children: [] },
@@ -1504,222 +1464,147 @@
             };
         }
 
-        // Tidy, Collapsible Horizontal Hierarchical layout completely eliminating overlapping [8]
         function initMindmap() {
             if (TOPICS_DATA.length === 0) return;
             const svg = d3.select("#mindmap-svg");
             svg.selectAll("*").remove();
             
-            const width = svg.node().clientWidth || 900;
-            const height = svg.node().clientHeight || 600;
+            const width = svg.node().clientWidth || 800;
+            const height = svg.node().clientHeight || 500;
             
-            const rawData = buildDynamicMindmapData();
-            
-            // Set margins
-            const margin = {top: 20, right: 90, bottom: 30, left: 90};
-            
-            const gContainer = svg.append("g")
-                .attr("class", "mindmap-container");
+            const data = buildDynamicMindmapData();
+            const root = d3.hierarchy(data);
+            const nodes = root.descendants();
+            const links = root.links();
+
+            const container = svg.append("g").attr("class", "mindmap-container");
 
             const zoom = d3.zoom()
                 .scaleExtent([0.1, 3])
                 .on("zoom", (event) => {
-                    gContainer.attr("transform", event.transform);
+                    container.attr("transform", event.transform);
                 });
 
             svg.call(zoom);
 
-            const treemap = d3.tree().nodeSize([45, 240]);
-            
-            // Assign index and children backup to support collapsible structure
-            let root = d3.hierarchy(rawData, d => d.children);
-            root.x0 = height / 2;
-            root.y0 = 0;
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(d => {
+                    if (d.source.data.priority === 'root') return 185;
+                    return 125;
+                }).strength(0.85))
+                .force("charge", d3.forceManyBody().strength(-300))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide().radius(d => d.data.priority === 'root' ? 85 : (d.data.priority === 'category' ? 65 : 45)).strength(1.0))
+                .force("x", d3.forceX(width / 2).strength(0.06))
+                .force("y", d3.forceY(height / 2).strength(0.06));
 
-            // Collapse everything except first category branch by default [8]
-            root.children.forEach((d, i) => {
-                if (i > 0) collapse(d);
+            const link = container.append("g")
+                .selectAll("path")
+                .data(links)
+                .join("path")
+                .attr("stroke-width", 2)
+                .attr("fill", "none")
+                .attr("stroke", d => d.target.data.color || d.target.parent.data.color || "var(--border)")
+                .attr("stroke-opacity", 0.5);
+
+            // Separate drag from simple navigation click cleanly to ensure responsive jumps [6]
+            const dragBehavior = d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended);
+
+            const node = container.append("g")
+                .selectAll("g")
+                .data(nodes)
+                .join("g")
+                .call(dragBehavior);
+
+            node.each(function(d) {
+                const el = d3.select(this);
+                if (d.data.priority === 'root') {
+                    el.append("circle")
+                        .attr("r", 36)
+                        .attr("fill", "var(--accent)")
+                        .attr("stroke", "#ffffff")
+                        .attr("stroke-width", 2.5);
+                    el.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", ".35em")
+                        .attr("fill", "#ffffff")
+                        .attr("font-size", "10px")
+                        .attr("font-weight", "bold")
+                        .text(d.data.name);
+                } else if (d.data.priority === 'category') {
+                    el.append("circle")
+                        .attr("r", 22)
+                        .attr("fill", d.data.color)
+                        .attr("stroke", "var(--border)")
+                        .attr("stroke-width", 1.5);
+                    el.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", ".35em")
+                        .attr("fill", "#ffffff")
+                        .attr("font-size", "7px")
+                        .attr("font-weight", "bold")
+                        .text(d.data.name.split(" & ")[0]); // simple truncate label
+                } else {
+                    // Topic leaf node
+                    const textWidth = Math.max(120, d.data.name.length * 6);
+                    el.append("rect")
+                        .attr("x", -textWidth / 2)
+                        .attr("y", -16)
+                        .attr("width", textWidth)
+                        .attr("height", 32)
+                        .attr("rx", 6)
+                        .attr("fill", "var(--bg-card)")
+                        .attr("stroke", d.parent.data.color || "var(--border)")
+                        .attr("stroke-width", 1.5)
+                        .attr("class", "cursor-pointer");
+                    el.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", "-2px")
+                        .attr("fill", "var(--text-primary)")
+                        .attr("font-size", "8px")
+                        .attr("font-weight", "bold")
+                        .text(d.data.name.substring(0, 24) + (d.data.name.length > 24 ? '...' : ''));
+                    el.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", "9px")
+                        .attr("fill", "var(--text-muted)")
+                        .attr("font-size", "7px")
+                        .text(d.data.detail ? d.data.detail.substring(0, 26) + '...' : '');
+                }
+                el.append("title").text(d.data.name + (d.data.detail ? "\n" + d.data.detail : ""));
             });
 
-            update(root);
-
-            function collapse(d) {
-                if (d.children) {
-                    d._children = d.children;
-                    d._children.forEach(collapse);
-                    d.children = null;
+            // Prevent drag from triggering topic selection [6]
+            node.on("click", (event, d) => {
+                if (event.defaultPrevented) return; // skip click handling if drag initiated
+                if (d.data.id) {
+                    activeIdx = d.data.idx;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    switchTab('dashboard');
                 }
+            });
+
+            simulation.on("tick", () => {
+                link.attr("d", d => `M${d.source.x},${d.source.y} Q${(d.source.x + d.target.x)/2},${(d.source.y + d.target.y)/2 - 12} ${d.target.x},${d.target.y}`);
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x; d.fy = d.y;
             }
-
-            function update(source) {
-                const treeData = treemap(root);
-                const nodes = treeData.descendants();
-                const links = treeData.links();
-
-                nodes.forEach(d => { d.y = d.depth * 220; });
-
-                // Nodes mapping
-                const node = gContainer.selectAll('g.mindmap-node')
-                    .data(nodes, d => d.id || (d.id = ++iCount));
-
-                const nodeEnter = node.enter().append('g')
-                    .attr('class', 'mindmap-node cursor-pointer')
-                    .attr('transform', d => `translate(${source.y0},${source.x0})`)
-                    .on('click', clickNode);
-
-                // Add shapes based on depth level
-                nodeEnter.each(function(d) {
-                    const el = d3.select(this);
-                    
-                    if (d.data.priority === 'root') {
-                        el.append('circle')
-                            .attr('r', 16)
-                            .attr('fill', 'var(--accent)')
-                            .attr('stroke', '#ffffff')
-                            .attr('stroke-width', 2);
-                        
-                        el.append('text')
-                            .attr('dy', '.35em')
-                            .attr('x', -24)
-                            .attr('text-anchor', 'end')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '10px')
-                            .attr('font-weight', 'bold')
-                            .text(d.data.name);
-                    } else if (d.data.priority === 'category') {
-                        el.append('circle')
-                            .attr('r', 12)
-                            .attr('fill', d.data.color)
-                            .attr('stroke', '#ffffff')
-                            .attr('stroke-width', 1.5);
-                        
-                        el.append('text')
-                            .attr('dy', '.35em')
-                            .attr('x', d => d.children || d._children ? -18 : 18)
-                            .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '9px')
-                            .attr('font-weight', 'bold')
-                            .text(d.data.name);
-                    } else {
-                        // Leaf topic node - beautiful interactive horizontal cards
-                        const textW = Math.max(120, d.data.name.length * 6);
-                        
-                        el.append('rect')
-                            .attr('x', 10)
-                            .attr('y', -16)
-                            .attr('width', textW)
-                            .attr('height', 32)
-                            .attr('rx', 6)
-                            .attr('fill', 'var(--bg-card)')
-                            .attr('stroke', d.parent.data.color || 'var(--border)')
-                            .attr('stroke-width', 1.5);
-                        
-                        el.append('text')
-                            .attr('dy', '-2px')
-                            .attr('x', 20)
-                            .attr('text-anchor', 'start')
-                            .attr('fill', 'var(--text-primary)')
-                            .attr('font-size', '8px')
-                            .attr('font-weight', 'bold')
-                            .text(d.data.name.substring(0, 22) + (d.data.name.length > 22 ? '...' : ''));
-
-                        el.append('text')
-                            .attr('dy', '9px')
-                            .attr('x', 20)
-                            .attr('text-anchor', 'start')
-                            .attr('fill', 'var(--text-muted)')
-                            .attr('font-size', '7px')
-                            .text(d.data.detail ? d.data.detail.substring(0, 26) + '...' : '');
-                    }
-                });
-
-                const nodeUpdate = nodeEnter.merge(node);
-
-                nodeUpdate.transition().duration(250)
-                    .attr('transform', d => `translate(${d.y},${d.x})`);
-
-                // Style indicators for collapsible categories [8]
-                nodeUpdate.select('circle')
-                    .attr('fill', d => d._children ? '#ffffff' : (d.data.color || 'var(--accent)'))
-                    .attr('stroke', d => d._children ? (d.data.color || 'var(--accent)') : '#ffffff')
-                    .attr('stroke-width', d => d._children ? 3 : 2);
-
-                const nodeExit = node.exit().transition().duration(250)
-                    .attr('transform', d => `translate(${source.y},${source.x})`)
-                    .remove();
-
-                // Links rendering curve structure
-                const link = gContainer.selectAll('path.mindmap-link')
-                    .data(links, d => d.target.id);
-
-                const linkEnter = link.enter().insert('path', "g")
-                    .attr('class', 'mindmap-link')
-                    .attr('fill', 'none')
-                    .attr('stroke', 'var(--border)')
-                    .attr('stroke-opacity', 0.4)
-                    .attr('stroke-width', 1.5)
-                    .attr('d', d => {
-                        const o = {x: source.x0, y: source.y0};
-                        return diagonal(o, o);
-                    });
-
-                const linkUpdate = linkEnter.merge(link);
-
-                linkUpdate.transition().duration(250)
-                    .attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)')
-                    .attr('stroke-opacity', 0.6)
-                    .attr('stroke-width', 2)
-                    .attr('d', d => diagonal(d.source, d.target));
-
-                const linkExit = link.exit().transition().duration(250)
-                    .attr('d', d => {
-                        const o = {x: source.x, y: source.y};
-                        return diagonal(o, o);
-                    })
-                    .remove();
-
-                nodes.forEach(d => {
-                    d.x0 = d.x;
-                    d.y0 = d.y;
-                });
-
-                function diagonal(s, d) {
-                    // Adjust horizontal links beautifully with cubic bezier curve
-                    const startY = s.y + (s.data.priority === undefined ? 130 : 0);
-                    const endY = d.y;
-                    return `M ${startY} ${s.x}
-                            C ${(startY + endY) / 2} ${s.x},
-                              ${(startY + endY) / 2} ${d.x},
-                              ${endY} ${d.x}`;
-                }
-
-                // Handle click state changes
-                function clickNode(event, d) {
-                    if (d.data.id) {
-                        // Leaf topic selection trigger [8]
-                        activeIdx = d.data.idx;
-                        localStorage.setItem('b2_active_idx', activeIdx);
-                        renderSidebar();
-                        renderActiveTopic();
-                        switchTab('dashboard');
-                    } else {
-                        // Collapse / Expand Category structure [8]
-                        if (d.children) {
-                            d._children = d.children;
-                            d.children = null;
-                        } else {
-                            d.children = d._children;
-                            d._children = null;
-                        }
-                        update(d);
-                    }
-                }
+            function dragged(event, d) {
+                d.fx = event.x; d.fy = event.y;
             }
-
-            let iCount = 0;
-            // Align mindmap to fit viewport
-            svg.call(zoom.transform, d3.zoomIdentity.translate(margin.left, height / 2).scale(0.8));
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null; d.fy = null;
+            }
         }
 
         // EXPORT THE SYSTEM DATABASE AS topics.json
