@@ -170,11 +170,11 @@
         </div>
 
         <div class="flex items-center gap-3 flex-wrap">
-            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
+            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] overflow-x-auto">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🧠 Mindmap</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📚 Grammatik</button>
             </div>
 
             <button id="theme-toggle" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors">
@@ -629,27 +629,6 @@
             }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
-        });
-
-        function toggleMenuDropdown(event) {
-            event.stopPropagation();
-            document.getElementById('menu-dropdown-content').classList.toggle('hidden');
-        }
-
-        document.addEventListener('click', (e) => {
-            const content = document.getElementById('menu-dropdown-content');
-            if (content && !content.classList.contains('hidden') && !e.target.closest('#menu-dropdown-btn') && !e.target.closest('#menu-dropdown-content')) {
-                content.classList.add('hidden');
-            }
-        });
-
-        document.getElementById('sidebar-toggle-btn').onclick = () => {
-            document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
-        };
-
         function saveHighlight(topicId, blockKey, htmlContent) {
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
             highlightsStore[topicId][blockKey] = htmlContent;
@@ -754,10 +733,10 @@
 
             let top = rect.bottom + 8;
             if (rect.bottom + popoverHeight > window.innerHeight) { top = rect.top - popoverHeight - 8; }
-            top = Math.max(8, Min(window.innerHeight - popoverHeight - 8, top));
+            top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
 
             let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
-            left = Math.max(8, Min(window.innerWidth - popoverWidth - 8, left));
+            left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
 
             panel.style.top = `${top}px`;
             panel.style.left = `${left}px`;
@@ -765,14 +744,6 @@
 
             populateVoicesList();
         }
-
-        document.getElementById('voice-picker-play').onclick = () => {
-            playBlockAudio(globalAudioText, globalAudioBtn);
-        };
-        
-        document.getElementById('voice-picker-stop').onclick = () => {
-            stopBlockAudio();
-        };
 
         function closeVoicePicker() {
             document.getElementById('voice-picker-panel').classList.add('hidden');
@@ -842,12 +813,6 @@
             }
         }
 
-        const themeToggle = document.getElementById('theme-toggle');
-        const sunIcon = document.getElementById('theme-toggle-sun-icon');
-        const moonIcon = document.getElementById('theme-toggle-moon-icon');
-        let isDark = localStorage.getItem('theme_mode_1_52') === 'dark' || 
-                     (!('theme_mode_1_52' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
         function applyTheme() {
             const rootEl = document.documentElement;
             if (isDark) {
@@ -862,19 +827,6 @@
                 moonIcon.classList.remove('hidden');
             }
         }
-
-        themeToggle.onclick = () => {
-            isDark = !isDark;
-            localStorage.setItem('theme_mode_1_52', isDark ? 'dark' : 'light');
-            applyTheme();
-            renderSidebar();
-            if (activeTab === 'dashboard') renderActiveTopic();
-            else if (activeTab === 'mindmap') initMindmap();
-            else if (activeTab === 'redemittel') renderRedemittel();
-            else if (activeTab === 'grammar') renderGrammar();
-        };
-
-        applyTheme();
 
         function switchTab(tabId) {
             activeTab = tabId;
@@ -914,50 +866,6 @@
                 }
             }
         }
-
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-logged-out').classList.add('hidden');
-                document.getElementById('auth-logged-in').classList.remove('hidden');
-                const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
-                document.getElementById('user-display-name').textContent = `${name}`;
-                await loadTopics();
-            } else {
-                currentUser = null;
-                document.getElementById('auth-logged-out').classList.remove('hidden');
-                document.getElementById('auth-logged-in').classList.add('hidden');
-                await loadTopics();
-            }
-        });
-
-        document.getElementById('btn-login').onclick = async () => {
-            const userKey = document.getElementById('user-select').value;
-            const password = document.getElementById('workspace-password').value;
-            const email = `${userKey}@b2telc.com`;
-
-            if (!password) { alert("Bitte geben Sie das Passwort ein."); return; }
-            try {
-                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-                await auth.signInWithEmailAndPassword(email, password);
-                document.getElementById('workspace-password').value = "";
-            } catch (err) { alert("Fehler: " + err.message); }
-        };
-
-        document.getElementById('btn-signup').onclick = async () => {
-            const userKey = document.getElementById('user-select').value;
-            const password = document.getElementById('workspace-password').value;
-            const email = `${userKey}@b2telc.com`;
-
-            if (!password || password.length < 6) { alert("Passwort muss mindestens 6 Zeichen lang sein."); return; }
-            try {
-                await auth.createUserWithEmailAndPassword(email, password);
-                alert("Konto registriert.");
-                document.getElementById('workspace-password').value = "";
-            } catch (err) { alert("Fehler bei Registrierung: " + err.message); }
-        };
-
-        document.getElementById('btn-logout').onclick = () => { auth.signOut(); };
 
         async function loadTopics() {
             try {
@@ -1032,63 +940,100 @@
             }
         }
 
-        document.getElementById('reset-edits-btn').onclick = async () => {
-            if (confirm("Möchten Sie alle Änderungen an diesem Thema verwerfen?")) {
-                pushToHistory();
-                const activeTopic = TOPICS_DATA[activeIdx];
-                if (currentUser) {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).delete();
-                } else {
-                    let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
-                    localEdits = localEdits.filter(t => t.id !== activeTopic.id);
-                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
-                }
-                if (highlightsStore[activeTopic.id]) {
-                    delete highlightsStore[activeTopic.id];
-                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
-                }
-                await loadTopics();
+        function applySelectionFormat(type, value) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+            const range = selection.getRangeAt(0);
+
+            let activeContainer = selection.anchorNode;
+            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+                activeContainer = activeContainer.parentNode;
             }
-        };
 
-        function applyConnectorsHighlight(htmlText) {
-            if (!showHighlights) return htmlText;
-            const temp = document.createElement("div");
-            temp.innerHTML = htmlText;
-            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
+            if (!activeContainer) return;
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            if (!blockKey) return; 
 
-            function highlightNode(node) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    let text = node.nodeValue;
-                    let replaced = false;
-                    const div = document.createElement('div');
-                    div.textContent = text;
-                    let safeHTML = div.innerHTML;
+            pushToHistory();
 
-                    sorted.forEach(word => {
-                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
-                        if (regex.test(safeHTML)) {
-                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
-                            replaced = true;
-                        }
-                    });
-
-                    if (replaced) {
-                        const span = document.createElement('span');
-                        span.innerHTML = safeHTML;
-                        if (node.parentNode) {
-                            node.parentNode.replaceChild(span, node);
-                        }
-                    }
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    if (!node.classList.contains('highlight') && !node.classList.contains('word-circle') && !node.className.startsWith('hl-')) {
-                        Array.from(node.childNodes).forEach(highlightNode);
-                    }
-                }
+            if (type === 'bold') {
+                document.execCommand('bold', false, null);
+            } else if (type === 'highlight') {
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) { document.execCommand('backColor', false, '#FEF08A'); }
+            } else if (type === 'circle') {
+                const span = document.createElement('span');
+                span.className = 'word-circle';
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {}
+            } else if (type === 'clear') {
+                unwrapSelection(range, activeContainer);
             }
-            Array.from(temp.childNodes).forEach(highlightNode);
-            return temp.innerHTML;
+
+            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
+            activeContainer.blur(); // Save instantly to the state backend engine
+            handleSelectionChange();
+        }
+
+        function unwrapSelection(range, activeContainer) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-orange, .hl-blue, .word-circle, .highlight');
+            spans.forEach(span => {
+                if (selection.containsNode(span, true)) {
+                    const parent = span.parentNode;
+                    while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
+                    parent.removeChild(span);
+                }
+            });
+
+            activeContainer.normalize();
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
+            activeContainer.blur();
+        }
+
+        function handleSelectionChange() {
+            if (!isEditMode) { hideToolbar(); return; }
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) { hideToolbar(); return; }
+            
+            let parent = selection.anchorNode;
+            let isInsideEditable = false;
+            while (parent) {
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
+                    isInsideEditable = true; break;
+                }
+                parent = parent.parentNode;
+            }
+            if (!isInsideEditable) { hideToolbar(); return; }
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('formatting-toolbar');
+            toolbar.classList.remove('hidden');
+
+            const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+            const top = rect.top + window.scrollY - toolbarHeight - 10;
+            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2)));
+
+            toolbar.style.top = `${top}px`;
+            toolbar.style.left = `${left}px`;
+        }
+
+        function hideToolbar() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (toolbar) toolbar.classList.add('hidden');
         }
 
         // ==========================================
@@ -1101,7 +1046,7 @@
             clearTimeout(autoTranslateTimer);
             autoTranslateTimer = setTimeout(() => {
                 triggerAutoTranslate(element, topicId, compoundKey);
-            }, 1200); // 1.2s debounce
+            }, 1200); 
         }
 
         async function triggerAutoTranslate(element, topicId, compoundKey) {
@@ -1156,181 +1101,11 @@
             } else {
                 let plainText = element.innerText || element.textContent;
                 setTopicValue(topic, compoundKey, plainText);
-                element.innerText = plainText; // Remove corrupted HTML
+                element.innerText = plainText; 
             }
             saveEditsSilent();
         }
 
-        function applySelectionFormat(type, value) {
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
-            const range = selection.getRangeAt(0);
-
-            let activeContainer = selection.anchorNode;
-            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
-                activeContainer = activeContainer.parentNode;
-            }
-
-            if (!activeContainer) return;
-            const blockKey = activeContainer.getAttribute('data-block-key');
-            if (!blockKey) return; 
-
-            pushToHistory();
-
-            if (type === 'bold') {
-                document.execCommand('bold', false, null);
-            } else if (type === 'highlight') {
-                const span = document.createElement('span');
-                span.className = `hl-${value}`;
-                try {
-                    const contents = range.extractContents();
-                    span.appendChild(contents);
-                    range.insertNode(span);
-                } catch (e) { document.execCommand('backColor', false, '#FEF08A'); }
-            } else if (type === 'circle') {
-                const span = document.createElement('span');
-                span.className = 'word-circle';
-                try {
-                    const contents = range.extractContents();
-                    span.appendChild(contents);
-                    range.insertNode(span);
-                } catch (e) {}
-            } else if (type === 'clear') {
-                unwrapSelection(range, activeContainer);
-            }
-
-            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
-            activeContainer.dispatchEvent(new Event('blur'));
-            handleSelectionChange();
-        }
-
-        function unwrapSelection(range, activeContainer) {
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0) return;
-
-            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-orange, .hl-blue, .word-circle, .highlight');
-            spans.forEach(span => {
-                if (selection.containsNode(span, true)) {
-                    const parent = span.parentNode;
-                    while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
-                    parent.removeChild(span);
-                }
-            });
-
-            activeContainer.normalize();
-            const blockKey = activeContainer.getAttribute('data-block-key');
-            saveHighlight(TOPICS_DATA[activeIdx].id, blockKey, activeContainer.innerHTML);
-            activeContainer.dispatchEvent(new Event('blur'));
-        }
-
-        function handleSelectionChange() {
-            if (!isEditMode) { hideToolbar(); return; }
-            const selection = window.getSelection();
-            if (!selection || selection.isCollapsed || selection.rangeCount === 0) { hideToolbar(); return; }
-            
-            let parent = selection.anchorNode;
-            let isInsideEditable = false;
-            while (parent) {
-                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
-                    isInsideEditable = true; break;
-                }
-                parent = parent.parentNode;
-            }
-            if (!isInsideEditable) { hideToolbar(); return; }
-
-            const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
-            const toolbar = document.getElementById('formatting-toolbar');
-            toolbar.classList.remove('hidden');
-
-            const toolbarWidth = toolbar.offsetWidth || 180;
-            const toolbarHeight = toolbar.offsetHeight || 42;
-            const top = rect.top + window.scrollY - toolbarHeight - 10;
-            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2)));
-
-            toolbar.style.top = `${top}px`;
-            toolbar.style.left = `${left}px`;
-        }
-
-        function hideToolbar() {
-            const toolbar = document.getElementById('formatting-toolbar');
-            if (toolbar) toolbar.classList.add('hidden');
-        }
-
-        document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
-
-        function setFilter(filterType) {
-            currentFilter = filterType;
-            document.getElementById('filter-all-btn').className = filterType === 'all' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
-            document.getElementById('filter-learned-btn').className = filterType === 'learned' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
-            document.getElementById('filter-offen-btn').className = filterType === 'offen' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
-            renderSidebar();
-        }
-
-        function renderSidebar() {
-            const listContainer = document.getElementById('topic-list');
-            listContainer.innerHTML = "";
-            const searchVal = document.getElementById('search-bar').value.toLowerCase();
-
-            TOPICS_DATA.forEach((topic, index) => {
-                const isLearned = learnedList.includes(topic.id);
-                
-                if (currentFilter === 'learned' && !isLearned) return;
-                if (currentFilter === 'offen' && isLearned) return;
-
-                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && !topic.title_en.toLowerCase().includes(searchVal)) {
-                    return;
-                }
-                const isActive = index === activeIdx;
-                const tab = document.createElement('button');
-                tab.className = `w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 topic-list-item ${
-                    isActive 
-                    ? 'bg-[var(--accent-light)] border-[var(--accent)]/20 ring-2 ring-[var(--accent)]/10' 
-                    : 'bg-transparent border-transparent hover:bg-[var(--bg-app)]'
-                }`;
-
-                const badge = isLearned 
-                    ? `<span class="text-[var(--success)] mt-0.5">✓</span>`
-                    : `<span class="text-[var(--text-faint)] text-xs font-bold mt-0.5">${topic.id}</span>`;
-
-                const emojiIcon = TOPIC_ICONS[topic.id] || "📌";
-
-                tab.innerHTML = `
-                    <div class="flex items-center gap-1 flex-col justify-center min-w-[24px]">
-                        ${badge}
-                        <span class="text-base select-none">${emojiIcon}</span>
-                    </div>
-                    <div class="flex-1 min-w-0 hide-on-collapse">
-                        <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
-                        <div class="flex items-center justify-between mt-1 gap-1">
-                            <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
-                            <span class="text-[8px] px-1 bg-[var(--bg-app)] rounded text-[var(--text-faint)]">TELC B2</span>
-                        </div>
-                    </div>
-                `;
-
-                tab.onclick = () => {
-                    activeIdx = index;
-                    localStorage.setItem('b2_active_idx', activeIdx);
-                    renderSidebar();
-                    if (activeTab === 'dashboard') renderActiveTopic();
-                    closeSidebarMobile();
-                };
-                listContainer.appendChild(tab);
-            });
-            updateProgress();
-        }
-
-        function updateProgress() {
-            if (TOPICS_DATA.length === 0) return;
-            const percentage = (learnedList.length / TOPICS_DATA.length) * 100;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
-        }
-
-        // ==========================================
-        //  MODAL EDITOR
-        // ==========================================
         function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
             const topic = TOPICS_DATA[activeIdx];
             activeEditBlockContext = { keyPath, isArray, index, subKey };
@@ -1628,7 +1403,7 @@
             { title: "1. Meinung äußern", icon: "🗣️", phrases: [{ de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." }, { de: "Ich bin der festen Überzeugung, dass...", en: "I strongly believe that...", ar: "أنا مقتنع تماماً بأن..." }, { de: "Ein weiteres wichtiges Argument ist...", en: "Another important argument is...", ar: "حجة أخرى مهمة هي..." }] },
             { title: "2. Zustimmen", icon: "✅", phrases: [{ de: "Da stimme ich dir vollkommen zu.", en: "I completely agree with you there.", ar: "أتفق معك تماماً في ذلك." }, { de: "Das ist ein berechtigter Punkt.", en: "That is a valid point.", ar: "هذه نقطة وجيهة." }] },
             { title: "3. Widersprechen", icon: "❌", phrases: [{ de: "Das sehe ich ein bisschen anders.", en: "I see that a little differently.", ar: "أرى ذلك بشكل مختلف قليلاً." }, { de: "Dagegen könnte man einwenden, dass...", en: "On the other hand, one could object that...", ar: "في المقابل، يمكن الاعتراض بأن..." }] },
-            { title: "4. Zusammenfassen", icon: "🤝", phrases: [{ de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق auf أن..." }, { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "باختصار، يمكن القول..." }] }
+            { title: "4. Zusammenfassen", icon: "🤝", phrases: [{ de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." }, { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "باختصار، يمكن القول..." }] }
         ];
 
         function renderRedemittel() {
@@ -1762,6 +1537,9 @@
             svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
         }
 
+        // ==========================================
+        //  UI EVENT ATTACHMENTS & SUBSCRIPTIONS
+        // ==========================================
         const editModeToggle = document.getElementById('edit-mode-toggle');
         editModeToggle.onclick = () => {
             isEditMode = !isEditMode;
@@ -1781,6 +1559,10 @@
                 ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
                 : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
         });
+
+        // Restored core window events for custom text formatting engine
+        document.addEventListener('selectionchange', handleSelectionChange);
+        window.addEventListener('resize', hideToolbar);
 
         loadTopics();
     </script>
