@@ -313,7 +313,7 @@
                     
                     <div class="flex flex-col">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider font-sans">Aktion</span>
-                        <button onclick="clearAllHighlightsForTopic()" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm flex items-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
+                        <button id="clear-topic-highlights-btn" onclick="clearAllHighlightsForTopic()" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm flex items-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
                             🧹 Zurücksetzen
                         </button>
                     </div>
@@ -324,7 +324,7 @@
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Klicken Sie direkt in den Text, um ihn zu bearbeiten. Beim Tippen im Deutschen wird automatisch übersetzt. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Klicken Sie direkt in den Text, um ihn zu bearbeiten. Beim Tippen im Deutschen wird automatisch übersetzt. Markieren Sie Text oder klicken Sie auf ein Wort, um es im PDF-Stil hervorzuheben. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
@@ -754,10 +754,10 @@
 
             let top = rect.bottom + 8;
             if (rect.bottom + popoverHeight > window.innerHeight) { top = rect.top - popoverHeight - 8; }
-            top = Math.max(8, Min(window.innerHeight - popoverHeight - 8, top));
+            top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
 
             let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
-            left = Math.max(8, Min(window.innerWidth - popoverWidth - 8, left));
+            left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
 
             panel.style.top = `${top}px`;
             panel.style.left = `${left}px`;
@@ -1159,6 +1159,7 @@
                 element.innerText = plainText; // Remove corrupted HTML
             }
             saveEditsSilent();
+            // Optional re-render to keep event nodes clean, but omitting to prevent caret jump during direct typing.
         }
 
         function applySelectionFormat(type, value) {
@@ -1255,6 +1256,81 @@
         function hideToolbar() {
             const toolbar = document.getElementById('formatting-toolbar');
             if (toolbar) toolbar.classList.add('hidden');
+        }
+
+        // ==========================================
+        //  PDF-STYLE FAST WORD CLICK HIGHLIGHTER
+        // ==========================================
+        function setupPdfClickHighlighter() {
+            document.getElementById('active-topic-container').addEventListener('click', (e) => {
+                if (!isEditMode) return;
+                
+                // Find nearest contenteditable container
+                let targetBlock = e.target;
+                while (targetBlock && targetBlock !== this && !targetBlock.hasAttribute('data-block-key')) {
+                    targetBlock = targetBlock.parentNode;
+                }
+                if (!targetBlock || !targetBlock.hasAttribute('data-block-key')) return;
+                
+                // If clicking an existing custom highlight node, unwrap it (Toggle-off)
+                if (e.target.classList.contains('hl-yellow') || e.target.classList.contains('hl-orange') || e.target.classList.contains('hl-blue')) {
+                    pushToHistory();
+                    const pNode = e.target.parentNode;
+                    while (e.target.firstChild) {
+                        pNode.insertBefore(e.target.firstChild, e.target);
+                    }
+                    pNode.removeChild(e.target);
+                    pNode.normalize();
+                    saveHighlight(TOPICS_DATA[activeIdx].id, targetBlock.getAttribute('data-block-key'), targetBlock.innerHTML);
+                    targetBlock.dispatchEvent(new Event('blur'));
+                    return;
+                }
+
+                // Modern smart selection logic for clean word selection without drag requirements
+                const selection = window.getSelection();
+                if (!selection || !selection.isCollapsed) return; // Ignore if user is dragging text explicitly
+                
+                const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+                if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) return;
+                
+                const textNode = range.startContainer;
+                const offset = range.startOffset;
+                const textData = textNode.data;
+                
+                // Compute word boundaries based on Regex criteria
+                const wordRegex = /[a-zA-ZäöüÄÖÜß]+/g;
+                let match;
+                let wordStart = -1;
+                let wordEnd = -1;
+                
+                while ((match = wordRegex.exec(textData)) !== null) {
+                    if (offset >= match.index && offset <= wordRegex.lastIndex) {
+                        wordStart = match.index;
+                        wordEnd = wordRegex.lastIndex;
+                        break;
+                    }
+                }
+                
+                if (wordStart !== -1 && wordEnd !== -1) {
+                    pushToHistory();
+                    const wordRange = document.createRange();
+                    wordRange.setStart(textNode, wordStart);
+                    wordRange.setEnd(textNode, wordEnd);
+                    
+                    const span = document.createElement('span');
+                    span.className = 'hl-yellow'; // Standard instant color selection like default apps
+                    
+                    try {
+                        const contents = wordRange.extractContents();
+                        span.appendChild(contents);
+                        wordRange.insertNode(span);
+                        selection.removeAllRanges();
+                    } catch(err) { console.error("PDF Highlight extraction error", err); }
+                    
+                    saveHighlight(TOPICS_DATA[activeIdx].id, targetBlock.getAttribute('data-block-key'), targetBlock.innerHTML);
+                    targetBlock.dispatchEvent(new Event('blur'));
+                }
+            });
         }
 
         document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
@@ -1507,7 +1583,7 @@
                 </div>
                 <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
                 <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
-                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
+                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanSchlAr = cleanEinlAr}</p>
             `;
             const einleitungCard = document.createElement('div');
             einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
@@ -1782,7 +1858,9 @@
                 : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
         });
 
+        // Initialize Core Data Engine & PDF click extension setup
         loadTopics();
+        setupPdfClickHighlighter();
     </script>
 
     <script>
