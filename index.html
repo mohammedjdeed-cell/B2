@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
@@ -85,7 +83,6 @@
             color: var(--text-primary);
         }
 
-        /* Set base scaling on root element for robust responsiveness of all rem units */
         html {
             font-size: var(--text-scale) !important;
         }
@@ -170,10 +167,10 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
-    <!-- Header with clean minimalistic logo & subtle linguistic background patterns -->
+    <!-- Header (Dynamic background elements, permanently docked layout to prevent gaps) -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
         
-        <!-- Linguistic Background Overlays -->
+        <!-- Subtle linguistic watermarks floating in the header background -->
         <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-20 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
             <span class="text-xs font-serif italic text-zinc-400 dark:text-zinc-500">Aa</span>
             <span class="text-lg font-bold text-zinc-300 dark:text-zinc-600">Ö</span>
@@ -185,20 +182,11 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Modern Minimalist Gradient Logo -->
-            <div class="relative w-11 h-11 flex-shrink-0 select-none">
+            <!-- Modern Minimalist Solid Blue B2 Icon Badge -->
+            <div class="relative w-10 h-10 flex-shrink-0 select-none">
                 <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="28" fill="url(#logoGrad)" />
-                    <!-- Intersecting Communication Circles -->
-                    <circle cx="44" cy="46" r="22" stroke="white" stroke-width="5" stroke-linecap="round" stroke-dasharray="100 30" />
-                    <circle cx="56" cy="54" r="22" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" stroke-dasharray="120 20" />
-                    <text x="50" y="55" font-family="'Inter', system-ui, sans-serif" font-weight="900" font-size="28" fill="white" text-anchor="middle" dominant-baseline="central">B2</text>
-                    <defs>
-                        <linearGradient id="logoGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#2563EB"/>
-                            <stop offset="1" stop-color="#1D4ED8"/>
-                        </linearGradient>
-                    </defs>
+                    <rect width="100" height="100" rx="24" fill="#2563EB"/>
+                    <text x="50%" y="54%" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
                 </svg>
             </div>
             <div>
@@ -312,7 +300,7 @@
         </div>
     </aside>
 
-    <!-- Main Workspace Container (Structured to prevent header gap bugs) -->
+    <!-- Main Workspace Container -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
@@ -354,7 +342,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-fade-in">
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
                     <div>
@@ -419,7 +407,7 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern simplistic box/calendar grid section -->
+            <!-- Modern Grid View (Optimized to give card texts maximum horizontal space & fit headlines perfectly) -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -441,8 +429,8 @@
                         </select>
                     </div>
                 </div>
-                <!-- Box Grid Container -->
-                <div id="box-grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3.5 pt-2"></div>
+                <!-- Spacing increased slightly (cols-5 / cols-6 max) to give texts more container width -->
+                <div id="box-grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
@@ -616,10 +604,9 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Sanitize citation codes & google tracking links from imported LLM dataset structures
+        // Sanitize citation codes & google search redirect URLs from grammar blocks
         function cleanCitationLinks(text) {
             if (!text) return "";
-            // Purge markdown search citations e.g. [[6](https://www.google.com/url?...)] or nested [6](https://...)
             let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
             cleaned = cleaned.replace(/\[\d+\]\(https:\/\/[^\s)]+\)/g, "");
             cleaned = cleaned.replace(/\[\[\d+\]\]/g, "");
@@ -627,6 +614,49 @@
             cleaned = cleaned.replace(/\s\s+/g, " "); 
             return cleaned.trim();
         }
+
+        // Restored and fully enhanced Redemittel expressions specifically tailored for TELC B2 Mündliche Prüfung (Diskussion)
+        const redemittelData = [
+            {
+                title: "Die eigene Meinung äußern (Expressing Opinion)",
+                icon: "💬",
+                phrases: [
+                    { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way.", ar: "في رأيي، ينبغي للمرء أن ينظر إلى هذا بطريقة أكثر تمايزًا." },
+                    { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن هذا الموضوع يلعب دوراً هاماً." },
+                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا على موقف أن المزايا تفوق العيوب هنا." },
+                    { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظري الشخصية، من الضروري اتخاذ إجراء هنا." }
+                ]
+            },
+            {
+                title: "Zustimmung ausdrücken (Agreeing with Partner)",
+                icon: "✅",
+                phrases: [
+                    { de: "Da stimme ich dir voll und ganz zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. هذه حجة قاطعة ومقنعة." },
+                    { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
+                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أنا أرى ذلك تماماً بنفس طريقة شريكي." },
+                    { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
+                ]
+            },
+            {
+                title: "Widersprechen & Zweifel (Disagreeing / Limiting)",
+                icon: "❌",
+                phrases: [
+                    { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل مختلف قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
+                    { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي هنا. فالواقع غالباً ما يبدو مختلفاً." },
+                    { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، ولكن لا يجب أن ننسى أن..." },
+                    { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك في أن هذا الحل المقترح يعمل في الممارسة العملية." }
+                ]
+            },
+            {
+                title: "Einen Kompromiss finden (Reaching an Agreement)",
+                icon: "🤝",
+                phrases: [
+                    { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق على أن كلا الجانبين لديهما جوانب مهمة." },
+                    { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار؟" },
+                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه على الرغم من اختلاف وجهات النظر، يمكننا التوصل إلى اتفاق." }
+                ]
+            }
+        ];
 
         let audioUnlocked = false;
         document.body.addEventListener('click', () => {
@@ -717,6 +747,7 @@
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
+        // REDO Logic
         function redo() {
             if (redoStack.length === 0) {
                 alert("Nichts zum Wiederholen!");
@@ -1170,7 +1201,7 @@
 
         applyThemeSetting();
 
-        // 100% responsive font scaling by redefining base typography sizing of the html element
+        // Dynamically adjusts global font metrics responsive scaling
         function applyTextScale() {
             document.documentElement.style.setProperty('--text-scale', textScale);
             
@@ -1309,7 +1340,7 @@
 
         document.getElementById('drawer-btn-logout').onclick = () => { auth.signOut(); toggleDrawer(); };
 
-        // CORE SYSTEM DATA LOADER (Strips AI citations before initialization)
+        // CORE SYSTEM DATA LOADER
         async function loadTopics() {
             try {
                 const [resTopics, resTemplate, resGrammatik] = await Promise.all([
@@ -1339,10 +1370,10 @@
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in المناطق الخالية من التدخin.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
-                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل different، يجب auf الجميع اتخاذ القرار بأنفسهم." }
                         ],
                         schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
                         schluss_en: "In conclusion, a compromise would make sense.",
@@ -1364,7 +1395,7 @@
                     }];
                 }
 
-                // Recursively clean citation patterns in Grammar datasets
+                // Auto-sanitize citations and search metadata from the loaded grammar entries
                 baseGrammatik.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
                     if (item.description) item.description = cleanCitationLinks(item.description);
@@ -2105,7 +2136,7 @@
         }
 
         // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW (FIXED WRAPPING FOR LONG HEADLINES)
+        //  MODERN SIMPLISTIC GRID VIEW (FIXED WITH DYNAMIC FONT SCALING)
         // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
@@ -2125,11 +2156,11 @@
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
-                // Removed absolute max height limits (h-32) and applied auto wrapping bounds (min-h-[144px])
-                card.className = `p-4 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[144px] h-auto relative select-none hover:scale-[1.03] ${
+                // Auto-expandable height with custom min-bounds to avoid overlapping borders
+                card.className = `p-3.5 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[156px] h-auto relative select-none hover:shadow-md hover:scale-[1.02] ${
                     isActive 
                     ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
-                    : 'bg-[var(--bg-card)] border-[var(--border)] hover:shadow-md'
+                    : 'bg-[var(--bg-card)] border-[var(--border)] shadow-sm'
                 }`;
 
                 const numBadge = `<span class="text-xs font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
@@ -2141,20 +2172,29 @@
                     ? `<span class="text-amber-500 text-base font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
                     : ``;
 
+                // Calculate optimal responsive sizing dynamically based on word metrics length
+                const titleLength = topic.title_de.length;
+                let responsiveTextClass = "text-xs"; // Base font-size
+                if (titleLength > 48) {
+                    responsiveTextClass = "text-[9.5px]";
+                } else if (titleLength > 32) {
+                    responsiveTextClass = "text-[10.5px]";
+                }
+
                 card.innerHTML = `
-                    <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
-                        <div class="flex items-center gap-1.5">
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center gap-1">
                             ${numBadge}
                             ${starBadge}
                         </div>
                         ${progressBadge}
                     </div>
                     <div class="flex-1 flex items-center justify-center py-2">
-                        <!-- Headline wraps dynamically with breakdown support and no line clamp clipping -->
-                        <p class="text-[11.5px] font-bold text-center leading-snug break-words ${isActive ? 'text-[var(--accent)] font-extrabold' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
+                        <!-- Implemented hyphens-auto & break-words to handle German compound words neatly -->
+                        <p class="${responsiveTextClass} font-bold text-center leading-snug break-words ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
                     </div>
-                    <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1.5 flex-shrink-0">
-                        <span class="truncate max-w-[70px]">${topic.category || 'Prüfung'}</span>
+                    <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1">
+                        <span class="truncate max-w-[64px]">${topic.category || 'Prüfung'}</span>
                         <span class="text-[var(--text-faint)]">${TOPIC_ICONS[topic.id] || "📌"}</span>
                     </div>
                 `;
@@ -2213,7 +2253,7 @@
             container.innerHTML = "";
 
             const bannerHtml = `
-                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)] animate-fade-in">
+                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)]">
                     <div class="h-10 w-16 opacity-80 flex-shrink-0">${CATEGORY_SVGS[topic.category] || ''}</div>
                     <div>
                         <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Kategorie</div>
@@ -2238,7 +2278,7 @@
                 const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
 
                 const einleitungHtml = `
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
                     <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
                     <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
                 `;
@@ -2487,6 +2527,7 @@
                 container.appendChild(schlussCard);
             }
 
+            // Keep expanded on-demand translation panels loaded when redrawing topics
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
                 if (containerNode) {
@@ -2538,7 +2579,8 @@
             const container = document.getElementById('redemittel-tab-section');
             container.innerHTML = `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
-                    <h2 class="text-xl font-bold text-[var(--text-primary)]">🗣️ Redemittel für TELC B2 Diskussionen</h2>
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">🗣️ Redemittel für TELC B2 Diskussionen (Mündlich)</h2>
+                    <p class="text-xs text-[var(--text-muted)] mt-1">Perfekt strukturierte Redemittel für Ihre mündliche B2-Prüfung.</p>
                 </div>
             `;
             const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
@@ -2567,7 +2609,7 @@
             container.innerHTML = `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
-                    <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
+                    <p class="text-xs text-[var(--text-muted)] mt-1">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
                 </div>
             `;
             const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
