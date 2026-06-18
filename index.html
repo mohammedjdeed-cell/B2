@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
@@ -24,7 +26,7 @@
         }
     </script>
     
-    <!-- Firebase Web SDK Compat (Essential for Authentication & Cloud Database Sync) -->
+    <!-- Firebase Web SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -81,6 +83,11 @@
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             background-color: var(--bg-app);
             color: var(--text-primary);
+        }
+
+        /* Set base scaling on root element for robust responsiveness of all rem units */
+        html {
+            font-size: var(--text-scale) !important;
         }
 
         [dir="rtl"], [lang="ar"], .ar-text {
@@ -148,12 +155,8 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
 
-        header {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         .scalable-content {
-            font-size: var(--text-scale) !important;
+            font-size: 1rem !important;
         }
 
         .glow-word {
@@ -165,31 +168,46 @@
         }
     </style>
 </head>
-<body class="h-full flex flex-col overflow-hidden">
+<body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
-    <!-- Header (Disappears when scrolling down, reappears when scrolling up) -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 fixed top-0 left-0 right-0 z-40 shadow-sm transition-transform duration-300">
-        <div class="flex items-center gap-3">
-            <!-- Dynamic Vector Logo: Big B2 with Doctoral/Academic Cap -->
-            <div class="relative w-12 h-12 flex-shrink-0 select-none">
-                <svg class="w-full h-full text-[var(--accent)]" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Graduation Cap tilted over B -->
-                    <path d="M15 35 L50 20 L85 35 L50 50 Z" fill="var(--accent)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                    <path d="M32 38 L32 48 C32 52, 68 52, 68 48 L68 38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                    <!-- Tassel -->
-                    <path d="M85 35 L89 52 L86 54 Z" fill="#F59E0B" stroke="#F59E0B" stroke-width="1"/>
-                    <!-- Styled Typography -->
-                    <text x="18" y="88" font-family="'Inter', system-ui, sans-serif" font-weight="900" font-size="44" fill="currentColor">B</text>
-                    <text x="50" y="88" font-family="'Inter', system-ui, sans-serif" font-weight="900" font-size="44" fill="#F59E0B">2</text>
+    <!-- Header with clean minimalistic logo & subtle linguistic background patterns -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
+        
+        <!-- Linguistic Background Overlays -->
+        <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-20 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
+            <span class="text-xs font-serif italic text-zinc-400 dark:text-zinc-500">Aa</span>
+            <span class="text-lg font-bold text-zinc-300 dark:text-zinc-600">Ö</span>
+            <span class="text-sm font-mono text-zinc-300 dark:text-zinc-600">ß</span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">B2 Trainer</span>
+            <span class="text-xs font-serif text-zinc-300 dark:text-zinc-600">gespräch</span>
+            <span class="text-sm font-extrabold text-[var(--accent)] opacity-10">dialog</span>
+            <span class="text-xl font-serif text-[#F59E0B] opacity-20">Ü</span>
+        </div>
+
+        <div class="flex items-center gap-3 relative z-10">
+            <!-- Modern Minimalist Gradient Logo -->
+            <div class="relative w-11 h-11 flex-shrink-0 select-none">
+                <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="28" fill="url(#logoGrad)" />
+                    <!-- Intersecting Communication Circles -->
+                    <circle cx="44" cy="46" r="22" stroke="white" stroke-width="5" stroke-linecap="round" stroke-dasharray="100 30" />
+                    <circle cx="56" cy="54" r="22" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" stroke-dasharray="120 20" />
+                    <text x="50" y="55" font-family="'Inter', system-ui, sans-serif" font-weight="900" font-size="28" fill="white" text-anchor="middle" dominant-baseline="central">B2</text>
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#2563EB"/>
+                            <stop offset="1" stop-color="#1D4ED8"/>
+                        </linearGradient>
+                    </defs>
                 </svg>
             </div>
             <div>
-                <h1 class="text-lg font-black text-[var(--text-primary)]">TELC B2 Trainer</h1>
-                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung & Strukturierte Analyse (1 – 52)</p>
+                <h1 class="text-lg font-black text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse (1 – 52)</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-3 flex-wrap">
+        <div class="flex items-center gap-3 flex-wrap relative z-10">
             <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
                 <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
                 <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
@@ -210,7 +228,7 @@
         <div class="p-5 space-y-6">
             <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
                 <h3 class="font-black text-sm text-[var(--text-primary)] flex items-center gap-2">
-                    ⚙️ Steuerung & Daten
+                    ⚙️ Steuerung &amp; Daten
                 </h3>
                 <button id="drawer-close" class="p-1 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -251,7 +269,7 @@
 
             <!-- Font Sizing Dynamic Configuration -->
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📏 Element- & Textgröße</h4>
+                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📏 Element- &amp; Textgröße</h4>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
                     <button onclick="changeTextScale('80%')" id="scale-80" class="py-1 text-center rounded">80%</button>
                     <button onclick="changeTextScale('100%')" id="scale-100" class="py-1 text-center rounded">100%</button>
@@ -261,7 +279,7 @@
 
             <!-- Appearance Theme Control (Light / Dark / System Preference) -->
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🎨 Design & Farbschema</h4>
+                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🎨 Design &amp; Farbschema</h4>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
                     <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-1 text-center rounded">Hell</button>
                     <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-1 text-center rounded">Dunkel</button>
@@ -271,7 +289,7 @@
 
             <!-- Total Backup / JSON Import & Export Structure -->
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📦 Backup & JSON-Dateien</h4>
+                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📦 Backup &amp; JSON-Dateien</h4>
                 <div class="space-y-2">
                     <button onclick="exportTotalBackup()" class="w-full py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center gap-1.5 shadow-sm">
                         📥 App-Vollbackup erstellen
@@ -294,8 +312,10 @@
         </div>
     </aside>
 
-    <div class="h-full flex flex-col lg:flex-row overflow-hidden pt-20">
-        <!-- Sidebar (Upgraded with responsive floating states for mobile screens) -->
+    <!-- Main Workspace Container (Structured to prevent header gap bugs) -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        
+        <!-- Sidebar -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:z-auto -translate-x-full lg:translate-x-0 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
@@ -328,13 +348,13 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1"></nav>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Scrollable Panel -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-fade-in">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
                     <div>
@@ -356,9 +376,9 @@
                     <div class="flex flex-col">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Anzeige</span>
                         <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
-                            <option value="both">Bilingual (DE & EN)</option>
-                            <option value="de_ar">Bilingual (DE & AR)</option>
-                            <option value="all">Trilingual (DE, EN & AR)</option>
+                            <option value="both">Bilingual (DE &amp; EN)</option>
+                            <option value="de_ar">Bilingual (DE &amp; AR)</option>
+                            <option value="all">Trilingual (DE, EN &amp; AR)</option>
                             <option value="de">Nur Deutsch (Prüfungsmodus)</option>
                             <option value="en">Nur Englisch</option>
                             <option value="ar">Nur Arabisch</option>
@@ -403,7 +423,7 @@
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h3 class="text-base font-black text-[var(--text-primary)]">📦 Lern-Raster & Themenauswahl (1-52)</h3>
+                        <h3 class="text-base font-black text-[var(--text-primary)]">📦 Lern-Raster &amp; Themenauswahl (1-52)</h3>
                         <p class="text-xs text-[var(--text-muted)] mt-1">
                             Übersicht über alle Themen. Die wichtigsten 19 Prüfungsthemen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
                         </p>
@@ -413,11 +433,11 @@
                         <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-48" />
                         <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
                             <option value="all">Alle Kategorien</option>
-                            <option value="Freizeit & Gesundheit">Freizeit & Gesundheit</option>
-                            <option value="Arbeit & Karriere">Arbeit & Karriere</option>
-                            <option value="Umwelt & Mobilität">Umwelt & Mobilität</option>
-                            <option value="Gesellschaft & Politik">Gesellschaft & Politik</option>
-                            <option value="Bildung & Technologie">Bildung & Technologie</option>
+                            <option value="Freizeit &amp; Gesundheit">Freizeit &amp; Gesundheit</option>
+                            <option value="Arbeit &amp; Karriere">Arbeit &amp; Karriere</option>
+                            <option value="Umwelt &amp; Mobilität">Umwelt &amp; Mobilität</option>
+                            <option value="Gesellschaft &amp; Politik">Gesellschaft &amp; Politik</option>
+                            <option value="Bildung &amp; Technologie">Bildung &amp; Technologie</option>
                         </select>
                     </div>
                 </div>
@@ -596,47 +616,18 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Standardized German Redemittel categories
-        const redemittelData = [
-            {
-                title: "Meinung äußern",
-                icon: "💬",
-                phrases: [
-                    { de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." },
-                    { de: "Ich bin der Ansicht, dass...", en: "I am of the view that...", ar: "أنا من رأي أن..." },
-                    { de: "Ich stehe auf dem Standpunkt, dass...", en: "I take the stand that...", ar: "أنا على موقف أن..." }
-                ]
-            },
-            {
-                title: "Zustimmung ausdrücken",
-                icon: "✅",
-                phrases: [
-                    { de: "Da stimme ich dir völlig zu.", en: "I completely agree with you.", ar: "أنا أتفق معك تماماً في ذلك." },
-                    { de: "Das ist ein sehr gutes Argument.", en: "That is a very good argument.", ar: "هذه حجة جيدة جداً." },
-                    { de: "Ich sehe das ganz genauso.", en: "I see it exactly the same way.", ar: "أرى ذلك تماماً بنفس الطريقة." }
-                ]
-            },
-            {
-                title: "Widersprechen / Zweifel",
-                icon: "❌",
-                phrases: [
-                    { de: "Das sehe ich etwas anders, weil...", en: "I see that a bit differently because...", ar: "أرى ذلك بشكل مختلف قليلاً لأن..." },
-                    { de: "Da muss ich dir leider widersprechen.", en: "Unfortunately, I have to disagree with you there.", ar: "للأسف يجب أن أخالفك الرأي في ذلك." },
-                    { de: "Ich bin mir nicht sicher, ob das stimmt.", en: "I am not sure if that is correct.", ar: "لست متأكداً مما إذا كان هذا صحيحاً." }
-                ]
-            },
-            {
-                title: "Sich einigen / Lösung finden",
-                icon: "🤝",
-                phrases: [
-                    { de: "Wie wäre es, wenn wir...", en: "How about if we...", ar: "ما رأيك لو أننا..." },
-                    { de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." },
-                    { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "خلاصة القول يمكننا القول أن..." }
-                ]
-            }
-        ];
+        // Sanitize citation codes & google tracking links from imported LLM dataset structures
+        function cleanCitationLinks(text) {
+            if (!text) return "";
+            // Purge markdown search citations e.g. [[6](https://www.google.com/url?...)] or nested [6](https://...)
+            let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
+            cleaned = cleaned.replace(/\[\d+\]\(https:\/\/[^\s)]+\)/g, "");
+            cleaned = cleaned.replace(/\[\[\d+\]\]/g, "");
+            cleaned = cleaned.replace(/\[\d+\]/g, "");
+            cleaned = cleaned.replace(/\s\s+/g, " "); 
+            return cleaned.trim();
+        }
 
-        // Global browser audio unlock
         let audioUnlocked = false;
         document.body.addEventListener('click', () => {
             if (!audioUnlocked && 'speechSynthesis' in window) {
@@ -1128,7 +1119,7 @@
             }
         }
 
-        // Universal Custom Theme Engine (Hell / Dunkel / System)
+        // Universal Custom Theme Engine
         let currentThemeSetting = localStorage.getItem('b2_theme_setting') || 'system';
 
         function applyThemeSetting() {
@@ -1179,8 +1170,10 @@
 
         applyThemeSetting();
 
+        // 100% responsive font scaling by redefining base typography sizing of the html element
         function applyTextScale() {
             document.documentElement.style.setProperty('--text-scale', textScale);
+            
             ['80', '100', '125'].forEach(scale => {
                 const btn = document.getElementById(`scale-${scale}`);
                 if (btn) {
@@ -1222,22 +1215,6 @@
         drawerToggle.onclick = toggleDrawer;
         drawerClose.onclick = toggleDrawer;
         drawerOverlay.onclick = toggleDrawer;
-
-        let lastScrollTop = 0;
-        const headerNode = document.querySelector('header');
-        const scrollContainer = document.querySelector('main');
-
-        if (scrollContainer && headerNode) {
-            scrollContainer.addEventListener('scroll', () => {
-                let st = scrollContainer.scrollTop;
-                if (st > lastScrollTop && st > 80) {
-                    headerNode.classList.add('-translate-y-full');
-                } else {
-                    headerNode.classList.remove('-translate-y-full');
-                }
-                lastScrollTop = st <= 0 ? 0 : st;
-            });
-        }
 
         function switchTab(tabId) {
             activeTab = tabId;
@@ -1332,7 +1309,7 @@
 
         document.getElementById('drawer-btn-logout').onclick = () => { auth.signOut(); toggleDrawer(); };
 
-        // CORE SYSTEM DATA LOADER (Upgraded with ultra-robust fetchers & offline mock fallback models)
+        // CORE SYSTEM DATA LOADER (Strips AI citations before initialization)
         async function loadTopics() {
             try {
                 const [resTopics, resTemplate, resGrammatik] = await Promise.all([
@@ -1345,7 +1322,6 @@
                 let baseTemplate = Array.isArray(resTemplate) && resTemplate.length > 0 ? resTemplate : [];
                 let baseGrammatik = Array.isArray(resGrammatik) && resGrammatik.length > 0 ? resGrammatik : [];
 
-                // Inject baseline system backup models if offline resources fail or are unconfigured
                 if (baseTopics.length === 0) {
                     baseTopics = [{
                         id: 1,
@@ -1366,7 +1342,7 @@
                         pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
-                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب على الجميع اتخاذ القرار بأنفسهم." }
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
                         ],
                         schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
                         schluss_en: "In conclusion, a compromise would make sense.",
@@ -1387,6 +1363,15 @@
                         examples: ["Er spricht sowohl Deutsch als auch Englisch.", "Sie ist sowohl intelligent als auch freundlich."]
                     }];
                 }
+
+                // Recursively clean citation patterns in Grammar datasets
+                baseGrammatik.forEach(item => {
+                    if (item.title) item.title = cleanCitationLinks(item.title);
+                    if (item.description) item.description = cleanCitationLinks(item.description);
+                    if (item.examples && Array.isArray(item.examples)) {
+                        item.examples = item.examples.map(ex => cleanCitationLinks(ex));
+                    }
+                });
 
                 editedTopicIds = [];
                 editedTemplateIds = [];
@@ -1842,9 +1827,6 @@
             if (toolbar) toolbar.classList.add('hidden');
         }
 
-        // ==========================================
-        //  UPGRADED: MISSING SYSTEM CORE FUNCTIONS (CRITICAL FIX)
-        // ==========================================
         function renderSidebar() {
             const listContainer = document.getElementById('topic-list');
             if (!listContainer) return;
@@ -2123,7 +2105,7 @@
         }
 
         // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW
+        //  MODERN SIMPLISTIC GRID VIEW (FIXED WRAPPING FOR LONG HEADLINES)
         // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
@@ -2143,7 +2125,8 @@
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
-                card.className = `p-4 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between h-32 relative select-none hover:scale-[1.03] ${
+                // Removed absolute max height limits (h-32) and applied auto wrapping bounds (min-h-[144px])
+                card.className = `p-4 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[144px] h-auto relative select-none hover:scale-[1.03] ${
                     isActive 
                     ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
                     : 'bg-[var(--bg-card)] border-[var(--border)] hover:shadow-md'
@@ -2159,17 +2142,18 @@
                     : ``;
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
                         <div class="flex items-center gap-1.5">
                             ${numBadge}
                             ${starBadge}
                         </div>
                         ${progressBadge}
                     </div>
-                    <div class="flex-1 flex items-center justify-center my-1">
-                        <p class="text-[11px] font-bold text-center leading-snug line-clamp-2 ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
+                    <div class="flex-1 flex items-center justify-center py-2">
+                        <!-- Headline wraps dynamically with breakdown support and no line clamp clipping -->
+                        <p class="text-[11.5px] font-bold text-center leading-snug break-words ${isActive ? 'text-[var(--accent)] font-extrabold' : 'text-[var(--text-primary)]'}">${topic.title_de}</p>
                     </div>
-                    <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1">
+                    <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1.5 flex-shrink-0">
                         <span class="truncate max-w-[70px]">${topic.category || 'Prüfung'}</span>
                         <span class="text-[var(--text-faint)]">${TOPIC_ICONS[topic.id] || "📌"}</span>
                     </div>
@@ -2229,7 +2213,7 @@
             container.innerHTML = "";
 
             const bannerHtml = `
-                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)]">
+                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)] animate-fade-in">
                     <div class="h-10 w-16 opacity-80 flex-shrink-0">${CATEGORY_SVGS[topic.category] || ''}</div>
                     <div>
                         <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Kategorie</div>
@@ -2254,7 +2238,7 @@
                 const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
 
                 const einleitungHtml = `
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
                     <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
                     <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
                 `;
@@ -2553,7 +2537,7 @@
         function renderRedemittel() {
             const container = document.getElementById('redemittel-tab-section');
             container.innerHTML = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">🗣️ Redemittel für TELC B2 Diskussionen</h2>
                 </div>
             `;
@@ -2572,7 +2556,7 @@
                             </div>
                         </div>`;
                 });
-                grid.innerHTML += `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]"><div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3"><span class="text-lg">${cat.icon}</span><h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3></div>${phrasesHtml}</div>`;
+                grid.innerHTML += `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] relative"><div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3"><span class="text-lg">${cat.icon}</span><h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3></div>${phrasesHtml}</div>`;
             });
             container.appendChild(grid);
         }
@@ -2581,7 +2565,7 @@
         function renderGrammar() {
             const container = document.getElementById('grammar-tab-section');
             container.innerHTML = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
                     <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
                 </div>
@@ -2796,4 +2780,3 @@
     </script>
 </body>
 </html>
-
