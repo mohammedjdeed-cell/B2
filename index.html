@@ -1,3 +1,5 @@
+index.html
+
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
@@ -23,6 +25,11 @@
             darkMode: 'class'
         }
     </script>
+    
+    <!-- Firebase Web SDK Compat (Essential for Authentication & Cloud Database Sync) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
         :root {
@@ -220,7 +227,7 @@
                     <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↪️ Vor</button>
                 </div>
                 <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-dashed border-[var(--border)]">
-                    ✏️ <span>Edit-Modus umschalten</span>
+                    ✏️ <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
             </div>
 
@@ -290,8 +297,8 @@
     </aside>
 
     <div class="h-full flex flex-col lg:flex-row overflow-hidden pt-20">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-full lg:w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-all duration-300">
+        <!-- Sidebar (Upgraded with responsive floating states for mobile screens) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:z-auto -translate-x-full lg:translate-x-0 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
@@ -589,8 +596,47 @@
         const translationCache = {};
         const expandedContainers = new Set();
         
-        // Dynamic zoom factor state
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
+
+        // Standardized German Redemittel categories
+        const redemittelData = [
+            {
+                title: "Meinung äußern",
+                icon: "💬",
+                phrases: [
+                    { de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." },
+                    { de: "Ich bin der Ansicht, dass...", en: "I am of the view that...", ar: "أنا من رأي أن..." },
+                    { de: "Ich stehe auf dem Standpunkt, dass...", en: "I take the stand that...", ar: "أنا على موقف أن..." }
+                ]
+            },
+            {
+                title: "Zustimmung ausdrücken",
+                icon: "✅",
+                phrases: [
+                    { de: "Da stimme ich dir völlig zu.", en: "I completely agree with you.", ar: "أنا أتفق معك تماماً في ذلك." },
+                    { de: "Das ist ein sehr gutes Argument.", en: "That is a very good argument.", ar: "هذه حجة جيدة جداً." },
+                    { de: "Ich sehe das ganz genauso.", en: "I see it exactly the same way.", ar: "أرى ذلك تماماً بنفس الطريقة." }
+                ]
+            },
+            {
+                title: "Widersprechen / Zweifel",
+                icon: "❌",
+                phrases: [
+                    { de: "Das sehe ich etwas anders, weil...", en: "I see that a bit differently because...", ar: "أرى ذلك بشكل مختلف قليلاً لأن..." },
+                    { de: "Da muss ich dir leider widersprechen.", en: "Unfortunately, I have to disagree with you there.", ar: "للأسف يجب أن أخالفك الرأي في ذلك." },
+                    { de: "Ich bin mir nicht sicher, ob das stimmt.", en: "I am not sure if that is correct.", ar: "لست متأكداً مما إذا كان هذا صحيحاً." }
+                ]
+            },
+            {
+                title: "Sich einigen / Lösung finden",
+                icon: "🤝",
+                phrases: [
+                    { de: "Wie wäre es, wenn wir...", en: "How about if we...", ar: "ما رأيك لو أننا..." },
+                    { de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." },
+                    { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "خلاصة القول يمكننا القول أن..." }
+                ]
+            }
+        ];
 
         // Global browser audio unlock
         let audioUnlocked = false;
@@ -756,7 +802,6 @@
             }
             if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
 
-            // If clicking an existing highlight, unwrap it (Toggle off)
             if (e.target.className.includes('hl-')) {
                 pushToHistory();
                 const parent = e.target.parentNode;
@@ -769,11 +814,10 @@
                 return;
             }
 
-            // Ignore clicks directly inside the formatting toolbar
             if (e.target.closest('#formatting-toolbar')) return;
 
             const selection = window.getSelection();
-            if (!selection || !selection.isCollapsed) return; // Prevent overwriting drag-selections
+            if (!selection || !selection.isCollapsed) return;
 
             const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
             if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
@@ -794,9 +838,9 @@
                     targetRange.setEnd(node, wordRegex.lastIndex);
                     
                     selection.removeAllRanges();
-                    selection.addRange(targetRange); // Select the word automatically
+                    selection.addRange(targetRange);
                     
-                    handleSelectionChange(); // Trigger the 4-color soft menu popup
+                    handleSelectionChange();
                     break;
                 }
             }
@@ -836,7 +880,6 @@
                 return;
             }
 
-            // DYNAMIC VOICE SORTING (Natural, Premium & Online voices first)
             availableGermanVoices.sort((a, b) => {
                 const getScore = (v) => {
                     let score = 0; let name = v.name.toLowerCase();
@@ -881,7 +924,6 @@
             });
         }
 
-        // DYNAMIC VOICE & SPEED PICKER (POPOVER UI)
         function openVoicePicker(event, encodedText) {
             event.stopPropagation();
             
@@ -911,7 +953,6 @@
         }
 
         document.getElementById('voice-picker-play').onclick = () => {
-            // Find active element context for word-by-word glow during readout
             const containerNode = globalAudioBtn.closest('.relative')?.querySelector('[data-block-key]');
             if (containerNode) {
                 const blockId = containerNode.getAttribute('data-block-key');
@@ -942,7 +983,6 @@
             window.speechSynthesis.speak(ut);
         }
 
-        // Realtime Word Glow Speech Engine
         function startGlowSpeech(text, container, blockId) {
             window.speechSynthesis.cancel();
             
@@ -982,7 +1022,6 @@
                     if (!node.classList.contains('highlight') && !node.classList.contains('word-circle') && !node.className.startsWith('hl-')) {
                         Array.from(node.childNodes).forEach(tokenize);
                     } else {
-                        // Keep highlighted inline nodes intact
                         Array.from(node.childNodes).forEach(tokenize);
                     }
                 }
@@ -1040,7 +1079,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // Standard Block Speech Fallback
         function playBlockAudio(text, buttonEl) {
             window.speechSynthesis.cancel();
             
@@ -1114,7 +1152,6 @@
                 rootEl.setAttribute('data-theme', 'light');
             }
 
-            // Sync menu drawer active states
             ['light', 'dark', 'system'].forEach(pref => {
                 const btn = document.getElementById(`theme-${pref}-btn`);
                 if (btn) {
@@ -1144,7 +1181,6 @@
 
         applyThemeSetting();
 
-        // Dynamischer Sizing-Faktor (80% / 100% / 125%)
         function applyTextScale() {
             document.documentElement.style.setProperty('--text-scale', textScale);
             ['80', '100', '125'].forEach(scale => {
@@ -1189,7 +1225,6 @@
         drawerClose.onclick = toggleDrawer;
         drawerOverlay.onclick = toggleDrawer;
 
-        // Custom Header Scroll Disappear Behavior (Performance-optimized)
         let lastScrollTop = 0;
         const headerNode = document.querySelector('header');
         const scrollContainer = document.querySelector('main');
@@ -1299,18 +1334,61 @@
 
         document.getElementById('drawer-btn-logout').onclick = () => { auth.signOut(); toggleDrawer(); };
 
-        // CORE SYSTEM DATA LOADER (topics.json / template.json / Grammatik.json)
+        // CORE SYSTEM DATA LOADER (Upgraded with ultra-robust fetchers & offline mock fallback models)
         async function loadTopics() {
             try {
                 const [resTopics, resTemplate, resGrammatik] = await Promise.all([
-                    fetch('./topics.json'),
-                    fetch('./template.json'),
-                    fetch('./Grammatik.json').catch(() => fetch('./grammatik.json')) // case-sensitive fallback
+                    fetch('./topics.json').then(r => r.ok ? r.json() : []).catch(() => []),
+                    fetch('./template.json').then(r => r.ok ? r.json() : []).catch(() => []),
+                    fetch('./Grammatik.json').then(r => r.ok ? r.json() : fetch('./grammatik.json').then(rj => rj.json())).catch(() => [])
                 ]);
 
-                let baseTopics = await resTopics.json();
-                let baseTemplate = await resTemplate.json();
-                let baseGrammatik = await resGrammatik.json();
+                let baseTopics = Array.isArray(resTopics) && resTopics.length > 0 ? resTopics : [];
+                let baseTemplate = Array.isArray(resTemplate) && resTemplate.length > 0 ? resTemplate : [];
+                let baseGrammatik = Array.isArray(resGrammatik) && resGrammatik.length > 0 ? resGrammatik : [];
+
+                // Inject baseline system backup models if offline resources fail or are unconfigured
+                if (baseTopics.length === 0) {
+                    baseTopics = [{
+                        id: 1,
+                        title_de: "Rauchen in der Öffentlichkeit verbieten?",
+                        title_en: "Ban smoking in public places?",
+                        category: "Freizeit & Gesundheit",
+                        einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
+                        einleitung_en: "The topic of public smoking has been discussed controversially for years.",
+                        einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
+                        pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
+                        pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
+                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
+                        contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
+                        contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
+                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
+                        pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
+                        pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
+                        dialog: [
+                            { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب على الجميع اتخاذ القرار بأنفسهم." }
+                        ],
+                        schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
+                        schluss_en: "In conclusion, a compromise would make sense.",
+                        schluss_ar: "خلاصة القول هي أن التسوية ستكون منطقية."
+                    }];
+                }
+
+                if (baseTemplate.length === 0) {
+                    baseTemplate = JSON.parse(JSON.stringify(baseTopics));
+                }
+
+                if (baseGrammatik.length === 0) {
+                    baseGrammatik = [{
+                        level: "B2",
+                        category: "Konjunktionen",
+                        title: "Zweiteilige Konjunktionen",
+                        description: "Sowohl ... als auch drückt eine Ergänzung aus.",
+                        examples: ["Er spricht sowohl Deutsch als auch Englisch.", "Sie ist sowohl intelligent als auch freundlich."]
+                    }];
+                }
 
                 editedTopicIds = [];
                 editedTemplateIds = [];
@@ -1496,7 +1574,6 @@
             return temp.innerHTML;
         }
 
-        // Inline input automatic translations
         let autoTranslateTimer;
 
         function handleInlineInput(element, topicId, lang, compoundKey) {
@@ -1580,7 +1657,6 @@
             saveEditsSilent();
         }
 
-        // On-demand block translation utilities
         function getTranslationContainerId(blockId) {
             return `trans-container-${blockId}`;
         }
@@ -1628,15 +1704,11 @@
                 const dataAr = await resAr.json();
 
                 if (dataEn.responseStatus !== 200 || dataAr.responseStatus !== 200) {
-                    throw new Error("MyMemory quota or downtime");
+                    throw new Error("MyMemory error");
                 }
 
                 const transEn = dataEn.responseData?.translatedText || "";
                 const transAr = dataAr.responseData?.translatedText || "";
-
-                if (transEn.includes("EXCEEDED YOUR FREE QUOTA") || transAr.includes("EXCEEDED YOUR FREE QUOTA")) {
-                    throw new Error("MyMemory Rate limit.");
-                }
 
                 translationCache[blockId] = { en: transEn, ar: transAr };
                 renderTranslationHTML(container, transEn, transAr);
@@ -1669,6 +1741,7 @@
         function switchActiveMode(value) {
             activeMode = value;
             localStorage.setItem('b2_active_mode', value);
+            renderSidebar();
             renderActiveTopic();
             if (activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
@@ -1772,7 +1845,287 @@
         }
 
         // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW (MINDMAP REPLACEMENT)
+        //  UPGRADED: MISSING SYSTEM CORE FUNCTIONS (CRITICAL FIX)
+        // ==========================================
+        function renderSidebar() {
+            const listContainer = document.getElementById('topic-list');
+            if (!listContainer) return;
+            listContainer.innerHTML = "";
+
+            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+
+            dataset.forEach((topic, index) => {
+                const isLearned = learnedList.includes(topic.id);
+                const isStarred = STARRED_TOPICS.includes(topic.id);
+                const isActive = index === activeIdx;
+
+                if (currentFilter === 'learned' && !isLearned) return;
+                if (currentFilter === 'offen' && isLearned) return;
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
+
+                const item = document.createElement('button');
+                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item ${
+                    isActive 
+                    ? 'bg-[var(--accent)] text-white shadow-md font-semibold' 
+                    : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)] hover:translate-x-1'
+                }`;
+
+                const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
+                const learnMarker = isLearned 
+                    ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
+                    : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="text-xs opacity-75 font-mono">#${topic.id}</span>
+                        ${starMarker}
+                        <span class="truncate text-xs topic-title">${topic.title_de}</span>
+                    </div>
+                    ${learnMarker}
+                `;
+
+                item.onclick = () => {
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    closeSidebarMobile();
+                };
+
+                listContainer.appendChild(item);
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            if (dataset.length === 0) return;
+
+            const total = dataset.length;
+            const learnedCount = dataset.filter(t => learnedList.includes(t.id)).length;
+            
+            const progressText = document.getElementById('progress-text');
+            if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
+
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                const percent = (learnedCount / total) * 100;
+                progressBar.style.width = `${percent}%`;
+            }
+        }
+
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            ['all', 'learned', 'offen'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}-btn`);
+                if (btn) {
+                    if (f === filterType) {
+                        btn.className = "py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]";
+                    } else {
+                        btn.className = "py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                    }
+                }
+            });
+            renderSidebar();
+        }
+
+        document.getElementById('search-bar').addEventListener('input', () => {
+            renderSidebar();
+        });
+
+        function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
+            const encodedText = encodeURIComponent(stripHtml(textForAudio));
+            return `
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative">
+                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${showAudio && textForAudio ? `
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-xs hover:scale-110 active:scale-95 transition-transform flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--accent)]" title="Vorlesen">
+                                🔊 <span class="text-[10px] font-bold">Vorlesen</span>
+                            </button>
+                            ` : ''}
+                            <button onclick="openBlockEditor('${dbField}', ${index === 0 ? 'false' : 'true'}, ${index}, '${lang}')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold ${isEditMode ? 'block' : 'hidden'}">✏️ Edit Block</button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 relative">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+
+        function buildTemplateBlockHTML(title, deVal, blockKey, dbField) {
+            const cleanDeText = stripHtml(deVal);
+            const statementSpeechText = encodeURIComponent(cleanDeText);
+            return `
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative">
+                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
+                        </div>
+                        <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform" title="Diesen Block anhören">🔊</button>
+                    </div>
+                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')">
+                        ${isEditMode ? deVal : applyConnectorsHighlight(deVal)}
+                    </div>
+                    <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
+                        <button onclick="toggleTranslation(event, '${blockKey}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                        <button onclick="openBlockEditor('${dbField}', false, 0, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit Block</button>
+                    </div>
+                    <div id="trans-container-${blockKey}" class="${expandedContainers.has(blockKey) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                </div>
+            `;
+        }
+
+        function openBlockEditor(dbField, isArray = false, index = 0, lang = 'de') {
+            const modal = document.getElementById('block-editor-modal');
+            if (!modal) return;
+
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
+            activeEditBlockContext = { dbField, isArray, index, lang };
+
+            let valDe = "";
+            let valEn = "";
+            let valAr = "";
+
+            if (dbField === 'dialog') {
+                const chat = topic.dialog && topic.dialog[index];
+                if (chat) {
+                    valDe = chat.de || "";
+                    valEn = chat.en || "";
+                    valAr = chat.ar || "";
+                }
+            } else if (isArray) {
+                const deKey = dbField;
+                const enKey = dbField.replace('_de', '_en');
+                const arKey = dbField.replace('_de', '_ar');
+
+                valDe = topic[deKey] && topic[deKey][index] !== undefined ? topic[deKey][index] : "";
+                valEn = topic[enKey] && topic[enKey][index] !== undefined ? topic[enKey][index] : "";
+                valAr = topic[arKey] && topic[arKey][index] !== undefined ? topic[arKey][index] : "";
+            } else {
+                const baseField = dbField.replace('_de', '');
+                valDe = topic[`${baseField}_de`] || "";
+                valEn = topic[`${baseField}_en`] || "";
+                valAr = topic[`${baseField}_ar`] || "";
+            }
+
+            const blockKey = isArray ? `${dbField}_${index}` : dbField;
+            const savedHighlight = getHighlight(topic.id, blockKey);
+            if (savedHighlight) {
+                valDe = savedHighlight;
+            }
+
+            document.getElementById('modal-edit-de').value = stripHtml(valDe);
+            document.getElementById('modal-edit-en').value = stripHtml(valEn);
+            document.getElementById('modal-edit-ar').value = stripHtml(valAr);
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeBlockEditor() {
+            const modal = document.getElementById('block-editor-modal');
+            if (modal) modal.classList.add('hidden');
+            activeEditBlockContext = null;
+        }
+
+        async function saveBlockEditor() {
+            if (!activeEditBlockContext) return;
+            const { dbField, isArray, index } = activeEditBlockContext;
+
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
+            pushToHistory();
+
+            const newDe = document.getElementById('modal-edit-de').value.trim();
+            const newEn = document.getElementById('modal-edit-en').value.trim();
+            const newAr = document.getElementById('modal-edit-ar').value.trim();
+
+            const blockKey = isArray ? `${dbField}_${index}` : dbField;
+            
+            if (dbField === 'dialog') {
+                if (!topic.dialog) topic.dialog = [];
+                if (!topic.dialog[index]) topic.dialog[index] = { role: `Speaker ${index % 2 === 0 ? 'A' : 'B'}` };
+                topic.dialog[index].de = newDe;
+                topic.dialog[index].en = newEn;
+                topic.dialog[index].ar = newAr;
+            } else if (isArray) {
+                const deKey = dbField;
+                const enKey = dbField.replace('_de', '_en');
+                const arKey = dbField.replace('_de', '_ar');
+
+                if (!topic[deKey]) topic[deKey] = [];
+                if (!topic[enKey]) topic[enKey] = [];
+                if (!topic[arKey]) topic[arKey] = [];
+
+                topic[deKey][index] = newDe;
+                topic[enKey][index] = newEn;
+                topic[arKey][index] = newAr;
+            } else {
+                const baseField = dbField.replace('_de', '');
+                topic[`${baseField}_de`] = newDe;
+                topic[`${baseField}_en`] = newEn;
+                topic[`${baseField}_ar`] = newAr;
+            }
+
+            saveHighlight(topic.id, blockKey, newDe);
+
+            if (activeMode === 'template') {
+                delete translationCache[blockKey];
+            }
+
+            await saveEdits();
+            closeBlockEditor();
+            renderActiveTopic();
+        }
+
+        async function autoTranslateBlockModal() {
+            const deText = document.getElementById('modal-edit-de').value.trim();
+            if (!deText) {
+                alert("Bitte geben Sie zuerst deutschen Text ein.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-auto-translate');
+            const origLabel = btn.textContent;
+            btn.textContent = "⏳ Translating...";
+            btn.disabled = true;
+
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`),
+                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                if (dataEn.responseData?.translatedText) {
+                    document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
+                }
+                if (dataAr.responseData?.translatedText) {
+                    document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
+                }
+            } catch (e) {
+                console.error("Auto-translation in modal failed:", e);
+                alert("Automatisches Übersetzen ist fehlgeschlagen.");
+            } finally {
+                btn.textContent = origLabel;
+                btn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        //  MODERN SIMPLISTIC GRID VIEW
         // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
@@ -1788,7 +2141,6 @@
                 const isStarred = STARRED_TOPICS.includes(topic.id);
                 const isActive = index === activeIdx;
 
-                // Category and search filtering
                 if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
@@ -1799,7 +2151,6 @@
                     : 'bg-[var(--bg-card)] border-[var(--border)] hover:shadow-md'
                 }`;
 
-                // Badges rendering
                 const numBadge = `<span class="text-xs font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
                 const progressBadge = isLearned 
                     ? `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500" title="Gelernt"></span>`
@@ -1860,10 +2211,10 @@
             const rootEl = document.documentElement;
             if (isEditMode) {
                 rootEl.classList.add('edit-mode-active');
-                document.getElementById('edit-mode-status-text').textContent = "Bearbeitungsmodus: AN";
+                document.getElementById('edit-mode-status-text').textContent = "Edit-Modus: AN";
             } else {
                 rootEl.classList.remove('edit-mode-active');
-                document.getElementById('edit-mode-status-text').textContent = "Bearbeitungsmodus: AUS";
+                document.getElementById('edit-mode-status-text').textContent = "Edit-Modus umschalten";
             }
 
             const isLearned = learnedList.includes(topic.id);
@@ -1916,7 +2267,7 @@
                 const proContraParent = document.createElement('div');
                 proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
-                // 2. PRO POINTS (With discrete audio audio triggers next to each point)
+                // 2. PRO POINTS
                 let proContent = "";
                 let fullProTextForAudio = "";
                 topic.pro_de.forEach((deVal, index) => {
@@ -1943,7 +2294,7 @@
                 proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio, 'pro_de', true, 0);
                 proContraParent.appendChild(proCard);
 
-                // 3. CONTRA POINTS (With discrete audio audio triggers next to each point)
+                // 3. CONTRA POINTS
                 let contraContent = "";
                 let fullContraTextForAudio = "";
                 topic.contra_de.forEach((deVal, index) => {
@@ -1986,7 +2337,7 @@
                 erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
                 container.appendChild(erfahrungCard);
 
-                // 5. DIALOG SIMULATION (Direct discrete audio trigger per statement inside bubble layout)
+                // 5. DIALOG SIMULATION
                 let dialogHtml = '<div class="space-y-3">';
                 let fullDialogTextForAudio = "";
                 topic.dialog.forEach((chat, index) => {
@@ -2032,7 +2383,6 @@
                 container.appendChild(schlussCard);
 
             } else if (activeMode === 'template') {
-                // TEMPLATE TAB INTERACTIVES: On-demand modular framework
                 const bannerDiv = document.createElement('div');
                 bannerDiv.innerHTML = bannerHtml;
                 container.appendChild(bannerDiv);
@@ -2068,7 +2418,7 @@
                     `;
                 });
                 const proCard = document.createElement('div');
-                proCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200";
+                proCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 proCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
@@ -2099,7 +2449,7 @@
                     `;
                 });
                 const contraCard = document.createElement('div');
-                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200";
+                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
@@ -2117,7 +2467,7 @@
                 erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
                 container.appendChild(erfahrungCard);
 
-                // 5. DIALOG SIMULATION (Template with individual triggers inside standard timeline structure)
+                // 5. DIALOG SIMULATION (Template)
                 let dialogHtml = '<div class="space-y-4">';
                 topic.dialog.forEach((chat, index) => {
                     const skeyDe = `dialog_de_${index}`;
@@ -2155,7 +2505,6 @@
                 container.appendChild(schlussCard);
             }
 
-            // Sync translation view cache
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
                 if (containerNode) {
@@ -2184,7 +2533,6 @@
             showResetButton();
         }
 
-        // Sidebar state configuration triggers
         const isLearnedStateToggle = document.getElementById('learned-toggle');
         if (isLearnedStateToggle) {
             isLearnedStateToggle.onclick = () => {
@@ -2261,7 +2609,7 @@
                 const isExpanded = expandedContainers.has(blockId);
 
                 grid.innerHTML += `
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col justify-between">
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col justify-between relative">
                         <div>
                             <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
                                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">${item.level} | ${item.category}</span>
@@ -2297,9 +2645,6 @@
             });
         }
 
-        // ==========================================
-        //  DRAWER EXCLUSIVE LOGICS (BACKUPS, IMPORTS)
-        // ==========================================
         const drawerEditToggle = document.getElementById('drawer-edit-toggle');
         if (drawerEditToggle) {
             drawerEditToggle.onclick = () => {
@@ -2323,7 +2668,6 @@
             };
         }
 
-        // Unified Consolidated Backup (Full Local State JSON)
         function exportTotalBackup() {
             const backupObj = {
                 version: "B2Trainer_Unified_Backup_v5",
@@ -2383,7 +2727,7 @@
                         localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
                         localStorage.setItem('edited_template_data_1_52', JSON.stringify(TEMPLATE_DATA));
                     } else {
-                        alert("Backup geladen! Daten werden im Hintergrund mit der Cloud synchronisiert.");
+                        alert("Backup geladen! Daten werden synchronisiert.");
                         for (let topic of TOPICS_DATA) {
                             await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(topic.id.toString()).set(topic);
                         }
@@ -2406,7 +2750,6 @@
             reader.readAsText(file);
         }
 
-        // Export individual raw datasets
         function exportSingleJSON(type) {
             const data = type === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             const filename = type === 'classic' ? 'topics.json' : 'template.json';
@@ -2419,7 +2762,6 @@
             downloadAnchor.remove();
         }
 
-        // Global responsive toggles
         const sidebarElement = document.getElementById('sidebar');
         const mobileToggle = document.getElementById('mobile-nav-toggle');
         mobileToggle.addEventListener('click', () => {
@@ -2456,3 +2798,4 @@
     </script>
 </body>
 </html>
+
