@@ -148,7 +148,6 @@
         .sidebar-collapsed .topic-title { display: none; }
         .sidebar-collapsed .sidebar-header-flex { flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
 
-        /* Sidebar Collapse Responsive states */
         .sidebar-only-emoji { display: none !important; }
         .sidebar-collapsed .sidebar-only-emoji { display: inline-block !important; }
         .sidebar-collapsed .hide-on-collapse-custom { display: none !important; }
@@ -160,14 +159,34 @@
         .scalable-content {
             font-size: 1rem !important;
         }
+
+        /* Mobile Webapp Safe Areas */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+                padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+            }
+        }
+
+        /* Ensure formatting toolbar doesn't overflow mobile screen */
+        #formatting-toolbar {
+            max-width: 90vw;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Make dialog bubbles full width on mobile for better reading focus */
+        @media (max-width: 768px) {
+            .max-w-\[95\%\] {
+                max-width: 100% !important;
+            }
+        }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
-    <!-- Header (Dynamic background elements, permanently docked layout to prevent gaps) -->
+    <!-- Header -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
-        
-        <!-- Subtle linguistic watermarks floating in the header background -->
         <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-20 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
             <span class="text-xs font-serif italic text-zinc-400 dark:text-zinc-500">Aa</span>
             <span class="text-lg font-bold text-zinc-300 dark:text-zinc-600">Ö</span>
@@ -179,7 +198,6 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Modern Minimalist Solid Blue B2 Icon Badge -->
             <div class="relative w-10 h-10 flex-shrink-0 select-none">
                 <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="100" height="100" rx="24" fill="#2563EB"/>
@@ -188,12 +206,13 @@
             </div>
             <div>
                 <h1 class="text-lg font-black text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
-                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse (1 – 52)</p>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-3 flex-wrap relative z-10">
-            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+        <div class="flex items-center gap-3 relative z-10">
+            <!-- Navigation Tabs (Hidden on mobile, visible on medium screens and up) -->
+            <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
                 <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
                 <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
                 <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
@@ -201,7 +220,7 @@
             </div>
 
             <!-- Hamburger Button -->
-            <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors" title="Einstellungen und Werkzeuge">
+            <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Einstellungen und Werkzeuge">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </div>
@@ -220,7 +239,6 @@
                 </button>
             </div>
 
-            <!-- Edit, Undo, Redo, Navigation Tools -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">⚡ Editier-Werkzeuge</h4>
                 <div class="grid grid-cols-2 gap-2">
@@ -228,20 +246,19 @@
                     <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↪️ Vor</button>
                 </div>
                 <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-dashed border-[var(--border)]">
-                    ✏️ <span id="edit-mode-status-text">Edit-Modus umschalten</span>
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
-                <!-- Moved formatting & reset buttons inside the tools drawer -->
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="clearAllHighlightsForTopic()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg border border-[var(--border)] transition-colors flex items-center justify-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
-                        🧹 Zurücksetzen
+                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Reset
                     </button>
                     <button id="reset-edits-btn" class="py-2 text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1" title="Alle Änderungen an diesem Thema verwerfen">
-                        🗑️ Reset Edit
+                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg> Discard
                     </button>
                 </div>
             </div>
 
-            <!-- Workspace Profile Control -->
             <div class="space-y-3">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🔐 Cloud-Arbeitsplatz</h4>
                 <div id="drawer-auth-logged-out" class="space-y-2">
@@ -261,7 +278,6 @@
                 </div>
             </div>
 
-            <!-- Font Sizing Dynamic Configuration -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📏 Element- &amp; Textgröße</h4>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
@@ -271,7 +287,6 @@
                 </div>
             </div>
 
-            <!-- Appearance Theme Control (Light / Dark / System Preference) -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🎨 Design &amp; Farbschema</h4>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
@@ -281,7 +296,6 @@
                 </div>
             </div>
 
-            <!-- Total Backup / JSON Import & Export Structure -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📦 Backup &amp; JSON-Dateien</h4>
                 <div class="space-y-2">
@@ -343,49 +357,36 @@
         </aside>
 
         <!-- Main Scrollable Panel -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-            <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-
-            <!-- Dashboard controls (Clean and streamlined after moving data tools inside the Drawer) -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200">
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6">
+            
+            <!-- Streamlined Focus View Controls -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border-b border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:border md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 -mx-4 md:mx-0 px-4 mt-[-1rem] md:mt-0 pt-4">
                 <div class="flex items-center gap-3">
-                    <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
+                    <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
                     <div>
-                        <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/10 rounded uppercase tracking-wider">Thema --</span>
-                        <h2 id="active-topic-title-de" class="text-lg font-bold text-[var(--text-primary)] mt-1 flex items-center gap-1.5">Lade Diskussionsthema...</h2>
+                        <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] rounded uppercase tracking-wider">Thema --</span>
+                        <h2 id="active-topic-title-de" class="text-lg font-black text-[var(--text-primary)] mt-1 leading-tight">Lade Diskussionsthema...</h2>
                         <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading...</h3>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-2 items-center">
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Modus</span>
-                        <select id="active-mode" onchange="switchActiveMode(this.value)" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
-                            <option value="classic" selected>Klassisch (Bilingual)</option>
-                            <option value="template">Template (On-Demand)</option>
-                        </select>
-                    </div>
+                <!-- 2-Column Grid on Mobile for compact settings -->
+                <div class="grid grid-cols-2 md:flex gap-2 items-center w-full md:w-auto">
+                    <select id="active-mode" onchange="switchActiveMode(this.value)" class="w-full text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
+                        <option value="classic" selected>Klassisch</option>
+                        <option value="template">Template</option>
+                    </select>
 
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Anzeige</span>
-                        <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
-                            <option value="both">Bilingual (DE &amp; EN)</option>
-                            <option value="de_ar">Bilingual (DE &amp; AR)</option>
-                            <option value="all">Trilingual (DE, EN &amp; AR)</option>
-                            <option value="de">Nur Deutsch (Prüfungsmodus)</option>
-                            <option value="en">Nur Englisch</option>
-                            <option value="ar">Nur Arabisch</option>
-                        </select>
-                    </div>
-
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Lernzustand</span>
-                        <button id="learned-toggle" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm">
-                            Als gelernt markieren
-                        </button>
-                    </div>
+                    <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="w-full text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
+                        <option value="both">DE &amp; EN</option>
+                        <option value="de_ar">DE &amp; AR</option>
+                        <option value="all">DE, EN, AR</option>
+                        <option value="de">Nur DE</option>
+                    </select>
+                    
+                    <button id="learned-toggle" class="col-span-2 md:col-span-1 w-full text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-2 border border-[var(--border)] shadow-sm">
+                        Als gelernt markieren
+                    </button>
                 </div>
             </div>
 
@@ -400,7 +401,7 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern Grid View (Responsive layouts matching high density grid cards) -->
+            <!-- Modern Grid View -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -409,7 +410,6 @@
                             Übersicht über alle Themen. Die wichtigsten 19 Prüfungsthemen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
                         </p>
                     </div>
-                    <!-- Quick Search / Category filter for 52 box grid -->
                     <div class="flex items-center gap-2">
                         <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-48" />
                         <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
@@ -422,12 +422,41 @@
                         </select>
                     </div>
                 </div>
-                <!-- Box grid wraps comfortably (Up to 5 columns max) to grant maximum space and avoid text overlays -->
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-4"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content"></section>
+
+            <!-- Mobile Native Bottom Navigation -->
+            <div class="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/90 backdrop-blur-md border-t border-[var(--border)] pb-safe pt-2 px-4 flex justify-between items-center z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+                <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Thema</span>
+                </button>
+                <button onclick="switchTab('mindmap')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Raster</span>
+                </button>
+                
+                <button id="mobile-nav-toggle-center" class="relative -top-5 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+
+                <button onclick="switchTab('redemittel')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Reden</span>
+                </button>
+                <button onclick="switchTab('grammar')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
+                </button>
+            </div>
+            
+            <!-- Mobile Edit FAB (Floating Action Button) -->
+            <button id="mobile-edit-fab" onclick="toggleEditMode()" class="md:hidden fixed bottom-[90px] right-4 w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center z-40 transition-transform active:scale-90">
+                <svg id="edit-fab-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </button>
         </main>
     </div>
 
@@ -487,7 +516,9 @@
     <!-- Voice picker panel -->
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
-            <span class="text-xs font-bold text-[var(--text-primary)]">🗣 overlay.Stimme</span>
+            <span class="text-xs font-bold text-[var(--text-primary)]">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg> Stimme wählen
+            </span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1"></div>
@@ -512,7 +543,7 @@
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
             <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-2">
-                    <span class="text-lg">✏️</span>
+                    <svg class="w-5 h-5 text-[var(--text-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     <h3 class="text-sm font-bold text-[var(--text-primary)]">Block bearbeiten</h3>
                 </div>
                 <button onclick="closeBlockEditor()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm">✕</button>
@@ -522,7 +553,9 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
-                        <button id="btn-auto-translate" onclick="autoTranslateBlockModal()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate</button>
+                        <button id="btn-auto-translate" onclick="autoTranslateBlockModal()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">
+                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Auto-Translate
+                        </button>
                     </div>
                     <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
                 </div>
@@ -888,7 +921,6 @@
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
-        // --- WORD-LEVEL PDF GLOW HIGHLIGHT ENGINE ---
         document.addEventListener('click', function(e) {
             if (!isEditMode) return;
             
@@ -898,11 +930,10 @@
             }
             if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
 
-            // Ignore clicks directly inside the formatting toolbar
             if (e.target.closest('#formatting-toolbar')) return;
 
             const selection = window.getSelection();
-            if (!selection || !selection.isCollapsed) return; // Prevent overwriting drag-selections
+            if (!selection || !selection.isCollapsed) return;
 
             const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
             if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
@@ -923,15 +954,14 @@
                     targetRange.setEnd(node, wordRegex.lastIndex);
                     
                     selection.removeAllRanges();
-                    selection.addRange(targetRange); // Select the word automatically
+                    selection.addRange(targetRange);
                     
-                    handleSelectionChange(); // Trigger the 4-color soft menu popup
+                    handleSelectionChange();
                     break;
                 }
             }
         });
 
-        // Global Selection Dismiss / Blur Handler (Fixes the stuck toolbar menu bug)
         document.addEventListener('mouseup', function(e) {
             if (!isEditMode) return;
             setTimeout(() => {
@@ -971,9 +1001,6 @@
             }
         }
 
-        // ==========================================
-        //  TTS (TEXT TO SPEECH) ALGORITHM
-        // ==========================================
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
         let globalAudioText = "";
@@ -1141,7 +1168,6 @@
             }
         }
 
-        // Universal Custom Theme Engine
         let currentThemeSetting = localStorage.getItem('b2_theme_setting') || 'system';
 
         function applyThemeSetting() {
@@ -1215,7 +1241,6 @@
 
         applyTextScale();
 
-        // Slide-out Drawer Panel UI Logic
         const drawerMenu = document.getElementById('drawer-menu');
         const drawerOverlay = document.getElementById('drawer-overlay');
         const drawerToggle = document.getElementById('menu-drawer-toggle');
@@ -1274,12 +1299,10 @@
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
                     sidebar.classList.add('-translate-x-full');
-                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
                 }
             }
         }
 
-        // Firebase Workspace Sync
         auth.onAuthStateChanged(async (user) => {
             const outArea = document.getElementById('drawer-auth-logged-out');
             const inArea = document.getElementById('drawer-auth-logged-in');
@@ -1330,7 +1353,6 @@
 
         document.getElementById('drawer-btn-logout').onclick = () => { auth.signOut(); toggleDrawer(); };
 
-        // CORE SYSTEM DATA LOADER
         async function loadTopics() {
             try {
                 const [resTopics, resTemplate, resGrammatik] = await Promise.all([
@@ -1502,7 +1524,6 @@
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const trackerArray = activeMode === 'classic' ? editedTopicIds : editedTemplateIds;
             
-            // Fixed the disappearing behavior: Always keep the button visible, but styled as active or disabled.
             if (activeTopic && trackerArray.includes(activeTopic.id)) {
                 resetBtn.removeAttribute('disabled');
                 resetBtn.className = "py-2 text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1 cursor-pointer";
@@ -1934,13 +1955,9 @@
                     ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
                     : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
-                // Replaced textual items when collapsed with the theme's custom emoji (aesthetic minimized mode)
                 item.innerHTML = `
                     <div class="flex items-center gap-2.5 truncate">
-                        <!-- Sidebar minimized view only -->
                         <span class="sidebar-only-emoji text-base select-none leading-none">${emoji}</span>
-                        
-                        <!-- Sidebar maximized view only -->
                         <div class="flex items-center gap-2 truncate hide-on-collapse-custom">
                             <span class="text-xs opacity-75 font-mono">#${topic.id}</span>
                             ${starMarker}
@@ -2006,7 +2023,6 @@
             const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const isLearned = topic && learnedList.includes(topic.id);
             
-            // Set modern green colors for active topic blocks when the topic is completed
             const cardBgClass = isLearned 
                 ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
                 : "bg-[var(--bg-card)] border-[var(--border)]";
@@ -2025,10 +2041,12 @@
                         <div class="flex items-center gap-2">
                             ${showAudio && textForAudio ? `
                             <button onclick="openVoicePicker(event, '${encodedText}')" class="text-xs hover:scale-110 active:scale-95 transition-transform flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--accent)]" title="Vorlesen">
-                                🔊 <span class="text-[10px] font-bold">Vorlesen</span>
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg> <span class="text-[10px] font-bold">Vorlesen</span>
                             </button>
                             ` : ''}
-                            <button onclick="openBlockEditor('${dbField}', ${index === 0 ? 'false' : 'true'}, ${index}, '${lang}')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold ${isEditMode ? 'block' : 'hidden'}">✏️ Edit Block</button>
+                            <button onclick="openBlockEditor('${dbField}', ${index === 0 ? 'false' : 'true'}, ${index}, '${lang}')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit Block
+                            </button>
                         </div>
                     </div>
                     <div class="space-y-2 relative">
@@ -2045,7 +2063,6 @@
             const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const isLearned = topic && learnedList.includes(topic.id);
             
-            // Set modern green colors for active template blocks when the topic is completed
             const cardBgClass = isLearned 
                 ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
                 : "bg-[var(--bg-card)] border-[var(--border)]";
@@ -2061,14 +2078,20 @@
                             <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
-                        <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform" title="Diesen Block anhören">🔊</button>
+                        <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform" title="Diesen Block anhören">
+                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                        </button>
                     </div>
                     <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')">
                         ${isEditMode ? deVal : applyConnectorsHighlight(deVal)}
                     </div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
-                        <button onclick="toggleTranslation(event, '${blockKey}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                        <button onclick="openBlockEditor('${dbField}', false, 0, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit Block</button>
+                        <button onclick="toggleTranslation(event, '${blockKey}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                        </button>
+                        <button onclick="openBlockEditor('${dbField}', false, 0, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit Block
+                        </button>
                     </div>
                     <div id="trans-container-${blockKey}" class="${expandedContainers.has(blockKey) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
                 </div>
@@ -2188,8 +2211,8 @@
             }
 
             const btn = document.getElementById('btn-auto-translate');
-            const origLabel = btn.textContent;
-            btn.textContent = "⏳ Translating...";
+            const origLabel = btn.innerHTML;
+            btn.innerHTML = "⏳ Translating...";
             btn.disabled = true;
 
             try {
@@ -2231,14 +2254,11 @@
                     alert("Automatisches Übersetzen ist fehlgeschlagen.");
                 }
             } finally {
-                btn.textContent = origLabel;
+                btn.innerHTML = origLabel;
                 btn.disabled = false;
             }
         }
 
-        // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW (OPTIMIZED HOVER, LONG PRESS, AND ENLARGED DISPLAY)
-        // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2258,7 +2278,6 @@
 
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
-                // Dynamically sets category-specific background, borders, glow patterns, and focus styles
                 const card = document.createElement('div');
                 card.className = `group p-4 pt-5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} ${style.glow} hover:-translate-y-1 hover:scale-[1.04] ${
                     isActive 
@@ -2277,9 +2296,7 @@
 
                 const textClass = "text-[10.5px] sm:text-[11px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
 
-                // Applied floating aesthetic top-badge with strict style injection. Cleaned internal list items.
                 card.innerHTML = `
-                    <!-- Floating Category Badge (Aesthetic Mode) -->
                     <div class="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider shadow-sm border ${style.badgeBg} transition-all duration-200 group-hover:scale-105 group-hover:-translate-y-0.5">
                         ${topic.category || 'Allgemein'}
                     </div>
@@ -2301,7 +2318,6 @@
                     </div>
                 `;
 
-                // Mobile Touchscreen Support: long press detection
                 let touchTimer;
                 let isLongPress = false;
 
@@ -2309,7 +2325,7 @@
                     isLongPress = false;
                     touchTimer = setTimeout(() => {
                         isLongPress = true;
-                        showThemaPreview(topic); // Fire preview modal on hold
+                        showThemaPreview(topic);
                     }, 600);
                 }, { passive: true });
 
@@ -2324,7 +2340,7 @@
                 card.onclick = (e) => {
                     if (isLongPress) {
                         isLongPress = false;
-                        return; // Absorb event
+                        return;
                     }
                     activeIdx = index;
                     localStorage.setItem('b2_active_idx', activeIdx);
@@ -2337,7 +2353,6 @@
             });
         }
 
-        // Beautiful on-demand Quick Preview panel functions
         function showThemaPreview(topic) {
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
@@ -2415,20 +2430,19 @@
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
             if (isLearned) {
-                learnedBtn.className = "text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-1.5 border border-rose-300 transition-all shadow-sm";
+                learnedBtn.className = "col-span-2 md:col-span-1 w-full text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-2 border border-rose-300 transition-all shadow-sm";
                 learnedBtn.textContent = "Als offen markieren";
             } else {
-                learnedBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-card)] transition-all shadow-sm";
+                learnedBtn.className = "col-span-2 md:col-span-1 w-full text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-2 border border-[var(--border)] hover:bg-[var(--bg-card)] transition-all shadow-sm";
                 learnedBtn.textContent = "Als gelernt markieren";
             }
 
-            // Green style adaptation for controls container when the topic is completed (Learned/Done)
             const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200";
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border-b p-4 md:rounded-[var(--radius-card)] md:border md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 -mx-4 md:mx-0 px-4 mt-[-1rem] md:mt-0 pt-4";
                 } else {
-                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200";
+                    controlsEl.className = "bg-[var(--bg-card)] border-b border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:border md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 -mx-4 md:mx-0 px-4 mt-[-1rem] md:mt-0 pt-4";
                 }
             }
 
@@ -2462,7 +2476,6 @@
                 const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? '' : 'hidden';
                 const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? '' : 'hidden';
 
-                // 1. EINLEITUNG
                 const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
                 const savedEinl = getHighlight(topic.id, einlDe);
                 const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
@@ -2480,7 +2493,6 @@
                 const proContraParent = document.createElement('div');
                 proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
-                // 2. PRO POINTS
                 let proContent = "";
                 let fullProTextForAudio = "";
                 topic.pro_de.forEach((deVal, index) => {
@@ -2494,7 +2506,9 @@
 
                     proContent += `
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${itemSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">🔊</button>
+                            <button onclick="openVoicePicker(event, '${itemSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                             <div class="flex-1">
                                 <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
                                 <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
@@ -2507,7 +2521,6 @@
                 proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio, 'pro_de', true, 0);
                 proContraParent.appendChild(proCard);
 
-                // 3. CONTRA POINTS
                 let contraContent = "";
                 let fullContraTextForAudio = "";
                 topic.contra_de.forEach((deVal, index) => {
@@ -2521,7 +2534,9 @@
 
                     contraContent += `
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${itemSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">🔊</button>
+                            <button onclick="openVoicePicker(event, '${itemSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                             <div class="flex-1">
                                 <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
                                 <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
@@ -2535,7 +2550,6 @@
                 proContraParent.appendChild(contraCard);
                 container.appendChild(proContraParent);
 
-                // 4. PERSÖNLICHE ERFAHRUNG
                 const erfDe = "pers_erfahrung_de"; const erfEn = "pers_erfahrung_en"; const erfAr = "pers_erfahrung_ar";
                 const savedErf = getHighlight(topic.id, erfDe);
                 const cleanErfEn = stripHtml(getTopicValue(topic, erfEn));
@@ -2550,7 +2564,6 @@
                 erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
                 container.appendChild(erfahrungCard);
 
-                // 5. DIALOG SIMULATION
                 let dialogHtml = '<div class="space-y-3">';
                 let fullDialogTextForAudio = "";
                 topic.dialog.forEach((chat, index) => {
@@ -2567,7 +2580,9 @@
                         <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
                             <div class="flex items-center justify-between gap-4 mb-1">
                                 <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">${chat.role}</span>
-                                <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform" title="Diesen Redebeitrag anhören">🔊</button>
+                                <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform" title="Diesen Redebeitrag anhören">
+                                    <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                </button>
                             </div>
                             <div data-block-key="${skeyDe}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
                             <p id="en-${skeyDe}" class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
@@ -2580,7 +2595,6 @@
                 dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio, 'dialog', true, 0, 'de');
                 container.appendChild(dialogCard);
 
-                // 6. GEMEINSAME LÖSUNG
                 const schlDe = "schluss_de"; const schlEn = "schluss_en"; const schlAr = "schluss_ar";
                 const savedSchl = getHighlight(topic.id, schlDe);
                 const cleanSchlEn = stripHtml(getTopicValue(topic, schlEn));
@@ -2600,7 +2614,6 @@
                 bannerDiv.innerHTML = bannerHtml;
                 container.appendChild(bannerDiv);
 
-                // 1. EINLEITUNG (Template)
                 const einlDe = "einleitung_de";
                 const deValEinl = getHighlight(topic.id, einlDe) || topic[einlDe];
                 const einleitungCard = document.createElement('div');
@@ -2610,7 +2623,6 @@
                 const proContraParent = document.createElement('div');
                 proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
-                // 2. PRO (Template)
                 let proContent = "";
                 topic.pro_de.forEach((deVal, index) => {
                     const skeyDe = `pro_de_${index}`;
@@ -2618,12 +2630,18 @@
                     const statementSpeechText = encodeURIComponent(stripHtml(deValPro));
                     proContent += `
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">🔊</button>
+                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                             <div class="flex-1">
                                 <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValPro : applyConnectorsHighlight(deValPro)}</div>
                                 <div class="mt-2 flex items-center justify-between">
-                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                                    <button onclick="openBlockEditor('pro_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
+                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                    </button>
+                                    <button onclick="openBlockEditor('pro_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                                    </button>
                                 </div>
                                 <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
                             </div>
@@ -2641,7 +2659,6 @@
                 `;
                 proContraParent.appendChild(proCard);
 
-                // 3. CONTRA (Template)
                 let contraContent = "";
                 topic.contra_de.forEach((deVal, index) => {
                     const skeyDe = `contra_de_${index}`;
@@ -2649,12 +2666,18 @@
                     const statementSpeechText = encodeURIComponent(stripHtml(deValContra));
                     contraContent += `
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">🔊</button>
+                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                             <div class="flex-1">
                                 <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValContra : applyConnectorsHighlight(deValContra)}</div>
                                 <div class="mt-2 flex items-center justify-between">
-                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                                    <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
+                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                    </button>
+                                    <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                                    </button>
                                 </div>
                                 <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
                             </div>
@@ -2673,14 +2696,12 @@
                 proContraParent.appendChild(contraCard);
                 container.appendChild(proContraParent);
 
-                // 4. EXPERIENCE (Template)
                 const erfDe = "pers_erfahrung_de";
                 const deValErf = getHighlight(topic.id, erfDe) || topic[erfDe];
                 const erfahrungCard = document.createElement('div');
                 erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
                 container.appendChild(erfahrungCard);
 
-                // 5. DIALOG SIMULATION (Template)
                 let dialogHtml = '<div class="space-y-4">';
                 topic.dialog.forEach((chat, index) => {
                     const skeyDe = `dialog_de_${index}`;
@@ -2692,14 +2713,20 @@
                         <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
                             <div class="flex items-center justify-between gap-4 mb-2">
                                 <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
-                                <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">🔊</button>
+                                <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">
+                                    <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                </button>
                             </div>
                             <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
                                 ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                             </div>
                             <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
-                                <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                                <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
+                                <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                </button>
+                                <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                                </button>
                             </div>
                             <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
                         </div>
@@ -2710,7 +2737,6 @@
                 dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
                 container.appendChild(dialogCard);
 
-                // 6. SCHLUSS (Template)
                 const schlussDe = "schluss_de";
                 const deValSchluss = getHighlight(topic.id, schlussDe) || topic[schlussDe];
                 const schlussCard = document.createElement('div');
@@ -2760,12 +2786,11 @@
                 localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
                 renderSidebar();
                 updateProgress();
-                renderActiveTopic(); // Instantly update active workspace colors
+                renderActiveTopic();
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
 
-        // REDEMITTEL TAB
         function renderRedemittel() {
             const container = document.getElementById('redemittel-tab-section');
             container.innerHTML = `
@@ -2781,7 +2806,9 @@
                     const encodedText = encodeURIComponent(p.de);
                     phrasesHtml += `
                         <div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0 flex items-start gap-2 relative">
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-xs hover:scale-110 active:scale-90 transition-transform mt-0.5">🔊</button>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 active:scale-90 transition-transform mt-0.5">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                             <div class="flex-1">
                                 <div data-block-key="redemittel_${p.de.slice(0,8)}" class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div>
                                 <div class="text-[11px] italic text-[var(--text-muted)]">${p.en}</div>
@@ -2794,7 +2821,6 @@
             container.appendChild(grid);
         }
 
-        // GRAMMAR TAB INTEGRATION
         function renderGrammar() {
             const container = document.getElementById('grammar-tab-section');
             container.innerHTML = `
@@ -2812,7 +2838,9 @@
                     const encodedText = encodeURIComponent(cleanText);
                     examplesHtml += `
                         <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-xs hover:scale-110 transition-transform mt-0.5">🔊</button>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 transition-transform mt-0.5">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                             <span class="flex-1">${ex}</span>
                         </li>`; 
                 });
@@ -2828,7 +2856,9 @@
                         <div>
                             <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
                                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">${item.level} | ${item.category}</span>
-                                <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                                <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                </button>
                             </div>
                             <h3 class="text-sm font-bold text-[var(--accent)] mt-2">${item.title}</h3>
                             <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">${item.description}</p>
@@ -2860,27 +2890,42 @@
             });
         }
 
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            
+            const statusLabel = document.querySelector('#drawer-edit-toggle span');
+            const menuStatusLabel = document.getElementById('edit-mode-status-text');
+            const tipBanner = document.getElementById('edit-tip-banner');
+            const fab = document.getElementById('mobile-edit-fab');
+            const drawerToggle = document.getElementById('drawer-edit-toggle');
+            
+            if (isEditMode) {
+                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.add('bg-[var(--accent)]', 'text-white');
+                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                }
+                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
+                if (tipBanner) tipBanner.classList.remove('hidden');
+            } else {
+                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
+                    fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
+                }
+                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
+                if (tipBanner) tipBanner.classList.add('hidden');
+            }
+            renderActiveTopic();
+        }
+
         const drawerEditToggle = document.getElementById('drawer-edit-toggle');
         if (drawerEditToggle) {
-            drawerEditToggle.onclick = () => {
-                isEditMode = !isEditMode;
-                const statusLabel = drawerEditToggle.querySelector('span');
-                const menuStatusLabel = document.getElementById('edit-mode-status-text');
-                const tipBanner = document.getElementById('edit-tip-banner');
-                
-                if (isEditMode) {
-                    drawerEditToggle.classList.add('bg-[var(--accent)]', 'text-white');
-                    if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
-                    if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
-                    if (tipBanner) tipBanner.classList.remove('hidden');
-                } else {
-                    drawerEditToggle.classList.remove('bg-[var(--accent)]', 'text-white');
-                    if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
-                    if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
-                    if (tipBanner) tipBanner.classList.add('hidden');
-                }
-                renderActiveTopic();
-            };
+            drawerEditToggle.onclick = toggleEditMode;
         }
 
         function exportTotalBackup() {
@@ -2966,14 +3011,12 @@
         }
 
         const sidebarElement = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobile-nav-toggle');
-        mobileToggle.addEventListener('click', () => {
-            sidebarElement.classList.toggle('-translate-x-full');
-            const isHidden = sidebarElement.classList.contains('-translate-x-full');
-            document.getElementById('menu-icon').innerHTML = isHidden 
-                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
-                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
-        });
+        const centerToggle = document.getElementById('mobile-nav-toggle-center');
+        if (centerToggle) {
+            centerToggle.addEventListener('click', () => {
+                sidebarElement.classList.toggle('-translate-x-full');
+            });
+        }
 
         loadTopics();
     </script>
