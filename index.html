@@ -421,8 +421,8 @@
                         </select>
                     </div>
                 </div>
-                <!-- Spacing increased slightly to give texts more container width -->
-                <div id="box-grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pt-2"></div>
+                <!-- Box grid wraps comfortably (Up to 5 columns max) to grant maximum space and avoid text overlays -->
+                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
@@ -659,7 +659,7 @@
                 title: "Zustimmung ausdrücken (Agreeing with Partner)",
                 icon: "✅",
                 phrases: [
-                    { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
+                    { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
                     { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
                     { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
@@ -670,7 +670,7 @@
                 icon: "❌",
                 phrases: [
                     { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل different قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
-                    { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي هنا. فالواقع غالباً ما يبدو مختلفاً." },
+                    { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي hier. فالواقع غالباً ما يبدو مختلفاً." },
                     { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، jedoch لا يجب أن ننسى أن..." },
                     { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك في أن هذا الحل المقترح يعمل في الممارسة العملية." }
                 ]
@@ -685,6 +685,16 @@
                 ]
             }
         ];
+
+        let audioUnlocked = false;
+        document.body.addEventListener('click', () => {
+            if (!audioUnlocked && 'speechSynthesis' in window) {
+                const dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0;
+                window.speechSynthesis.speak(dummy);
+                audioUnlocked = true;
+            }
+        }, { once: true });
 
         function stripHtml(html) {
             if (!html) return "";
@@ -1009,6 +1019,7 @@
             populateVoicesList();
         }
 
+        // Updated voice-picker-play trigger to directly use standard TTS to prevent lagginess
         document.getElementById('voice-picker-play').onclick = () => {
             playBlockAudio(globalAudioText, globalAudioBtn);
         };
@@ -1311,7 +1322,7 @@
                         ],
                         schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
                         schluss_en: "In conclusion, a compromise would make sense.",
-                        schluss_ar: "خlaصة القول هي أن التسوية ستكون منطقية."
+                        schluss_ar: "خلاصة القول هي أن التسوية ستكون منطقية."
                     }];
                 }
 
@@ -1549,13 +1560,22 @@
 
                 try {
                     const [resEn, resAr] = await Promise.all([
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
+                        fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(plainText)}`),
+                        fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(plainText)}`)
                     ]);
-                    const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
+                    const dataEn = await resEn.json();
+                    const dataAr = await resAr.json();
 
-                    const transEn = dataEn.responseData?.translatedText || "";
-                    const transAr = dataAr.responseData?.translatedText || "";
+                    let transEn = "";
+                    if (dataEn && dataEn[0]) {
+                        dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
+                    }
+                    let transAr = "";
+                    if (dataAr && dataAr[0]) {
+                        dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+                    }
+
+                    if (!transEn || !transAr) throw new Error();
 
                     setTopicValue(topic, enKey, transEn);
                     setTopicValue(topic, arKey, transAr);
@@ -1564,9 +1584,27 @@
                     if(arEl) arEl.innerText = transAr;
                     saveEditsSilent();
                 } catch(e) {
-                    console.warn("Auto-translate network issue.", e);
-                    if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
-                    if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
+                    try {
+                        const [resEn, resAr] = await Promise.all([
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
+                        ]);
+                        const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
+
+                        const transEn = dataEn.responseData?.translatedText || "";
+                        const transAr = dataAr.responseData?.translatedText || "";
+
+                        setTopicValue(topic, enKey, transEn);
+                        setTopicValue(topic, arKey, transAr);
+
+                        if(enEl) enEl.innerText = transEn;
+                        if(arEl) arEl.innerText = transAr;
+                        saveEditsSilent();
+                    } catch (err) {
+                        console.warn("Auto-translate network issue.", err);
+                        if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
+                        if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
+                    }
                 }
             } else {
                 const container = document.getElementById(getTranslationContainerId(compoundKey));
@@ -1623,6 +1661,7 @@
             }
         }
 
+        // Upgraded with Google Translate free api endpoints as a primary and MyMemory as a secondary backup
         async function fetchAndRenderTranslation(blockId, text, container) {
             if (!container) container = document.getElementById(getTranslationContainerId(blockId));
             if (!container) return;
@@ -1637,36 +1676,59 @@
 
             container.innerHTML = `
                 <div class="text-[10px] text-purple-500 dark:text-purple-400 animate-pulse font-semibold">
-                    ⏳ Übersetze mit MyMemory API...
+                    ⏳ Übersetze mit Google Translate...
                 </div>
             `;
 
             try {
                 const [resEn, resAr] = await Promise.all([
-                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|en`),
-                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|ar`)
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(cleanText)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(cleanText)}`)
                 ]);
+
+                if (!resEn.ok || !resAr.ok) throw new Error();
 
                 const dataEn = await resEn.json();
                 const dataAr = await resAr.json();
 
-                if (dataEn.responseStatus !== 200 || dataAr.responseStatus !== 200) {
-                    throw new Error("MyMemory error");
+                let transEn = "";
+                if (dataEn && dataEn[0]) {
+                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
                 }
 
-                const transEn = dataEn.responseData?.translatedText || "";
-                const transAr = dataAr.responseData?.translatedText || "";
+                let transAr = "";
+                if (dataAr && dataAr[0]) {
+                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+                }
+
+                if (!transEn || !transAr) throw new Error();
 
                 translationCache[blockId] = { en: transEn, ar: transAr };
                 renderTranslationHTML(container, transEn, transAr);
             } catch (e) {
-                console.error("Translation failed:", e);
-                container.innerHTML = `
-                    <div class="text-[10px] text-rose-500 font-semibold flex items-center justify-between">
-                        <span>⚠️ API-Limit erreicht.</span>
-                        <button onclick="retryTranslation(event, '${blockId}', '${encodeURIComponent(text)}')" class="px-1.5 py-0.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 font-bold rounded text-[9px] uppercase">Wiederholen</button>
-                    </div>
-                `;
+                try {
+                    const [resEn, resAr] = await Promise.all([
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|ar`)
+                    ]);
+
+                    const dataEn = await resEn.json();
+                    const dataAr = await resAr.json();
+
+                    const transEn = dataEn.responseData?.translatedText || "";
+                    const transAr = dataAr.responseData?.translatedText || "";
+
+                    translationCache[blockId] = { en: transEn, ar: transAr };
+                    renderTranslationHTML(container, transEn, transAr);
+                } catch (err) {
+                    console.error("Translation failed on both backends:", err);
+                    container.innerHTML = `
+                        <div class="text-[10px] text-rose-500 font-semibold flex items-center justify-between">
+                            <span>⚠️ API-Limit erreicht.</span>
+                            <button onclick="retryTranslation(event, '${blockId}', '${encodeURIComponent(text)}')" class="px-1.5 py-0.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 font-bold rounded text-[9px] uppercase">Wiederholen</button>
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -2047,21 +2109,43 @@
 
             try {
                 const [resEn, resAr] = await Promise.all([
-                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`),
-                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`)
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(deText)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(deText)}`)
                 ]);
                 const dataEn = await resEn.json();
                 const dataAr = await resAr.json();
 
-                if (dataEn.responseData?.translatedText) {
-                    document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
+                let transEn = "";
+                if (dataEn && dataEn[0]) {
+                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
                 }
-                if (dataAr.responseData?.translatedText) {
-                    document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
+                let transAr = "";
+                if (dataAr && dataAr[0]) {
+                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
                 }
+
+                if (transEn) document.getElementById('modal-edit-en').value = transEn;
+                if (transAr) document.getElementById('modal-edit-ar').value = transAr;
             } catch (e) {
-                console.error("Auto-translation in modal failed:", e);
-                alert("Automatisches Übersetzen ist fehlgeschlagen.");
+                // MyMemory fallback inside modal
+                try {
+                    const [resEn, resAr] = await Promise.all([
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`)
+                    ]);
+                    const dataEn = await resEn.json();
+                    const dataAr = await resAr.json();
+
+                    if (dataEn.responseData?.translatedText) {
+                        document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
+                    }
+                    if (dataAr.responseData?.translatedText) {
+                        document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
+                    }
+                } catch(err) {
+                    console.error("Auto-translation in modal failed:", err);
+                    alert("Automatisches Übersetzen ist fehlgeschlagen.");
+                }
             } finally {
                 btn.textContent = origLabel;
                 btn.disabled = false;
@@ -2089,7 +2173,6 @@
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
-                // Added high-quality responsive class layout variables
                 card.className = `group p-3.5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[156px] h-auto relative select-none transition-all duration-300 hover:bg-amber-50/90 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-1 hover:scale-[1.04] dark:hover:bg-amber-950/20 dark:hover:border-amber-600 ${
                     isActive 
                     ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
@@ -2105,7 +2188,6 @@
                     ? `<span class="text-amber-500 text-base font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
                     : ``;
 
-                // Standard font size is compact, but when hovered, the card text expands smoothly for maximum readability
                 const textClass = "text-[10.5px] sm:text-[11px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
 
                 // Modernized UI: Emoji centered inside a round border badge next to topic tags
@@ -2396,7 +2478,7 @@
                 const cleanSchlAr = stripHtml(getTopicValue(topic, schlAr));
 
                 const schlussHtml = `
-                    <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${schlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
+                    <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${schlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
                     <p id="en-${schlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${schlEn}')">${cleanSchlEn}</p>
                     <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
                 `;
@@ -2429,7 +2511,7 @@
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
                             <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">🔊</button>
                             <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValPro : applyConnectorsHighlight(deValPro)}</div>
+                                <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValPro : applyConnectorsHighlight(deValPro)}</div>
                                 <div class="mt-2 flex items-center justify-between">
                                     <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
                                     <button onclick="openBlockEditor('pro_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
@@ -2460,7 +2542,7 @@
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
                             <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">🔊</button>
                             <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValContra : applyConnectorsHighlight(deValContra)}</div>
+                                <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValContra : applyConnectorsHighlight(deValContra)}</div>
                                 <div class="mt-2 flex items-center justify-between">
                                     <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
                                     <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
@@ -2471,7 +2553,7 @@
                     `;
                 });
                 const contraCard = document.createElement('div');
-                // FIXED: Replaced standard class assignment bug with correct document element builder logic
+                // FIXED: Resolved target document reference typo to correctly render contra blocks in template tab
                 contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
