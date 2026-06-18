@@ -159,7 +159,7 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
-    <!-- Header (Dynamic background elements, permanently docked layout to prevent gaps) -->
+    <!-- Header -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
         
         <!-- Subtle linguistic watermarks floating in the header background -->
@@ -290,7 +290,7 @@
         <div class="p-4 bg-[var(--bg-app)] border-t border-[var(--border)] text-center">
             <span class="text-[10px] text-[var(--text-faint)] font-bold uppercase tracking-widest">TELC B2Trainer v5.0</span>
         </div>
-    </</aside>
+    </aside>
 
     <!-- Main Workspace Container -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
@@ -660,9 +660,9 @@
                 icon: "✅",
                 phrases: [
                     { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. هذه حجة قاطعة ومقنعة." },
-                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومnaسبة جداً ذكرتها." },
+                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
                     { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
-                    { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
+                    { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرk منطقي ومقنع تماماً بالنسبة لي." }
                 ]
             },
             {
@@ -680,7 +680,7 @@
                 icon: "🤝",
                 phrases: [
                     { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق على أن كلا الجانبين لديهما جوانب مهمة." },
-                    { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار؟" },
+                    { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار?" },
                     { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه على الرغم von اختلاف وجهات النظر، يمكننا التوصل إلى اتفاق." }
                 ]
             }
@@ -2471,13 +2471,12 @@
                                     <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
                                     <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
                                 </div>
-                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
                             </div>
                         </div>
                     `;
                 });
-                const contraCard = document.createElement('div');
-                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
+                const contraCard = document.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
