@@ -144,9 +144,14 @@
         #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
         .sidebar-collapsed { width: 5.5rem !important; }
         .sidebar-collapsed .hide-on-collapse { display: none !important; }
-        .sidebar-collapsed .topic-list-item { padding: 0.75rem 0.5rem; justify-content: center; }
+        .sidebar-collapsed .topic-list-item { padding: 0.75rem 0.5rem; justify-content: center; align-items: center; }
         .sidebar-collapsed .topic-title { display: none; }
         .sidebar-collapsed .sidebar-header-flex { flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
+
+        /* Sidebar Collapse Responsive states */
+        .sidebar-only-emoji { display: none !important; }
+        .sidebar-collapsed .sidebar-only-emoji { display: inline-block !important; }
+        .sidebar-collapsed .hide-on-collapse-custom { display: none !important; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -225,6 +230,15 @@
                 <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-dashed border-[var(--border)]">
                     ✏️ <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
+                <!-- Moved formatting & reset buttons inside the tools drawer -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="clearAllHighlightsForTopic()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg border border-[var(--border)] transition-colors flex items-center justify-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
+                        🧹 Zurücksetzen
+                    </button>
+                    <button id="reset-edits-btn" class="py-2 text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1" title="Alle Änderungen an diesem Thema verwerfen">
+                        🗑️ Reset Edit
+                    </button>
+                </div>
             </div>
 
             <!-- Workspace Profile Control -->
@@ -334,7 +348,8 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <!-- Dashboard controls (Clean and streamlined after moving data tools inside the Drawer) -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
                     <div>
@@ -369,20 +384,6 @@
                         <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Lernzustand</span>
                         <button id="learned-toggle" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm">
                             Als gelernt markieren
-                        </button>
-                    </div>
-                    
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Formatierung</span>
-                        <button onclick="clearAllHighlightsForTopic()" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm flex items-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
-                            🧹 Zurücksetzen
-                        </button>
-                    </div>
-
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Daten</span>
-                        <button id="reset-edits-btn" class="hidden text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg px-3 py-1.5 border border-rose-300 transition-all shadow-sm">
-                            🗑️ Reset Edit
                         </button>
                     </div>
                 </div>
@@ -422,7 +423,7 @@
                     </div>
                 </div>
                 <!-- Box grid wraps comfortably (Up to 5 columns max) to grant maximum space and avoid text overlays -->
-                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-2"></div>
+                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-4"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
@@ -592,6 +593,54 @@
             'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
         };
 
+        const CATEGORY_STYLES = {
+            'Freizeit & Gesundheit': {
+                lightBg: 'bg-emerald-50/50',
+                lightBorder: 'border-emerald-200',
+                darkBg: 'dark:bg-emerald-950/20',
+                darkBorder: 'dark:border-emerald-900',
+                glow: 'hover:shadow-[0_0_20px_rgba(16,185,129,0.35)]',
+                badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-800/50',
+                activeRing: 'ring-emerald-500'
+            },
+            'Arbeit & Karriere': {
+                lightBg: 'bg-blue-50/50',
+                lightBorder: 'border-blue-200',
+                darkBg: 'dark:bg-blue-950/20',
+                darkBorder: 'dark:border-blue-900',
+                glow: 'hover:shadow-[0_0_20px_rgba(37,99,235,0.35)]',
+                badgeBg: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200/50 dark:border-blue-800/50',
+                activeRing: 'ring-blue-500'
+            },
+            'Umwelt & Mobilität': {
+                lightBg: 'bg-teal-50/50',
+                lightBorder: 'border-teal-200',
+                darkBg: 'dark:bg-teal-950/20',
+                darkBorder: 'dark:border-teal-900',
+                glow: 'hover:shadow-[0_0_20px_rgba(20,184,166,0.35)]',
+                badgeBg: 'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300 border-teal-200/50 dark:border-teal-800/50',
+                activeRing: 'ring-teal-500'
+            },
+            'Gesellschaft & Politik': {
+                lightBg: 'bg-purple-50/50',
+                lightBorder: 'border-purple-200',
+                darkBg: 'dark:bg-purple-950/20',
+                darkBorder: 'dark:border-purple-900',
+                glow: 'hover:shadow-[0_0_20px_rgba(168,85,247,0.35)]',
+                badgeBg: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200/50 dark:border-purple-800/50',
+                activeRing: 'ring-purple-500'
+            },
+            'Bildung & Technologie': {
+                lightBg: 'bg-amber-50/50',
+                lightBorder: 'border-amber-200',
+                darkBg: 'dark:bg-amber-950/20',
+                darkBorder: 'dark:border-amber-900',
+                glow: 'hover:shadow-[0_0_20px_rgba(245,158,11,0.35)]',
+                badgeBg: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200/50 dark:border-amber-800/50',
+                activeRing: 'ring-amber-500'
+            }
+        };
+
         const firebaseConfig = {
             apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
             authDomain: "b2telc-6e061.firebaseapp.com",
@@ -652,7 +701,7 @@
                     { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way.", ar: "في رأيي، ينبغي للمرء أن ينظر إلى هذا بطريقة أكثر تمايزًا." },
                     { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن هذا الموضوع يلعب دوراً هاماً." },
                     { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيوب هنا." },
-                    { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظري الشخصية، من الضروري اتخاذ إجراء هنا." }
+                    { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظri الشخصية، من الضروري اتخاذ إجراء هنا." }
                 ]
             },
             {
@@ -681,7 +730,7 @@
                 phrases: [
                     { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق على أن كلا الجانبين لديهما جوانب مهمة." },
                     { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار?" },
-                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه على الرغم von اختلاف وجهات النظر، kann man التوصل إلى اتفاق." }
+                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه auf الرغم von اختلاف وجهات النظر، kann man التوصل إلى اتفاق." }
                 ]
             }
         ];
@@ -885,16 +934,13 @@
         // Global Selection Dismiss / Blur Handler (Fixes the stuck toolbar menu bug)
         document.addEventListener('mouseup', function(e) {
             if (!isEditMode) return;
-            // Introduce a short timeout to let the browser's selection APIs update
             setTimeout(() => {
                 const selection = window.getSelection();
                 if (!selection || selection.isCollapsed) {
-                    // Check if the click target is outside the toolbar to avoid closing it when clicking its controls
                     if (!e.target.closest('#formatting-toolbar')) {
                         hideToolbar();
                     }
                 } else {
-                    // Only show if selection anchor is within an active block container
                     let parent = selection.anchorNode;
                     let isValidTarget = false;
                     while (parent) {
@@ -1019,7 +1065,6 @@
             populateVoicesList();
         }
 
-        // Updated voice-picker-play trigger to directly use standard TTS to prevent lagginess
         document.getElementById('voice-picker-play').onclick = () => {
             playBlockAudio(globalAudioText, globalAudioBtn);
         };
@@ -1453,17 +1498,24 @@
 
         function showResetButton() {
             const resetBtn = document.getElementById('reset-edits-btn');
+            if (!resetBtn) return;
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const trackerArray = activeMode === 'classic' ? editedTopicIds : editedTemplateIds;
             
+            // Fixed the disappearing behavior: Always keep the button visible, but styled as active or disabled.
             if (activeTopic && trackerArray.includes(activeTopic.id)) {
-                resetBtn.classList.remove('hidden');
+                resetBtn.removeAttribute('disabled');
+                resetBtn.className = "py-2 text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1 cursor-pointer";
             } else {
-                resetBtn.classList.add('hidden');
+                resetBtn.setAttribute('disabled', 'true');
+                resetBtn.className = "py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed";
             }
         }
 
         document.getElementById('reset-edits-btn').onclick = async () => {
+            const resetBtn = document.getElementById('reset-edits-btn');
+            if (resetBtn.hasAttribute('disabled')) return;
+            
             if (confirm("Möchten Sie alle Änderungen an diesem Thema verwerfen?")) {
                 pushToHistory();
                 const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
@@ -1661,7 +1713,6 @@
             }
         }
 
-        // Upgraded with Google Translate free api endpoints as a primary and MyMemory as a secondary backup
         async function fetchAndRenderTranslation(blockId, text, container) {
             if (!container) container = document.getElementById(getTranslationContainerId(blockId));
             if (!container) return;
@@ -1877,18 +1928,26 @@
                     : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)] hover:translate-x-1'
                 }`;
 
+                const emoji = TOPIC_ICONS[topic.id] || "📌";
                 const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
                 const learnMarker = isLearned 
                     ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
                     : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
+                // Replaced textual items when collapsed with the theme's custom emoji (aesthetic minimized mode)
                 item.innerHTML = `
-                    <div class="flex items-center gap-2 truncate">
-                        <span class="text-xs opacity-75 font-mono">#${topic.id}</span>
-                        ${starMarker}
-                        <span class="truncate text-xs topic-title">${topic.title_de}</span>
+                    <div class="flex items-center gap-2.5 truncate">
+                        <!-- Sidebar minimized view only -->
+                        <span class="sidebar-only-emoji text-base select-none leading-none">${emoji}</span>
+                        
+                        <!-- Sidebar maximized view only -->
+                        <div class="flex items-center gap-2 truncate hide-on-collapse-custom">
+                            <span class="text-xs opacity-75 font-mono">#${topic.id}</span>
+                            ${starMarker}
+                            <span class="truncate text-xs topic-title">${topic.title_de}</span>
+                        </div>
                     </div>
-                    ${learnMarker}
+                    <div class="hide-on-collapse-custom flex-shrink-0">${learnMarker}</div>
                 `;
 
                 item.onclick = () => {
@@ -1943,11 +2002,24 @@
 
         function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
             const encodedText = encodeURIComponent(stripHtml(textForAudio));
+            
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isLearned = topic && learnedList.includes(topic.id);
+            
+            // Set modern green colors for active topic blocks when the topic is completed
+            const cardBgClass = isLearned 
+                ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
+                : "bg-[var(--bg-card)] border-[var(--border)]";
+            
+            const titleBulletClass = isLearned 
+                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                : "bg-[var(--accent)]";
+
             return `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative">
+                <div class="${cardBgClass} border rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in">
                     <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-4">
                         <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                            <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                             <h3 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</h3>
                         </div>
                         <div class="flex items-center gap-2">
@@ -1969,11 +2041,24 @@
         function buildTemplateBlockHTML(title, deVal, blockKey, dbField) {
             const cleanDeText = stripHtml(deVal);
             const statementSpeechText = encodeURIComponent(cleanDeText);
+            
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isLearned = topic && learnedList.includes(topic.id);
+            
+            // Set modern green colors for active template blocks when the topic is completed
+            const cardBgClass = isLearned 
+                ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
+                : "bg-[var(--bg-card)] border-[var(--border)]";
+            
+            const titleBulletClass = isLearned 
+                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                : "bg-[var(--accent)]";
+
             return `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative">
+                <div class="${cardBgClass} border rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in">
                     <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
                         <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                            <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
                         <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform" title="Diesen Block anhören">🔊</button>
@@ -2127,7 +2212,6 @@
                 if (transEn) document.getElementById('modal-edit-en').value = transEn;
                 if (transAr) document.getElementById('modal-edit-ar').value = transAr;
             } catch (e) {
-                // MyMemory fallback inside modal
                 try {
                     const [resEn, resAr] = await Promise.all([
                         fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`),
@@ -2172,11 +2256,14 @@
                 if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
+                const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
+
+                // Dynamically sets category-specific background, borders, glow patterns, and focus styles
                 const card = document.createElement('div');
-                card.className = `group p-3.5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[156px] h-auto relative select-none transition-all duration-300 hover:bg-amber-50/90 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-1 hover:scale-[1.04] dark:hover:bg-amber-950/20 dark:hover:border-amber-600 ${
+                card.className = `group p-4 pt-5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} ${style.glow} hover:-translate-y-1 hover:scale-[1.04] ${
                     isActive 
-                    ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
-                    : 'bg-[var(--bg-card)] border-[var(--border)] shadow-sm'
+                    ? `ring-2 ${style.activeRing} shadow-md` 
+                    : 'shadow-sm'
                 }`;
 
                 const numBadge = `<span class="text-xs font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
@@ -2185,27 +2272,31 @@
                     : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" title="Offen"></span>`;
                 
                 const starBadge = isStarred 
-                    ? `<span class="text-amber-500 text-base font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
+                    ? `<span class="text-amber-500 text-xs font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
                     : ``;
 
                 const textClass = "text-[10.5px] sm:text-[11px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
 
-                // Modernized UI: Emoji centered inside a round border badge next to topic tags
+                // Applied floating aesthetic top-badge with strict style injection. Cleaned internal list items.
                 card.innerHTML = `
-                    <div class="flex items-start justify-between mb-1">
-                        <div class="flex flex-col items-start gap-1">
+                    <!-- Floating Category Badge (Aesthetic Mode) -->
+                    <div class="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider shadow-sm border ${style.badgeBg} transition-all duration-200 group-hover:scale-105 group-hover:-translate-y-0.5">
+                        ${topic.category || 'Allgemein'}
+                    </div>
+
+                    <div class="flex items-start justify-between mb-1 mt-1">
+                        <div class="flex flex-col items-start gap-0.5">
                             ${numBadge}
                             ${starBadge}
                         </div>
-                        <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
+                        <div class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
                             ${TOPIC_ICONS[topic.id] || "📌"}
                         </div>
                     </div>
                     <div class="flex-1 flex items-center justify-center py-2">
                         <p class="${textClass}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
                     </div>
-                    <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1">
-                        <span class="truncate max-w-[64px]">${topic.category || 'Prüfung'}</span>
+                    <div class="flex items-center justify-end mt-1">
                         ${progressBadge}
                     </div>
                 `;
@@ -2331,6 +2422,16 @@
                 learnedBtn.textContent = "Als gelernt markieren";
             }
 
+            // Green style adaptation for controls container when the topic is completed (Learned/Done)
+            const controlsEl = document.getElementById('dashboard-controls');
+            if (controlsEl) {
+                if (isLearned) {
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200";
+                } else {
+                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200";
+                }
+            }
+
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
@@ -2343,6 +2444,14 @@
                     </div>
                 </div>
             `;
+
+            const cardBgClass = isLearned 
+                ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
+                : "bg-[var(--bg-card)] border border-[var(--border)]";
+            
+            const titleBulletClass = isLearned 
+                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                : "bg-[var(--accent)]";
 
             if (activeMode === 'classic') {
                 const bannerDiv = document.createElement('div');
@@ -2522,10 +2631,10 @@
                     `;
                 });
                 const proCard = document.createElement('div');
-                proCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
+                proCard.className = `${cardBgClass} rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in`;
                 proCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                        <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                         <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">2. Dafür (Pro)</span>
                     </div>
                     ${proContent}
@@ -2553,11 +2662,10 @@
                     `;
                 });
                 const contraCard = document.createElement('div');
-                // FIXED: Resolved target document reference typo to correctly render contra blocks in template tab
-                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
+                contraCard.className = `${cardBgClass} rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in`;
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                        <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                         <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">3. Dagegen (Contra)</span>
                     </div>
                     ${contraContent}
@@ -2652,6 +2760,7 @@
                 localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
                 renderSidebar();
                 updateProgress();
+                renderActiveTopic(); // Instantly update active workspace colors
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
