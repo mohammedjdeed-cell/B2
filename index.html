@@ -153,6 +153,10 @@
         .sidebar-collapsed .sidebar-only-emoji { display: inline-block !important; }
         .sidebar-collapsed .hide-on-collapse-custom { display: none !important; }
 
+        /* Hide scrollbars but keep functionality */
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
@@ -165,7 +169,8 @@
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
     <!-- Header (Dynamic background elements, permanently docked layout to prevent gaps) -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
+    <!-- Responsive layout: stacks on mobile, unified row on desktop -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 py-3.5 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
         
         <!-- Subtle linguistic watermarks floating in the header background -->
         <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-20 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
@@ -178,30 +183,39 @@
             <span class="text-xl font-serif text-[#F59E0B] opacity-20">Ü</span>
         </div>
 
-        <div class="flex items-center gap-3 relative z-10">
-            <!-- Modern Minimalist Solid Blue B2 Icon Badge -->
-            <div class="relative w-10 h-10 flex-shrink-0 select-none">
-                <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="24" fill="#2563EB"/>
-                    <text x="50%" y="54%" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
-                </svg>
+        <!-- Upper Row: Logo, Title, and Mobile Hamburger -->
+        <div class="flex items-center justify-between w-full md:w-auto relative z-10">
+            <div class="flex items-center gap-3">
+                <!-- Modern Minimalist Solid Blue B2 Icon Badge -->
+                <div class="relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 select-none">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100" height="100" rx="24" fill="#2563EB"/>
+                        <text x="50%" y="54%" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-black text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
+                    <p class="hidden sm:block text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse (1 – 52)</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-lg font-black text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
-                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse (1 – 52)</p>
-            </div>
+
+            <!-- Hamburger Button for Mobile View (Visible next to Title on Small Screens) -->
+            <button id="menu-drawer-toggle" class="md:hidden p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors" title="Einstellungen und Werkzeuge">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
         </div>
 
-        <div class="flex items-center gap-3 flex-wrap relative z-10">
-            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
+        <!-- Lower Row: Horizontal Scrollable Tabs & Desktop Hamburger -->
+        <div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto scrollbar-none z-10">
+            <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] flex-nowrap min-w-max">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-[11px] sm:text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-[11px] sm:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-[11px] sm:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-[11px] sm:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
             </div>
 
-            <!-- Hamburger Button -->
-            <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors" title="Einstellungen und Werkzeuge">
+            <!-- Hamburger Button for Desktop View -->
+            <button id="menu-drawer-toggle-desktop" class="hidden md:block p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors" title="Einstellungen und Werkzeuge">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </div>
@@ -342,13 +356,13 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1"></nav>
         </aside>
 
-        <!-- Main Scrollable Panel -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        <!-- Main Scrollable Panel (pb-28 added to scroll comfortably past the mobile floating action button) -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 pb-28">
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
-            <!-- Dashboard controls (Clean and streamlined after moving data tools inside the Drawer) -->
+            <!-- Dashboard controls -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-200">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
@@ -400,8 +414,8 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern Grid View (Responsive layouts matching high density grid cards) -->
-            <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
+            <!-- Modern Grid View -->
+            <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6 animate-fade-in">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-base font-black text-[var(--text-primary)]">📦 Lern-Raster &amp; Themenauswahl (1-52)</h3>
@@ -409,10 +423,10 @@
                             Übersicht über alle Themen. Die wichtigsten 19 Prüfungsthemen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
                         </p>
                     </div>
-                    <!-- Quick Search / Category filter for 52 box grid -->
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-48" />
-                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
+                    <!-- Quick Search / Category filter styled cleanly to fit beautifully on small screens -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-full sm:w-48" />
+                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold w-full sm:w-auto">
                             <option value="all">Alle Kategorien</option>
                             <option value="Freizeit &amp; Gesundheit">Freizeit &amp; Gesundheit</option>
                             <option value="Arbeit &amp; Karriere">Arbeit &amp; Karriere</option>
@@ -608,7 +622,7 @@
                 lightBorder: 'border-blue-200',
                 darkBg: 'dark:bg-blue-950/20',
                 darkBorder: 'dark:border-blue-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(59,130,246,0.35)]',
+                glow: 'hover:shadow-[0_0_20px_rgba(37,99,235,0.35)]',
                 badgeBg: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200/50 dark:border-blue-800/50',
                 activeRing: 'ring-blue-500'
             },
@@ -699,8 +713,8 @@
                 icon: "💬",
                 phrases: [
                     { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way.", ar: "في رأيي، ينبغي للمرء أن ينظر إلى هذا بطريقة أكثر تمايزًا." },
-                    { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن هذا الموضوع يلعب دوراً هاماً." },
-                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيob هنا." },
+                    { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن dieses Thema يلعب دوراً هاماً." },
+                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيوب هنا." },
                     { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظري الشخصية، من الضروري اتخاذ إجراء هنا." }
                 ]
             },
@@ -710,7 +724,7 @@
                 phrases: [
                     { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
                     { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
-                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة schريكي." },
+                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
                 ]
             },
@@ -721,14 +735,14 @@
                     { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل different قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
                     { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي hier. فالواقع غالباً ما يبدو مختلفاً." },
                     { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، jedoch لا يجب أن ننسى أن..." },
-                    { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك في أن هذا الحل المقترح يعمل في الممارسة العملية." }
+                    { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك in أن dieses Lösungsansatz يعمل في الممارسة العملية." }
                 ]
             },
             {
                 title: "Einen Kompromiss finden (Reaching an Agreement)",
                 icon: "🤝",
                 phrases: [
-                    { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق على أن كلا الجانبين لديهما جوانب مهمة." },
+                    { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben." },
                     { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار?" },
                     { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه auf الرغم von اختلاف وجهات النظر، kann man التوصل إلى اتفاق." }
                 ]
@@ -1218,7 +1232,8 @@
         // Slide-out Drawer Panel UI Logic
         const drawerMenu = document.getElementById('drawer-menu');
         const drawerOverlay = document.getElementById('drawer-overlay');
-        const drawerToggle = document.getElementById('menu-drawer-toggle');
+        const drawerToggleMobile = document.getElementById('menu-drawer-toggle');
+        const drawerToggleDesktop = document.getElementById('menu-drawer-toggle-desktop');
         const drawerClose = document.getElementById('drawer-close');
 
         function toggleDrawer() {
@@ -1233,7 +1248,8 @@
             }
         }
 
-        drawerToggle.onclick = toggleDrawer;
+        if (drawerToggleMobile) drawerToggleMobile.onclick = toggleDrawer;
+        if (drawerToggleDesktop) drawerToggleDesktop.onclick = toggleDrawer;
         drawerClose.onclick = toggleDrawer;
         drawerOverlay.onclick = toggleDrawer;
 
@@ -2292,7 +2308,7 @@
                             ${numBadge}
                             ${starBadge}
                         </div>
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-base sm:text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
                             ${TOPIC_ICONS[topic.id] || "📌"}
                         </div>
                     </div>
@@ -2547,7 +2563,7 @@
                 const erfahrungHtml = `
                     <div data-block-key="${erfDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${erfDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${erfDe}')">${isEditMode ? (savedErf || topic[erfDe]) : applyConnectorsHighlight(savedErf || topic[erfDe])}</div>
                     <p id="en-${erfDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${erfEn}')">${cleanErfEn}</p>
-                    <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
+                    <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${arfAr}')" dir="rtl">${cleanErfAr}</p>
                 `;
                 const erfahrungCard = document.createElement('div');
                 erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
