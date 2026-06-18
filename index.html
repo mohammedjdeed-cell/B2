@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
+<html lang="de" class="h-full bg-[var(--bg-app)] transition-all duration-200 scale-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -78,6 +78,11 @@
             color: var(--text-primary);
         }
 
+        /* Scalable Layout / Text sizes via html class */
+        html.zoom-80 { font-size: 14px; }
+        html.zoom-100 { font-size: 16px; }
+        html.zoom-120 { font-size: 18px; }
+
         [dir="rtl"], [lang="ar"], .ar-text {
             font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
             direction: rtl;
@@ -99,7 +104,7 @@
             border-bottom-color: #EAB308;
         }
 
-        /* Modern Soft Highlight Colors */
+        /* Soft Highlight PDF-Style Options */
         .hl-yellow { background-color: rgba(254, 240, 138, 0.6) !important; border-radius: 4px; padding: 0px 2px; margin: 0; display: inline; }
         .hl-blue   { background-color: rgba(191, 219, 254, 0.6) !important; border-radius: 4px; padding: 0px 2px; margin: 0; display: inline; }
         .hl-red    { background-color: rgba(254, 202, 202, 0.6) !important; border-radius: 4px; padding: 0px 2px; margin: 0; display: inline; }
@@ -159,60 +164,111 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="h-full flex flex-col overflow-hidden">
+<body class="h-full flex flex-col overflow-hidden select-none">
 
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
+    <!-- Header bar with Mobile Layout Navigation controls -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 md:px-6 py-4 flex items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
-            <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
+            <!-- Mobile Menu Toggle Button (Hamburger) -->
+            <button id="mobile-sidebar-toggle" class="lg:hidden p-2 rounded-lg border border-[var(--border)] hover:bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm hidden sm:block">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             </div>
             <div>
-                <h1 class="text-lg font-bold text-[var(--text-primary)]">TELC B2 Trainer</h1>
-                <p class="text-xs text-[var(--text-muted)]">Interaktive Vorbereitung & Strukturierte Analyse (1 – 52)</p>
+                <h1 class="text-sm md:text-lg font-bold text-[var(--text-primary)] leading-tight">TELC B2 Trainer</h1>
+                <p class="text-[10px] md:text-xs text-[var(--text-muted)]">Interaktive Vorbereitung & Analyse (1 – 52)</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-3 flex-wrap">
+        <!-- Navigation Tabs -->
+        <div class="flex items-center gap-2 flex-wrap">
             <div class="flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-2 md:px-3 py-1 text-[11px] md:text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-2 md:px-3 py-1 text-[11px] md:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Mindmap</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-2 md:px-3 py-1 text-[11px] md:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-2 md:px-3 py-1 text-[11px] md:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
             </div>
 
+            <!-- Settings / Zoom scale options -->
+            <div class="flex items-center gap-1.5 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+                <button onclick="changeZoomScale('80')" id="scale-btn-80" class="w-6 h-6 text-[10px] font-bold rounded flex items-center justify-center transition-all bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">80%</button>
+                <button onclick="changeZoomScale('100')" id="scale-btn-100" class="w-6 h-6 text-[10px] font-bold rounded flex items-center justify-center transition-all text-[var(--text-muted)]">100%</button>
+                <button onclick="changeZoomScale('120')" id="scale-btn-120" class="w-6 h-6 text-[10px] font-bold rounded flex items-center justify-center transition-all text-[var(--text-muted)]">120%</button>
+            </div>
+
+            <!-- Light/Dark toggle -->
             <button id="theme-toggle" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors">
                 <svg id="theme-toggle-sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z"></path></svg>
                 <svg id="theme-toggle-moon-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
-        </div>
 
-        <div class="flex items-center gap-3 flex-wrap">
-            <div id="auth-logged-out" class="flex items-center gap-2">
-                <select id="user-select" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none">
-                    <option value="mohammed">Mohammed</option>
-                    <option value="mai">Mai</option>
-                </select>
-                <input type="password" id="workspace-password" placeholder="Passwort" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none w-24" />
-                <button id="btn-login" class="px-2.5 py-1 text-xs bg-[var(--accent)] text-white rounded font-bold hover:opacity-90">Login</button>
-                <button id="btn-signup" class="px-2 py-1 text-xs bg-zinc-200 dark:bg-zinc-700 text-[var(--text-primary)] rounded font-semibold hover:opacity-80">Registrieren</button>
-            </div>
-            <div id="auth-logged-in" class="hidden flex items-center gap-2">
-                <span id="user-display-name" class="text-xs font-bold text-[var(--text-primary)]"></span>
-                <button id="btn-logout" class="px-2.5 py-1 text-xs bg-rose-600 text-white rounded font-bold hover:bg-rose-700">Logout</button>
+            <!-- Actions Hamburguer Menu dropdown directly integrated from index1.html -->
+            <div class="relative inline-block text-left">
+                <button id="menu-dropdown-btn" onclick="toggleMenuDropdown(event)" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors flex items-center justify-center" title="Aktionen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div id="menu-dropdown-content" class="hidden absolute right-0 mt-2 w-64 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-2 space-y-1">
+                    <div id="auth-logged-out" class="p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--bg-app)] rounded-lg">
+                        <div class="text-[10px] font-bold text-amber-500 mb-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Offline-Schnittstelle aktiv</div>
+                        <select id="user-select" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 font-bold text-[var(--text-primary)]">
+                            <option value="mohammed">Mohammed Jdeed</option>
+                            <option value="mai">Mai Hasan</option>
+                        </select>
+                        <input type="password" id="workspace-password" placeholder="Passwort" class="w-full text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 text-[var(--text-primary)]">
+                        <div class="flex gap-1 pt-1">
+                            <button id="btn-login" class="flex-1 text-[10px] font-bold bg-[var(--accent)] hover:opacity-90 text-white rounded py-1.5 transition">Laden</button>
+                            <button id="btn-signup" class="flex-1 text-[10px] font-bold bg-[var(--success)] hover:opacity-90 text-white rounded py-1.5 transition">Konto</button>
+                        </div>
+                    </div>
+
+                    <div id="auth-logged-in" class="hidden p-2 space-y-2 border-b border-[var(--border)] mb-1 bg-[var(--success-light)] rounded-lg">
+                        <div class="text-[10px] font-bold text-[var(--success)] flex items-center gap-1">✓ Cloud-Synchronisierung aktiv</div>
+                        <div id="user-display-name" class="text-xs font-bold text-[var(--text-primary)] truncate">...</div>
+                        <button id="btn-logout" class="w-full text-[10px] font-bold border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)] rounded py-1.5 transition">Abmelden</button>
+                    </div>
+
+                    <button id="edit-mode-toggle" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>✏️</span><span id="edit-mode-status-text">Bearbeitungsmodus: AUS</span>
+                    </button>
+                    <hr class="border-[var(--border)] my-1" />
+                    <button onclick="undo()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>↩️</span><span>Zurück (Undo)</span>
+                    </button>
+                    <button onclick="redo()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>↪️</span><span>Vor (Redo)</span>
+                    </button>
+                    <hr class="border-[var(--border)] my-1" />
+                    <input type="file" id="import-json-input" class="hidden" accept=".json" onchange="importTopicsJSON(event)" />
+                    <button onclick="document.getElementById('import-json-input').click()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>📥</span><span>JSON importieren</span>
+                    </button>
+                    <button id="export-json-btn" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
+                        <span>📤</span><span>JSON exportieren</span>
+                    </button>
+                    <hr class="border-[var(--border)] my-1" />
+                    <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
+                        <span>🧹</span><span>Änderungen zurücksetzen</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <div class="h-full flex flex-col lg:flex-row overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-full lg:w-80 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-all duration-300">
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-80 absolute lg:relative inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
-                <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
+                <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </div>
 
+            <!-- Progress tracker -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 hide-on-collapse">
                 <div class="flex items-center justify-between text-xs font-bold">
                     <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Fortschritt</span>
@@ -235,30 +291,16 @@
             </div>
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1"></nav>
-
-            <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2 hide-on-collapse">
-                <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                    ↩️ Zurück
-                </button>
-                <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                    ↪️ Vor
-                </button>
-            </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main workspace viewport -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-            <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
                     <div>
                         <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/10 rounded uppercase tracking-wider">Thema --</span>
                         <h2 id="active-topic-title-de" class="text-lg font-bold text-[var(--text-primary)] mt-1">Lade Diskussionsthema...</h2>
-                        <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading...</h3>
                     </div>
                 </div>
 
@@ -266,20 +308,8 @@
                     <div class="flex flex-col">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Modus</span>
                         <select id="active-mode" onchange="switchActiveMode(this.value)" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
-                            <option value="classic" selected>Klassisch (Bilingual)</option>
+                            <option value="classic" selected>Klassisch (Dialoge)</option>
                             <option value="template">Template (On-Demand)</option>
-                        </select>
-                    </div>
-
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Anzeige</span>
-                        <select id="lang-view" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
-                            <option value="both">Bilingual (DE & EN)</option>
-                            <option value="de_ar">Bilingual (DE & AR)</option>
-                            <option value="all">Trilingual (DE, EN & AR)</option>
-                            <option value="de">Nur Deutsch (Prüfungsmodus)</option>
-                            <option value="en">Nur Englisch</option>
-                            <option value="ar">Nur Arabisch</option>
                         </select>
                     </div>
 
@@ -300,16 +330,17 @@
             </div>
 
             <div id="dashboard-tab-section" class="space-y-6">
-                <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
+                <!-- Editable active feedback banners -->
+                <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5 animate-fadeIn">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort, um die Formatierungs-Toolbar zu öffnen. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Wählen Sie ein beliebiges Wort oder markieren Sie Text im deutschen Block, um die <strong>PDF-Style Toolbar</strong> zu nutzen. Bearbeiten Sie Deutsch live; die Übersetzungen passen sich automatisch debounced an!
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Mindmap section -->
+            <!-- Dynamic Mindmap View Container -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
@@ -329,14 +360,16 @@
                 </div>
             </section>
 
+            <!-- Redemittel and Grammatik Tabs -->
             <section id="redemittel-tab-section" class="hidden space-y-6"></section>
             <section id="grammar-tab-section" class="hidden space-y-6"></section>
         </main>
     </div>
 
-    <!-- Selection toolbar -->
-    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
+    <!-- Floating PDF-Style Selection Toolbar -->
+    <div id="formatting-toolbar" class="hidden absolute z-50 flex items-center gap-1.5 bg-[var(--bg-card)] border border-[var(--border)] px-2.5 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2.5 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-lg border border-[var(--border)]" title="Fett (B)">B</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-lg border border-[var(--border)]" title="Einkreisen">◯</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-200 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-900/50" title="Gelb"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-200 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-900/50" title="Blau"></button>
@@ -349,7 +382,7 @@
     </div>
 
     <!-- Voice picker panel -->
-    <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
+    <div id="voice-picker-panel" class="hidden absolute z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
@@ -365,14 +398,14 @@
                 </select>
             </div>
             <div class="flex gap-2">
-                <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white font-bold text-xs shadow-sm shadow-[var(--accent)]/20">Vorlesen</button>
+                <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white font-bold text-xs shadow-sm">Vorlesen</button>
                 <button id="voice-picker-stop" class="flex-1 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs">Stopp</button>
             </div>
         </div>
     </div>
 
     <!-- Edit modal -->
-    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
             <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-2">
@@ -492,8 +525,7 @@
         let undoStack = [];
         let redoStack = [];
         
-        // Multi-file state holders
-        const translationCache = {};
+        const translationCache = JSON.parse(localStorage.getItem('b2_translation_cache') || '{}');
         const expandedContainers = new Set();
         
         let audioUnlocked = false;
@@ -513,17 +545,45 @@
             return tmp.textContent || tmp.innerText || "";
         }
 
+        // Global Scale Layout Controller
+        function changeZoomScale(zoom) {
+            const html = document.documentElement;
+            html.classList.remove('scale-80', 'scale-100', 'scale-125', 'scale-150');
+            
+            // Set scaling metrics dynamically
+            if (zoom === '80') {
+                html.style.fontSize = '13px';
+            } else if (zoom === '120') {
+                html.style.fontSize = '19px';
+            } else {
+                html.style.fontSize = '16px';
+            }
+
+            localStorage.setItem('ui_zoom_scale', zoom);
+            ['80', '100', '120'].forEach(sz => {
+                const btn = document.getElementById(`scale-btn-${sz}`);
+                if (sz === zoom) {
+                    btn.className = "w-10 h-6 text-[10px] font-bold rounded flex items-center justify-center transition-all bg-[var(--accent)] text-white shadow-sm";
+                } else {
+                    btn.className = "w-10 h-6 text-[10px] font-bold rounded flex items-center justify-center transition-all text-[var(--text-muted)]";
+                }
+            });
+        }
+        
+        // Read stored scale metric
+        changeZoomScale(localStorage.getItem('ui_zoom_scale') || '100');
+
         function getTopicValue(topic, compoundKey) {
             if (!topic) return "";
             if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_'); 
                 const lang = parts[1];
-                const idx = parseInt(parts[2]);
+                const idx = parts[2];
                 return topic.dialog && topic.dialog[idx] ? topic.dialog[idx][lang] : "";
             } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
                 const parts = compoundKey.split('_');
                 const arrName = parts[0] + '_' + parts[1];
-                const idx = parseInt(parts[2]);
+                const idx = parts[2];
                 return topic[arrName] && topic[arrName][idx] !== undefined ? topic[arrName][idx] : "";
             } else {
                 return topic[compoundKey] || "";
@@ -535,14 +595,14 @@
             if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_');
                 const lang = parts[1];
-                const idx = parseInt(parts[2]);
+                const idx = parts[2];
                 if(!topic.dialog) topic.dialog = [];
                 if(!topic.dialog[idx]) topic.dialog[idx] = {};
                 topic.dialog[idx][lang] = value;
             } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
                 const parts = compoundKey.split('_');
                 const arrName = parts[0] + '_' + parts[1];
-                const idx = parseInt(parts[2]);
+                const idx = parts[2];
                 if(!topic[arrName]) topic[arrName] = [];
                 topic[arrName][idx] = value;
             } else {
@@ -609,6 +669,7 @@
 
         async function saveEditsSilent() {
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!activeTopic) return;
             if (activeMode === 'classic') {
                 if (currentUser) {
                     try {
@@ -649,6 +710,11 @@
             document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
         };
 
+        // Mobile-friendly Layout Hamburguer Menu Toggle
+        document.getElementById('mobile-sidebar-toggle').onclick = () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        };
+
         function saveHighlight(topicId, blockKey, htmlContent) {
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
             highlightsStore[topicId][blockKey] = htmlContent;
@@ -670,13 +736,15 @@
             if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
 
             // If clicking an existing highlight, unwrap it (Toggle off)
-            if (e.target.className.includes('hl-')) {
+            if (e.target.className.includes('hl-') || e.target.className.includes('word-circle') || e.target.className.includes('highlight')) {
                 pushToHistory();
                 const parent = e.target.parentNode;
                 while (e.target.firstChild) { parent.insertBefore(e.target.firstChild, e.target); }
                 parent.removeChild(e.target);
                 parent.normalize();
-                saveHighlight(TOPICS_DATA[activeIdx].id, editableContainer.getAttribute('data-block-key'), editableContainer.innerHTML);
+                
+                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                saveHighlight(activeTopic.id, editableContainer.getAttribute('data-block-key'), editableContainer.innerHTML);
                 editableContainer.dispatchEvent(new Event('blur'));
                 hideToolbar();
                 return;
@@ -716,11 +784,11 @@
         });
 
         function clearAllHighlightsForTopic() {
-            if (TOPICS_DATA.length === 0) return;
-            const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!activeTopic) return;
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
-                if (highlightsStore[topicId]) {
-                    delete highlightsStore[topicId];
+                if (highlightsStore[activeTopic.id]) {
+                    delete highlightsStore[activeTopic.id];
                     localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
                     renderActiveTopic();
                 }
@@ -965,7 +1033,6 @@
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
                     sidebar.classList.add('-translate-x-full');
-                    document.getElementById('menu-icon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`;
                 }
             }
         }
@@ -1090,21 +1157,20 @@
 
                 if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
                 
-                // Keep selected mode dropdown state synced
                 document.getElementById('active-mode').value = activeMode;
 
                 showResetButton();
                 renderSidebar();
                 if(activeTab === 'dashboard') renderActiveTopic();
             } catch (e) {
-                console.error("Fehler beim Laden der Multi-Schnittstelle:", e);
+                console.error("Fehler beim Laden der Quelldaten:", e);
             }
         }
 
         async function saveEdits() {
             pushToHistory(); 
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-            
+            if (!activeTopic) return;
             if (activeMode === 'classic') {
                 if (!editedTopicIds.includes(activeTopic.id)) {
                     editedTopicIds.push(activeTopic.id);
@@ -1135,6 +1201,7 @@
         function showResetButton() {
             const resetBtn = document.getElementById('reset-edits-btn');
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!activeTopic) return;
             const trackerArray = activeMode === 'classic' ? editedTopicIds : editedTemplateIds;
             
             if (activeTopic && trackerArray.includes(activeTopic.id)) {
@@ -1148,6 +1215,7 @@
             if (confirm("Möchten Sie alle Änderungen an diesem Thema verwerfen?")) {
                 pushToHistory();
                 const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                if (!activeTopic) return;
                 if (activeMode === 'classic') {
                     if (currentUser) {
                         await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).delete();
@@ -1223,7 +1291,7 @@
             clearTimeout(autoTranslateTimer);
             autoTranslateTimer = setTimeout(() => {
                 triggerAutoTranslate(element, topicId, compoundKey);
-            }, 1200); // 1.2s debounce
+            }, 1200); 
         }
 
         async function triggerAutoTranslate(element, topicId, compoundKey) {
@@ -1233,43 +1301,34 @@
             let plainText = element.innerText || element.textContent;
             if (plainText.length < 3) return; 
 
-            if (activeMode === 'classic') {
-                const enKey = compoundKey.replace('_de', '_en');
-                const arKey = compoundKey.replace('_de', '_ar');
-                const enEl = document.getElementById(`en-${compoundKey}`);
-                const arEl = document.getElementById(`ar-${compoundKey}`);
+            const enKey = compoundKey.replace('_de', '_en');
+            const arKey = compoundKey.replace('_de', '_ar');
+            const enEl = document.getElementById(`en-${compoundKey}`);
+            const arEl = document.getElementById(`ar-${compoundKey}`);
 
-                if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...übersetze...</span>`;
-                if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...ترجمة...</span>`;
+            if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...übersetze...</span>`;
+            if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...ترجمة...</span>`;
 
-                try {
-                    const [resEn, resAr] = await Promise.all([
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
-                    ]);
-                    const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
+                ]);
+                const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
 
-                    const transEn = dataEn.responseData?.translatedText || "";
-                    const transAr = dataAr.responseData?.translatedText || "";
+                const transEn = dataEn.responseData?.translatedText || "";
+                const transAr = dataAr.responseData?.translatedText || "";
 
-                    setTopicValue(topic, enKey, transEn);
-                    setTopicValue(topic, arKey, transAr);
+                setTopicValue(topic, enKey, transEn);
+                setTopicValue(topic, arKey, transAr);
 
-                    if(enEl) enEl.innerText = transEn;
-                    if(arEl) arEl.innerText = transAr;
-                    saveEditsSilent();
-                } catch(e) {
-                    console.warn("Auto-translate failed.", e);
-                    if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
-                    if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
-                }
-            } else {
-                // If template mode translation is currently expanded, update it in real-time
-                const container = document.getElementById(getTranslationContainerId(compoundKey));
-                if (container && !container.classList.contains('hidden')) {
-                    delete translationCache[compoundKey];
-                    fetchAndRenderTranslation(compoundKey, plainText, container);
-                }
+                if(enEl) enEl.innerText = transEn;
+                if(arEl) arEl.innerText = transAr;
+                saveEditsSilent();
+            } catch(e) {
+                console.warn("Auto-translate failed.", e);
+                if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
+                if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
             }
         }
 
@@ -1285,18 +1344,16 @@
                 saveHighlight(topicId, compoundKey, newHtml);
                 setTopicValue(topic, compoundKey, newHtml);
 
-                if (activeMode === 'template') {
-                    // Instantly trigger re-translation if it's expanded
+                // Instantly update dynamic translations if they are expanded
+                const transCont = document.getElementById(`trans-container-${compoundKey}`);
+                if (transCont && !transCont.classList.contains('hidden')) {
                     delete translationCache[compoundKey];
-                    const container = document.getElementById(getTranslationContainerId(compoundKey));
-                    if (container && !container.classList.contains('hidden')) {
-                        fetchAndRenderTranslation(compoundKey, stripHtml(newHtml), container);
-                    }
+                    fetchAndRenderTranslation(compoundKey, stripHtml(newHtml), transCont);
                 }
             } else {
                 let plainText = element.innerText || element.textContent;
                 setTopicValue(topic, compoundKey, plainText);
-                element.innerText = plainText; // Remove styling corruptions
+                element.innerText = plainText; 
             }
             saveEditsSilent();
         }
@@ -1363,6 +1420,7 @@
                 }
 
                 translationCache[blockId] = { en: transEn, ar: transAr };
+                localStorage.setItem('b2_translation_cache', JSON.stringify(translationCache));
                 renderTranslationHTML(container, transEn, transAr);
             } catch (e) {
                 console.error("Translation fail:", e);
@@ -1434,8 +1492,8 @@
                 unwrapSelection(range, activeContainer);
             }
 
-            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
-            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            saveHighlight(activeTopic.id, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
             handleSelectionChange();
         }
@@ -1455,8 +1513,8 @@
 
             activeContainer.normalize();
             const blockKey = activeContainer.getAttribute('data-block-key');
-            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
-            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            saveHighlight(activeTopic.id, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
         }
 
@@ -1667,17 +1725,17 @@
                 setTopicValue(topic, keyPath.replace('_de', '_ar'), valAR);
             }
 
-            if (activeMode === 'template') {
-                // If translation for the template block was cached, clear it
-                delete translationCache[blockIdUpdated];
-            }
+            delete translationCache[blockIdUpdated];
+            localStorage.setItem('b2_translation_cache', JSON.stringify(translationCache));
 
             saveEdits();
             closeBlockEditor();
             renderActiveTopic();
         }
 
-        // --- RENDER DYNAMIC CARD DESIGN STRUCTURES ---
+        // ==========================================
+        //  DYNAMIC WORKSPACE DESIGN RENDERING
+        // ==========================================
         function buildCardWrapper(title, contentHtml, blockKey, textToSpeakHtml, rawPath, isArray = false, arrayIdx = null, subKey = null) {
             const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
             const plainTextForAudio = stripHtml(textToSpeakHtml);
@@ -1741,15 +1799,6 @@
 
             document.getElementById('active-topic-num').textContent = `Thema ${topic.id} / 52`;
             document.getElementById('active-topic-title-de').textContent = topic.title_de;
-            
-            const titleEnEl = document.getElementById('active-topic-title-en');
-            if (activeMode === 'classic') {
-                titleEnEl.textContent = topic.title_en;
-                titleEnEl.classList.remove('hidden');
-            } else {
-                titleEnEl.classList.add('hidden');
-            }
-            
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
             const rootEl = document.documentElement;
@@ -1787,24 +1836,11 @@
             `;
 
             if (activeMode === 'classic') {
-                const deClass = (activeView === 'both' || activeView === 'de_ar' || activeView === 'all' || activeView === 'de') ? 'block' : 'hidden';
-                const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? 'block' : 'hidden';
-                const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? 'block' : 'hidden';
-
                 // --- 1. EINLEITUNG (Classic) ---
-                const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
-                const savedEinl = getHighlight(topic.id, einlDe);
-                const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
-                const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
-
-                const einleitungHtml = `
-                    ${bannerHtml}
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
-                    <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
-                    <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
-                `;
+                const einlDe = "einleitung_de";
+                const deValEinl = getHighlight(topic.id, einlDe) || topic[einlDe];
                 const einleitungCard = document.createElement('div');
-                einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
+                einleitungCard.innerHTML = buildTemplateBlockHTML("1. Einleitung / Context", deValEinl, einlDe, 'einleitung_de');
                 container.appendChild(einleitungCard);
 
                 const proContraParent = document.createElement('div');
@@ -1812,111 +1848,111 @@
 
                 // --- 2. PRO SECTION (Classic) ---
                 let proContent = "";
-                let fullProTextForAudio = "";
                 topic.pro_de.forEach((deVal, index) => {
-                    const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`; const skeyAr = `pro_ar_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe);
-                    const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
-                    fullProTextForAudio += (saved || deVal) + ". ";
+                    const skeyDe = `pro_de_${index}`;
+                    const deValPro = getHighlight(topic.id, skeyDe) || deVal;
                     proContent += `
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                             <span class="text-[var(--success)] font-black text-lg leading-none mt-0.5">+</span>
-                            <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                                <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                                <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                            <div class="flex-1 font-sans">
+                                <div data-block-key="${skeyDe}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValPro : applyConnectorsHighlight(deValPro)}</div>
+                                <div class="mt-2 flex items-center justify-between">
+                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(deValPro)}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                                    <button onclick="openBlockEditor('pro_de', true, ${index})" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
+                                </div>
+                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
                             </div>
                         </div>
                     `;
                 });
                 const proCard = document.createElement('div');
-                proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio, 'pro_de', true, 0);
+                proCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200";
+                proCard.innerHTML = `
+                    <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">2. Dafür (Pro)</span>
+                    </div>
+                    ${proContent}
+                `;
                 proContraParent.appendChild(proCard);
 
                 // --- 3. CONTRA SECTION (Classic) ---
                 let contraContent = "";
-                let fullContraTextForAudio = "";
                 topic.contra_de.forEach((deVal, index) => {
-                    const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`; const skeyAr = `contra_ar_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe);
-                    const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
-                    fullContraTextForAudio += (saved || deVal) + ". ";
+                    const skeyDe = `contra_de_${index}`;
+                    const deValContra = getHighlight(topic.id, skeyDe) || deVal;
                     contraContent += `
                         <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                             <span class="text-[var(--danger)] font-black text-lg leading-none mt-0.5">-</span>
-                            <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                                <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                                <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                            <div class="flex-1 font-sans">
+                                <div data-block-key="${skeyDe}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValContra : applyConnectorsHighlight(deValContra)}</div>
+                                <div class="mt-2 flex items-center justify-between">
+                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(deValContra)}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                                    <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
+                                </div>
+                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
                             </div>
                         </div>
                     `;
                 });
                 const contraCard = document.createElement('div');
-                contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra)", contraContent, "contra_section", fullContraTextForAudio, 'contra_de', true, 0);
+                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200";
+                contraCard.innerHTML = `
+                    <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">3. Dagegen (Contra)</span>
+                    </div>
+                    ${contraContent}
+                `;
                 proContraParent.appendChild(contraCard);
                 container.appendChild(proContraParent);
 
                 // --- 4. PERSÖNLICHE ERFAHRUNG (Classic) ---
-                const erfDe = "pers_erfahrung_de"; const erfEn = "pers_erfahrung_en"; const erfAr = "pers_erfahrung_ar";
-                const savedErf = getHighlight(topic.id, erfDe);
-                const cleanErfEn = stripHtml(getTopicValue(topic, erfEn));
-                const cleanErfAr = stripHtml(getTopicValue(topic, erfAr));
-
-                const erfahrungHtml = `
-                    <div data-block-key="${erfDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${erfDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${erfDe}')">${isEditMode ? (savedErf || topic[erfDe]) : applyConnectorsHighlight(savedErf || topic[erfDe])}</div>
-                    <p id="en-${erfDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${erfEn}')">${cleanErfEn}</p>
-                    <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
-                `;
+                const erfDe = "pers_erfahrung_de";
+                const deValErf = getHighlight(topic.id, erfDe) || topic[erfDe];
                 const erfahrungCard = document.createElement('div');
-                erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
+                erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
                 container.appendChild(erfahrungCard);
 
                 // --- 5. DIALOG SIMULATION (Classic) ---
                 let dialogHtml = '<div class="space-y-3">';
-                let fullDialogTextForAudio = "";
                 topic.dialog.forEach((chat, index) => {
-                    const skeyDe = `dialog_de_${index}`; const skeyEn = `dialog_en_${index}`; const skeyAr = `dialog_ar_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe);
-                    const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
+                    const skeyDe = `dialog_de_${index}`;
+                    const deValChat = getHighlight(topic.id, skeyDe) || chat.de;
                     const isA = chat.role.includes('A');
-                    fullDialogTextForAudio += chat.role + ": " + (saved || chat.de) + ". ";
                     
                     dialogHtml += `
                         <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
                             <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
-                            <div data-block-key="${skeyDe}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
-                            <p id="en-${skeyDe}" class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                            <p id="ar-${skeyDe}" class="${arClass} text-[11px] text-right font-medium font-arabic mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}</div>
+                            <div class="mt-2 flex items-center justify-between">
+                                <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(deValChat)}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                                <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
+                            </div>
+                            <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
                         </div>
                     `;
                 });
                 dialogHtml += '</div>';
                 const dialogCard = document.createElement('div');
-                dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio, 'dialog', true, 0, 'de');
+                dialogCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200";
+                dialogCard.innerHTML = `
+                    <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">5. Dialog Simulation</span>
+                    </div>
+                    ${dialogHtml}
+                `;
                 container.appendChild(dialogCard);
 
                 // --- 6. GEMEINSAME LÖSUNG (Classic) ---
-                const schlDe = "schluss_de"; const schlEn = "schluss_en"; const schlAr = "schluss_ar";
-                const savedSchl = getHighlight(topic.id, schlDe);
-                const cleanSchlEn = stripHtml(getTopicValue(topic, schlEn));
-                const cleanSchlAr = stripHtml(getTopicValue(topic, schlAr));
-
-                const schlussHtml = `
-                    <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${schlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
-                    <p id="en-${schlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${schlEn}')">${cleanSchlEn}</p>
-                    <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
-                `;
+                const schlDe = "schluss_de";
+                const deValSchl = getHighlight(topic.id, schlDe) || topic[schlDe];
                 const schlussCard = document.createElement('div');
-                schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung", schlussHtml, schlDe, savedSchl || topic[schlDe], 'schluss_de');
+                schlussCard.innerHTML = buildTemplateBlockHTML("6. Gemeinsame Lösung", deValSchl, schlDe, 'schluss_de');
                 container.appendChild(schlussCard);
 
             } else if (activeMode === 'template') {
-                // --- ON-DEMAND TRANSLATIONS SYSTEM (Template Mode) ---
-                
                 // Top Category Banner
                 const bannerDiv = document.createElement('div');
                 bannerDiv.innerHTML = bannerHtml;
@@ -2037,19 +2073,19 @@
                 const schlussCard = document.createElement('div');
                 schlussCard.innerHTML = buildTemplateBlockHTML("6. Gemeinsame Lösung", deValSchl, schlDe, 'schluss_de');
                 container.appendChild(schlussCard);
-
-                // Instantly update/render translation containers marked as expanded
-                expandedContainers.forEach(blockId => {
-                    const node = document.querySelector(`[data-block-key="${blockId}"]`);
-                    if (node) {
-                        const txt = node.innerText || node.textContent;
-                        const containerDiv = document.getElementById(getTranslationContainerId(blockId));
-                        if (containerDiv) {
-                            fetchAndRenderTranslation(blockId, txt, containerDiv);
-                        }
-                    }
-                });
             }
+
+            // Instantly fill translation trays marked as expanded
+            expandedContainers.forEach(blockId => {
+                const node = document.querySelector(`[data-block-key="${blockId}"]`);
+                if (node) {
+                    const txt = node.innerText || node.textContent;
+                    const containerDiv = document.getElementById(getTranslationContainerId(blockId));
+                    if (containerDiv) {
+                        fetchAndRenderTranslation(blockId, txt, containerDiv);
+                    }
+                }
+            });
 
             showResetButton();
         }
@@ -2059,6 +2095,7 @@
         // ==========================================
         document.getElementById('learned-toggle').onclick = () => {
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!activeTopic) return;
             if (learnedList.includes(activeTopic.id)) {
                 learnedList = learnedList.filter(id => id !== activeTopic.id);
                 document.getElementById('learned-toggle').textContent = "Als gelernt markieren";
@@ -2132,7 +2169,6 @@
                 .attr("fill", d => d.data.priority === 'root' ? 'var(--accent)' : (d.data.color || 'var(--bg-card)'))
                 .attr("stroke", d => d.data.priority === 'root' ? 'none' : 'var(--border)')
                 .attr("stroke-width", "1.5px")
-                .attr("shadow", "0 1px 3px rgba(0,0,0,0.05)")
                 .on("click", (event, d) => {
                     if (d.data.idx !== undefined) {
                         activeIdx = d.data.idx;
@@ -2168,10 +2204,10 @@
         //  REDEMITTEL TAB
         // ==========================================
         const redemittelData = [
-            { title: "1. Meinung äußern", icon: "🗣️", phrases: [{ de: "Meiner Meinung nach...", en: "In my opinion...", ar: "في رأيي..." }, { de: "Ich bin der festen Überzeugung, dass...", en: "I strongly believe that...", ar: "أنا مقتنع تماماً بأن..." }, { de: "Ein weiteres wichtiges Argument ist...", en: "Another important argument is...", ar: "حجة أخرى مهمة هي..." }] },
-            { title: "2. Zustimmen", icon: "✅", phrases: [{ de: "Da stimme ich dir vollkommen zu.", en: "I completely agree with you there.", ar: "أتفق معك تماماً في ذلك." }, { de: "Das ist ein berechtigter Punkt.", en: "That is a valid point.", ar: "هذه نقطة وجeeهة." }] },
-            { title: "3. Widersprechen", icon: "❌", phrases: [{ de: "Das sehe ich ein bisschen anders.", en: "I see that a little differently.", ar: "أرى ذلك بشكل مختلف قليلاً." }, { de: "Dagegen könnte man einwenden, dass...", en: "On the other hand, one could object that...", ar: "في المقابل، يمكن الاعتراض بأن..." }] },
-            { title: "4. Zusammenfassen", icon: "🤝", phrases: [{ de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that...", ar: "ربما يمكننا الاتفاق على أن..." }, { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said...", ar: "باختصار، يمكن القول..." }] }
+            { title: "1. Meinung äußern", icon: "🗣️", phrases: [{ de: "Meiner Meinung nach...", en: "In my opinion..." }, { de: "Ich bin der festen Überzeugung, dass...", en: "I strongly believe that..." }, { de: "Ein weiteres wichtiges Argument ist...", en: "Another important argument is..." }] },
+            { title: "2. Zustimmen", icon: "✅", phrases: [{ de: "Da stimme ich dir vollkommen zu.", en: "I completely agree with you there." }, { de: "Das ist ein berechtigter Punkt.", en: "That is a valid point." }] },
+            { title: "3. Widersprechen", icon: "❌", phrases: [{ de: "Das sehe ich ein bisschen anders.", en: "I see that a little differently." }, { de: "Dagegen könnte man einwenden, dass...", en: "On the other hand, one could object that..." }] },
+            { title: "4. Zusammenfassen", icon: "🤝", phrases: [{ de: "Vielleicht können wir uns darauf einigen, dass...", en: "Perhaps we can agree that..." }, { de: "Zusammenfassend lässt sich sagen...", en: "In summary, it can be said..." }] }
         ];
 
         function renderRedemittel() {
@@ -2182,10 +2218,19 @@
                 </div>
             `;
             const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-            redemittelData.forEach(cat => {
+            redemittelData.forEach((cat, cIdx) => {
                 let phrasesHtml = "";
-                cat.phrases.forEach(p => {
-                    phrasesHtml += `<div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0"><div class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div><div class="text-[11px] italic text-[var(--text-muted)]">${p.en}</div><div class="text-[11px] font-arabic font-medium text-right mt-0.5" dir="rtl">${p.ar}</div></div>`;
+                cat.phrases.forEach((p, pIdx) => {
+                    const blockId = `redemittel_${cIdx}_${pIdx}`;
+                    const encodedText = encodeURIComponent(p.de);
+                    phrasesHtml += `
+                        <div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
+                            <div class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div>
+                            <div class="flex items-center justify-between">
+                                <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                            </div>
+                            <div id="trans-container-${blockId}" class="hidden mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
+                        </div>`;
                 });
                 grid.innerHTML += `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]"><div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3"><span class="text-lg">${cat.icon}</span><h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3></div>${phrasesHtml}</div>`;
             });
@@ -2198,7 +2243,7 @@
             container.innerHTML = `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
-                    <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
+                    <p class="text-[10px] text-[var(--text-muted)] mt-0.5 font-sans">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
                 </div>
             `;
             const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
@@ -2253,7 +2298,51 @@
             });
         }
 
-        // --- GLOBAL INTERACTION HANDLERS ---
+        // JSON Import Utilities
+        function importTopicsJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        pushToHistory();
+                        if (activeMode === 'classic') {
+                            TOPICS_DATA = data;
+                            localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+                        } else {
+                            TEMPLATE_DATA = data;
+                            localStorage.setItem('edited_template_data_1_52', JSON.stringify(TEMPLATE_DATA));
+                        }
+                        renderSidebar();
+                        renderActiveTopic();
+                        alert("Daten erfolgreich importiert!");
+                    } else {
+                        alert("Ungültiges Dateiformat. Bitte laden Sie ein gültiges JSON-Array hoch.");
+                    }
+                } catch (err) {
+                    alert("Fehler beim Lesen der JSON-Datei: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Export active database
+        document.getElementById('export-json-btn').onclick = () => {
+            const dataToExport = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const filename = activeMode === 'classic' ? 'edited_topics_export.json' : 'edited_templates_export.json';
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
         const editModeToggle = document.getElementById('edit-mode-toggle');
         editModeToggle.onclick = () => {
             isEditMode = !isEditMode;
@@ -2264,21 +2353,11 @@
             renderActiveTopic();
         };
 
-        const sidebarElement = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobile-nav-toggle');
-        mobileToggle.addEventListener('click', () => {
-            sidebarElement.classList.toggle('-translate-x-full');
-            const isHidden = sidebarElement.classList.contains('-translate-x-full');
-            document.getElementById('menu-icon').innerHTML = isHidden 
-                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
-                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
-        });
-
         // Initialize and load multi-dataset PWA
         loadTopics();
     </script>
 
-    <!-- Service worker handler -->
+    <!-- Service worker PWA offline adapter -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
