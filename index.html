@@ -631,8 +631,8 @@
                 title: "Zustimmung ausdrücken (Agreeing with Partner)",
                 icon: "✅",
                 phrases: [
-                    { de: "Da stimme ich dir voll und ganz zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. هذه حجة قاطعة ومقنعة." },
-                    { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
+                    { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. هذه حجة قاطعة ومقنعة." },
+                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
                     { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أنا أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
                 ]
@@ -641,7 +641,7 @@
                 title: "Widersprechen & Zweifel (Disagreeing / Limiting)",
                 icon: "❌",
                 phrases: [
-                    { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل مختلف قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
+                    { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل different قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
                     { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي هنا. فالواقع غالباً ما يبدو مختلفاً." },
                     { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، ولكن لا يجب أن ننسى أن..." },
                     { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك في أن هذا الحل المقترح يعمل في الممارسة العملية." }
@@ -653,7 +653,7 @@
                 phrases: [
                     { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق على أن كلا الجانبين لديهما جوانب مهمة." },
                     { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار؟" },
-                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه على الرغم من اختلاف وجهات النظر، يمكننا التوصل إلى اتفاق." }
+                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه على الرغم von اختلاف وجهات النظر، يمكننا التوصل إلى اتفاق." }
                 ]
             }
         ];
@@ -747,7 +747,6 @@
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
-        // REDO Logic
         function redo() {
             if (redoStack.length === 0) {
                 alert("Nichts zum Wiederholen!");
@@ -822,22 +821,14 @@
             }
             if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
 
-            if (e.target.className.includes('hl-')) {
-                pushToHistory();
-                const parent = e.target.parentNode;
-                while (e.target.firstChild) { parent.insertBefore(e.target.firstChild, e.target); }
-                parent.removeChild(e.target);
-                parent.normalize();
-                saveHighlight((activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id, editableContainer.getAttribute('data-block-key'), editableContainer.innerHTML);
-                editableContainer.dispatchEvent(new Event('blur'));
-                hideToolbar();
-                return;
-            }
+            // --- REMOVED: Auto-remove highlight on highlighted word click block ---
+            // (As requested, formatted words will not be stripped automatically when pressed)
 
+            // Ignore clicks directly inside the formatting toolbar
             if (e.target.closest('#formatting-toolbar')) return;
 
             const selection = window.getSelection();
-            if (!selection || !selection.isCollapsed) return;
+            if (!selection || !selection.isCollapsed) return; // Prevent overwriting drag-selections
 
             const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
             if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
@@ -858,12 +849,43 @@
                     targetRange.setEnd(node, wordRegex.lastIndex);
                     
                     selection.removeAllRanges();
-                    selection.addRange(targetRange);
+                    selection.addRange(targetRange); // Select the word automatically
                     
-                    handleSelectionChange();
+                    handleSelectionChange(); // Trigger the 4-color soft menu popup
                     break;
                 }
             }
+        });
+
+        // Global Selection Dismiss / Blur Handler (Fixes the stuck toolbar menu bug)
+        document.addEventListener('mouseup', function(e) {
+            if (!isEditMode) return;
+            // Introduce a short timeout to let the browser's selection APIs update
+            setTimeout(() => {
+                const selection = window.getSelection();
+                if (!selection || selection.isCollapsed) {
+                    // Check if the click target is outside the toolbar to avoid closing it when clicking its controls
+                    if (!e.target.closest('#formatting-toolbar')) {
+                        hideToolbar();
+                    }
+                } else {
+                    // Only show if selection anchor is within an active block container
+                    let parent = selection.anchorNode;
+                    let isValidTarget = false;
+                    while (parent) {
+                        if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
+                            isValidTarget = true;
+                            break;
+                        }
+                        parent = parent.parentNode;
+                    }
+                    if (isValidTarget) {
+                        handleSelectionChange();
+                    } else {
+                        hideToolbar();
+                    }
+                }
+            }, 10);
         });
 
         function clearAllHighlightsForTopic() {
@@ -1201,7 +1223,6 @@
 
         applyThemeSetting();
 
-        // Dynamically adjusts global font metrics responsive scaling
         function applyTextScale() {
             document.documentElement.style.setProperty('--text-scale', textScale);
             
@@ -1395,7 +1416,6 @@
                     }];
                 }
 
-                // Auto-sanitize citations and search metadata from the loaded grammar entries
                 baseGrammatik.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
                     if (item.description) item.description = cleanCitationLinks(item.description);
@@ -2136,7 +2156,7 @@
         }
 
         // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW (FIXED WITH DYNAMIC FONT SCALING)
+        //  MODERN SIMPLISTIC GRID VIEW
         // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
@@ -2156,7 +2176,6 @@
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
-                // Auto-expandable height with custom min-bounds to avoid overlapping borders
                 card.className = `p-3.5 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[156px] h-auto relative select-none hover:shadow-md hover:scale-[1.02] ${
                     isActive 
                     ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
@@ -2172,9 +2191,8 @@
                     ? `<span class="text-amber-500 text-base font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
                     : ``;
 
-                // Calculate optimal responsive sizing dynamically based on word metrics length
                 const titleLength = topic.title_de.length;
-                let responsiveTextClass = "text-xs"; // Base font-size
+                let responsiveTextClass = "text-xs"; 
                 if (titleLength > 48) {
                     responsiveTextClass = "text-[9.5px]";
                 } else if (titleLength > 32) {
@@ -2190,7 +2208,6 @@
                         ${progressBadge}
                     </div>
                     <div class="flex-1 flex items-center justify-center py-2">
-                        <!-- Implemented hyphens-auto & break-words to handle German compound words neatly -->
                         <p class="${responsiveTextClass} font-bold text-center leading-snug break-words ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
                     </div>
                     <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1">
@@ -2278,7 +2295,7 @@
                 const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
 
                 const einleitungHtml = `
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
                     <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
                     <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
                 `;
@@ -2470,8 +2487,7 @@
                         </div>
                     `;
                 });
-                const contraCard = document.createElement('div');
-                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
+                const contraCard = document.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
@@ -2527,7 +2543,6 @@
                 container.appendChild(schlussCard);
             }
 
-            // Keep expanded on-demand translation panels loaded when redrawing topics
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
                 if (containerNode) {
@@ -2772,18 +2787,6 @@
                 }
             };
             reader.readAsText(file);
-        }
-
-        function exportSingleJSON(type) {
-            const data = type === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
-            const filename = type === 'classic' ? 'topics.json' : 'template.json';
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", filename);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         }
 
         const sidebarElement = document.getElementById('sidebar');
