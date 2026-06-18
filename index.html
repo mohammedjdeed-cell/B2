@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Updated font to Outfit for a more modern, elegant, and readable look -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;500;600;700;800&family=Noto+Sans+Arabic:wght=300..700&display=swap" rel="stylesheet">
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
@@ -31,159 +31,117 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
-        :root {
-            --bg-app:        #F5F4F0;
-            --bg-card:       #FFFFFF;
-            --bg-sidebar:    #FAFAF8;
-            --border:        rgba(0,0,0,0.08);
-            --text-primary:  #1A1A1A;
-            --text-muted:    #6B7280;
-            --text-faint:    #9CA3AF;
-            --accent:        #2563EB;          
-            --accent-light:  #EFF6FF;          
-            --success:       #16A34A;
-            --success-light: #F0FDF4;
-            --danger:        #DC2626;
-            --danger-light:  #FEF2F2;
-            --amber:         #D97706;
-            --amber-light:   #FFFBEB;
-            --purple:        #7C3AED;
-            --purple-light:  #F5F3FF;
-            --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-            --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
-            --radius-card:   14px;
-            --radius-btn:    8px;
-            --text-scale:    100%;
-        }
+    :root {
+        --bg-app:        #F5F4F0;
+        --bg-card:       #FFFFFF;
+        --bg-sidebar:    #FAFAF8;
+        --border:        rgba(0,0,0,0.08);
+        --text-primary:  #1A1A1A;
+        --text-muted:    #6B7280;
+        --text-faint:    #9CA3AF;
+        --accent:        #4a7c59; /* Unified clean sage family */          
+        --accent-light:  #f0f7f3;          
+        --success:       #4a7c59;
+        --success-light: #f0f7f3;
+        --danger:        #c0392b;
+        --danger-light:  #fdf2f2;
+        --amber:         #D97706;
+        --amber-light:   #FFFBEB;
+        --purple:        #7C3AED;
+        --purple-light:  #F5F3FF;
+        --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+        --radius-card:   12px;
+        --radius-btn:    8px;
+        --text-scale:    100%;
+    }
 
-        /* Updated Dark Theme: Softer, neutral greys for reduced eye strain */
-        [data-theme="dark"] {
-            --bg-app:        #18181A;
-            --bg-card:       #222224;
-            --bg-sidebar:    #18181A;
-            --border:        rgba(255,255,255,0.06);
-            --text-primary:  #E4E4E7;
-            --text-muted:    #A1A1AA;
-            --text-faint:    #52525B;
-            --accent:        #3B82F6;
-            --accent-light:  rgba(59,130,246,0.12);
-            --success:       #22C55E;
-            --success-light: rgba(34,197,94,0.12);
-            --danger:        #EF4444;
-            --danger-light:  rgba(239,68,68,0.12);
-            --amber:         #F59E0B;
-            --amber-light:   rgba(245,158,11,0.12);
-            --purple:        #A78BFA;
-            --purple-light:  rgba(167,139,250,0.12);
-            --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
-            --shadow-md:     0 4px 12px rgba(0,0,0,0.4);
-        }
+    /* Problem 1: Eye-Strain Free Warm Dark Palette Override */
+    [data-theme="dark"] {
+        --bg-app:        #1c1b18; /* Warm dark canvas */
+        --bg-card:       #242320; /* Warm dark surface cards */
+        --sidebar-bg:    #1c1b18;
+        --border:        #2e2c28; /* Subdued border */
+        --text-primary:  #e8e4dc; /* Soft warm white */
+        --text-muted:    #9a9690; /* Subdued descriptive text */
+        --text-faint:    #52504c;
+        --accent:        #5a8f6a; /* Muted sage green accent */
+        --accent-light:  rgba(90, 143, 106, 0.15);
+        --success:       #5a8f6a;
+        --success-light: #1e2d22; /* Very dark green tint */
+        --danger:        #c0392b;
+        --danger-light:  #2d1e1e; /* Very dark red tint */
+        --amber:         #d97706;
+        --amber-light:   rgba(217, 119, 6, 0.15);
+        --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
+        --shadow-md:     0 4px 12px rgba(0,0,0,0.6);
+    }
 
-        body {
-            font-family: 'Outfit', 'Inter', system-ui, sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-primary);
-        }
+    /* 0.3s Transition configuration for theme switches */
+    body, header, aside, main, .card-transition {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
 
-        html {
-            font-size: var(--text-scale) !important;
-        }
+    /* Problem 6: Touch Interaction & Micro-animations */
+    button, .clickable-row, #topic-list button {
+        transition: transform 0.1s ease, background-color 0.2s ease;
+    }
+    button:active, .clickable-row:active, #topic-list button:active {
+        transform: scale(0.97) !important; /* Visual physical press feedback */
+    }
 
-        [dir="rtl"], [lang="ar"], .ar-text {
-            font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
-            direction: rtl;
-            text-align: right;
-        }
+    /* Accordion Max-Height Transition Animation */
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease-out, opacity 0.25s ease-out;
+        opacity: 0;
+    }
+    .accordion-content.expanded {
+        max-height: 2000px; /* Safe upper boundary for text sections */
+        opacity: 1;
+    }
 
-        .highlight {
-            background-color: #FEF08A;
-            color: #854D0E;
-            font-weight: 700;
-            padding: 1px 2px;
-            border-radius: 4px;
-            border-bottom: 2px solid #FACC15;
-            display: inline-block;
-        }
-        [data-theme="dark"] .highlight {
-            background-color: #CA8A04;
-            color: #FEF9C3;
-            border-bottom-color: #EAB308;
-        }
+    /* Swipe reveal styles for topic container lists */
+    .swipe-container {
+        position: relative;
+        overflow: hidden;
+    }
+    .swipe-row {
+        transition: transform 0.25s ease;
+        position: relative;
+        z-index: 10;
+    }
+    .swipe-actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        justify-content: flex-end;
+        z-index: 1;
+    }
 
-        .hl-yellow { background-color: rgba(254, 240, 138, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
-        .hl-blue   { background-color: rgba(191, 219, 254, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
-        .hl-red    { background-color: rgba(254, 202, 202, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
-        .hl-green  { background-color: rgba(187, 247, 208, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
-        
-        [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
-        [data-theme="dark"] .hl-blue   { background-color: rgba(96, 165, 250, 0.25) !important; color: #bfdbfe; }
-        [data-theme="dark"] .hl-red    { background-color: rgba(248, 113, 113, 0.25) !important; color: #fecaca; }
-        [data-theme="dark"] .hl-green  { background-color: rgba(74, 222, 128, 0.25) !important; color: #bbf7d0; }
+    /* Content Fade out/in state indicators */
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.12s ease-out;
+    }
+    .fade-in-active {
+        opacity: 1;
+        transition: opacity 0.12s ease-in;
+    }
 
-        .word-circle {
-            position: relative;
-            display: inline;
-            border: 1.5px solid #EF4444;
-            border-radius: 4px;
-            padding: 0px 2px;
-        }
-
-        .edit-mode-active [contenteditable="true"] {
-            cursor: text;
-            border-bottom: 2px dashed var(--accent);
-            padding: 2px 4px;
-            margin: -2px -4px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            display: block;
-        }
-        .edit-mode-active [contenteditable="true"]:focus {
-            background-color: var(--accent-light);
-            outline: none;
-            border-bottom-style: solid;
-        }
-
-        #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
-        .sidebar-collapsed { width: 5.5rem !important; }
-        .sidebar-collapsed .hide-on-collapse { display: none !important; }
-        .sidebar-collapsed .topic-list-item { padding: 0.75rem 0.5rem; justify-content: center; align-items: center; }
-        .sidebar-collapsed .topic-title { display: none; }
-        .sidebar-collapsed .sidebar-header-flex { flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
-
-        .sidebar-only-emoji { display: none !important; }
-        .sidebar-collapsed .sidebar-only-emoji { display: inline-block !important; }
-        .sidebar-collapsed .hide-on-collapse-custom { display: none !important; }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
-
-        .scalable-content {
-            font-size: 1rem !important;
-        }
-
-        /* Mobile Webapp Safe Areas */
-        @supports (padding-bottom: env(safe-area-inset-bottom)) {
-            .pb-safe {
-                padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
-            }
-        }
-
-        /* Ensure formatting toolbar doesn't overflow mobile screen */
-        #formatting-toolbar {
-            max-width: 90vw;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Make dialog bubbles full width on mobile for better reading focus */
-        @media (max-width: 768px) {
-            .max-w-\[95\%\] {
-                max-width: 100% !important;
-            }
-        }
-    </style>
+    /* Custom scrollbar utility for горизонтальной навигации */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
@@ -229,96 +187,75 @@
     </header>
 
     <!-- Slide-out Universal Hamburger Drawer Menu -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>
-    <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-50 translate-x-full transition-transform duration-300 overflow-y-auto flex flex-col justify-between">
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-50 hidden transition-opacity duration-300"></div>
+    <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[300px] mobile:w-full max-w-full bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-50 transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
             <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
-                <h3 class="font-black text-sm text-[var(--text-primary)] flex items-center gap-2">
-                    ⚙️ Steuerung &amp; Daten
-                </h3>
-                <button id="drawer-close" class="p-1 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)]">
+                <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--text-primary)]">⚙️ Einstellungen</h3>
+                <button id="drawer-close" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">⚡ Editier-Werkzeuge</h4>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EDITIER-WERKZEUGE</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↩️ Zurück</button>
-                    <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↪️ Vor</button>
+                    <button onclick="undo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↩️ Zurück</button>
+                    <button onclick="redo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↪️ Vor</button>
                 </div>
-                <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-dashed border-[var(--border)]">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2">
                     <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="clearAllHighlightsForTopic()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg border border-[var(--border)] transition-colors flex items-center justify-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
-                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Reset
-                    </button>
-                    <button id="reset-edits-btn" class="py-2 text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1" title="Alle Änderungen an diesem Thema verwerfen">
-                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg> Discard
-                    </button>
-                </div>
             </div>
 
-            <div class="space-y-3">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🔐 Cloud-Arbeitsplatz</h4>
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">CLOUD-ARBEITSPLATZ</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div id="drawer-auth-logged-out" class="space-y-2">
-                    <select id="drawer-user-select" class="w-full text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 py-1.5 text-[var(--text-primary)] focus:outline-none">
+                    <select id="drawer-user-select" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]">
                         <option value="mohammed">Mohammed</option>
                         <option value="mai">Mai</option>
                     </select>
-                    <input type="password" id="drawer-workspace-password" placeholder="Passwort eingeben" class="w-full text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 py-1.5 text-[var(--text-primary)] focus:outline-none" />
+                    <input type="password" id="drawer-workspace-password" placeholder="Passwort" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
                     <div class="grid grid-cols-2 gap-2">
-                        <button id="drawer-btn-login" class="py-1.5 text-xs bg-[var(--accent)] text-white rounded font-bold hover:opacity-90">Login</button>
-                        <button id="drawer-btn-signup" class="py-1.5 text-xs bg-zinc-200 dark:bg-zinc-700 text-[var(--text-primary)] rounded font-semibold hover:opacity-80">Registrieren</button>
+                        <button id="drawer-btn-login" class="w-full min-h-[44px] text-xs bg-[var(--accent)] text-white font-bold rounded">Login</button>
+                        <button id="drawer-btn-signup" class="w-full min-h-[44px] text-xs bg-zinc-600 text-white font-bold rounded">Registrieren</button>
                     </div>
                 </div>
-                <div id="drawer-auth-logged-in" class="hidden space-y-2">
-                    <p class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1">🟢 Angemeldet als: <span id="drawer-user-display" class="text-[var(--accent)]"></span></p>
-                    <button id="drawer-btn-logout" class="w-full py-1.5 text-xs bg-rose-600 text-white rounded font-bold hover:bg-rose-700">Logout</button>
+                <div id="drawer-auth-logged-in" class="space-y-2 hidden">
+                    <p class="text-xs text-[var(--text-primary)]">Angemeldet als: <span id="drawer-user-display" class="font-bold"></span></p>
+                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded">Logout</button>
                 </div>
             </div>
 
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📏 Element- &amp; Textgröße</h4>
-                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
-                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-1 text-center rounded">80%</button>
-                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-1 text-center rounded">100%</button>
-                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-1 text-center rounded">125%</button>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">ELEMENT & TEXTGRÖSSE</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
+                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-2 text-xs font-bold rounded">80%</button>
+                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-2 text-xs font-bold rounded">100%</button>
+                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-2 text-xs font-bold rounded">125%</button>
                 </div>
             </div>
 
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🎨 Design &amp; Farbschema</h4>
-                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
-                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-1 text-center rounded">Hell</button>
-                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-1 text-center rounded">Dunkel</button>
-                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-1 text-center rounded">System</button>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DESIGN & FARBSCHEMA</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
+                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-2 text-xs font-bold rounded">Hell</button>
+                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-2 text-xs font-bold rounded">Dunkel</button>
+                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-2 text-xs font-bold rounded">System</button>
                 </div>
             </div>
 
             <div class="space-y-2.5">
-                <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📦 Backup &amp; JSON-Dateien</h4>
-                <div class="space-y-2">
-                    <button onclick="exportTotalBackup()" class="w-full py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center gap-1.5 shadow-sm">
-                        📥 App-Vollbackup erstellen
-                    </button>
-                    <label class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:bg-zinc-700 text-[var(--text-primary)] rounded-lg flex items-center justify-center gap-1.5 border border-[var(--border)] cursor-pointer">
-                        📤 Vollbackup einspielen
-                        <input type="file" id="backup-file-input" class="hidden" accept=".json" onchange="importTotalBackup(event)" />
-                    </label>
-                    <div class="h-px bg-[var(--border)] my-1"></div>
-                    <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
-                        <button onclick="exportSingleJSON('classic')" class="py-1 bg-[var(--bg-app)] hover:bg-zinc-200 dark:bg-zinc-700 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Export Topics</button>
-                        <button onclick="exportSingleJSON('template')" class="py-1 bg-[var(--bg-app)] hover:bg-zinc-200 dark:bg-zinc-700 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Export Template</button>
-                    </div>
-                </div>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">BACKUP & JSON</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <button onclick="exportTotalBackup()" class="w-full min-h-[44px] text-xs font-bold bg-emerald-600 text-white rounded-lg mb-2">Vollbackup erstellen</button>
+                <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[44px] text-xs font-bold bg-blue-600 text-white rounded-lg">Backup einspielen</button>
+                <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
             </div>
-        </div>
-        
-        <div class="p-4 bg-[var(--bg-app)] border-t border-[var(--border)] text-center">
-            <span class="text-[10px] text-[var(--text-faint)] font-bold uppercase tracking-widest">TELC B2Trainer v5.0</span>
         </div>
     </aside>
 
@@ -372,7 +309,7 @@
                     </div>
                 </div>
 
-                <!-- 2-Column Grid on Mobile for compact settings -->
+                <!-- Column/Grid on Mobile for settings -->
                 <div class="grid grid-cols-2 md:flex gap-2 items-center w-full md:w-auto">
                     <select id="active-mode" onchange="switchActiveMode(this.value)" class="w-full text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
                         <option value="classic" selected>Klassisch</option>
@@ -388,6 +325,10 @@
                     
                     <button id="learned-toggle" class="col-span-2 md:col-span-1 w-full text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-2 border border-[var(--border)] shadow-sm">
                         Als gelernt markieren
+                    </button>
+
+                    <button id="reset-edits-btn" disabled class="col-span-2 md:col-span-1 w-full text-xs bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed">
+                        🔄 Zurücksetzen
                     </button>
                 </div>
             </div>
@@ -735,7 +676,7 @@
                 icon: "✅",
                 phrases: [
                     { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
-                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
+                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومnaسبة جداً ذكرتها." },
                     { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
                 ]
@@ -1519,10 +1460,10 @@
             
             if (activeTopic && trackerArray.includes(activeTopic.id)) {
                 resetBtn.removeAttribute('disabled');
-                resetBtn.className = "py-2 text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1 cursor-pointer";
+                resetBtn.className = "col-span-2 md:col-span-1 w-full text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800 rounded-lg border transition-all flex items-center justify-center gap-1 cursor-pointer";
             } else {
                 resetBtn.setAttribute('disabled', 'true');
-                resetBtn.className = "py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed";
+                resetBtn.className = "col-span-2 md:col-span-1 w-full text-xs bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed";
             }
         }
 
@@ -1652,7 +1593,7 @@
                 } catch(e) {
                     try {
                         const [resEn, resAr] = await Promise.all([
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&logpair=de|en`),
                             fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
                         ]);
                         const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
@@ -2010,43 +1951,47 @@
             renderSidebar();
         });
 
+        // Replacement JS logic for Section Block wrappers & Pro/Contra components
         function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
             const encodedText = encodeURIComponent(stripHtml(textForAudio));
+            const isAlwaysOpen = blockKey === 'einleitung_de';
             
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-            const isLearned = topic && learnedList.includes(topic.id);
-            
-            const cardBgClass = isLearned 
-                ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
-                : "bg-[var(--bg-card)] border-[var(--border)]";
-            
-            const titleBulletClass = isLearned 
-                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
-                : "bg-[var(--accent)]";
-
             return `
-                <div class="${cardBgClass} border rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in">
-                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-4">
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] overflow-hidden card-transition">
+                    <div onclick="${isAlwaysOpen ? '' : `toggleCardAccordion('${blockKey}')`}" class="flex items-center justify-between p-4 min-h-[44px] cursor-pointer select-none bg-[var(--bg-sidebar)] border-b border-[var(--border)]">
                         <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</h3>
+                            <span class="text-[11px] font-black uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-3" onclick="event.stopPropagation();">
                             ${showAudio && textForAudio ? `
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-xs hover:scale-110 active:scale-95 transition-transform flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--accent)]" title="Vorlesen">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg> <span class="text-[10px] font-bold">Vorlesen</span>
-                            </button>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)]">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>` : ''}
+                            ${!isAlwaysOpen ? `
+                            <svg id="chevron-${blockKey}" class="w-4 h-4 text-[var(--text-muted)] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             ` : ''}
-                            <button onclick="openBlockEditor('${dbField}', ${index === 0 ? 'false' : 'true'}, ${index}, '${lang}')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
-                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit Block
-                            </button>
                         </div>
                     </div>
-                    <div class="space-y-2 relative">
+                    <div id="content-block-${blockKey}" class="accordion-content ${isAlwaysOpen ? 'expanded' : ''} p-5 space-y-4">
                         ${content}
                     </div>
                 </div>
             `;
+        }
+
+        // Global programmatic expansion controller 
+        function toggleCardAccordion(blockKey) {
+            const element = document.getElementById(`content-block-${blockKey}`);
+            const chevron = document.getElementById(`chevron-${blockKey}`);
+            if (!element) return;
+
+            if (element.classList.contains('expanded')) {
+                element.classList.remove('expanded');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                element.classList.add('expanded');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            }
         }
 
         function buildTemplateBlockHTML(title, deVal, blockKey, dbField) {
@@ -2486,209 +2431,58 @@
                 einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
                 container.appendChild(einleitungCard);
 
+                // Code segment to be dropped into the structural loop block within renderActiveTopic()
                 const proContraParent = document.createElement('div');
-                proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+                proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
 
-                let proContent = "";
-                let fullProTextForAudio = "";
+                // PRO GENERATION
+                let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
                 topic.pro_de.forEach((deVal, index) => {
-                    const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`; const skeyAr = `pro_ar_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe);
+                    const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
+                    const saved = getHighlight(topic.id, skeyDe) || deVal;
                     const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
-                    fullProTextForAudio += (saved || deVal) + " ";
-                    
-                    const itemSpeechText = encodeURIComponent(stripHtml(saved || deVal));
-
                     proContent += `
-                        <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${itemSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                            </button>
-                            <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                                <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                                <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                        <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
+                            <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
+                            <div class="flex-1 text-[14px]">
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
                             </div>
-                        </div>
-                    `;
+                            ${isEditMode ? `
+                            <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                                ✏️
+                            </button>` : ''}
+                        </div>`;
                 });
-                const proCard = document.createElement('div');
-                proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio, 'pro_de', true, 0);
-                proContraParent.appendChild(proCard);
+                proContent += `</div>`;
 
-                let contraContent = "";
-                let fullContraTextForAudio = "";
+                // CONTRA GENERATION
+                let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
                 topic.contra_de.forEach((deVal, index) => {
-                    const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`; const skeyAr = `contra_ar_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe);
+                    const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
+                    const saved = getHighlight(topic.id, skeyDe) || deVal;
                     const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
-                    fullContraTextForAudio += (saved || deVal) + " ";
-
-                    const itemSpeechText = encodeURIComponent(stripHtml(saved || deVal));
-
                     contraContent += `
-                        <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${itemSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                            </button>
-                            <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                                <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                                <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                        <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
+                            <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
+                            <div class="flex-1 text-[14px]">
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
                             </div>
-                        </div>
-                    `;
+                            ${isEditMode ? `
+                            <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                                ✏️
+                            </button>` : ''}
+                        </div>`;
                 });
-                const contraCard = document.createElement('div');
-                contraCard.innerHTML = buildCardWrapper("3. Dagegen (Contra)", contraContent, "contra_section", fullContraTextForAudio, 'contra_de', true, 0);
-                proContraParent.appendChild(contraCard);
-                container.appendChild(proContraParent);
+                contraContent += `</div>`;
 
-                const erfDe = "pers_erfahrung_de"; const erfEn = "pers_erfahrung_en"; const erfAr = "pers_erfahrung_ar";
-                const savedErf = getHighlight(topic.id, erfDe);
-                const cleanErfEn = stripHtml(getTopicValue(topic, erfEn));
-                const cleanErfAr = stripHtml(getTopicValue(topic, erfAr));
-
-                const erfahrungHtml = `
-                    <div data-block-key="${erfDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${erfDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${erfDe}')">${isEditMode ? (savedErf || topic[erfDe]) : applyConnectorsHighlight(savedErf || topic[erfDe])}</div>
-                    <p id="en-${erfDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${erfEn}')">${cleanErfEn}</p>
-                    <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
-                `;
-                const erfahrungCard = document.createElement('div');
-                erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
-                container.appendChild(erfahrungCard);
-
-                let dialogHtml = '<div class="space-y-3">';
-                let fullDialogTextForAudio = "";
-                topic.dialog.forEach((chat, index) => {
-                    const skeyDe = `dialog_de_${index}`; const skeyEn = `dialog_en_${index}`; const skeyAr = `dialog_ar_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe);
-                    const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    const cleanAr = stripHtml(getTopicValue(topic, skeyAr));
-                    const isA = chat.role.includes('A');
-                    fullDialogTextForAudio += chat.role + ": " + (saved || chat.de) + " ";
-                    
-                    const statementSpeechText = encodeURIComponent(stripHtml(saved || chat.de));
-
-                    dialogHtml += `
-                        <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
-                            <div class="flex items-center justify-between gap-4 mb-1">
-                                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">${chat.role}</span>
-                                <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform" title="Diesen Redebeitrag anhören">
-                                    <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                                </button>
-                            </div>
-                            <div data-block-key="${skeyDe}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
-                            <p id="en-${skeyDe}" class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                            <p id="ar-${skeyDe}" class="${arClass} text-[11px] text-right font-medium font-arabic mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
-                        </div>
-                    `;
-                });
-                dialogHtml += '</div>';
-                const dialogCard = document.createElement('div');
-                dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio, 'dialog', true, 0, 'de');
-                container.appendChild(dialogCard);
-
-                const schlDe = "schluss_de"; const schlEn = "schluss_en"; const schlAr = "schluss_ar";
-                const savedSchl = getHighlight(topic.id, schlDe);
-                const cleanSchlEn = stripHtml(getTopicValue(topic, schlEn));
-                const cleanSchlAr = stripHtml(getTopicValue(topic, schlAr));
-
-                const schlussHtml = `
-                    <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${schlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
-                    <p id="en-${schlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${schlEn}')">${cleanSchlEn}</p>
-                    <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
-                `;
-                const schlussCard = document.createElement('div');
-                schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung", schlussHtml, schlDe, savedSchl || topic[schlDe], 'schluss_de');
-                container.appendChild(schlussCard);
-
-            } else if (activeMode === 'template') {
-                const bannerDiv = document.createElement('div');
-                bannerDiv.innerHTML = bannerHtml;
-                container.appendChild(bannerDiv);
-
-                const einlDe = "einleitung_de";
-                const deValEinl = getHighlight(topic.id, einlDe) || topic[einlDe];
-                const einleitungCard = document.createElement('div');
-                einleitungCard.innerHTML = buildTemplateBlockHTML("1. Einleitung / Context", deValEinl, einlDe, 'einleitung_de');
-                container.appendChild(einleitungCard);
-
-                const proContraParent = document.createElement('div');
-                proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-
-                let proContent = "";
-                topic.pro_de.forEach((deVal, index) => {
-                    const skeyDe = `pro_de_${index}`;
-                    const deValPro = getHighlight(topic.id, skeyDe) || deVal;
-                    const statementSpeechText = encodeURIComponent(stripHtml(deValPro));
-                    proContent += `
-                        <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                            </button>
-                            <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValPro : applyConnectorsHighlight(deValPro)}</div>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
-                                    </button>
-                                    <button onclick="openBlockEditor('pro_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
-                                    </button>
-                                </div>
-                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
-                            </div>
-                        </div>
-                    `;
-                });
                 const proCard = document.createElement('div');
-                proCard.className = `${cardBgClass} rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in`;
-                proCard.innerHTML = `
-                    <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">2. Dafür (Pro)</span>
-                    </div>
-                    ${proContent}
-                `;
-                proContraParent.appendChild(proCard);
-
-                let contraContent = "";
-                topic.contra_de.forEach((deVal, index) => {
-                    const skeyDe = `contra_de_${index}`;
-                    const deValContra = getHighlight(topic.id, skeyDe) || deVal;
-                    const statementSpeechText = encodeURIComponent(stripHtml(deValContra));
-                    contraContent += `
-                        <div class="mb-4 last:mb-0 relative flex gap-2 items-start border-b border-[var(--border)] pb-3 last:border-0 last:pb-0">
-                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mt-0.5" title="Dieses Argument anhören">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                            </button>
-                            <div class="flex-1">
-                                <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValContra : applyConnectorsHighlight(deValContra)}</div>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
-                                    </button>
-                                    <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
-                                    </button>
-                                </div>
-                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
-                            </div>
-                        </div>
-                    `;
-                });
+                proCard.innerHTML = buildCardWrapper("Dafür (Pro)", proContent, "pro_section", "", 'pro_de', false);
                 const contraCard = document.createElement('div');
-                contraCard.className = `${cardBgClass} rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in`;
-                contraCard.innerHTML = `
-                    <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">3. Dagegen (Contra)</span>
-                    </div>
-                    ${contraContent}
-                `;
+                contraCard.innerHTML = buildCardWrapper("Dagegen (Contra)", contraContent, "contra_section", "", 'contra_de', false);
+
+                proContraParent.appendChild(proCard);
                 proContraParent.appendChild(contraCard);
                 container.appendChild(proContraParent);
 
@@ -2787,38 +2581,77 @@
             };
         }
 
+        // Grouped functional arrays matching explicit design categories
+        const structuralRedemittel = {
+            "Meinung äußern": [
+                { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way." },
+                { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role." }
+            ],
+            "Zustimmung": [
+                { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
+                { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
+            ],
+            "Widerspruch": [
+                { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
+                { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there." }
+            ],
+            "Einschränkung": [
+                { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that..." },
+                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice." }
+            ],
+            "Abschluss": [
+                { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
+                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+            ]
+        };
+
         function renderRedemittel() {
             const container = document.getElementById('redemittel-tab-section');
-            container.innerHTML = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
-                    <h2 class="text-xl font-bold text-[var(--text-primary)]">🗣️ Redemittel für TELC B2 Diskussionen (Mündlich)</h2>
-                    <p class="text-xs text-[var(--text-muted)] mt-1">Perfekt strukturierte Redemittel für Ihre mündliche B2-Prüfung.</p>
-                </div>
-            `;
-            const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-            redemittelData.forEach(cat => {
-                let phrasesHtml = "";
-                cat.phrases.forEach(p => {
-                    const encodedText = encodeURIComponent(p.de);
-                    phrasesHtml += `
-                        <div class="mb-3 border-b border-[var(--border)] pb-3 last:border-0 last:pb-0 flex items-start gap-2 relative">
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 active:scale-90 transition-transform mt-0.5">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                            </button>
+            if (!container) return;
+            container.innerHTML = "";
+
+            // Sticky Horizontal Pill Category Navigation
+            let navigationBar = `<div class="sticky top-0 bg-[var(--bg-app)] z-30 py-2 flex gap-1.5 overflow-x-auto no-scrollbar border-b border-[var(--border)] mb-4">`;
+            Object.keys(structuralRedemittel).forEach((cat, idx) => {
+                navigationBar += `
+                    <button onclick="document.getElementById('cat-anchor-${idx}').scrollIntoView({behavior: 'smooth'})" class="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] font-bold text-xs rounded-full whitespace-nowrap min-h-[44px]">
+                        ${cat}
+                    </button>`;
+            });
+            navigationBar += `</div>`;
+            
+            let contentsHtml = `<div class="space-y-6">`;
+            Object.keys(structuralRedemittel).forEach((category, catIdx) => {
+                contentsHtml += `
+                    <div id="cat-anchor-${catIdx}" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-sm">
+                        <span class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest block mb-2">${category}</span>
+                        <div class="h-px bg-[var(--border)] w-full mb-3"></div>
+                        <div class="space-y-3">`;
+                
+                structuralRedemittel[category].forEach(phrase => {
+                    const encodedText = encodeURIComponent(phrase.de);
+                    contentsHtml += `
+                        <div class="flex items-center justify-between p-3 bg-[var(--bg-sidebar)] rounded-lg min-h-[44px] gap-4">
                             <div class="flex-1">
-                                <div data-block-key="redemittel_${p.de.slice(0,8)}" class="text-sm font-bold text-[var(--accent)] mb-1">${p.de}</div>
-                                <div class="text-[11px] italic text-[var(--text-muted)]">${p.en}</div>
-                                <div class="text-[11px] font-arabic font-medium text-right mt-0.5" dir="rtl">${p.ar}</div>
+                                <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
+                                <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
                             </div>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)]">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
                         </div>`;
                 });
-                grid.innerHTML += `<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] relative"><div class="flex items-center gap-2 border-b border-[var(--border)] pb-2 mb-3"><span class="text-lg">${cat.icon}</span><h3 class="text-sm font-bold text-[var(--text-primary)]">${cat.title}</h3></div>${phrasesHtml}</div>`;
+                
+                contentsHtml += `</div></div>`;
             });
-            container.appendChild(grid);
+            contentsHtml += `</div>`;
+
+            container.innerHTML = navigationBar + contentsHtml;
         }
 
         function renderGrammar() {
             const container = document.getElementById('grammar-tab-section');
+            if (!container) return;
             container.innerHTML = `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
@@ -3013,7 +2846,74 @@
                 sidebarElement.classList.toggle('-translate-x-full');
             });
         }
+        
+        // Touch Delta Multi-axis Filter Logic
+        let touchStartX = 0; let touchStartY = 0;
+        let touchEndX = 0; let touchEndY = 0;
 
+        const workspacePanel = document.querySelector('main');
+
+        if (workspacePanel) {
+            workspacePanel.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            workspacePanel.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipeNavigation();
+            }, { passive: true });
+        }
+
+        function handleSwipeNavigation() {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Axis threshold verification: strictly verify horizontal intent over vertical scroll delta
+            if (Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2.5 * Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    // Swipe Right: Navigate backward
+                    navigateTopicStep(-1);
+                } else {
+                    // Swipe Left: Navigate forward
+                    navigateTopicStep(1);
+                }
+            }
+        }
+
+        // Microanimated Fade Transition Controller
+        function navigateTopicStep(direction) {
+            const targetIdx = activeIdx + direction;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            
+            if (targetIdx >= 0 && targetIdx < dataset.length) {
+                const panel = document.querySelector('main');
+                panel.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    activeIdx = targetIdx;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    panel.classList.remove('fade-out');
+                    panel.classList.add('fade-in-active');
+                    setTimeout(() => panel.classList.remove('fade-in-active'), 120);
+                    panel.scrollTop = 0;
+                }, 120);
+            }
+        }
+
+        // Gelernt Scale-Pulse Animator Mutation
+        function handleLearningToggleAnimation(buttonEl, isNowLearned) {
+            if (isNowLearned) {
+                buttonEl.style.transform = "scale(1.05)";
+                buttonEl.classList.add("bg-emerald-600", "text-white");
+                setTimeout(() => {
+                    buttonEl.style.transform = "scale(1)";
+                }, 150);
+            }
+        }
         loadTopics();
     </script>
 
