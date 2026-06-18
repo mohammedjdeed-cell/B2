@@ -99,10 +99,10 @@
             border-bottom-color: #EAB308;
         }
 
-        .hl-yellow { background-color: rgba(254, 240, 138, 0.6) !important; border-radius: 4px; padding: 0px 2px; }
-        .hl-blue   { background-color: rgba(191, 219, 254, 0.6) !important; border-radius: 4px; padding: 0px 2px; }
-        .hl-red    { background-color: rgba(254, 202, 202, 0.6) !important; border-radius: 4px; padding: 0px 2px; }
-        .hl-green  { background-color: rgba(187, 247, 208, 0.6) !important; border-radius: 4px; padding: 0px 2px; }
+        .hl-yellow { background-color: rgba(254, 240, 138, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
+        .hl-blue   { background-color: rgba(191, 219, 254, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
+        .hl-red    { background-color: rgba(254, 202, 202, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
+        .hl-green  { background-color: rgba(187, 247, 208, 0.6) !important; border-radius: 4px; padding: 0px 2px; display: inline; }
         
         [data-theme="dark"] .hl-yellow { background-color: rgba(253, 224, 71, 0.25) !important; color: #fef08a; }
         [data-theme="dark"] .hl-blue   { background-color: rgba(96, 165, 250, 0.25) !important; color: #bfdbfe; }
@@ -162,7 +162,7 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden">
 
-    <!-- Header (Hides dynamically on scroll) -->
+    <!-- Header (Disappears when scrolling down, reappears when scrolling up) -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 fixed top-0 left-0 right-0 z-40 shadow-sm transition-transform duration-300">
         <div class="flex items-center gap-3">
             <!-- Dynamic Vector Logo: Big B2 with Doctoral/Academic Cap -->
@@ -199,7 +199,7 @@
         </div>
     </header>
 
-    <!-- Slide-out Hamburger Drawer Menu -->
+    <!-- Slide-out Universal Hamburger Drawer Menu -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>
     <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-50 translate-x-full transition-transform duration-300 overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
@@ -212,7 +212,7 @@
                 </button>
             </div>
 
-            <!-- Edit & Navigation Tools -->
+            <!-- Edit, Undo, Redo, Navigation Tools -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">⚡ Editier-Werkzeuge</h4>
                 <div class="grid grid-cols-2 gap-2">
@@ -244,7 +244,7 @@
                 </div>
             </div>
 
-            <!-- Scalability Configuration -->
+            <!-- Font Sizing Dynamic Configuration -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📏 Element- & Textgröße</h4>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
@@ -254,7 +254,7 @@
                 </div>
             </div>
 
-            <!-- Appearance Theme Control (Light / Dark / System) -->
+            <!-- Appearance Theme Control (Light / Dark / System Preference) -->
             <div class="space-y-2.5">
                 <h4 class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">🎨 Design & Farbschema</h4>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] text-xs font-bold">
@@ -396,11 +396,25 @@
 
             <!-- Modern simplistic box/calendar grid section -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
-                <div class="border-b border-[var(--border)] pb-4">
-                    <h3 class="text-base font-black text-[var(--text-primary)]">📦 Lern-Raster & Themenauswahl (1-52)</h3>
-                    <p class="text-xs text-[var(--text-muted)] mt-1">
-                        Übersicht über alle Themen. Die wichtigsten 19 Prüfungsthemen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
-                    </p>
+                <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-black text-[var(--text-primary)]">📦 Lern-Raster & Themenauswahl (1-52)</h3>
+                        <p class="text-xs text-[var(--text-muted)] mt-1">
+                            Übersicht über alle Themen. Die wichtigsten 19 Prüfungsthemen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
+                        </p>
+                    </div>
+                    <!-- Quick Search / Category filter for 52 box grid -->
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-48" />
+                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
+                            <option value="all">Alle Kategorien</option>
+                            <option value="Freizeit & Gesundheit">Freizeit & Gesundheit</option>
+                            <option value="Arbeit & Karriere">Arbeit & Karriere</option>
+                            <option value="Umwelt & Mobilität">Umwelt & Mobilität</option>
+                            <option value="Gesellschaft & Politik">Gesellschaft & Politik</option>
+                            <option value="Bildung & Technologie">Bildung & Technologie</option>
+                        </select>
+                    </div>
                 </div>
                 <!-- Box Grid Container -->
                 <div id="box-grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3.5 pt-2"></div>
@@ -487,7 +501,6 @@
 
     <!-- Script Block -->
     <script>
-        // Starred important topics matching selection criteria
         const STARRED_TOPICS = [4, 8, 14, 15, 17, 18, 19, 21, 22, 26, 27, 30, 31, 34, 38, 39, 41, 43, 48];
 
         const TOPIC_ICONS = {
@@ -576,10 +589,10 @@
         const translationCache = {};
         const expandedContainers = new Set();
         
-        // Dynamic Zoom Preferences
+        // Dynamic zoom factor state
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Global TTS unlock
+        // Global browser audio unlock
         let audioUnlocked = false;
         document.body.addEventListener('click', () => {
             if (!audioUnlocked && 'speechSynthesis' in window) {
@@ -733,7 +746,77 @@
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
-        // TEXT-TO-SPEECH (TTS) SYSTEM & DYNAMIC WORD GLOW
+        // --- WORD-LEVEL PDF GLOW HIGHLIGHT ENGINE ---
+        document.addEventListener('click', function(e) {
+            if (!isEditMode) return;
+            
+            let editableContainer = e.target;
+            while (editableContainer && editableContainer !== document.body && !editableContainer.hasAttribute('data-block-key')) {
+                editableContainer = editableContainer.parentNode;
+            }
+            if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
+
+            // If clicking an existing highlight, unwrap it (Toggle off)
+            if (e.target.className.includes('hl-')) {
+                pushToHistory();
+                const parent = e.target.parentNode;
+                while (e.target.firstChild) { parent.insertBefore(e.target.firstChild, e.target); }
+                parent.removeChild(e.target);
+                parent.normalize();
+                saveHighlight((activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id, editableContainer.getAttribute('data-block-key'), editableContainer.innerHTML);
+                editableContainer.dispatchEvent(new Event('blur'));
+                hideToolbar();
+                return;
+            }
+
+            // Ignore clicks directly inside the formatting toolbar
+            if (e.target.closest('#formatting-toolbar')) return;
+
+            const selection = window.getSelection();
+            if (!selection || !selection.isCollapsed) return; // Prevent overwriting drag-selections
+
+            const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+            if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
+                hideToolbar();
+                return;
+            }
+
+            const node = range.startContainer;
+            const text = node.data;
+            const offset = range.startOffset;
+
+            const wordRegex = /[a-zA-ZäöüÄÖÜß]+/g;
+            let match;
+            while ((match = wordRegex.exec(text)) !== null) {
+                if (offset >= match.index && offset <= wordRegex.lastIndex) {
+                    const targetRange = document.createRange();
+                    targetRange.setStart(node, match.index);
+                    targetRange.setEnd(node, wordRegex.lastIndex);
+                    
+                    selection.removeAllRanges();
+                    selection.addRange(targetRange); // Select the word automatically
+                    
+                    handleSelectionChange(); // Trigger the 4-color soft menu popup
+                    break;
+                }
+            }
+        });
+
+        function clearAllHighlightsForTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
+                if (highlightsStore[topicId]) {
+                    delete highlightsStore[topicId];
+                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                    renderActiveTopic();
+                }
+            }
+        }
+
+        // ==========================================
+        //  TTS (TEXT TO SPEECH) ALGORITHM
+        // ==========================================
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
         let globalAudioText = "";
@@ -753,7 +836,7 @@
                 return;
             }
 
-            // Dynamic voice sorting
+            // DYNAMIC VOICE SORTING (Natural, Premium & Online voices first)
             availableGermanVoices.sort((a, b) => {
                 const getScore = (v) => {
                     let score = 0; let name = v.name.toLowerCase();
@@ -798,7 +881,7 @@
             });
         }
 
-        // Voice Picker popover anchor
+        // DYNAMIC VOICE & SPEED PICKER (POPOVER UI)
         function openVoicePicker(event, encodedText) {
             event.stopPropagation();
             
@@ -1222,7 +1305,7 @@
                 const [resTopics, resTemplate, resGrammatik] = await Promise.all([
                     fetch('./topics.json'),
                     fetch('./template.json'),
-                    fetch('./Grammatik.json')
+                    fetch('./Grammatik.json').catch(() => fetch('./grammatik.json')) // case-sensitive fallback
                 ]);
 
                 let baseTopics = await resTopics.json();
@@ -1545,7 +1628,7 @@
                 const dataAr = await resAr.json();
 
                 if (dataEn.responseStatus !== 200 || dataAr.responseStatus !== 200) {
-                    throw new Error("MyMemory limits");
+                    throw new Error("MyMemory quota or downtime");
                 }
 
                 const transEn = dataEn.responseData?.translatedText || "";
@@ -1558,7 +1641,7 @@
                 translationCache[blockId] = { en: transEn, ar: transAr };
                 renderTranslationHTML(container, transEn, transAr);
             } catch (e) {
-                console.error("Translation fail:", e);
+                console.error("Translation failed:", e);
                 container.innerHTML = `
                     <div class="text-[10px] text-rose-500 font-semibold flex items-center justify-between">
                         <span>⚠️ API-Limit erreicht.</span>
@@ -1688,241 +1771,6 @@
             if (toolbar) toolbar.classList.add('hidden');
         }
 
-        function setFilter(filterType) {
-            currentFilter = filterType;
-            document.getElementById('filter-all-btn').className = filterType === 'all' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
-            document.getElementById('filter-learned-btn').className = filterType === 'learned' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
-            document.getElementById('filter-offen-btn').className = filterType === 'offen' ? 'py-1 text-center rounded bg-[var(--accent-light)] text-[var(--text-primary)] shadow-sm' : 'py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]';
-            renderSidebar();
-        }
-
-        function renderSidebar() {
-            const listContainer = document.getElementById('topic-list');
-            listContainer.innerHTML = "";
-            const searchVal = document.getElementById('search-bar').value.toLowerCase();
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
-
-            dataset.forEach((topic, index) => {
-                const isLearned = learnedList.includes(topic.id);
-                
-                if (currentFilter === 'learned' && !isLearned) return;
-                if (currentFilter === 'offen' && isLearned) return;
-
-                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal) && (!topic.title_en || !topic.title_en.toLowerCase().includes(searchVal))) {
-                    return;
-                }
-                const isActive = index === activeIdx;
-                const tab = document.createElement('button');
-                tab.className = `w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 topic-list-item ${
-                    isActive 
-                    ? 'bg-[var(--accent-light)] border-[var(--accent)]/20 ring-2 ring-[var(--accent)]/10' 
-                    : 'bg-transparent border-transparent hover:bg-[var(--bg-app)]'
-                }`;
-
-                const badge = isLearned 
-                    ? `<span class="text-[var(--success)] mt-0.5">✓</span>`
-                    : `<span class="text-[var(--text-faint)] text-xs font-bold mt-0.5">${topic.id}</span>`;
-
-                const emojiIcon = TOPIC_ICONS[topic.id] || "📌";
-                
-                // Add Gold Star indication on most important topics
-                const starIndicator = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 font-bold ml-1 text-sm select-none" title="Sehr wichtiges Prüfungsthema">★</span>` : '';
-
-                tab.innerHTML = `
-                    <div class="flex items-center gap-1 flex-col justify-center min-w-[24px]">
-                        ${badge}
-                        <span class="text-base select-none">${emojiIcon}</span>
-                    </div>
-                    <div class="flex-1 min-w-0 hide-on-collapse">
-                        <p class="topic-title font-bold leading-tight ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}">${topic.title_de} ${starIndicator}</p>
-                        <div class="flex items-center justify-between mt-1 gap-1">
-                            <span class="text-[9px] font-bold text-[var(--text-muted)] truncate">${topic.category || 'Prüfung'}</span>
-                            <span class="text-[8px] px-1 bg-[var(--bg-app)] rounded text-[var(--text-faint)]">TELC B2</span>
-                        </div>
-                    </div>
-                `;
-
-                tab.onclick = () => {
-                    activeIdx = index;
-                    localStorage.setItem('b2_active_idx', activeIdx);
-                    renderSidebar();
-                    if (activeTab === 'dashboard') renderActiveTopic();
-                    closeSidebarMobile();
-                };
-                listContainer.appendChild(tab);
-            });
-            updateProgress();
-        }
-
-        function updateProgress() {
-            if (TOPICS_DATA.length === 0) return;
-            const percentage = (learnedList.length / TOPICS_DATA.length) * 100;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
-        }
-
-        // Modal Editor Functions
-        function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-            activeEditBlockContext = { keyPath, isArray, index, subKey };
-
-            let textDE = ""; let textEN = ""; let textAR = "";
-
-            if (isArray) {
-                if (subKey) {
-                    textDE = getTopicValue(topic, `${keyPath}_${index}_${subKey}`);
-                    textEN = getTopicValue(topic, `${keyPath}_${index}_en`);
-                    textAR = getTopicValue(topic, `${keyPath}_${index}_ar`);
-                } else {
-                    const arrName = keyPath.replace('_de', '');
-                    textDE = getTopicValue(topic, `${arrName}_de_${index}`);
-                    textEN = getTopicValue(topic, `${arrName}_en_${index}`);
-                    textAR = getTopicValue(topic, `${arrName}_ar_${index}`);
-                }
-            } else {
-                textDE = getTopicValue(topic, keyPath);
-                textEN = getTopicValue(topic, keyPath.replace('_de', '_en'));
-                textAR = getTopicValue(topic, keyPath.replace('_de', '_ar'));
-            }
-
-            document.getElementById('modal-edit-de').value = stripHtml(textDE);
-            document.getElementById('modal-edit-en').value = stripHtml(textEN);
-            document.getElementById('modal-edit-ar').value = stripHtml(textAR);
-
-            document.getElementById('block-editor-modal').classList.remove('hidden');
-        }
-
-        function closeBlockEditor() {
-            document.getElementById('block-editor-modal').classList.add('hidden');
-            activeEditBlockContext = null;
-        }
-
-        async function autoTranslateBlockModal() {
-            const deText = document.getElementById('modal-edit-de').value.trim();
-            if (!deText) return;
-            
-            const btn = document.getElementById('btn-auto-translate');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "⏳ Lädt...";
-            btn.disabled = true;
-
-            try {
-                const resEn = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`);
-                const dataEn = await resEn.json();
-                if(dataEn.responseData && dataEn.responseData.translatedText) {
-                    document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
-                }
-
-                const resAr = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`);
-                const dataAr = await resAr.json();
-                if(dataAr.responseData && dataAr.responseData.translatedText) {
-                    document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
-                }
-            } catch (e) {
-                alert("Fehler bei automatischer Übersetzung.");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        function saveBlockEditor() {
-            if (!activeEditBlockContext) return;
-            const { keyPath, isArray, index, subKey } = activeEditBlockContext;
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-
-            const valDE = document.getElementById('modal-edit-de').value.trim();
-            const valEN = document.getElementById('modal-edit-en').value.trim();
-            const valAR = document.getElementById('modal-edit-ar').value.trim();
-
-            pushToHistory();
-
-            let blockIdUpdated = keyPath;
-
-            if (isArray) {
-                if (subKey) {
-                    setTopicValue(topic, `${keyPath}_${index}_${subKey}`, valDE);
-                    blockIdUpdated = `${keyPath}_de_${index}`;
-                    if (subKey === 'de') {
-                        setTopicValue(topic, `${keyPath}_${index}_en`, valEN);
-                        setTopicValue(topic, `${keyPath}_${index}_ar`, valAR);
-                    }
-                } else {
-                    const arrName = keyPath.replace('_de', '');
-                    setTopicValue(topic, `${arrName}_de_${index}`, valDE);
-                    setTopicValue(topic, `${arrName}_en_${index}`, valEN);
-                    setTopicValue(topic, `${arrName}_ar_${index}`, valAR);
-                    blockIdUpdated = `${arrName}_de_${index}`;
-                }
-            } else {
-                setTopicValue(topic, keyPath, valDE);
-                setTopicValue(topic, keyPath.replace('_de', '_en'), valEN);
-                setTopicValue(topic, keyPath.replace('_de', '_ar'), valAR);
-            }
-
-            if (activeMode === 'template') {
-                delete translationCache[blockIdUpdated];
-            }
-
-            saveEdits();
-            closeBlockEditor();
-            renderActiveTopic();
-        }
-
-        function buildCardWrapper(title, contentHtml, blockKey, textToSpeakHtml, rawPath, isArray = false, arrayIdx = null, subKey = null) {
-            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
-            const plainTextForAudio = stripHtml(textToSpeakHtml);
-            const encodedText = encodeURIComponent(plainTextForAudio);
-            
-            return `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
-                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button data-text="${encodedText}" onclick="openVoicePicker(event, '${encodedText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
-                            <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
-                                ✏️ Bearbeiten
-                            </button>
-                        </div>
-                    </div>
-                    ${contentHtml}
-                </div>
-            `;
-        }
-
-        function buildTemplateBlockHTML(title, deVal, blockId, rawPath, isArray=false, arrayIdx=null, subKey=null) {
-            const cleanParams = isArray ? `'${rawPath}', true, ${arrayIdx}, ${subKey ? `'${subKey}'` : 'null'}` : `'${rawPath}'`;
-            const encodedText = encodeURIComponent(stripHtml(deVal));
-            const isExpanded = expandedContainers.has(blockId);
-            
-            return `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative overflow-hidden">
-                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button data-text="${encodedText}" onclick="openVoicePicker(event, '${encodedText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-[var(--accent)] transition-all font-bold" title="Vorlesen">🔊 Anhören</button>
-                            <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="p-1 rounded text-xs hover:bg-[var(--bg-app)] text-purple-600 dark:text-purple-400 font-bold transition-all">🌐 Translate</button>
-                            <button onclick="openBlockEditor(${cleanParams})" class="p-1.5 rounded text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all ${isEditMode ? 'block' : 'hidden'}" title="Block editieren">
-                                ✏️ Bearbeiten
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div data-block-key="${blockId}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${TEMPLATE_DATA[activeIdx].id}, 'de', '${blockId}')" oninput="handleInlineInput(this, ${TEMPLATE_DATA[activeIdx].id}, 'de', '${blockId}')">
-                        ${isEditMode ? deVal : applyConnectorsHighlight(deVal)}
-                    </div>
-                    
-                    <div id="trans-container-${blockId}" class="${isExpanded ? '' : 'hidden'} mt-3 pt-3 border-t border-[var(--border)] space-y-2"></div>
-                </div>
-            `;
-        }
-
         // ==========================================
         //  MODERN SIMPLISTIC GRID VIEW (MINDMAP REPLACEMENT)
         // ==========================================
@@ -1931,12 +1779,18 @@
             if (!gridContainer) return;
             gridContainer.innerHTML = "";
 
+            const searchVal = document.getElementById('grid-search').value.toLowerCase();
+            const categoryFilter = document.getElementById('grid-category-filter').value;
             const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
                 const isStarred = STARRED_TOPICS.includes(topic.id);
                 const isActive = index === activeIdx;
+
+                // Category and search filtering
+                if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
                 card.className = `p-4 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between h-32 relative select-none hover:scale-[1.03] ${
@@ -2015,10 +1869,10 @@
             const isLearned = learnedList.includes(topic.id);
             const learnedBtn = document.getElementById('learned-toggle');
             if (isLearned) {
-                learnedBtn.className = "text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-1.5 shadow-sm transition-all";
-                learnedBtn.textContent = "✓ Gelernt";
+                learnedBtn.className = "text-xs bg-[var(--success)] text-white font-bold rounded-lg px-3 py-1.5 border border-rose-300 transition-all shadow-sm";
+                learnedBtn.textContent = "Als offen markieren";
             } else {
-                learnedBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 shadow-sm transition-all";
+                learnedBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-card)] transition-all shadow-sm";
                 learnedBtn.textContent = "Als gelernt markieren";
             }
 
@@ -2044,7 +1898,7 @@
                 const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? '' : 'hidden';
                 const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? '' : 'hidden';
 
-                // 1. EINLEITUNG (Classic)
+                // 1. EINLEITUNG
                 const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
                 const savedEinl = getHighlight(topic.id, einlDe);
                 const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
@@ -2062,7 +1916,7 @@
                 const proContraParent = document.createElement('div');
                 proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
 
-                // 2. PRO (Classic)
+                // 2. PRO POINTS (With discrete audio audio triggers next to each point)
                 let proContent = "";
                 let fullProTextForAudio = "";
                 topic.pro_de.forEach((deVal, index) => {
@@ -2089,7 +1943,7 @@
                 proCard.innerHTML = buildCardWrapper("2. Dafür (Pro)", proContent, "pro_section", fullProTextForAudio, 'pro_de', true, 0);
                 proContraParent.appendChild(proCard);
 
-                // 3. CONTRA (Classic)
+                // 3. CONTRA POINTS (With discrete audio audio triggers next to each point)
                 let contraContent = "";
                 let fullContraTextForAudio = "";
                 topic.contra_de.forEach((deVal, index) => {
@@ -2117,7 +1971,7 @@
                 proContraParent.appendChild(contraCard);
                 container.appendChild(proContraParent);
 
-                // 4. PERSÖNLICHE ERFAHRUNG (Classic)
+                // 4. PERSÖNLICHE ERFAHRUNG
                 const erfDe = "pers_erfahrung_de"; const erfEn = "pers_erfahrung_en"; const erfAr = "pers_erfahrung_ar";
                 const savedErf = getHighlight(topic.id, erfDe);
                 const cleanErfEn = stripHtml(getTopicValue(topic, erfEn));
@@ -2132,7 +1986,7 @@
                 erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
                 container.appendChild(erfahrungCard);
 
-                // 5. DIALOG SIMULATION (Classic)
+                // 5. DIALOG SIMULATION (Direct discrete audio trigger per statement inside bubble layout)
                 let dialogHtml = '<div class="space-y-3">';
                 let fullDialogTextForAudio = "";
                 topic.dialog.forEach((chat, index) => {
@@ -2162,7 +2016,7 @@
                 dialogCard.innerHTML = buildCardWrapper("5. Dialog Simulation", dialogHtml, "dialog_section", fullDialogTextForAudio, 'dialog', true, 0, 'de');
                 container.appendChild(dialogCard);
 
-                // 6. GEMEINSAME LÖSUNG (Classic)
+                // 6. GEMEINSAME LÖSUNG
                 const schlDe = "schluss_de"; const schlEn = "schluss_en"; const schlAr = "schluss_ar";
                 const savedSchl = getHighlight(topic.id, schlDe);
                 const cleanSchlEn = stripHtml(getTopicValue(topic, schlEn));
@@ -2290,14 +2144,7 @@
                 });
                 dialogHtml += '</div>';
                 const dialogCard = document.createElement('div');
-                dialogCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200";
-                dialogCard.innerHTML = `
-                    <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">5. Dialog Simulation</span>
-                    </div>
-                    ${dialogHtml}
-                `;
+                dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
                 container.appendChild(dialogCard);
 
                 // 6. SCHLUSS (Template)
@@ -2609,3 +2456,5 @@
     </script>
 </body>
 </html>
+
+
