@@ -148,13 +148,6 @@
         .sidebar-collapsed .topic-title { display: none; }
         .sidebar-collapsed .sidebar-header-flex { flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
 
-        /* Left Sidebar Minimized Emoji styles */
-        #sidebar:not(.sidebar-collapsed) .sidebar-emoji-collapsed { display: none !important; }
-        #sidebar.sidebar-collapsed .sidebar-emoji-collapsed { display: block !important; }
-        #sidebar.sidebar-collapsed .topic-title,
-        #sidebar.sidebar-collapsed .font-mono,
-        #sidebar.sidebar-collapsed .flex-shrink-0 { display: none !important; }
-
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
@@ -229,18 +222,9 @@
                     <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↩️ Zurück</button>
                     <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↪️ Vor</button>
                 </div>
-                <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-[var(--border)]">
+                <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-dashed border-[var(--border)]">
                     ✏️ <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
-                <div class="h-px bg-[var(--border)] my-1"></div>
-                <div class="space-y-2">
-                    <button onclick="clearAllHighlightsForTopic()" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-[var(--border)] shadow-sm" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
-                        🧹 Formatierung zurücksetzen
-                    </button>
-                    <button id="reset-edits-btn" class="w-full py-2 text-xs font-bold bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm opacity-50 pointer-events-none" disabled>
-                        🗑️ Reset Thema-Edits
-                    </button>
-                </div>
             </div>
 
             <!-- Workspace Profile Control -->
@@ -387,6 +371,20 @@
                             Als gelernt markieren
                         </button>
                     </div>
+                    
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Formatierung</span>
+                        <button onclick="clearAllHighlightsForTopic()" class="text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-app)]/85 transition-all shadow-sm flex items-center gap-1" title="Alle Hervorhebungen und Zeichnungen für dieses Thema zurücksetzen">
+                            🧹 Zurücksetzen
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Daten</span>
+                        <button id="reset-edits-btn" class="hidden text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg px-3 py-1.5 border border-rose-300 transition-all shadow-sm">
+                            🗑️ Reset Edit
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -401,7 +399,7 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern Grid View -->
+            <!-- Modern Grid View (Responsive layouts matching high density grid cards) -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -594,38 +592,57 @@
             'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
         };
 
-        const CATEGORY_COLORS = {
-            'Freizeit & Gesundheit': {
-                bg: 'bg-emerald-50/70 border-emerald-200 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-300',
-                hover: 'hover:bg-emerald-100/90 hover:border-emerald-300 hover:shadow-[0_8px_20px_rgba(16,185,129,0.15)]',
-                badge: 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-            },
-            'Arbeit & Karriere': {
-                bg: 'bg-blue-50/70 border-blue-200 text-blue-800 dark:bg-blue-950/20 dark:border-blue-900 dark:text-blue-300',
-                hover: 'hover:bg-blue-100/90 hover:border-blue-300 hover:shadow-[0_8px_20px_rgba(37,99,235,0.15)]',
-                badge: 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300'
-            },
-            'Umwelt & Mobilität': {
-                bg: 'bg-teal-50/70 border-teal-200 text-teal-800 dark:bg-teal-950/20 dark:border-teal-900 dark:text-teal-300',
-                hover: 'hover:bg-teal-100/90 hover:border-teal-300 hover:shadow-[0_8px_20px_rgba(20,184,166,0.15)]',
-                badge: 'bg-teal-100/80 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300'
-            },
-            'Gesellschaft & Politik': {
-                bg: 'bg-rose-50/70 border-rose-200 text-rose-800 dark:bg-rose-950/20 dark:border-rose-900 dark:text-rose-300',
-                hover: 'hover:bg-rose-100/90 hover:border-rose-300 hover:shadow-[0_8px_20px_rgba(244,63,94,0.15)]',
-                badge: 'bg-rose-100/80 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300'
-            },
-            'Bildung & Technologie': {
-                bg: 'bg-purple-50/70 border-purple-200 text-purple-800 dark:bg-purple-950/20 dark:border-purple-900 dark:text-purple-300',
-                hover: 'hover:bg-purple-100/90 hover:border-purple-300 hover:shadow-[0_8px_20px_rgba(139,92,246,0.15)]',
-                badge: 'bg-purple-100/80 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300'
-            }
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+            authDomain: "b2telc-6e061.firebaseapp.com",
+            databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "b2telc-6e061",
+            storageBucket: "b2telc-6e061.firebasestorage.app",
+            messagingSenderId: "593882455085",
+            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+            measurementId: "G-SPHLVHRL6K"
         };
 
-        const doneColors = {
-            bg: 'bg-green-100/80 border-green-300 text-green-900 dark:bg-green-950/40 dark:border-green-800 dark:text-green-300',
-            hover: 'hover:bg-green-200/90 hover:border-green-400 hover:shadow-[0_8px_20px_rgba(34,197,94,0.2)]'
-        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let TOPICS_DATA = [];
+        let TEMPLATE_DATA = [];
+        let GRAMMATIK_DATA = [];
+        
+        let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
+        let showHighlights = true;
+        let activeView = "both";
+        let isEditMode = false;
+        let activeTab = "dashboard";
+        let currentFilter = "all";
+        let activeMode = localStorage.getItem('b2_active_mode') || "classic";
+        
+        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
+        let currentUser = null;
+        let editedTopicIds = [];
+        let editedTemplateIds = [];
+        let activeEditBlockContext = null;
+
+        let undoStack = [];
+        let redoStack = [];
+        
+        const translationCache = {};
+        const expandedContainers = new Set();
+        
+        let textScale = localStorage.getItem('b2_text_scale') || '100%';
+
+        function cleanCitationLinks(text) {
+            if (!text) return "";
+            let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
+            cleaned = cleaned.replace(/\[\d+\]\(https:\/\/[^\s)]+\)/g, "");
+            cleaned = cleaned.replace(/\[\[\d+\]\]/g, "");
+            cleaned = cleaned.replace(/\[\d+\]/g, "");
+            cleaned = cleaned.replace(/\s\s+/g, " "); 
+            return cleaned.trim();
+        }
 
         const redemittelData = [
             {
@@ -634,7 +651,7 @@
                 phrases: [
                     { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way.", ar: "في رأيي، ينبغي للمرء أن ينظر إلى هذا بطريقة أكثر تمايزًا." },
                     { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن هذا الموضوع يلعب دوراً هاماً." },
-                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العイوب هنا." },
+                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيوب هنا." },
                     { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظري الشخصية، من الضروري اتخاذ إجراء هنا." }
                 ]
             },
@@ -642,7 +659,7 @@
                 title: "Zustimmung ausdrücken (Agreeing with Partner)",
                 icon: "✅",
                 phrases: [
-                    { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
+                    { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
                     { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
                     { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
@@ -654,7 +671,7 @@
                 phrases: [
                     { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل different قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
                     { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي hier. فالواقع غالباً ما يبدو مختلفاً." },
-                    { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، jedoch لا يجب أن نnesy أن..." },
+                    { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، jedoch لا يجب أن ننسى أن..." },
                     { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك في أن هذا الحل المقترح يعمل في الممارسة العملية." }
                 ]
             },
@@ -662,15 +679,22 @@
                 title: "Einen Kompromiss finden (Reaching an Agreement)",
                 icon: "🤝",
                 phrases: [
-                    { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق auf أن كلا الجانبين لديهما جوانب مهمة." },
+                    { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects.", ar: "ربما يمكننا الاتفاق على أن كلا الجانبين لديهما جوانب مهمة." },
                     { de: "Wie wäre es, wenn wir einen Mittelweg finden, der beide Positionen berücksichtigt?", en: "How about if we find a middle ground that takes both positions into account?", ar: "ما رأيك لو نجد حلاً وسطاً يأخذ كلا الموقفين في الاعتبار?" },
-                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه auf الرغم von اختلاف وجهات النظر، kann man التوصل إلى اتفاق." }
+                    { de: "Zusammenfassend lässt sich sagen, dass wir trotz unterschiedlicher Ansichten eine Einigung erzielen können.", en: "In summary, despite different views, we can reach an agreement.", ar: "خلاصة القول هي أنه على الرغم von اختلاف وجهات النظر، kann man التوصل إلى اتفاق." }
                 ]
             }
         ];
 
-        let touchTimer;
-        let isLongPress = false;
+        let audioUnlocked = false;
+        document.body.addEventListener('click', () => {
+            if (!audioUnlocked && 'speechSynthesis' in window) {
+                const dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0;
+                window.speechSynthesis.speak(dummy);
+                audioUnlocked = true;
+            }
+        }, { once: true });
 
         function stripHtml(html) {
             if (!html) return "";
@@ -1429,16 +1453,13 @@
 
         function showResetButton() {
             const resetBtn = document.getElementById('reset-edits-btn');
-            if (!resetBtn) return;
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const trackerArray = activeMode === 'classic' ? editedTopicIds : editedTemplateIds;
             
             if (activeTopic && trackerArray.includes(activeTopic.id)) {
-                resetBtn.removeAttribute('disabled');
-                resetBtn.classList.remove('opacity-50', 'pointer-events-none');
+                resetBtn.classList.remove('hidden');
             } else {
-                resetBtn.setAttribute('disabled', 'true');
-                resetBtn.classList.add('opacity-50', 'pointer-events-none');
+                resetBtn.classList.add('hidden');
             }
         }
 
@@ -1860,16 +1881,14 @@
                 const learnMarker = isLearned 
                     ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
                     : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
-                const icon = TOPIC_ICONS[topic.id] || "📌";
 
                 item.innerHTML = `
                     <div class="flex items-center gap-2 truncate">
                         <span class="text-xs opacity-75 font-mono">#${topic.id}</span>
-                        <span class="text-base select-none sidebar-emoji-collapsed">${icon}</span>
                         ${starMarker}
                         <span class="truncate text-xs topic-title">${topic.title_de}</span>
                     </div>
-                    <div class="flex-shrink-0">${learnMarker}</div>
+                    ${learnMarker}
                 `;
 
                 item.onclick = () => {
@@ -2108,6 +2127,7 @@
                 if (transEn) document.getElementById('modal-edit-en').value = transEn;
                 if (transAr) document.getElementById('modal-edit-ar').value = transAr;
             } catch (e) {
+                // MyMemory fallback inside modal
                 try {
                     const [resEn, resAr] = await Promise.all([
                         fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`),
@@ -2144,118 +2164,85 @@
             const categoryFilter = document.getElementById('grid-category-filter').value;
             const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
 
-            const categories = ['Freizeit & Gesundheit', 'Arbeit & Karriere', 'Umwelt & Mobilität', 'Gesellschaft & Politik', 'Bildung & Technologie'];
+            dataset.forEach((topic, index) => {
+                const isLearned = learnedList.includes(topic.id);
+                const isStarred = STARRED_TOPICS.includes(topic.id);
+                const isActive = index === activeIdx;
 
-            categories.forEach(catName => {
-                if (categoryFilter !== 'all' && catName !== categoryFilter) return;
+                if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
-                const catTopics = dataset.filter(t => t.category === catName && (!searchVal || t.title_de.toLowerCase().includes(searchVal)));
-                if (catTopics.length === 0) return;
+                const card = document.createElement('div');
+                card.className = `group p-3.5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[156px] h-auto relative select-none transition-all duration-300 hover:bg-amber-50/90 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-1 hover:scale-[1.04] dark:hover:bg-amber-950/20 dark:hover:border-amber-600 ${
+                    isActive 
+                    ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
+                    : 'bg-[var(--bg-card)] border-[var(--border)] shadow-sm'
+                }`;
 
-                // Category row header card
-                const sectionHeader = document.createElement('div');
-                sectionHeader.className = "col-span-full mt-6 first:mt-2 mb-4 border-b border-[var(--border)] pb-2 flex items-center justify-between";
+                const numBadge = `<span class="text-xs font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
+                const progressBadge = isLearned 
+                    ? `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500" title="Gelernt"></span>`
+                    : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" title="Offen"></span>`;
                 
-                const catColors = CATEGORY_COLORS[catName] || CATEGORY_COLORS['Gesellschaft & Politik'];
+                const starBadge = isStarred 
+                    ? `<span class="text-amber-500 text-base font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
+                    : ``;
 
-                sectionHeader.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="h-8 w-12 opacity-80 flex-shrink-0">${CATEGORY_SVGS[catName] || ''}</div>
-                        <div>
-                            <h4 class="text-sm font-black text-[var(--text-primary)]">${catName}</h4>
-                            <span class="px-2 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider ${catColors.badge}">
-                                ${catTopics.length} ${catTopics.length === 1 ? 'Thema' : 'Themen'}
-                            </span>
+                const textClass = "text-[10.5px] sm:text-[11px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
+
+                // Modernized UI: Emoji centered inside a round border badge next to topic tags
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-1">
+                        <div class="flex flex-col items-start gap-1">
+                            ${numBadge}
+                            ${starBadge}
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
+                            ${TOPIC_ICONS[topic.id] || "📌"}
                         </div>
                     </div>
+                    <div class="flex-1 flex items-center justify-center py-2">
+                        <p class="${textClass}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
+                    </div>
+                    <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1">
+                        <span class="truncate max-w-[64px]">${topic.category || 'Prüfung'}</span>
+                        ${progressBadge}
+                    </div>
                 `;
-                gridContainer.appendChild(sectionHeader);
 
-                const subGrid = document.createElement('div');
-                subGrid.className = "col-span-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5";
+                // Mobile Touchscreen Support: long press detection
+                let touchTimer;
+                let isLongPress = false;
 
-                catTopics.forEach(topic => {
-                    const index = dataset.findIndex(t => t.id === topic.id);
-                    const isLearned = learnedList.includes(topic.id);
-                    const isStarred = STARRED_TOPICS.includes(topic.id);
-                    const isActive = index === activeIdx;
+                card.addEventListener('touchstart', (e) => {
+                    isLongPress = false;
+                    touchTimer = setTimeout(() => {
+                        isLongPress = true;
+                        showThemaPreview(topic); // Fire preview modal on hold
+                    }, 600);
+                }, { passive: true });
 
-                    const card = document.createElement('div');
-                    let colorSet = isLearned ? doneColors : catColors;
-
-                    card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${colorSet.bg} ${colorSet.hover} hover:-translate-y-1.5 hover:scale-[1.04] ${
-                        isActive 
-                        ? 'ring-2 ring-[var(--accent)] shadow-md' 
-                        : 'shadow-sm'
-                    }`;
-
-                    const numBadge = `<span class="text-xs font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'} opacity-75">#${topic.id}</span>`;
-                    const progressBadge = isLearned 
-                        ? `<span class="px-2 py-0.5 text-[8px] font-bold bg-green-200 text-green-800 rounded uppercase tracking-wider dark:bg-green-900/60 dark:text-green-200">Gelernt</span>`
-                        : `<span class="px-2 py-0.5 text-[8px] font-bold bg-zinc-150 text-zinc-600 rounded uppercase tracking-wider dark:bg-zinc-800 dark:text-zinc-400">Offen</span>`;
-                    
-                    const starBadge = isStarred 
-                        ? `<span class="text-amber-500 text-base font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
-                        : ``;
-
-                    const textClass = "text-[11px] sm:text-[12px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
-
-                    card.innerHTML = `
-                        <div class="flex items-start justify-between mb-1">
-                            <div class="flex flex-col items-start gap-1">
-                                <div class="flex items-center gap-1.5">
-                                    ${numBadge}
-                                    ${starBadge}
-                                </div>
-                            </div>
-                            <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
-                                ${TOPIC_ICONS[topic.id] || "📌"}
-                            </div>
-                        </div>
-                        <div class="flex-1 flex items-center justify-center py-2">
-                            <p class="${textClass}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
-                        </div>
-                        <div class="flex items-center justify-end mt-1">
-                            ${progressBadge}
-                        </div>
-                    `;
-
-                    // Mobile Touchscreen Support: long press detection
-                    let touchTimer;
-                    let isLongPress = false;
-
-                    card.addEventListener('touchstart', (e) => {
-                        isLongPress = false;
-                        touchTimer = setTimeout(() => {
-                            isLongPress = true;
-                            showThemaPreview(topic);
-                        }, 600);
-                    }, { passive: true });
-
-                    card.addEventListener('touchend', (e) => {
-                        clearTimeout(touchTimer);
-                    });
-
-                    card.addEventListener('touchmove', () => {
-                        clearTimeout(touchTimer);
-                    }, { passive: true });
-
-                    card.onclick = (e) => {
-                        if (isLongPress) {
-                            isLongPress = false;
-                            return;
-                        }
-                        activeIdx = index;
-                        localStorage.setItem('b2_active_idx', activeIdx);
-                        renderSidebar();
-                        renderActiveTopic();
-                        switchTab('dashboard');
-                    };
-
-                    subGrid.appendChild(card);
+                card.addEventListener('touchend', (e) => {
+                    clearTimeout(touchTimer);
                 });
-                gridContainer.appendChild(sectionHeader);
-                gridContainer.appendChild(subGrid);
+
+                card.addEventListener('touchmove', () => {
+                    clearTimeout(touchTimer);
+                }, { passive: true });
+
+                card.onclick = (e) => {
+                    if (isLongPress) {
+                        isLongPress = false;
+                        return; // Absorb event
+                    }
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    switchTab('dashboard');
+                };
+
+                gridContainer.appendChild(card);
             });
         }
 
@@ -2342,14 +2329,6 @@
             } else {
                 learnedBtn.className = "text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-3 py-1.5 border border-[var(--border)] hover:bg-[var(--bg-card)] transition-all shadow-sm";
                 learnedBtn.textContent = "Als gelernt markieren";
-            }
-
-            // Green active theme mode if topic is done
-            const controlsCard = document.getElementById('dashboard-controls');
-            if (isLearned) {
-                controlsCard.className = "bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800 rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-300";
-            } else {
-                controlsCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-300";
             }
 
             const container = document.getElementById('active-topic-container');
@@ -2574,6 +2553,7 @@
                     `;
                 });
                 const contraCard = document.createElement('div');
+                // FIXED: Resolved target document reference typo to correctly render contra blocks in template tab
                 contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
@@ -2606,7 +2586,7 @@
                                 <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
                                 <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-xs hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">🔊</button>
                             </div>
-                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
                                 ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                             </div>
                             <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
