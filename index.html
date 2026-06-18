@@ -7,7 +7,8 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
+    <!-- Updated font to Outfit for a more modern, elegant, and readable look -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
@@ -55,14 +56,15 @@
             --text-scale:    100%;
         }
 
+        /* Updated Dark Theme: Softer, neutral greys for reduced eye strain */
         [data-theme="dark"] {
-            --bg-app:        #111827;
-            --bg-card:       #1F2937;
-            --bg-sidebar:    #111827;
-            --border:        rgba(255,255,255,0.08);
-            --text-primary:  #F9FAFB;
-            --text-muted:    #9CA3AF;
-            --text-faint:    #6B7280;
+            --bg-app:        #18181A;
+            --bg-card:       #222224;
+            --bg-sidebar:    #18181A;
+            --border:        rgba(255,255,255,0.06);
+            --text-primary:  #E4E4E7;
+            --text-muted:    #A1A1AA;
+            --text-faint:    #52525B;
             --accent:        #3B82F6;
             --accent-light:  rgba(59,130,246,0.12);
             --success:       #22C55E;
@@ -73,12 +75,12 @@
             --amber-light:   rgba(245,158,11,0.12);
             --purple:        #A78BFA;
             --purple-light:  rgba(167,139,250,0.12);
-            --shadow-sm:     0 1px 3px rgba(0,0,0,0.3);
+            --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
             --shadow-md:     0 4px 12px rgba(0,0,0,0.4);
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Outfit', 'Inter', system-ui, sans-serif;
             background-color: var(--bg-app);
             color: var(--text-primary);
         }
@@ -201,7 +203,7 @@
             <div class="relative w-10 h-10 flex-shrink-0 select-none">
                 <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="100" height="100" rx="24" fill="#2563EB"/>
-                    <text x="50%" y="54%" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
+                    <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
                 </svg>
             </div>
             <div>
@@ -302,14 +304,14 @@
                     <button onclick="exportTotalBackup()" class="w-full py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center gap-1.5 shadow-sm">
                         📥 App-Vollbackup erstellen
                     </button>
-                    <label class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg flex items-center justify-center gap-1.5 border border-[var(--border)] cursor-pointer">
+                    <label class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:bg-zinc-700 text-[var(--text-primary)] rounded-lg flex items-center justify-center gap-1.5 border border-[var(--border)] cursor-pointer">
                         📤 Vollbackup einspielen
                         <input type="file" id="backup-file-input" class="hidden" accept=".json" onchange="importTotalBackup(event)" />
                     </label>
                     <div class="h-px bg-[var(--border)] my-1"></div>
                     <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
-                        <button onclick="exportSingleJSON('classic')" class="py-1 bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Export Topics</button>
-                        <button onclick="exportSingleJSON('template')" class="py-1 bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Export Template</button>
+                        <button onclick="exportSingleJSON('classic')" class="py-1 bg-[var(--bg-app)] hover:bg-zinc-200 dark:bg-zinc-700 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Export Topics</button>
+                        <button onclick="exportSingleJSON('template')" class="py-1 bg-[var(--bg-app)] hover:bg-zinc-200 dark:bg-zinc-700 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Export Template</button>
                     </div>
                 </div>
             </div>
@@ -626,51 +628,42 @@
             'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
         };
 
+        // Simplified dark mode styles removing neon glow, keeping soft borders
         const CATEGORY_STYLES = {
             'Freizeit & Gesundheit': {
-                lightBg: 'bg-emerald-50/50',
-                lightBorder: 'border-emerald-200',
-                darkBg: 'dark:bg-emerald-950/20',
-                darkBorder: 'dark:border-emerald-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(16,185,129,0.35)]',
-                badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-800/50',
-                activeRing: 'ring-emerald-500'
+                lightBg: 'bg-emerald-50/30', lightBorder: 'border-emerald-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-[#2A2A2C] dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/30',
+                activeRing: 'ring-emerald-500/50 dark:ring-emerald-500/30'
             },
             'Arbeit & Karriere': {
-                lightBg: 'bg-blue-50/50',
-                lightBorder: 'border-blue-200',
-                darkBg: 'dark:bg-blue-950/20',
-                darkBorder: 'dark:border-blue-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(37,99,235,0.35)]',
-                badgeBg: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200/50 dark:border-blue-800/50',
-                activeRing: 'ring-blue-500'
+                lightBg: 'bg-blue-50/30', lightBorder: 'border-blue-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-blue-100 text-blue-800 dark:bg-[#2A2A2C] dark:text-blue-400 border-blue-200/50 dark:border-blue-900/30',
+                activeRing: 'ring-blue-500/50 dark:ring-blue-500/30'
             },
             'Umwelt & Mobilität': {
-                lightBg: 'bg-teal-50/50',
-                lightBorder: 'border-teal-200',
-                darkBg: 'dark:bg-teal-950/20',
-                darkBorder: 'dark:border-teal-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(20,184,166,0.35)]',
-                badgeBg: 'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300 border-teal-200/50 dark:border-teal-800/50',
-                activeRing: 'ring-teal-500'
+                lightBg: 'bg-teal-50/30', lightBorder: 'border-teal-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-teal-100 text-teal-800 dark:bg-[#2A2A2C] dark:text-teal-400 border-teal-200/50 dark:border-teal-900/30',
+                activeRing: 'ring-teal-500/50 dark:ring-teal-500/30'
             },
             'Gesellschaft & Politik': {
-                lightBg: 'bg-purple-50/50',
-                lightBorder: 'border-purple-200',
-                darkBg: 'dark:bg-purple-950/20',
-                darkBorder: 'dark:border-purple-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(168,85,247,0.35)]',
-                badgeBg: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200/50 dark:border-purple-800/50',
-                activeRing: 'ring-purple-500'
+                lightBg: 'bg-purple-50/30', lightBorder: 'border-purple-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-purple-100 text-purple-800 dark:bg-[#2A2A2C] dark:text-purple-400 border-purple-200/50 dark:border-purple-900/30',
+                activeRing: 'ring-purple-500/50 dark:ring-purple-500/30'
             },
             'Bildung & Technologie': {
-                lightBg: 'bg-amber-50/50',
-                lightBorder: 'border-amber-200',
-                darkBg: 'dark:bg-amber-950/20',
-                darkBorder: 'dark:border-amber-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(245,158,11,0.35)]',
-                badgeBg: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200/50 dark:border-amber-800/50',
-                activeRing: 'ring-amber-500'
+                lightBg: 'bg-amber-50/30', lightBorder: 'border-amber-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-amber-100 text-amber-800 dark:bg-[#2A2A2C] dark:text-amber-400 border-amber-200/50 dark:border-amber-900/30',
+                activeRing: 'ring-amber-500/50 dark:ring-amber-500/30'
             }
         };
 
@@ -2259,6 +2252,7 @@
             }
         }
 
+        // Updated for non-overlapping, elegant layout in standard document flow
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2279,41 +2273,43 @@
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
                 const card = document.createElement('div');
-                card.className = `group p-4 pt-5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} ${style.glow} hover:-translate-y-1 hover:scale-[1.04] ${
+                card.className = `group p-4 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} hover:-translate-y-1 hover:shadow-md ${
                     isActive 
                     ? `ring-2 ${style.activeRing} shadow-md` 
                     : 'shadow-sm'
                 }`;
 
-                const numBadge = `<span class="text-xs font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
+                const numBadge = `<span class="text-[11px] font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
                 const progressBadge = isLearned 
                     ? `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500" title="Gelernt"></span>`
                     : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" title="Offen"></span>`;
                 
                 const starBadge = isStarred 
-                    ? `<span class="text-amber-500 text-xs font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
+                    ? `<span class="text-amber-500 text-[10px] font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
                     : ``;
 
-                const textClass = "text-[10.5px] sm:text-[11px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
+                const textClass = "text-[12px] sm:text-[13px] leading-relaxed font-semibold text-[var(--text-primary)] break-words transition-colors duration-200";
 
                 card.innerHTML = `
-                    <div class="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider shadow-sm border ${style.badgeBg} transition-all duration-200 group-hover:scale-105 group-hover:-translate-y-0.5">
-                        ${topic.category || 'Allgemein'}
-                    </div>
-
-                    <div class="flex items-start justify-between mb-1 mt-1">
-                        <div class="flex flex-col items-start gap-0.5">
-                            ${numBadge}
-                            ${starBadge}
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="px-2 py-1 rounded-[6px] text-[9px] font-bold uppercase tracking-wider border ${style.badgeBg}">
+                            ${topic.category || 'Allgemein'}
                         </div>
-                        <div class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
+                        <div class="w-8 h-8 rounded-full bg-[var(--bg-app)] flex items-center justify-center text-sm shadow-sm border border-[var(--border)] text-[var(--text-primary)]">
                             ${TOPIC_ICONS[topic.id] || "📌"}
                         </div>
                     </div>
-                    <div class="flex-1 flex items-center justify-center py-2">
+                    
+                    <div class="flex items-center gap-1.5 mb-1">
+                        ${numBadge}
+                        ${starBadge}
+                    </div>
+                    
+                    <div class="flex-1 py-1">
                         <p class="${textClass}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
                     </div>
-                    <div class="flex items-center justify-end mt-1">
+                    
+                    <div class="flex items-center justify-end mt-2 pt-2 border-t border-[var(--border)]/50">
                         ${progressBadge}
                     </div>
                 `;
