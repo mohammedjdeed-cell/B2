@@ -1,3 +1,5 @@
+index.html
+
 <!DOCTYPE html>
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
@@ -155,14 +157,6 @@
         .scalable-content {
             font-size: 1rem !important;
         }
-
-        .glow-word {
-            background-color: rgba(245, 158, 11, 0.25);
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
-            border-radius: 4px;
-            padding: 0 2px;
-            transition: background-color 0.1s ease, box-shadow 0.1s ease;
-        }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
@@ -298,7 +292,7 @@
         <div class="p-4 bg-[var(--bg-app)] border-t border-[var(--border)] text-center">
             <span class="text-[10px] text-[var(--text-faint)] font-bold uppercase tracking-widest">TELC B2Trainer v5.0</span>
         </div>
-    </aside>
+    </</aside>
 
     <!-- Main Workspace Container -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
@@ -407,7 +401,7 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern Grid View (Optimized to give card texts maximum horizontal space & fit headlines perfectly) -->
+            <!-- Modern Grid View (Responsive layouts matching high density grid cards) -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -429,13 +423,51 @@
                         </select>
                     </div>
                 </div>
-                <!-- Spacing increased slightly (cols-5 / cols-6 max) to give texts more container width -->
+                <!-- Spacing increased slightly to give texts more container width -->
                 <div id="box-grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content"></section>
         </main>
+    </div>
+
+    <!-- Quick Preview Modal -->
+    <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-4 shadow-2xl transition-all">
+            <div class="flex justify-between items-start border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-3">
+                    <span id="preview-emoji" class="text-3xl">📌</span>
+                    <div>
+                        <span id="preview-category" class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Kategorie</span>
+                        <h3 id="preview-title" class="text-sm font-black text-[var(--text-primary)]">Thema</h3>
+                    </div>
+                </div>
+                <button onclick="closeQuickPreview()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-1 rounded-full hover:bg-[var(--bg-app)]">✕</button>
+            </div>
+            
+            <div class="space-y-3.5 max-h-72 overflow-y-auto pr-1">
+                <div>
+                    <h4 class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Einleitung</h4>
+                    <p id="preview-einleitung" class="text-xs text-[var(--text-primary)] leading-relaxed italic"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-[var(--success-light)] p-2.5 rounded-lg border border-[var(--success)]/10">
+                        <h4 class="text-[9px] font-bold text-[var(--success)] uppercase tracking-wider mb-1">Dafür (Pro)</h4>
+                        <ul id="preview-pro" class="text-[10px] text-[var(--text-primary)] list-disc pl-3.5 space-y-1"></ul>
+                    </div>
+                    <div class="bg-[var(--danger-light)] p-2.5 rounded-lg border border-[var(--danger)]/10">
+                        <h4 class="text-[9px] font-bold text-[var(--danger)] uppercase tracking-wider mb-1">Dagegen (Contra)</h4>
+                        <ul id="preview-contra" class="text-[10px] text-[var(--text-primary)] list-disc pl-3.5 space-y-1"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeQuickPreview()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all">Schließen</button>
+                <button id="preview-nav-btn" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all flex items-center gap-1">Lernen ➔</button>
+            </div>
+        </div>
     </div>
 
     <!-- Selection formatting toolbar -->
@@ -604,7 +636,6 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Sanitize citation codes & google search redirect URLs from grammar blocks
         function cleanCitationLinks(text) {
             if (!text) return "";
             let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
@@ -615,7 +646,6 @@
             return cleaned.trim();
         }
 
-        // Restored and fully enhanced Redemittel expressions specifically tailored for TELC B2 Mündliche Prüfung (Diskussion)
         const redemittelData = [
             {
                 title: "Die eigene Meinung äußern (Expressing Opinion)",
@@ -632,8 +662,8 @@
                 icon: "✅",
                 phrases: [
                     { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. هذه حجة قاطعة ومقنعة." },
-                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
-                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أنا أرى ذلك تماماً بنفس طريقة شريكي." },
+                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومnaسبة جداً ذكرتها." },
+                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
                 ]
             },
@@ -657,16 +687,6 @@
                 ]
             }
         ];
-
-        let audioUnlocked = false;
-        document.body.addEventListener('click', () => {
-            if (!audioUnlocked && 'speechSynthesis' in window) {
-                const dummy = new SpeechSynthesisUtterance('');
-                dummy.volume = 0;
-                window.speechSynthesis.speak(dummy);
-                audioUnlocked = true;
-            }
-        }, { once: true });
 
         function stripHtml(html) {
             if (!html) return "";
@@ -820,9 +840,6 @@
                 editableContainer = editableContainer.parentNode;
             }
             if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
-
-            // --- REMOVED: Auto-remove highlight on highlighted word click block ---
-            // (As requested, formatted words will not be stripped automatically when pressed)
 
             // Ignore clicks directly inside the formatting toolbar
             if (e.target.closest('#formatting-toolbar')) return;
@@ -994,14 +1011,9 @@
             populateVoicesList();
         }
 
+        // Updated voice-picker-play trigger to directly use standard TTS to prevent lagginess
         document.getElementById('voice-picker-play').onclick = () => {
-            const containerNode = globalAudioBtn.closest('.relative')?.querySelector('[data-block-key]');
-            if (containerNode) {
-                const blockId = containerNode.getAttribute('data-block-key');
-                startGlowSpeech(globalAudioText, containerNode, blockId);
-            } else {
-                playBlockAudio(globalAudioText, globalAudioBtn);
-            }
+            playBlockAudio(globalAudioText, globalAudioBtn);
         };
         
         document.getElementById('voice-picker-stop').onclick = () => {
@@ -1023,102 +1035,6 @@
             
             window.currentUtterance = ut; 
             window.speechSynthesis.speak(ut);
-        }
-
-        function startGlowSpeech(text, container, blockId) {
-            window.speechSynthesis.cancel();
-            
-            if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-            }
-
-            const originalHTML = container.innerHTML;
-            const originalEditable = container.getAttribute('contenteditable');
-            container.setAttribute('contenteditable', 'false');
-
-            let charOffset = 0;
-            const plainTextArray = [];
-
-            function tokenize(node) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    const nodeVal = node.nodeValue;
-                    const fragment = document.createDocumentFragment();
-                    const parts = nodeVal.split(/([a-zA-ZäöüÄÖÜß]+)/g);
-                    parts.forEach(part => {
-                        if (/^[a-zA-ZäöüÄÖÜß]+$/.test(part)) {
-                            const span = document.createElement('span');
-                            span.className = 'speech-word transition-all duration-100';
-                            span.dataset.start = charOffset;
-                            span.dataset.end = charOffset + part.length;
-                            span.textContent = part;
-                            fragment.appendChild(span);
-                            plainTextArray.push(part);
-                            charOffset += part.length;
-                        } else {
-                            fragment.appendChild(document.createTextNode(part));
-                            charOffset += part.length;
-                        }
-                    });
-                    node.parentNode.replaceChild(fragment, node);
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    if (!node.classList.contains('highlight') && !node.classList.contains('word-circle') && !node.className.startsWith('hl-')) {
-                        Array.from(node.childNodes).forEach(tokenize);
-                    } else {
-                        Array.from(node.childNodes).forEach(tokenize);
-                    }
-                }
-            }
-
-            const workDiv = document.createElement('div');
-            workDiv.innerHTML = originalHTML;
-            tokenize(workDiv);
-            container.innerHTML = workDiv.innerHTML;
-
-            const speed = parseFloat(document.getElementById('voice-picker-speed').value) || 1.0;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'de-DE';
-            utterance.rate = speed;
-
-            const savedVoiceName = localStorage.getItem('b2_selected_voice');
-            let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
-            if (voiceObj) utterance.voice = voiceObj;
-
-            utterance.onboundary = (event) => {
-                if (event.name === 'word') {
-                    const charIndex = event.charIndex;
-                    const spans = container.querySelectorAll('.speech-word');
-                    spans.forEach(span => {
-                        const start = parseInt(span.dataset.start);
-                        const end = parseInt(span.dataset.end);
-                        if (charIndex >= start && charIndex < end) {
-                            span.className = 'speech-word glow-word text-black dark:text-white font-bold scale-105 inline-block transition-all duration-100';
-                        } else {
-                            span.className = 'speech-word transition-all duration-100';
-                        }
-                    });
-                }
-            };
-
-            const cleanup = () => {
-                container.innerHTML = originalHTML;
-                container.setAttribute('contenteditable', originalEditable);
-                if (activeSpeakingButton) {
-                    activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
-                    activeSpeakingButton = null;
-                }
-                window.currentUtterance = null;
-            };
-
-            utterance.onend = cleanup;
-            utterance.onerror = cleanup;
-
-            if (globalAudioBtn) {
-                globalAudioBtn.classList.add('animate-pulse', 'text-rose-600');
-                activeSpeakingButton = globalAudioBtn;
-            }
-
-            window.currentUtterance = utterance;
-            window.speechSynthesis.speak(utterance);
         }
 
         function playBlockAudio(text, buttonEl) {
@@ -1391,7 +1307,7 @@
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in المناطق الخالية من التدخin.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in المناطق الخالية von التدخin.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
                             { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل different، يجب auf الجميع اتخاذ القرار بأنفسهم." }
@@ -2156,7 +2072,7 @@
         }
 
         // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW
+        //  MODERN SIMPLISTIC GRID VIEW (OPTIMIZED HOVER, LONG PRESS, AND ENLARGED DISPLAY)
         // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
@@ -2176,7 +2092,8 @@
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
-                card.className = `p-3.5 rounded-xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[156px] h-auto relative select-none hover:shadow-md hover:scale-[1.02] ${
+                // Added warm glow and smooth scale transition classes on hover
+                card.className = `p-3.5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[156px] h-auto relative select-none transition-all duration-300 hover:bg-amber-50/75 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(245,158,11,0.25)] hover:scale-105 dark:hover:bg-amber-950/20 dark:hover:border-amber-600 ${
                     isActive 
                     ? 'bg-[var(--accent-light)] border-[var(--accent)] ring-2 ring-[var(--accent)]/10 shadow-md' 
                     : 'bg-[var(--bg-card)] border-[var(--border)] shadow-sm'
@@ -2199,24 +2116,51 @@
                     responsiveTextClass = "text-[10.5px]";
                 }
 
+                // Modernized UI: Emoji centered inside a round border badge next to topic tags
                 card.innerHTML = `
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="flex items-center gap-1">
+                    <div class="flex items-start justify-between mb-1">
+                        <div class="flex flex-col items-start gap-1">
                             ${numBadge}
                             ${starBadge}
                         </div>
-                        ${progressBadge}
+                        <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 hover:scale-110">
+                            ${TOPIC_ICONS[topic.id] || "📌"}
+                        </div>
                     </div>
                     <div class="flex-1 flex items-center justify-center py-2">
                         <p class="${responsiveTextClass} font-bold text-center leading-snug break-words ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
                     </div>
                     <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-wider text-[var(--text-muted)] mt-1">
                         <span class="truncate max-w-[64px]">${topic.category || 'Prüfung'}</span>
-                        <span class="text-[var(--text-faint)]">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                        ${progressBadge}
                     </div>
                 `;
 
-                card.onclick = () => {
+                // Mobile Touchscreen Support: long press detection
+                let touchTimer;
+                let isLongPress = false;
+
+                card.addEventListener('touchstart', (e) => {
+                    isLongPress = false;
+                    touchTimer = setTimeout(() => {
+                        isLongPress = true;
+                        showThemaPreview(topic); // Fire preview modal on hold
+                    }, 600);
+                }, { passive: true });
+
+                card.addEventListener('touchend', (e) => {
+                    clearTimeout(touchTimer);
+                });
+
+                card.addEventListener('touchmove', () => {
+                    clearTimeout(touchTimer);
+                }, { passive: true });
+
+                card.onclick = (e) => {
+                    if (isLongPress) {
+                        isLongPress = false;
+                        return; // Absorb event
+                    }
                     activeIdx = index;
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
@@ -2226,6 +2170,53 @@
 
                 gridContainer.appendChild(card);
             });
+        }
+
+        // Beautiful on-demand Quick Preview panel functions
+        function showThemaPreview(topic) {
+            const modal = document.getElementById('quick-preview-modal');
+            if (!modal) return;
+
+            document.getElementById('preview-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
+            document.getElementById('preview-category').textContent = topic.category || "Thema";
+            document.getElementById('preview-title').textContent = topic.title_de;
+            document.getElementById('preview-einleitung').textContent = stripHtml(topic.einleitung_de);
+
+            const proList = document.getElementById('preview-pro');
+            proList.innerHTML = "";
+            (topic.pro_de || []).slice(0, 2).forEach(p => {
+                const li = document.createElement('li');
+                li.textContent = stripHtml(p);
+                proList.appendChild(li);
+            });
+
+            const contraList = document.getElementById('preview-contra');
+            contraList.innerHTML = "";
+            (topic.contra_de || []).slice(0, 2).forEach(c => {
+                const li = document.createElement('li');
+                li.textContent = stripHtml(c);
+                contraList.appendChild(li);
+            });
+
+            const navBtn = document.getElementById('preview-nav-btn');
+            navBtn.onclick = () => {
+                const index = (activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA).findIndex(t => t.id === topic.id);
+                if (index !== -1) {
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    switchTab('dashboard');
+                    closeQuickPreview();
+                }
+            };
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeQuickPreview() {
+            const modal = document.getElementById('quick-preview-modal');
+            if (modal) modal.classList.add('hidden');
         }
 
         function renderActiveTopic() {
@@ -2270,7 +2261,7 @@
             container.innerHTML = "";
 
             const bannerHtml = `
-                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)]">
+                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)] animate-fade-in">
                     <div class="h-10 w-16 opacity-80 flex-shrink-0">${CATEGORY_SVGS[topic.category] || ''}</div>
                     <div>
                         <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Kategorie</div>
@@ -2482,12 +2473,13 @@
                                     <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
                                     <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'}">✏️ Edit</button>
                                 </div>
-                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
+                                <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
                             </div>
                         </div>
                     `;
                 });
-                const contraCard = document.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
+                const contraCard = document.createElement('div');
+                contraCard.className = "bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative";
                 contraCard.innerHTML = `
                     <div class="flex items-center gap-2 border-b border-[var(--border)] pb-3 mb-3">
                         <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
