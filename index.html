@@ -166,7 +166,7 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
 
-    <!-- Header -->
+    <!-- Header (Dynamic background elements, permanently docked layout to prevent gaps) -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
         
         <!-- Subtle linguistic watermarks floating in the header background -->
@@ -229,7 +229,7 @@
                     <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↩️ Zurück</button>
                     <button onclick="redo()" class="py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1">↪️ Vor</button>
                 </div>
-                <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-dashed border-[var(--border)]">
+                <button id="drawer-edit-toggle" class="w-full py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-[var(--border)]">
                     ✏️ <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
                 <div class="h-px bg-[var(--border)] my-1"></div>
@@ -401,7 +401,7 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern Grid View (Responsive layouts matching high density grid cards) -->
+            <!-- Modern Grid View -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
                 <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -597,27 +597,27 @@
         const CATEGORY_COLORS = {
             'Freizeit & Gesundheit': {
                 bg: 'bg-emerald-50/70 border-emerald-200 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-300',
-                hover: 'hover:bg-emerald-100 hover:border-emerald-300 hover:shadow-[0_8px_20px_rgba(16,185,129,0.15)]',
+                hover: 'hover:bg-emerald-100/90 hover:border-emerald-300 hover:shadow-[0_8px_20px_rgba(16,185,129,0.15)]',
                 badge: 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
             },
             'Arbeit & Karriere': {
                 bg: 'bg-blue-50/70 border-blue-200 text-blue-800 dark:bg-blue-950/20 dark:border-blue-900 dark:text-blue-300',
-                hover: 'hover:bg-blue-100 hover:border-blue-300 hover:shadow-[0_8px_20px_rgba(37,99,235,0.15)]',
+                hover: 'hover:bg-blue-100/90 hover:border-blue-300 hover:shadow-[0_8px_20px_rgba(37,99,235,0.15)]',
                 badge: 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300'
             },
             'Umwelt & Mobilität': {
                 bg: 'bg-teal-50/70 border-teal-200 text-teal-800 dark:bg-teal-950/20 dark:border-teal-900 dark:text-teal-300',
-                hover: 'hover:bg-teal-100 hover:border-teal-300 hover:shadow-[0_8px_20px_rgba(20,184,166,0.15)]',
+                hover: 'hover:bg-teal-100/90 hover:border-teal-300 hover:shadow-[0_8px_20px_rgba(20,184,166,0.15)]',
                 badge: 'bg-teal-100/80 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300'
             },
             'Gesellschaft & Politik': {
                 bg: 'bg-rose-50/70 border-rose-200 text-rose-800 dark:bg-rose-950/20 dark:border-rose-900 dark:text-rose-300',
-                hover: 'hover:bg-rose-100 hover:border-rose-300 hover:shadow-[0_8px_20px_rgba(244,63,94,0.15)]',
+                hover: 'hover:bg-rose-100/90 hover:border-rose-300 hover:shadow-[0_8px_20px_rgba(244,63,94,0.15)]',
                 badge: 'bg-rose-100/80 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300'
             },
             'Bildung & Technologie': {
                 bg: 'bg-purple-50/70 border-purple-200 text-purple-800 dark:bg-purple-950/20 dark:border-purple-900 dark:text-purple-300',
-                hover: 'hover:bg-purple-100 hover:border-purple-300 hover:shadow-[0_8px_20px_rgba(139,92,246,0.15)]',
+                hover: 'hover:bg-purple-100/90 hover:border-purple-300 hover:shadow-[0_8px_20px_rgba(139,92,246,0.15)]',
                 badge: 'bg-purple-100/80 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300'
             }
         };
@@ -634,7 +634,7 @@
                 phrases: [
                     { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way.", ar: "في رأيي، ينبغي للمرء أن ينظر إلى هذا بطريقة أكثر تمايزًا." },
                     { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن هذا الموضوع يلعب دوراً هاماً." },
-                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيوب هنا." },
+                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العイوب هنا." },
                     { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظري الشخصية، من الضروري اتخاذ إجراء هنا." }
                 ]
             },
@@ -643,7 +643,7 @@
                 icon: "✅",
                 phrases: [
                     { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I fully agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
-                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومnaسبة جداً ذكرتها." },
+                    { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
                     { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
                 ]
@@ -655,7 +655,7 @@
                     { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that...", ar: "أرى ذلك بشكل different قليلاً. يجب أن نأخذ في الاعتبار أيضاً أن..." },
                     { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there. Reality is often different.", ar: "للأسف يجب أن أخالفك الرأي hier. فالواقع غالباً ما يبدو مختلفاً." },
                     { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that...", ar: "هذه حجة جيدة بالفعل، jedoch لا يجب أن نnesy أن..." },
-                    { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك in أن هذا الحل المقترح يعمل في الممارسة العملية." }
+                    { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice.", ar: "أشك في أن هذا الحل المقترح يعمل في الممارسة العملية." }
                 ]
             },
             {
@@ -669,25 +669,8 @@
             }
         ];
 
-        function cleanCitationLinks(text) {
-            if (!text) return "";
-            let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
-            cleaned = cleaned.replace(/\[\d+\]\(https:\/\/[^\s)]+\)/g, "");
-            cleaned = cleaned.replace(/\[\[\d+\]\]/g, "");
-            cleaned = cleaned.replace(/\[\d+\]/g, "");
-            cleaned = cleaned.replace(/\s\s+/g, " "); 
-            return cleaned.trim();
-        }
-
-        let audioUnlocked = false;
-        document.body.addEventListener('click', () => {
-            if (!audioUnlocked && 'speechSynthesis' in window) {
-                const dummy = new SpeechSynthesisUtterance('');
-                dummy.volume = 0;
-                window.speechSynthesis.speak(dummy);
-                audioUnlocked = true;
-            }
-        }, { once: true });
+        let touchTimer;
+        let isLongPress = false;
 
         function stripHtml(html) {
             if (!html) return "";
@@ -1298,7 +1281,7 @@
                         title_en: "Ban smoking in public places?",
                         category: "Freizeit & Gesundheit",
                         einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
-                        einleitung_en: "The topic of public smoking has been discussed controversentially for years.",
+                        einleitung_en: "The topic of public smoking has been discussed controversially for years.",
                         einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
                         pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
                         pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
@@ -2150,7 +2133,7 @@
         }
 
         // ==========================================
-        //  MODERN SIMPLISTIC GRID VIEW (DYNAMISCH HOVER & KATEGORIEN-HEADER)
+        //  MODERN SIMPLISTIC GRID VIEW (OPTIMIZED HOVER, LONG PRESS, AND ENLARGED DISPLAY)
         // ==========================================
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
@@ -2169,7 +2152,7 @@
                 const catTopics = dataset.filter(t => t.category === catName && (!searchVal || t.title_de.toLowerCase().includes(searchVal)));
                 if (catTopics.length === 0) return;
 
-                // Category row header block
+                // Category row header card
                 const sectionHeader = document.createElement('div');
                 sectionHeader.className = "col-span-full mt-6 first:mt-2 mb-4 border-b border-[var(--border)] pb-2 flex items-center justify-between";
                 
