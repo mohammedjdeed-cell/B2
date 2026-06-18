@@ -423,7 +423,7 @@
                     </div>
                 </div>
                 <!-- Box grid wraps comfortably (Up to 5 columns max) to grant maximum space and avoid text overlays -->
-                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pt-6"></div>
+                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-4"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
@@ -608,7 +608,7 @@
                 lightBorder: 'border-blue-200',
                 darkBg: 'dark:bg-blue-950/20',
                 darkBorder: 'dark:border-blue-900',
-                glow: 'hover:shadow-[0_0_20px_rgba(59,130,246,0.35)]',
+                glow: 'hover:shadow-[0_0_20px_rgba(37,99,235,0.35)]',
                 badgeBg: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200/50 dark:border-blue-800/50',
                 activeRing: 'ring-blue-500'
             },
@@ -700,8 +700,8 @@
                 phrases: [
                     { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way.", ar: "في رأيي، ينبغي للمرء أن ينظر إلى هذا بطريقة أكثر تمايزًا." },
                     { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role.", ar: "أنا على يقين تام بأن هذا الموضوع يلعب دوراً هاماً." },
-                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيob هنا." },
-                    { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظري الشخصية، من الضروري اتخاذ إجراء هنا." }
+                    { de: "Ich stehe auf dem Standpunkt, dass die Vorteile hier überwiegen.", en: "I take the standpoint that the advantages outweigh the disadvantages here.", ar: "أنا auf موقف أن المزايا تفوق العيوب هنا." },
+                    { de: "Aus meiner persönlichen Sicht ist es unabdingbar, hier zu handeln.", en: "From my personal perspective, it is indispensable to take action here.", ar: "من وجهة نظri الشخصية، من الضروري اتخاذ إجراء هنا." }
                 ]
             },
             {
@@ -710,7 +710,7 @@
                 phrases: [
                     { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument.", ar: "أتفق معك تماماً في ذلك. diese حجة قاطعة ومقنعة." },
                     { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention.", ar: "هذه نقطة دقيقة ومناسبة جداً ذكرتها." },
-                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة schريكي." },
+                    { de: "Ich sehe das ganz genauso wie mein Partner.", en: "I see it exactly the same way as my partner.", ar: "أرى ذلك تماماً بنفس طريقة شريكي." },
                     { de: "Deine Argumentation leuchtet mir absolut ein.", en: "Your reasoning makes absolute sense to me.", ar: "حجتك وتفكيرك منطقي ومقنع تماماً بالنسبة لي." }
                 ]
             },
@@ -1899,7 +1899,6 @@
             toolbar.style.left = `${left}px`;
         }
 
-        // Clean hidden logic
         function hideToolbar() {
             const toolbar = document.getElementById('formatting-toolbar');
             if (toolbar) toolbar.classList.add('hidden');
@@ -2259,10 +2258,9 @@
 
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
-                // Dynamically sets category-specific background, borders, glow patterns, and focus styles.
-                // Replaced pt-5 with pt-8 to ensure elements inside are pushed down and do not overlap with the floating absolute badge!
+                // Dynamically sets category-specific background, borders, glow patterns, and focus styles
                 const card = document.createElement('div');
-                card.className = `group p-4 pt-8 pb-3.5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} ${style.glow} hover:-translate-y-1 hover:scale-[1.04] ${
+                card.className = `group p-4 pt-5 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} ${style.glow} hover:-translate-y-1 hover:scale-[1.04] ${
                     isActive 
                     ? `ring-2 ${style.activeRing} shadow-md` 
                     : 'shadow-sm'
@@ -2277,13 +2275,12 @@
                     ? `<span class="text-amber-500 text-xs font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
                     : ``;
 
-                const textClass = "text-xs sm:text-xs md:text-[13px] leading-relaxed font-bold text-center break-words transition-all duration-300 text-[var(--text-primary)]";
+                const textClass = "text-[10.5px] sm:text-[11px] leading-snug font-bold text-center break-words transition-all duration-300 group-hover:text-xs sm:group-hover:text-sm group-hover:leading-normal";
 
                 // Applied floating aesthetic top-badge with strict style injection. Cleaned internal list items.
-                // Slightly downscaled emoji badge inside card top-right (w-7 h-7 / text-base) to prevent mobile crowding.
                 card.innerHTML = `
                     <!-- Floating Category Badge (Aesthetic Mode) -->
-                    <div class="absolute -top-2.5 left-3 px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider shadow-sm border ${style.badgeBg} transition-all duration-200 group-hover:scale-105 group-hover:-translate-y-0.5">
+                    <div class="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider shadow-sm border ${style.badgeBg} transition-all duration-200 group-hover:scale-105 group-hover:-translate-y-0.5">
                         ${topic.category || 'Allgemein'}
                     </div>
 
@@ -2292,7 +2289,7 @@
                             ${numBadge}
                             ${starBadge}
                         </div>
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-base sm:text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
+                        <div class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-lg shadow-sm border border-[var(--border)] transition-transform duration-200 group-hover:scale-110">
                             ${TOPIC_ICONS[topic.id] || "📌"}
                         </div>
                     </div>
