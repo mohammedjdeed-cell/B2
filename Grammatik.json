@@ -1,0 +1,614 @@
+[
+  {
+    "level": "A1",
+    "category": "Verben",
+    "title": "Regelmäßige Verbkonjugation im Präsens",
+    "description": "Regelmäßige Verben im Präsens werden durch das Anhängen der Personalendungen -e, -st, -t, -en, -t, -en an den Verbstamm gebildet.",
+    "examples": [
+      "Ich <strong>lerne</strong> jeden Tag Deutsch.",
+      "Du <strong>wohnst</strong> in einer schönen Stadt."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Verben",
+    "title": "Starke Verben im Präsens",
+    "description": "Einige starke Verben ändern in der 2. und 3. Person Singular ihren Stammvokal von e nach i/ie oder von a nach ä.",
+    "examples": [
+      "Er <strong>liest</strong> ein spannendes Buch.",
+      "Du <strong>fährst</strong> morgen nach Berlin."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Satzbau",
+    "title": "Wortstellung im Hauptsatz",
+    "description": "Im deutschen Aussagesatz steht das konjugierte Verb immer an der zweiten Stelle (Position II).",
+    "examples": [
+      "Morgen <strong>geht</strong> mein Bruder zum Arzt.",
+      "Wir <strong>lernen</strong> heute fleißig Grammatik."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Satzbau",
+    "title": "W-Fragen (Offene Fragen)",
+    "description": "W-Fragen beginnen mit einem Fragewort auf Position I, gefolgt vom konjugierten Verb auf Position II.",
+    "examples": [
+      "Woher <strong>kommst</strong> du eigentlich?",
+      "Was <strong>trinkt</strong> ihr am liebsten?"
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Satzbau",
+    "title": "Ja/Nein-Fragen (Satzfragen)",
+    "description": "Bei Entscheidungsfragen ohne Fragewort steht das konjugierte Verb ganz am Anfang auf Position I.",
+    "examples": [
+      "<strong>Arbeitest</strong> du in München?",
+      "<strong>Trinkt</strong> er gerne Kaffee?"
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Fälle",
+    "title": "Der bestimmte Artikel im Nominativ",
+    "description": "Nomen haben im Nominativ einen bestimmten Artikel je nach Genus: maskulin (der), feminin (die), neutral (das) oder Plural (die).",
+    "examples": [
+      "<strong>Der</strong> Student wohnt in Passau.",
+      "<strong>Das</strong> Mädchen liest ein Buch."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Fälle",
+    "title": "Negation mit kein im Nominativ",
+    "description": "Unbestimmte Nomen oder Nomen ohne Artikel werden im Nominativ mit Formen von 'kein' verneint.",
+    "examples": [
+      "Das ist <strong>kein</strong> Apfel, sondern eine Birne.",
+      "Hier sind <strong>keine</strong> Kinder im Park."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Fälle",
+    "title": "Personalpronomen im Nominativ",
+    "description": "Die Personalpronomen (ich, du, er, sie, es, wir, ihr, sie, Sie) ersetzen Nomen im Subjektfall Nominativ.",
+    "examples": [
+      "<strong>Er</strong> studiert Medizin in Köln.",
+      "<strong>Wir</strong> trinken am Nachmittag Tee."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Verben",
+    "title": "Nicht trennbare Verben im Präsens",
+    "description": "Verben mit nicht trennbaren Präfixen (be-, ent-, er-, ver-, zer-) bleiben auch im konjugierten Zustand im Hauptsatz zusammen.",
+    "examples": [
+      "Peter <strong>bekommt</strong> morgen ein Geschenk.",
+      "Ich <strong>verstehe</strong> diese Grammatikregel nicht."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Verben",
+    "title": "Trennbare Verben im Hauptsatz",
+    "description": "Bei trennbaren Verben steht das Präfix am Satzende, während das konjugierte Basisverb auf Position II steht.",
+    "examples": [
+      "Der Zug <strong>kommt</strong> um 18 Uhr <strong>an</strong>.",
+      "Ich <strong>rufe</strong> dich heute Abend <strong>an</strong>."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Fälle",
+    "title": "Der bestimmte Artikel im Akkusativ",
+    "description": "Im Akkusativ verändert sich nur der maskuline Artikel (der -> den, ein -> einen, kein -> keinen). Feminine, neutrale und Plural-Artikel bleiben gleich.",
+    "examples": [
+      "Ich frage <strong>den</strong> Lehrer nach der Antwort.",
+      "Er isst <strong>einen</strong> leckeren Apfel."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Fälle",
+    "title": "Personalpronomen im Akkusativ",
+    "description": "Personalpronomen im Akkusativ ersetzen Personen oder Dinge, die das direkte Objekt im Satz darstellen.",
+    "examples": [
+      "Hallo Anna, ich besuche <strong>ihn</strong> morgen.",
+      "Kennst du sie? Ja, ich kenne <strong>sie</strong> gut."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Nomen",
+    "title": "Possessivartikel im Nominativ",
+    "description": "Possessivartikel zeigen Besitz oder Zugehörigkeit an und passen sich in der Endung dem folgenden Nomen an.",
+    "examples": [
+      "Das ist <strong>mein</strong> neues Fahrrad.",
+      "Ist das <strong>deine</strong> Kamera?"
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Verben",
+    "title": "Präteritum von haben und sein",
+    "description": "Die einfachen Vergangenheitsformen von 'haben' (hatte) und 'sein' (war) werden im Alltag häufiger als das Perfekt genutzt.",
+    "examples": [
+      "Gestern <strong>hatte</strong> ich leider keine Zeit.",
+      "Wir <strong>waren</strong> letzte Woche in München."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Verben",
+    "title": "Perfekt der schwachen Verben mit haben",
+    "description": "Das Perfekt schwacher Verben wird meistens mit dem Hilfsverb 'haben' auf Position II und dem Partizip II am Satzende gebildet.",
+    "examples": [
+      "Ich <strong>habe</strong> gestern ein Auto <strong>gekauft</strong>.",
+      "Wir <strong>haben</strong> den ganzen Tag <strong>gelernt</strong>."
+    ]
+  },
+  {
+    "level": "A1",
+    "category": "Satzbau",
+    "title": "Nebenordnende Konjunktionen auf Position 0",
+    "description": "Die Konjunktionen 'und', 'aber', 'oder', 'sondern' und 'denn' verbinden zwei Hauptsätze und besetzen die Position 0 vor dem Subjekt.",
+    "examples": [
+      "Ich kann dich besuchen, <strong>aber</strong> ich habe heute wenig Zeit.",
+      "Wir gehen nicht ins Kino, <strong>sondern</strong> wir bleiben zu Hause."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Satzbau",
+    "title": "Kausale Nebensätze mit weil",
+    "description": "Kausale Nebensätze begründen eine Handlung. Die Konjunktion 'weil' leitet den Nebensatz ein und schickt das konjugierte Verb ans Satzende.",
+    "examples": [
+      "Max kommt heute nicht, <strong>weil er keine Zeit hat</strong>.",
+      "Ich lerne Deutsch, <strong>weil ich in Deutschland arbeiten möchte</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Satzbau",
+    "title": "Wortstellung bei Dativ- und Akkusativobjekten",
+    "description": "Sind beide Objekte Nomen, steht Dativ vor Akkusativ. Ist ein Objekt ein Pronomen, steht dieses vor dem Nomen. Sind beide Pronomen, steht Akkusativ vor Dativ.",
+    "examples": [
+      "Der Ober bringt <strong>es ihm</strong> sofort.",
+      "Ich schenke <strong>meiner Mutter ein Buch</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Verben",
+    "title": "Präteritum der Modalverben",
+    "description": "Im Präteritum verlieren alle Modalverben ihren Umlaut und erhalten die Endungen -te, -test, -te, -ten, -tet, -ten am Stamm.",
+    "examples": [
+      "Als Kind <strong>musste</strong> ich früh ins Bett gehen.",
+      "Wir <strong>konnten</strong> das Problem gestern schnell lösen."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Fälle",
+    "title": "Der Genitiv und seine Endungen",
+    "description": "Der Genitiv drückt Zugehörigkeit aus. Maskuline und neutrale Nomen erhalten im Genitiv die Endung -(e)s, feminine und Plural-Artikel werden zu 'der'.",
+    "examples": [
+      "Das ist der Koffer <strong>des Gastes</strong>.",
+      "Wir hören die Meinung <strong>der Lehrerin</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Nomen",
+    "title": "Die n-Deklination bei maskulinen Nomen",
+    "description": "Bestimmte maskuline Nomen (z.B. auf -e, -ent, -ist) erhalten in allen Fällen außer dem Nominativ Singular die Endung -n oder -en.",
+    "examples": [
+      "Der Arzt untersucht <strong>den Patienten</strong> gründlich.",
+      "Ich kenne <strong>den Jungen</strong> seit zwei Jahren."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Adjektive",
+    "title": "Schwache Adjektivdeklination",
+    "description": "Nach einem bestimmten Artikel erhält das Adjektiv im Nominativ Singular die Endung -e, im Dativ, Genitiv und Plural immer die Endung -en.",
+    "examples": [
+      "Der <strong>grüne</strong> Salat schmeckt hervorragend.",
+      "Bei dem <strong>kalten</strong> Wetter bleibe ich lieber zu Hause."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Satzbau",
+    "title": "Nebensätze mit dass",
+    "description": "Sätze mit der Konjunktion 'dass' sind Objektsätze, die nach Verben des Wissens, Meinens oder Sagens stehen. Das Verb steht am Ende.",
+    "examples": [
+      "Ich glaube, <strong>dass er morgen kommt</strong>.",
+      "Es ist wichtig, <strong>dass du pünktlich bist</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Adjektive",
+    "title": "Der Komparativ zur Steigerung",
+    "description": "Der Komparativ vergleicht zwei ungleiche Dinge mit der Endung -er beim Adjektiv und der Konjunktion 'als'.",
+    "examples": [
+      "Mein Zimmer ist <strong>kleiner als</strong> dein Zimmer.",
+      "Die Rakete fliegt viel <strong>schneller als</strong> das Flugzeug."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Adjektive",
+    "title": "Der Superlativ im Prädikativ",
+    "description": "Der Superlativ drückt den höchsten Grad einer Eigenschaft aus und wird prädikativ mit 'am' und der Endung '-sten' gebildet.",
+    "examples": [
+      "Dieses Hotel ist <strong>am billigsten</strong>.",
+      "Im Sommer ist es hier <strong>am wärmsten</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Verben",
+    "title": "Echte und unechte reflexive Verben",
+    "description": "Reflexive Verben verlangen ein Reflexivpronomen (mich, dich, sich etc.), das sich auf das Subjekt bezieht und im Akkusativ oder Dativ steht.",
+    "examples": [
+      "Ich <strong>freue mich</strong> auf den Urlaub.",
+      "Du musst <strong>dir</strong> die Hände waschen."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Präpositionen",
+    "title": "Verben mit festen Präpositionen",
+    "description": "Viele Verben sind fest an eine bestimmte Präposition gebunden, die einen bestimmten Kasus (Dativ oder Akkusativ) verlangt.",
+    "examples": [
+      "Die Touristen warten <strong>auf den Bus</strong>.",
+      "Denkst du bitte <strong>an mein Angebot</strong>?"
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Präpositionen",
+    "title": "Pronominaladverbien bei Sachen",
+    "description": "Um sich auf eine Sache oder einen Vorgang mit Präposition zu beziehen, nutzt man Pronominaladverbien wie 'darüber' oder 'damit'.",
+    "examples": [
+      "Ich habe mich sehr <strong>darüber</strong> gefreut.",
+      "Hast du mit dieser Chance gerechnet? Ja, ich habe <strong>damit</strong> gerechnet."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Satzbau",
+    "title": "Konditionalsätze mit wenn",
+    "description": "Konditionalsätze drücken eine Bedingung aus. Die Konjunktion 'wenn' leitet den Nebensatz ein, und das konjugierte Verb steht am Ende.",
+    "examples": [
+      "<strong>Wenn du mir nicht hilfst</strong>, schaffe ich die Arbeit nicht.",
+      "Wir gehen im Park spazieren, <strong>wenn das Wetter schön ist</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Präpositionen",
+    "title": "Wechselpräpositionen mit Dativ und Akkusativ",
+    "description": "Wechselpräpositionen fordern den Dativ bei einer statischen Position (Wo?) und den Akkusativ bei einer zielgerichteten Bewegung (Wohin?).",
+    "examples": [
+      "Das Buch liegt <strong>auf dem Tisch</strong>.",
+      "Ich lege das Buch <strong>auf den Tisch</strong>."
+    ]
+  },
+  {
+    "level": "A2",
+    "category": "Satzbau",
+    "title": "Finalsätze mit damit",
+    "description": "Nebensätze mit 'damit' drücken eine Absicht, ein Ziel oder einen Zweck aus (Wozu?). Modalverben wie 'wollen' entfallen darin.",
+    "examples": [
+      "Ich schreibe alles auf, <strong>damit ich es nicht vergesse</strong>.",
+      "Er spricht sehr laut, <strong>damit alle ihn hören</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Das Perfekt der starken Verben",
+    "description": "Starke Verben bilden ihr Partizip II mit der Vorsilbe ge-, einem oft veränderten Stammvokal und der Endung -en.",
+    "examples": [
+      "Paula <strong>hat</strong> in der ersten Reihe <strong>gesessen</strong>.",
+      "Wir <strong>sind</strong> gestern nach Hause <strong>gegangen</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Temporale Nebensätze mit wenn und als",
+    "description": "'Als' wird für einmalige Ereignisse in der Vergangenheit verwendet, während 'wenn' für wiederholte Ereignisse der Vergangenheit sowie Gegenwart/Zukunft steht.",
+    "examples": [
+      "<strong>Als ich letztes Jahr in Wien war</strong>, regnete es die ganze Zeit.",
+      "<strong>Wenn ich im Sommer nach Griechenland fahre</strong>, treffe ich meine Freunde."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Konzessivsätze mit obwohl",
+    "description": "Konzessivsätze drücken einen unzureichenden Gegengrund aus. Nach der Konjunktion 'obwohl' steht das konjugierte Verb am Ende.",
+    "examples": [
+      "Max fuhr mit dem Fahrrad zur Arbeit, <strong>obwohl es regnete</strong>.",
+      "Ich ging spazieren, <strong>obwohl ich sehr müde war</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Konzessive Adverbien mit trotzdem",
+    "description": "'Trotzdem' verbindet Hauptsätze konzessiv und steht meist auf Position I, gefolgt vom konjugierten Verb auf Position II.",
+    "examples": [
+      "Es regnete in Strömen. <strong>Trotzdem ging</strong> er ohne Schirm spazieren.",
+      "Ich war krank. Ich <strong>ging trotzdem</strong> zur Arbeit."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Präpositionen",
+    "title": "Präpositionen mit dem Genitiv",
+    "description": "Häufige Präpositionen wie wegen, trotz, während und (an)statt fordern das darauf folgende Nomen im Genitiv.",
+    "examples": [
+      "<strong>Wegen des schlechten Wetters</strong> blieben wir zu Hause.",
+      "Er geht <strong>trotz seiner Erkältung</strong> zur Arbeit."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Konjunktiv II in der Gegenwart",
+    "description": "Der Konjunktiv II drückt Wünsche, Hypothesen oder Höflichkeit aus. Er wird meist mit 'würde + Infinitiv' oder den Formen 'hätte' / 'wäre' gebildet.",
+    "examples": [
+      "Es <strong>wäre</strong> schön, wenn ich mehr Zeit <strong>hätte</strong>.",
+      "Ich <strong>würde gerne</strong> nach Rom fahren."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Konjunktiv II in der Vergangenheit",
+    "description": "Irreale Bedingungen der Vergangenheit werden mit dem Konjunktiv II von haben/sein (hätte/wäre) und dem Partizip II am Satzende gebildet.",
+    "examples": [
+      "Wenn ich gestern Zeit <strong>gehabt hätte</strong>, <strong>wäre</strong> ich ins Kino <strong>gegangen</strong>.",
+      "Ich <strong>wäre</strong> so gerne nach Rom <strong>gereist</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Konjunktiv II der Modalverben",
+    "description": "Die Modalverben im Konjunktiv II (könnte, müsste, sollte, dürfte) drücken Ratschläge, höfliche Fragen oder Vermutungen aus.",
+    "examples": [
+      "Du <strong>solltest</strong> dich mehr auf deine Arbeit konzentrieren.",
+      "<strong>Könntest</strong> du mir bitte helfen?"
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Temporale Nebensätze zur zeitlichen Abfolge",
+    "description": "Diese Nebensätze drücken Gleichzeitigkeit (während), Vorzeitigkeit (nachdem) oder Nachzeitigkeit (bevor/ehe) aus.",
+    "examples": [
+      "<strong>Nachdem er geputzt hatte</strong>, sah er fern.",
+      "<strong>Bevor er ins Bett ging</strong>, putzte er sich die Zähne."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Relativsätze mit dem Genitiv",
+    "description": "Relativpronomen im Genitiv (dessen, deren) drücken einen Besitz oder eine Zugehörigkeit des Bezugsworts aus.",
+    "examples": [
+      "Das ist der Mann, <strong>dessen Auto</strong> gestohlen wurde.",
+      "Ich besuche meine Tante, <strong>deren Katze</strong> krank ist."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Das Vorgangspassiv im Präsens",
+    "description": "Das Vorgangspassiv betont die Handlung. Es wird mit dem Hilfsverb 'werden' im Präsens und dem Partizip II am Satzende gebildet.",
+    "examples": [
+      "Der Patient <strong>wird</strong> vom Arzt <strong>geimpft</strong>.",
+      "Das Auto <strong>wird</strong> in der Werkstatt <strong>repariert</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Vorgangspassiv im Präteritum und Perfekt",
+    "description": "Im Präteritum nutzt man 'wurde', im Perfekt 'ist ... worden' kombiniert mit dem Partizip II des Hauptverbs.",
+    "examples": [
+      "Der Dieb <strong>wurde</strong> von der Polizei <strong>verhaftet</strong>.",
+      "Die Rechnung <strong>ist</strong> gestern <strong>bezahlt worden</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Vorgangspassiv in Kombination mit Modalverben",
+    "description": "In dieser Struktur wird das Modalverb konjugiert und mit dem Passiv-Infinitiv ('Partizip II + werden') am Satzende verbunden.",
+    "examples": [
+      "Der Schaden <strong>muss repariert werden</strong>.",
+      "Die Geräte <strong>sollen kontrolliert werden</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Das Verb 'werden' als Vollverb und Hilfsverb",
+    "description": "Als Vollverb drückt 'werden' eine Veränderung aus; als Hilfsverb dient es zur Bildung des Futurs I oder des Vorgangspassivs.",
+    "examples": [
+      "Mein Sohn <strong>wird</strong> nächstes Jahr Anwalt.",
+      "Morgen <strong>wird</strong> mein Bruder aus dem Urlaub <strong>zurückkommen</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Verwendung von 'brauchen' mit zu und Infinitiv",
+    "description": "In Kombination mit einer Negation (nicht, kein) ersetzt 'brauchen + zu' die Bedeutung des Modalverbs 'müssen'.",
+    "examples": [
+      "Du <strong>brauchst</strong> heute nicht zu <strong>arbeiten</strong>.",
+      "Ich <strong>brauche</strong> ihm nicht zu <strong>helfen</strong>."
+    ]
+ },
+  {
+[
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Infinitivsätze mit zu",
+    "description": "Infinitivsätze mit 'zu' verkürzen Sätze ohne eigenes Subjekt und hängen oft von bestimmten Nomen, Adjektiven oder Verben ab[[1](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFcLHPp6ZBoW3XwfY927UT0sNtaqQ_W3drfReKQ8u7eOA-NG7T7iczHkNrRY89OTa13rHDqVOTdi2bkSw0Th5OzQEdHnFJOnvBYYL-WRrxl_PNyqeAy)].",
+    "examples": [
+      "Ich habe keine Lust, heute <strong>zu kochen</strong>.",
+      "Es ist unmöglich, alles an einem Tag <strong>zu lernen</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Das Verb lassen in verschiedenen Funktionen",
+    "description": "Das Verb 'lassen' wird als Vollverb (etwas zurücklassen) oder als Modalverb-ähnliches Verb (etwas erlauben oder veranlassen) verwendet[[1](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFcLHPp6ZBoW3XwfY927UT0sNtaqQ_W3drfReKQ8u7eOA-NG7T7iczHkNrRY89OTa13rHDqVOTdi2bkSw0Th5OzQEdHnFJOnvBYYL-WRrxl_PNyqeAy)][[2](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFCco8yseQ5YebO5ReF4hBnGGtDMCaKLzASNI2AOK4fTqoyfAaUXaMJVLippGZFtRRzLKXpKsoJmA8ACLYm7Mur0mNygmn4b4Ek4RgUD_40yVRiyAqJIymHO8vYaqPXtpHftVbUD2-gIMlL4fYj)].",
+    "examples": [
+      "Ich <strong>lasse</strong> mein Auto in der Werkstatt <strong>reparieren</strong>.",
+      "Meine Eltern <strong>lassen</strong> mich heute nicht im Park <strong>spielen</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Verben",
+    "title": "Das Zustandspassiv im Präsens",
+    "description": "Im Gegensatz zum Vorgangspassiv drückt das Zustandspassiv den abgeschlossenen Zustand einer Handlung mit 'sein + Partizip II' aus[[2](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFCco8yseQ5YebO5ReF4hBnGGtDMCaKLzASNI2AOK4fTqoyfAaUXaMJVLippGZFtRRzLKXpKsoJmA8ACLYm7Mur0mNygmn4b4Ek4RgUD_40yVRiyAqJIymHO8vYaqPXtpHftVbUD2-gIMlL4fYj)][[3](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQEdntZbXUgzObFHR0TzO1A-GLS0_RdGXg0mrsDiq-jWmcAob6IfYf_s1oPyiCfdmuirSOVQdFzE5Fa-18TIKyGdUpKkL-sRB4L7fX98JUg3icyFYfHXBE8twbAgDrdeoCHD1nuHTaeDxnIm)].",
+    "examples": [
+      "Das Geschäft <strong>ist</strong> am Sonntag <strong>geschlossen</strong>.",
+      "Das Problem <strong>ist</strong> bereits <strong>gelöst</strong>."
+    ]
+  },
+  {
+    "level": "B1",
+    "category": "Satzbau",
+    "title": "Konsekutivsätze mit sodass",
+    "description": "Konsekutivsätze drücken eine Folge oder ein Ergebnis einer Handlung aus[[4](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQHzV0EeOu_3aFWa5tx85ymWQzvRA2Mo5nmwuM09maSNLYpcxvpLsF_L7lhadPYY4NoM_Yvxjd_LWJU11n6fkCEGbIFeMsm7aeUNUco5wN_lKAST3kUze0xqmwPzu8M71ceEs-pslAr3SNI1)].",
+    "examples": [
+      "Es regnete in Strömen, <strong>sodass wir zu Hause bleiben mussten</strong>.",
+      "Er sprach <strong>so</strong> leise, <strong>dass ihn niemand verstehen konnte</strong>."
+    ]
+  },
+  {
+    "level": "Satzbau",
+    "category": "B1",
+    "title": "Modalpartikeln in der gesprochenen Sprache",
+    "description": "Modalpartikeln (ja, doch, mal, denn) verändern die Stimmung oder Absicht einer Aussage, ohne die grammatische Struktur zu beeinflussen[[5](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQGFeA60p5yNJllHZI7fb-B79lIDsAVq1YL49KWtHXfX9TOOPRBW_KYgVp0c2HX-fCHw_Uvzx9tTatJGL7s15pxIOd8J-kgWumhw9_ZGRVexIFJRYDjqFN4jHDh-9J67Vd0TRhMl69Io_mg%3D)].",
+    "examples": [
+      "Komm <strong>mal</strong> bitte her!",
+      "Das hast du <strong>ja</strong> wirklich gut gemacht!"
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Verben",
+    "title": "Konjunktiv I für die indirekte Rede",
+    "description": "Der Konjunktiv I wird vor allem in der Schriftsprache und im Journalismus verwendet, um Aussagen anderer neutral wiederzugeben[[4](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQHzV0EeOu_3aFWa5tx85ymWQzvRA2Mo5nmwuM09maSNLYpcxvpLsF_L7lhadPYY4NoM_Yvxjd_LWJU11n6fkCEGbIFeMsm7aeUNUco5wN_lKAST3kUze0xqmwPzu8M71ceEs-pslAr3SNI1)].",
+    "examples": [
+      "Der Bundeskanzler sagte, er <strong>reise</strong> morgen nach Paris.",
+      "Sie behauptet, sie <strong>habe</strong> kein Geld bei sich."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Adjektive",
+    "title": "Partizip I als attributives Adjektiv",
+    "description": "Das Partizip I (Infinitiv + -d) beschreibt eine aktive, gleichzeitig stattfindende Handlung und wird wie ein normales Adjektiv dekliniert[[6](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQE7-dhEAUCWS6Gn48VDUuolrGkoZuu4gPdoM8Hm4h0v2CjwyIZIDI3ABY1g-cQ2Aonj6ENaHj008DhWn9sw6dhM7CWAP47dkk6qHfEA5cvIz0JRDHQtTsQp5hZM3_t3tID-LNVjbndOlR6chzxpe80g9H4Vxt0XyIDNeKMb-LkCowGNUoQXHZ8jPxFynUC0_F_b0VevvEV8C656aWqL)][[7](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFMfUEzBnkmCY44GfUd8NUIJ-eiVsAGlaqWJux5jhW_VI_5aGMqnTFZo-S7RIYWbDwmF7OrMry5Vudo71aKC3QU9aGH26F9LPzVS5at4suyBT8AstpxOOxIEZXhfi2fz5Bpz3rPF2cri-38vDx38n589AU%3D)].",
+    "examples": [
+      "Das <strong>weinende</strong> Kind sucht seine Mutter.",
+      "In der Ecke steht eine <strong>singende</strong> Gruppe von Studenten."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Adjektive",
+    "title": "Partizip II als attributives Adjektiv",
+    "description": "Das Partizip II drückt eine passive oder abgeschlossene Handlung aus und wird attributiv dekliniert vor einem Nomen platziert[[6](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQE7-dhEAUCWS6Gn48VDUuolrGkoZuu4gPdoM8Hm4h0v2CjwyIZIDI3ABY1g-cQ2Aonj6ENaHj008DhWn9sw6dhM7CWAP47dkk6qHfEA5cvIz0JRDHQtTsQp5hZM3_t3tID-LNVjbndOlR6chzxpe80g9H4Vxt0XyIDNeKMb-LkCowGNUoQXHZ8jPxFynUC0_F_b0VevvEV8C656aWqL)][[7](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFMfUEzBnkmCY44GfUd8NUIJ-eiVsAGlaqWJux5jhW_VI_5aGMqnTFZo-S7RIYWbDwmF7OrMry5Vudo71aKC3QU9aGH26F9LPzVS5at4suyBT8AstpxOOxIEZXhfi2fz5Bpz3rPF2cri-38vDx38n589AU%3D)].",
+    "examples": [
+      "Das <strong>gelesene</strong> Buch liegt auf dem Tisch.",
+      "Der vom Koch <strong>zubereitete</strong> Fisch schmeckt köstlich."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Satzbau",
+    "title": "Je... desto-Konstruktion",
+    "description": "Dieser proportionale Konnektor verbindet zwei komparative Adjektive, wobei 'je' den Nebensatz einleitet und 'desto' den Hauptsatz einleitet[[7](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFMfUEzBnkmCY44GfUd8NUIJ-eiVsAGlaqWJux5jhW_VI_5aGMqnTFZo-S7RIYWbDwmF7OrMry5Vudo71aKC3QU9aGH26F9LPzVS5at4suyBT8AstpxOOxIEZXhfi2fz5Bpz3rPF2cri-38vDx38n589AU%3D)].",
+    "examples": [
+      "<strong>Je mehr</strong> du lernst, <strong>desto besser</strong> wirst du.",
+      "<strong>Je schneller</strong> wir laufen, <strong>umso früher</strong> kommen wir an."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Satzbau",
+    "title": "Komplexe Relativsätze mit Präpositionen",
+    "description": "Relativpronomen können nach Präpositionen stehen, wobei die Präposition den Fall (Dativ oder Akkusativ) des Pronomen bestimmt[[8](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQHbQxXdRuXO7P63BGGIwv8T9nKnskS19WKdeW4W3hIyvBHfeleeYxUzVoEpOW3hNiSlOQqvJOxW7joclEnij2ZfKoKBEgR1f3MUPh4rdPeAdgOtN6tUlhsJhhEAQAMqziCxn63BbSWFkx12FRtBDHwwaPLAigNmnCYGUZZl4GzQ)].",
+    "examples": [
+      "Das ist der Freund, <strong>mit dem</strong> ich gestern gesprochen habe.",
+      "Der Tisch, <strong>auf den</strong> ich das Buch gelegt habe, ist neu."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Verben",
+    "title": "Nomen-Verb-Verbindungen (Funktionsverbgefüge)",
+    "description": "Feste Verbindungen aus einem Nomen (oft mit Präposition) und einem verblassten Verb ersetzen im formellen Deutsch einfache Vollverben[[9](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFD1X_pN4Hxllx0UtYc_UHnymzFF9U8KQmW7xuH1AORYc5YeR8SomdwZery5lmLY0kW0gOO8rwhvcInn7HIt9nEmnHwYYwd9wlSa4M_sFIwBPwhCpALC_aoqTxkiEmxgUc_F-9ICuRfnbECo5nOzew4zmkvAU4otCmLiu06riSgAYJ9B1b2LINyiMLTo4LXgjhFfdDctWLk1_DRCKkxP4Jt3vzgC8qO)][[10](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQF2tPqG4vyTjoequ67HbzBTxiymxZY5yEJyd2iwC3BLQy6cpSAmnK6VCBru18YTETl8AGoxoJVCqObilNP5uObZRrboY4lAgKEjnTLC88IlO9estLpvP6aTBgnyuKk5dbfhs1EijR5n2YfowqWwM74GWQ758aqUJg%3D%3D)].",
+    "examples": [
+      "Ich möchte dieses Problem gern <strong>zur Sprache bringen</strong>.",
+      "Der Dozent stellt uns die Unterlagen <strong>zur Verfügung</strong>."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Verben",
+    "title": "Das Zustandspassiv im Präteritum",
+    "description": "Drückt einen abgeschlossenen Zustand aus, der in der Vergangenheit lag, gebildet mit 'war + Partizip II'[[2](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFCco8yseQ5YebO5ReF4hBnGGtDMCaKLzASNI2AOK4fTqoyfAaUXaMJVLippGZFtRRzLKXpKsoJmA8ACLYm7Mur0mNygmn4b4Ek4RgUD_40yVRiyAqJIymHO8vYaqPXtpHftVbUD2-gIMlL4fYj)].",
+    "examples": [
+      "Das Fenster <strong>war</strong> bereits <strong>geöffnet</strong>, als ich den Raum betrat.",
+      "Das Geschäft <strong>war</strong> gestern wegen des Feiertags <strong>geschlossen</strong>."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Satzbau",
+    "title": "Subjektlose Passivkonstruktionen",
+    "description": "Wenn im Aktivsatz kein Akkusativobjekt vorhanden ist, entsteht im Passiv ein subjektloser Satz, der oft mit dem Pronomen 'es' eingeleitet wird[[2](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQFCco8yseQ5YebO5ReF4hBnGGtDMCaKLzASNI2AOK4fTqoyfAaUXaMJVLippGZFtRRzLKXpKsoJmA8ACLYm7Mur0mNygmn4b4Ek4RgUD_40yVRiyAqJIymHO8vYaqPXtpHftVbUD2-gIMlL4fYj)].",
+    "examples": [
+      "Auf der Party <strong>wurde gestern viel getanzt</strong>.",
+      "<strong>Es wurde</strong> den ganzen Abend über das Projekt <strong>diskutiert</strong>."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Satzbau",
+    "title": "Verallgemeinernde Relativsätze mit wer und was",
+    "description": "Relative Sätze, die sich auf unbestimmte Personen oder Sachen beziehen, werden mit 'wer' (für Personen) oder 'was' (für neutrale Pronomen/Sätze) eingeleitet[[11](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQECuvzGTgOJGvX1D7FmFgarZkVuSrWPjZQi8tVKeBxaUKPugcDFgx9Bp_jOE5yiXe5Bv_Mzw6MhS_2NEO8O92ZGE_JEEL8UoqMK3tGslbkqg0TBBtOhcDMa3PJVDuoahr4X)][[12](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQECuvzGTgOJGvX1D7FmFgarZkVuSrWPjZQi8tVKeBxaUKPugcDFgx9Bp_jOE5yiXe5Bv_Mzw6MhS_2NEO8O92ZGE_JEEL8UoqMK3tGslbkqg0TBBtOhcDMa3PJVDuoahr4X)].",
+    "examples": [
+      "<strong>Wer</strong> die Hausaufgaben nicht macht, bekommt Ärger.",
+      "Alles, <strong>was</strong> er erzählt, entspricht der Wahrheit."
+    ]
+  },
+  {
+    "level": "B2",
+    "category": "Satzbau",
+    "title": "Zweiteilige Konnektoren",
+    "description": "Diese Konnektoren verbinden zwei Satzteile oder Sätze und drücken Beziehungen wie Gegensätze oder Ergänzungen aus[[4](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fgrounding-api-redirect%2FAUZIYQHzV0EeOu_3aFWa5tx85ymWQzvRA2Mo5nmwuM09maSNLYpcxvpLsF_L7lhadPYY4NoM_Yvxjd_LWJU11n6fkCEGbIFeMsm7aeUNUco5wN_lKAST3kUze0xqmwPzu8M71ceEs-pslAr3SNI1)].",
+    "examples": [
+      "Wir wollen <strong>nicht nur</strong> Deutsch lernen, <strong>sondern auch</strong> die Kultur verstehen.",
+      "Er ist <strong>weder</strong> pünktlich gekommen, <strong>noch</strong> hat er sich entschuldigt."
+    ]
+  }
+]
