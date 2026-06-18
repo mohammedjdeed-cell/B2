@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
+    <title>B2 Trainer — TELC B2 Diskussionstrainer</title>
     
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
+    <!-- PWA Meta Tags & Modern B2 Icon -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563EB">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="B2 Trainer">
-    <link class="apple-touch-icon" href="./icons/icon-192.png">
+    
+    <!-- Modern SVG Base64 Icon & Fallback -->
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzI1NjNFQiIvPjxwYXRoIGQ9Ik0xMjAgMTYwaDI3MnYxNjBIMjIwTDEyMCA0MDB2LTgwaC0weiIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iMjU2IiB5PSIyNzUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTEwIiBmaWxsPSIjMjU2M0VCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CMjwvdGV4dD48L3N2Zz4=">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -108,17 +113,20 @@
             display: inline;
         }
 
+        /* Improved Inline Editing UX */
         .edit-mode-active [contenteditable="true"] {
-            border-bottom: 1px dashed var(--text-faint);
-            outline: none;
-            transition: all 0.2s;
             cursor: text;
+            border-bottom: 2px dashed var(--accent);
+            padding: 2px 4px;
+            margin: -2px -4px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: block;
         }
         .edit-mode-active [contenteditable="true"]:focus {
-            background-color: var(--bg-app);
-            border-bottom: 1px solid var(--accent);
-            padding: 4px;
-            border-radius: 4px;
+            background-color: var(--accent-light);
+            outline: none;
+            border-bottom-style: solid;
         }
 
         #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
@@ -133,13 +141,15 @@
         ::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 9999px; }
     </style>
     
+    <!-- Firebase SDK compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="h-full flex flex-col overflow-hidden">
+<body class="h-full flex flex-col overflow-x-hidden">
 
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40 shadow-sm transition-colors duration-200">
+    <!-- MASTER BAR -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex flex-wrap items-center justify-between gap-4 relative z-40 shadow-sm transition-colors duration-200">
         <div class="flex items-center gap-3">
             <div class="bg-[var(--accent)] text-[var(--bg-card)] p-2 rounded-xl shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18 18.254 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -209,15 +219,13 @@
                     <button id="reset-edits-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[var(--danger)] flex items-center gap-2">
                         <span>🧹</span><span>Änderungen zurücksetzen</span>
                     </button>
-                    <button id="pwa-install-btn" class="hidden w-full text-left px-3 py-2 text-xs font-semibold rounded-lg bg-[var(--success)] text-white flex items-center gap-2 justify-center mt-2">
-                        <span>📲</span><span>App installieren</span>
-                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar Navigation -->
         <aside id="sidebar" class="w-80 fixed inset-y-0 left-0 z-30 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-all duration-300 ease-in-out">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
@@ -248,7 +256,8 @@
             </div>
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1">
-                </nav>
+                <!-- Programmatic list rendering -->
+            </nav>
 
             <div class="p-4 border-t border-[var(--border)] bg-[var(--bg-app)] grid grid-cols-2 gap-2 hide-on-collapse">
                 <button onclick="undo()" class="py-2 text-xs font-bold bg-[var(--bg-card)] hover:bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
@@ -260,11 +269,13 @@
             </div>
         </aside>
 
+        <!-- Main Workspace -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             <button id="mobile-nav-toggle" class="lg:hidden fixed bottom-6 right-6 z-50 bg-[var(--accent)] text-white p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
 
+            <!-- CONTROLS & SUBBAR -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none">📌</span>
@@ -304,17 +315,20 @@
                 </div>
             </div>
 
+            <!-- TAB 1: DASHBOARD CONTAINER -->
             <div id="dashboard-tab-section" class="space-y-6">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Klicken Sie direkt in den Text, um ihn zu bearbeiten. Änderungen im Deutschen übersetzen sich automatisch. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Klicken Sie direkt in den Text, um ihn zu bearbeiten. Beim Tippen im Deutschen wird automatisch übersetzt. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6">
-                    </div>
+                    <!-- Cards layout anchor -->
+                </div>
             </div>
 
+            <!-- TAB 2: MINDMAP CONTAINER -->
             <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-1 flex flex-col h-[75vh]">
                 <div class="flex items-center justify-between mb-4 flex-wrap gap-4 border-b border-[var(--border)] pb-4">
                     <div>
@@ -334,15 +348,20 @@
                 </div>
             </section>
 
+            <!-- TAB 3: REDEMITTEL CONTAINER -->
             <section id="redemittel-tab-section" class="hidden space-y-6">
-                </section>
+                <!-- Populated by JS -->
+            </section>
 
+            <!-- TAB 4: GRAMMAR CONTAINER -->
             <section id="grammar-tab-section" class="hidden space-y-6">
-                </section>
+                <!-- Populated by JS -->
+            </section>
 
         </main>
     </div>
 
+    <!-- FLOATING RICH TEXT EDITING FORMATTER TOOLBAR -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
@@ -356,13 +375,15 @@
         </button>
     </div>
 
+    <!-- DYNAMIC PER-BLOCK VOICE PICKER FLOATING POPOVER -->
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">🗣️ Stimme wählen</span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
         <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1">
-            </div>
+            <!-- Programmatic layout execution -->
+        </div>
         <div class="space-y-2 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between gap-2">
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
@@ -379,6 +400,7 @@
         </div>
     </div>
 
+    <!-- ADVANCED BLOCK CONTENT EDITOR MODAL -->
     <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
             <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
@@ -393,7 +415,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
-                        <button id="btn-auto-translate" onclick="autoTranslateBlock()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate</button>
+                        <button id="btn-auto-translate" onclick="autoTranslateBlockModal()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">🪄 Auto-Translate</button>
                     </div>
                     <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
                 </div>
@@ -414,6 +436,7 @@
         </div>
     </div>
 
+    <!-- MAIN APP STATE ENGINE -->
     <script>
         const TOPIC_ICONS = {
             1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
@@ -616,6 +639,7 @@
             }
         }
 
+        // Event Listeners for UI
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
@@ -660,7 +684,7 @@
         }
 
         // ==========================================
-        //  TTS (TEXT TO SPEECH) ALGORITHM
+        //  TTS (TEXT TO SPEECH) ALGORITHM 
         // ==========================================
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
@@ -1081,58 +1105,70 @@
         // ==========================================
         //  REAL-TIME INLINE EDIT & AUTO-TRANSLATE
         // ==========================================
-        async function handleInlineEdit(element, topicId, lang, compoundKey) {
+        let autoTranslateTimer;
+
+        function handleInlineInput(element, topicId, lang, compoundKey) {
+            if (!isEditMode || lang !== 'de') return;
+            clearTimeout(autoTranslateTimer);
+            autoTranslateTimer = setTimeout(() => {
+                triggerAutoTranslate(element, topicId, compoundKey);
+            }, 1200); // 1.2s debounce
+        }
+
+        async function triggerAutoTranslate(element, topicId, compoundKey) {
+            const topic = TOPICS_DATA.find(t => t.id === topicId);
+            if (!topic) return;
+
+            let plainText = element.innerText || element.textContent;
+            if (plainText.length < 3) return; 
+
+            const enKey = compoundKey.replace('_de', '_en');
+            const arKey = compoundKey.replace('_de', '_ar');
+            const enEl = document.getElementById(`en-${compoundKey}`);
+            const arEl = document.getElementById(`ar-${compoundKey}`);
+
+            if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...übersetze...</span>`;
+            if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...ترجمة...</span>`;
+
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
+                ]);
+                const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
+
+                const transEn = dataEn.responseData?.translatedText || "";
+                const transAr = dataAr.responseData?.translatedText || "";
+
+                setTopicValue(topic, enKey, transEn);
+                setTopicValue(topic, arKey, transAr);
+
+                if(enEl) enEl.innerText = transEn;
+                if(arEl) arEl.innerText = transAr;
+                saveEditsSilent();
+            } catch(e) {
+                console.warn("Auto-translate failed.", e);
+                if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
+                if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
+            }
+        }
+
+        function handleInlineBlur(element, topicId, lang, compoundKey) {
             if (!isEditMode) return;
-            
             const topic = TOPICS_DATA.find(t => t.id === topicId);
             if (!topic) return;
 
             pushToHistory();
-
-            const isGerman = (lang === 'de');
-            let newHtml = element.innerHTML.trim();
-            let plainText = element.innerText || element.textContent;
-
-            if (isGerman) {
+            
+            if (lang === 'de') {
+                const newHtml = element.innerHTML.trim();
                 saveHighlight(topicId, compoundKey, newHtml);
                 setTopicValue(topic, compoundKey, newHtml);
-
-                if (plainText.length > 2) {
-                    const enKey = compoundKey.replace('_de', '_en');
-                    const arKey = compoundKey.replace('_de', '_ar');
-                    
-                    const enEl = document.getElementById(`en-${compoundKey}`);
-                    const arEl = document.getElementById(`ar-${compoundKey}`);
-
-                    if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse">⏳ Übersetze...</span>`;
-                    if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse">⏳ جاري الترجمة...</span>`;
-
-                    try {
-                        const [resEn, resAr] = await Promise.all([
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
-                        ]);
-                        const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
-
-                        const transEn = dataEn.responseData?.translatedText || "";
-                        const transAr = dataAr.responseData?.translatedText || "";
-
-                        setTopicValue(topic, enKey, transEn);
-                        setTopicValue(topic, arKey, transAr);
-
-                        if(enEl) enEl.innerText = transEn;
-                        if(arEl) arEl.innerText = transAr;
-                    } catch(e) {
-                        console.warn("Auto-translate failed.", e);
-                        if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
-                        if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
-                    }
-                }
             } else {
+                let plainText = element.innerText || element.textContent;
                 setTopicValue(topic, compoundKey, plainText);
-                element.innerText = plainText; 
+                element.innerText = plainText; // Remove corrupted HTML
             }
-
             saveEditsSilent();
         }
 
@@ -1304,28 +1340,30 @@
             document.getElementById('progress-text').textContent = `${learnedList.length} / ${TOPICS_DATA.length}`;
         }
 
+        // ==========================================
+        //  MODAL EDITOR
+        // ==========================================
         function openBlockEditor(keyPath, isArray = false, index = null, subKey = null) {
             const topic = TOPICS_DATA[activeIdx];
             activeEditBlockContext = { keyPath, isArray, index, subKey };
 
-            let textDE = "";
-            let textEN = "";
-            let textAR = "";
+            let textDE = ""; let textEN = ""; let textAR = "";
 
             if (isArray) {
                 if (subKey) {
-                    textDE = topic[keyPath]?.[index]?.[subKey] || "";
-                    textEN = topic[keyPath + '_en']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['en'] || "";
-                    textAR = topic[keyPath + '_ar']?.[index]?.[subKey] || topic[keyPath]?.[index]?.['ar'] || "";
+                    textDE = getTopicValue(topic, `${keyPath}_${index}_${subKey}`);
+                    textEN = getTopicValue(topic, `${keyPath}_${index}_en`);
+                    textAR = getTopicValue(topic, `${keyPath}_${index}_ar`);
                 } else {
-                    textDE = topic[keyPath]?.[index] || "";
-                    textEN = topic[keyPath.replace('_de', '_en')]?.[index] || "";
-                    textAR = topic[keyPath.replace('_de', '_ar')]?.[index] || "";
+                    const arrName = keyPath.replace('_de', '');
+                    textDE = getTopicValue(topic, `${arrName}_de_${index}`);
+                    textEN = getTopicValue(topic, `${arrName}_en_${index}`);
+                    textAR = getTopicValue(topic, `${arrName}_ar_${index}`);
                 }
             } else {
-                textDE = topic[keyPath] || "";
-                textEN = topic[keyPath.replace('_de', '_en')] || "";
-                textAR = topic[keyPath.replace('_de', '_ar')] || "";
+                textDE = getTopicValue(topic, keyPath);
+                textEN = getTopicValue(topic, keyPath.replace('_de', '_en'));
+                textAR = getTopicValue(topic, keyPath.replace('_de', '_ar'));
             }
 
             document.getElementById('modal-edit-de').value = stripHtml(textDE);
@@ -1340,7 +1378,7 @@
             activeEditBlockContext = null;
         }
 
-        async function autoTranslateBlock() {
+        async function autoTranslateBlockModal() {
             const deText = document.getElementById('modal-edit-de').value.trim();
             if (!deText) return;
             
@@ -1382,35 +1420,21 @@
 
             if (isArray) {
                 if (subKey) {
-                    if (!topic[keyPath]) topic[keyPath] = [];
-                    if (!topic[keyPath][index]) topic[keyPath][index] = {};
-                    topic[keyPath][index][subKey] = valDE;
-
+                    setTopicValue(topic, `${keyPath}_${index}_${subKey}`, valDE);
                     if (subKey === 'de') {
-                        topic[keyPath][index]['en'] = valEN;
-                        topic[keyPath][index]['ar'] = valAR;
+                        setTopicValue(topic, `${keyPath}_${index}_en`, valEN);
+                        setTopicValue(topic, `${keyPath}_${index}_ar`, valAR);
                     }
                 } else {
-                    const deKey = keyPath;
-                    const enKey = keyPath.replace('_de', '_en');
-                    const arKey = keyPath.replace('_de', '_ar');
-
-                    if (!topic[deKey]) topic[deKey] = [];
-                    if (!topic[enKey]) topic[enKey] = [];
-                    if (!topic[arKey]) topic[arKey] = [];
-
-                    topic[deKey][index] = valDE;
-                    topic[enKey][index] = valEN;
-                    topic[arKey][index] = valAR;
+                    const arrName = keyPath.replace('_de', '');
+                    setTopicValue(topic, `${arrName}_de_${index}`, valDE);
+                    setTopicValue(topic, `${arrName}_en_${index}`, valEN);
+                    setTopicValue(topic, `${arrName}_ar_${index}`, valAR);
                 }
             } else {
-                const deKey = keyPath;
-                const enKey = keyPath.replace('_de', '_en');
-                const arKey = keyPath.replace('_de', '_ar');
-
-                topic[deKey] = valDE;
-                topic[enKey] = valEN;
-                topic[arKey] = valAR;
+                setTopicValue(topic, keyPath, valDE);
+                setTopicValue(topic, keyPath.replace('_de', '_en'), valEN);
+                setTopicValue(topic, keyPath.replace('_de', '_ar'), valAR);
             }
 
             saveEdits();
@@ -1454,12 +1478,8 @@
             const rootEl = document.documentElement;
             if (isEditMode) {
                 rootEl.classList.add('edit-mode-active');
-                makeEditable(document.getElementById('active-topic-title-de'), 'title_de');
-                makeEditable(document.getElementById('active-topic-title-en'), 'title_en');
             } else {
                 rootEl.classList.remove('edit-mode-active');
-                document.getElementById('active-topic-title-de').contentEditable = "false";
-                document.getElementById('active-topic-title-en').contentEditable = "false";
             }
 
             const isLearned = learnedList.includes(topic.id);
@@ -1497,9 +1517,9 @@
                         </div>
                     </div>
                 </div>
-                <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
-                <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
-                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
+                <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
+                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
             `;
             const einleitungCard = document.createElement('div');
             einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
@@ -1521,9 +1541,9 @@
                     <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                         <span class="text-[var(--success)] font-black text-lg leading-none mt-0.5">+</span>
                         <div class="flex-1">
-                            <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                            <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                            <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                            <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                            <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
+                            <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
                         </div>
                     </div>
                 `;
@@ -1545,9 +1565,9 @@
                     <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                         <span class="text-[var(--danger)] font-black text-lg leading-none mt-0.5">-</span>
                         <div class="flex-1">
-                            <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
-                            <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                            <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                            <div data-block-key="${skeyDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || deVal) : applyConnectorsHighlight(saved || deVal)}</div>
+                            <p id="en-${skeyDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
+                            <p id="ar-${skeyDe}" class="${arClass} text-xs text-right mt-1 font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
                         </div>
                     </div>
                 `;
@@ -1564,9 +1584,9 @@
             const cleanErfAr = stripHtml(getTopicValue(topic, erfAr));
 
             const erfahrungHtml = `
-                <div data-block-key="${erfDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${erfDe}')">${isEditMode ? (savedErf || topic[erfDe]) : applyConnectorsHighlight(savedErf || topic[erfDe])}</div>
-                <p id="en-${erfDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${erfEn}')">${cleanErfEn}</p>
-                <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
+                <div data-block-key="${erfDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${erfDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${erfDe}')">${isEditMode ? (savedErf || topic[erfDe]) : applyConnectorsHighlight(savedErf || topic[erfDe])}</div>
+                <p id="en-${erfDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${erfEn}')">${cleanErfEn}</p>
+                <p id="ar-${erfDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${erfAr}')" dir="rtl">${cleanErfAr}</p>
             `;
             const erfahrungCard = document.createElement('div');
             erfahrungCard.innerHTML = buildCardWrapper("4. Persönliche Erfahrung", erfahrungHtml, erfDe, savedErf || topic[erfDe], 'pers_erfahrung_de');
@@ -1586,9 +1606,9 @@
                 dialogHtml += `
                     <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
-                        <div data-block-key="${skeyDe}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
-                        <p id="en-${skeyDe}" class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
-                        <p id="ar-${skeyDe}" class="${arClass} text-[11px] text-right font-medium font-arabic mt-1 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
+                        <div data-block-key="${skeyDe}" class="${deClass} text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? (saved || chat.de) : applyConnectorsHighlight(saved || chat.de)}</div>
+                        <p id="en-${skeyDe}" class="${enClass} text-[11px] italic text-[var(--text-muted)] mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${skeyEn}')">${cleanEn}</p>
+                        <p id="ar-${skeyDe}" class="${arClass} text-[11px] text-right font-medium font-arabic mt-1 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${skeyAr}')" dir="rtl">${cleanAr}</p>
                     </div>
                 `;
             });
@@ -1604,39 +1624,14 @@
             const cleanSchlAr = stripHtml(getTopicValue(topic, schlAr));
 
             const schlussHtml = `
-                <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
-                <p id="en-${schlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'en', '${schlEn}')">${cleanSchlEn}</p>
-                <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode}" onblur="handleInlineEdit(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
+                <div data-block-key="${schlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${schlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${schlDe}')">${isEditMode ? (savedSchl || topic[schlDe]) : applyConnectorsHighlight(savedSchl || topic[schlDe])}</div>
+                <p id="en-${schlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${schlEn}')">${cleanSchlEn}</p>
+                <p id="ar-${schlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${schlAr}')" dir="rtl">${cleanSchlAr}</p>
             `;
             const schlussCard = document.createElement('div');
             schlussCard.innerHTML = buildCardWrapper("6. Gemeinsame Lösung", schlussHtml, schlDe, savedSchl || topic[schlDe], 'schluss_de');
             container.appendChild(schlussCard);
 
-            // --- 7. KEYWORDS ---
-            let kwBadges = "";
-            if (topic.keywords) {
-                const list = topic.keywords.split(',').map(k => k.trim()).filter(Boolean);
-                list.forEach(kw => {
-                    kwBadges += `<span class="px-2 py-1 text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded">${kw}</span>`;
-                });
-            }
-            const keywordsHtml = `
-                <div class="flex flex-wrap gap-2 keywords-display ${isEditMode ? 'hidden' : 'flex'}">${kwBadges}</div>
-                <div class="keywords-edit ${isEditMode ? 'block' : 'hidden'}">
-                    <input type="text" class="w-full text-xs font-mono bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg p-2" value="${topic.keywords || ''}" />
-                </div>
-            `;
-            const keywordsCard = document.createElement('div');
-            keywordsCard.innerHTML = buildCardWrapper("7. Schlüsselwörter", keywordsHtml, "keywords_block", topic.keywords || "", 'keywords');
-            container.appendChild(keywordsCard);
-
-            if (isEditMode) {
-                const kwInput = keywordsCard.querySelector('.keywords-edit input');
-                kwInput.addEventListener('blur', () => {
-                    TOPICS_DATA[activeIdx].keywords = kwInput.value.trim();
-                    saveEditsSilent();
-                });
-            }
             showResetButton();
         }
 
@@ -1778,90 +1773,6 @@
             }
             svg.call(zoom.transform, d3.zoomIdentity.translate(90, height / 2).scale(0.85));
         }
-
-        function exportTopicsJSON() {
-            if (TOPICS_DATA.length === 0) return;
-            const cleanData = JSON.stringify(TOPICS_DATA, null, 2);
-            const blob = new Blob([cleanData], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "topics.json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        async function importTopicsJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported) && imported.length > 0) {
-                        pushToHistory();
-                        TOPICS_DATA = imported;
-                        window.TOPICS_DATA = imported;
-                        localStorage.setItem('edited_topics_data_1_52', JSON.stringify(imported));
-                        if (currentUser) {
-                            for (const t of imported) {
-                                await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(t.id.toString()).set(t);
-                            }
-                        }
-                        activeIdx = 0;
-                        localStorage.setItem('b2_active_idx', activeIdx);
-                        renderSidebar();
-                        renderActiveTopic();
-                        alert("topics.json erfolgreich importiert!");
-                    }
-                } catch (err) { alert("Fehler beim Lesen der Datei: " + err.message); }
-            };
-            reader.readAsText(file);
-        }
-
-        document.getElementById('export-json-btn').onclick = exportTopicsJSON;
-
-        document.getElementById('learned-toggle').onclick = () => {
-            if (TOPICS_DATA.length === 0) return;
-            const topicId = TOPICS_DATA[activeIdx].id;
-            if (learnedList.includes(topicId)) {
-                learnedList = learnedList.filter(id => id !== topicId);
-            } else {
-                learnedList.push(topicId);
-            }
-            localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
-            renderSidebar();
-            renderActiveTopic();
-        };
-
-        document.getElementById('lang-view').addEventListener('change', (e) => {
-            activeView = e.target.value;
-            renderActiveTopic();
-        });
-
-        const editModeToggle = document.getElementById('edit-mode-toggle');
-        editModeToggle.onclick = () => {
-            isEditMode = !isEditMode;
-            editModeToggle.classList.toggle('bg-[var(--accent)]', isEditMode);
-            editModeToggle.classList.toggle('text-white', isEditMode);
-            document.getElementById('edit-mode-status-text').textContent = isEditMode ? "Bearbeitungsmodus: AN" : "Bearbeitungsmodus: AUS";
-            document.getElementById('edit-tip-banner').classList.toggle('hidden', !isEditMode);
-            renderActiveTopic();
-        };
-
-        document.getElementById('search-bar').addEventListener('input', () => { renderSidebar(); });
-
-        const sidebar = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobile-nav-toggle');
-        mobileToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            const isHidden = sidebar.classList.contains('-translate-x-full');
-            document.getElementById('menu-icon').innerHTML = isHidden 
-                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>`
-                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
-        });
 
         loadTopics();
     </script>
