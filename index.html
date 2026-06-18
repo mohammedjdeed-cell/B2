@@ -193,8 +193,8 @@
                 <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-2 md:px-3 py-1 text-[11px] md:text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
             </div>
 
-            <!-- Settings / Zoom scale options -->
-            <div class="flex items-center gap-1.5 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] flex-shrink-0">
+            <!-- Settings / Zoom scale options with flexible layout width to avoid overlays -->
+            <div class="flex items-center gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] flex-shrink-0">
                 <button onclick="changeZoomScale('80')" id="scale-btn-80" class="px-2.5 py-1 text-[10px] font-bold rounded transition-all flex-shrink-0">80%</button>
                 <button onclick="changeZoomScale('100')" id="scale-btn-100" class="px-2.5 py-1 text-[10px] font-bold rounded transition-all flex-shrink-0">100%</button>
                 <button onclick="changeZoomScale('120')" id="scale-btn-120" class="px-2.5 py-1 text-[10px] font-bold rounded transition-all flex-shrink-0">120%</button>
@@ -236,10 +236,10 @@
                     </button>
                     <hr class="border-[var(--border)] my-1" />
                     <button onclick="undo()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
-                        <span>↩️</span><span>Zurück (Undo)</span>
+                        <span>↩️</span><span>Zurück</span>
                     </button>
                     <button onclick="redo()" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-primary)] flex items-center gap-2">
-                        <span>↪️</span><span>Vor (Redo)</span>
+                        <span>↪️</span><span>Vor</span>
                     </button>
                     <hr class="border-[var(--border)] my-1" />
                     <input type="file" id="import-json-input" class="hidden" accept=".json" onchange="importTopicsJSON(event)" />
@@ -309,7 +309,7 @@
                         <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Modus</span>
                         <select id="active-mode" onchange="switchActiveMode(this.value)" class="text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm">
                             <option value="classic" selected>Klassisch (Dialoge)</option>
-                            <option value="template" selected>Template (On-Demand)</option>
+                            <option value="template">Template (On-Demand)</option>
                         </select>
                     </div>
 
@@ -334,7 +334,7 @@
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5 animate-fadeIn">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Wählen Sie ein beliebiges Wort oder markieren Sie Text im deutschen Block, um die <strong>PDF-Style Toolbar</strong> zu nutzen. Bearbeiten Sie Deutsch live; die Übersetzungen passen sich automatisch debounced an!
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort, um die Formatierungs-Toolbar zu öffnen. Für größere Eingriffe nutzen Sie den Button <strong>✏️ Bearbeiten</strong>.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6"></div>
@@ -519,7 +519,7 @@
                 examples: [
                     "In der heutigen Gesellschaft <strong>wird</strong> oft heftig über die Legalisierung von Doping <strong>diskutiert</strong>.",
                     "Bei der Planung von Hochzeiten <strong>wird</strong> heutzutage zunehmend auf finanzielle Ausgaben geachtet.",
-                    "Es <strong>muss</strong> dringend gehandelt <strong>werden</strong>, um der sozialen Ausgrenzung an Schulen wirksam entgegenzuwirken."
+                    "Es <strong>muss</strong> dringen gehandelt <strong>werden</strong>, um der sozialen Ausgrenzung an Schulen wirksam entgegenzuwirken."
                 ]
             },
             {
@@ -592,7 +592,7 @@
             return tmp.textContent || tmp.innerText || "";
         }
 
-        // Zoom Scale controller
+        // Fixed Zoom Scale layout dynamic width handler to eliminate overlapping elements
         function changeZoomScale(zoom) {
             const html = document.documentElement;
             html.classList.remove('zoom-80', 'zoom-100', 'zoom-120');
@@ -772,7 +772,7 @@
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
-        // Highlight selection menu trigger
+        // Click highlight engine to allow toggling highlights on simple touch clicks
         document.addEventListener('click', function(e) {
             if (!isEditMode) return;
             
@@ -1143,7 +1143,7 @@
                 let baseTemplate = [];
                 let baseGrammatik = [];
 
-                // Fetch topics.json
+                // Fetch topics.json safely
                 try {
                     const resTopics = await fetch('./topics.json');
                     baseTopics = await resTopics.json();
@@ -1151,7 +1151,7 @@
                     console.error("Error loading topics.json: ", err);
                 }
 
-                // Fetch template.json
+                // Fetch template.json safely
                 try {
                     const resTemplate = await fetch('./template.json');
                     baseTemplate = await resTemplate.json();
@@ -1159,12 +1159,14 @@
                     console.error("Error loading template.json: ", err);
                 }
 
-                // Fetch grammatik.json - falls leer oder fehlschlägt, auf Fallback ausweichen
+                // Fetch grammatik.json safely
                 try {
                     const resGrammatik = await fetch('./grammatik.json');
-                    baseGrammatik = await resGrammatik.json();
+                    if (resGrammatik.ok) {
+                        baseGrammatik = await resGrammatik.json();
+                    }
                 } catch(err) {
-                    console.error("Error loading grammatik.json: ", err);
+                    console.warn("Error loading grammatik.json: ", err);
                 }
 
                 if (!baseGrammatik || baseGrammatik.length === 0) {
@@ -1629,11 +1631,11 @@
                     <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                         <span class="text-[var(--success)] font-black text-lg leading-none mt-0.5">+</span>
                         <div class="flex-1">
-                            <div data-block-key="${skeyDe}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text font-sans" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValPro : highlightTemplateFills(applyConnectorsHighlight(deValPro), topic)}</div>
+                            <div data-block-key="${skeyDe}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text font-sans" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')" contenteditable="${isEditMode ? 'true' : 'false'}">${activeMode === 'classic' ? applyConnectorsHighlight(deValPro) : highlightTemplateFills(applyConnectorsHighlight(deValPro), topic)}</div>
                             <div class="mt-2 flex items-center justify-between">
                                 <div class="flex items-center gap-1.5">
                                     <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(deValPro)}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                                    <button onclick="playBlockAudioDirect(event, '${encodeURIComponent(stripHtml(deValPro))}')" class="text-[10px] text-[var(--accent)] font-bold hover:underline">🔊 Play</button>
+                                    <button onclick="playBlockAudioDirect(event, '${encodeURIComponent(stripHtml(deValPro))}')" class="text-[10px] text-[var(--accent)] font-bold hover:underline flex items-center gap-1">🔊 Anhören</button>
                                 </div>
                                 <button onclick="openBlockEditor('pro_de', true, ${index})" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'} font-sans">✏️ Edit</button>
                             </div>
@@ -1662,11 +1664,11 @@
                     <div class="mb-4 last:mb-0 relative flex gap-2 items-start">
                         <span class="text-[var(--danger)] font-black text-lg leading-none mt-0.5">-</span>
                         <div class="flex-1">
-                            <div data-block-key="${skeyDe}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text font-sans" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValContra : highlightTemplateFills(applyConnectorsHighlight(deValContra), topic)}</div>
+                            <div data-block-key="${skeyDe}" class="text-sm text-[var(--text-primary)] leading-relaxed select-text font-sans" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')" contenteditable="${isEditMode ? 'true' : 'false'}">${activeMode === 'classic' ? applyConnectorsHighlight(deValContra) : highlightTemplateFills(applyConnectorsHighlight(deValContra), topic)}</div>
                             <div class="mt-2 flex items-center justify-between">
                                 <div class="flex items-center gap-1.5">
                                     <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(deValContra)}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                                    <button onclick="playBlockAudioDirect(event, '${encodeURIComponent(stripHtml(deValContra))}')" class="text-[10px] text-[var(--accent)] font-bold hover:underline">🔊 Play</button>
+                                    <button onclick="playBlockAudioDirect(event, '${encodeURIComponent(stripHtml(deValContra))}')" class="text-[10px] text-[var(--accent)] font-bold hover:underline flex items-center gap-1">🔊 Anhören</button>
                                 </div>
                                 <button onclick="openBlockEditor('contra_de', true, ${index})" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'} font-sans">✏️ Edit</button>
                             </div>
@@ -1694,7 +1696,7 @@
             erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
             container.appendChild(erfahrungCard);
 
-            // --- 5. DIALOG SIMULATION (Common) ---
+            // --- 5. DIALOG SIMULATION (Common with inline audio control) ---
             let dialogHtml = '<div class="space-y-3">';
             topic.dialog.forEach((chat, index) => {
                 const skeyDe = `dialog_de_${index}`;
@@ -1704,11 +1706,11 @@
                 dialogHtml += `
                     <div class="p-3.5 rounded-xl border border-[var(--border)] transition-all max-w-[95%] ${isA ? 'bg-[var(--accent-light)]' : 'bg-[var(--bg-card)]'}">
                         <span class="text-[9px] font-bold text-[var(--text-muted)] block mb-1 uppercase tracking-wider">${chat.role}</span>
-                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-sans" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">${isEditMode ? deValChat : highlightTemplateFills(applyConnectorsHighlight(deValChat), topic)}</div>
+                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-sans" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')" contenteditable="${isEditMode ? 'true' : 'false'}">${activeMode === 'classic' ? applyConnectorsHighlight(deValChat) : highlightTemplateFills(applyConnectorsHighlight(deValChat), topic)}</div>
                         <div class="mt-2 flex items-center justify-between">
                             <div class="flex items-center gap-1.5">
                                 <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(deValChat)}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                                <button onclick="playBlockAudioDirect(event, '${encodeURIComponent(stripHtml(deValChat))}')" class="text-[10px] text-[var(--accent)] font-bold hover:underline">🔊 Play</button>
+                                <button onclick="playBlockAudioDirect(event, '${encodeURIComponent(stripHtml(deValChat))}')" class="text-[10px] text-[var(--accent)] font-bold hover:underline flex items-center gap-1">🔊 Anhören</button>
                             </div>
                             <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'block' : 'hidden'} font-sans">✏️ Edit</button>
                         </div>
@@ -1791,73 +1793,152 @@
         }
 
         function initMindmap() {
+            if (TOPICS_DATA.length === 0) return;
+            let iCount = 0;
             const svg = d3.select("#mindmap-svg");
             svg.selectAll("*").remove();
-
-            const width = document.getElementById('mindmap-svg').clientWidth || 800;
-            const height = document.getElementById('mindmap-svg').clientHeight || 500;
-
-            const g = svg.append("g");
-            const zoom = d3.zoom().on("zoom", (event) => g.attr("transform", event.transform));
+            
+            const width = svg.node().clientWidth || 900;
+            const height = svg.node().clientHeight || 600;
+            
+            const rawData = buildDynamicMindmapData();
+            const gContainer = svg.append("g").attr("class", "mindmap-container");
+            const zoom = d3.zoom().scaleExtent([0.1, 3]).on("zoom", (event) => { gContainer.attr("transform", event.transform); });
             svg.call(zoom);
 
-            const tree = d3.tree().size([height - 60, width - 240]);
-            const root = d3.hierarchy(buildDynamicMindmapData());
-            tree(root);
+            const treemap = d3.tree().nodeSize([30, 220]); // Spacious node spacing to eliminate stacked layouts
+            let root = d3.hierarchy(rawData, d => d.children);
+            root.x0 = height / 2; root.y0 = 0;
+            
+            // Collapse nodes by default except the first category to keep it neat
+            root.children.forEach((d, i) => { if (i > 0) collapse(d); });
+            update(root);
 
-            g.selectAll(".link")
-                .data(root.links())
-                .enter().append("path")
-                .attr("class", "link")
-                .attr("fill", "none")
-                .attr("stroke", "rgba(156,163,175,0.4)")
-                .attr("stroke-width", "1.5px")
-                .attr("d", d3.linkHorizontal().x(d => d.y + 40).y(d => d.x + 30));
+            function collapse(d) {
+                if (d.children) { d._children = d.children; d._children.forEach(collapse); d.children = null; }
+            }
 
-            const node = g.selectAll(".node")
-                .data(root.descendants())
-                .enter().append("g")
-                .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
-                .attr("transform", d => `translate(${d.y + 40},${d.x + 30})`);
+            function update(source) {
+                const treeData = treemap(root);
+                const nodes = treeData.descendants();
+                const links = treeData.links();
+                
+                // Set spacious horizontal depth
+                nodes.forEach(d => { d.y = d.depth * 240; }); 
+                
+                const node = gContainer.selectAll('g.mindmap-node').data(nodes, d => d.id || (d.id = ++iCount));
+                
+                const nodeEnter = node.enter().append('g')
+                    .attr('class', 'mindmap-node cursor-pointer')
+                    .attr('transform', d => `translate(${source.y0},${source.x0})`)
+                    .on('click', clickNode);
 
-            node.append("rect")
-                .attr("y", -14)
-                .attr("x", -10)
-                .attr("width", d => d.data.priority === 'root' ? 140 : 180)
-                .attr("height", 28)
-                .attr("rx", 6)
-                .attr("fill", d => d.data.priority === 'root' ? 'var(--accent)' : (d.data.color || 'var(--bg-card)'))
-                .attr("stroke", d => d.data.priority === 'root' ? 'none' : 'var(--border)')
-                .attr("stroke-width", "1.5px")
-                .on("click", (event, d) => {
+                nodeEnter.each(function(d) {
+                    const el = d3.select(this);
+                    
+                    if (d.data.priority === 'root') {
+                        el.append('rect')
+                            .attr('y', -14)
+                            .attr('x', -60)
+                            .attr('width', 120)
+                            .attr('height', 28)
+                            .attr('rx', 6)
+                            .attr('fill', 'var(--accent)')
+                            .attr('stroke', '#ffffff')
+                            .attr('stroke-width', 2);
+                            
+                        el.append('text')
+                            .attr('dy', '.35em')
+                            .attr('text-anchor', 'middle')
+                            .attr('fill', '#ffffff')
+                            .attr('font-size', '10px')
+                            .attr('font-weight', 'bold')
+                            .text(d.data.name);
+                    } else if (d.data.priority === 'category') {
+                        el.append('rect')
+                            .attr('y', -14)
+                            .attr('x', -10)
+                            .attr('width', 140)
+                            .attr('height', 28)
+                            .attr('rx', 6)
+                            .attr('fill', d.data.color)
+                            .attr('stroke', '#ffffff')
+                            .attr('stroke-width', 1.5);
+                            
+                        el.append('text')
+                            .attr('dy', '.35em')
+                            .attr('dx', 15)
+                            .attr('text-anchor', 'start')
+                            .attr('fill', '#ffffff')
+                            .attr('font-size', '9px')
+                            .attr('font-weight', 'bold')
+                            .text(d.data.name);
+                    } else {
+                        // Leaf nodes styled as modern accessible card buttons
+                        el.append('rect')
+                            .attr('y', -10)
+                            .attr('x', -5)
+                            .attr('width', 200)
+                            .attr('height', 22)
+                            .attr('rx', 5)
+                            .attr('fill', 'var(--bg-card)')
+                            .attr('stroke', 'var(--border)')
+                            .attr('stroke-width', 1.5);
+
+                        el.append('circle')
+                            .attr('cx', 5)
+                            .attr('cy', 1)
+                            .attr('r', 3.5)
+                            .attr('fill', d.parent.data.color || 'var(--accent)');
+                            
+                        el.append('text')
+                            .attr('dy', '.35em')
+                            .attr('dx', 15)
+                            .attr('text-anchor', 'start')
+                            .attr('fill', 'var(--text-primary)')
+                            .attr('font-size', '9px')
+                            .text(d.data.name.length > 28 ? d.data.name.substring(0, 26) + '...' : d.data.name);
+                    }
+                });
+
+                const nodeUpdate = nodeEnter.merge(node);
+                nodeUpdate.transition().duration(250).attr('transform', d => `translate(${d.y},${d.x})`);
+                node.exit().transition().duration(250).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+
+                const link = gContainer.selectAll('path.mindmap-link').data(links, d => d.target.id);
+                const linkEnter = link.enter().insert('path', "g")
+                    .attr('class', 'mindmap-link')
+                    .attr('fill', 'none')
+                    .attr('stroke', 'var(--border)')
+                    .attr('stroke-opacity', 0.4)
+                    .attr('stroke-width', 1.5)
+                    .attr('d', d => { const o = {x: source.x0, y: source.y0}; return diagonal(o, o); });
+
+                linkEnter.merge(link).transition().duration(250)
+                    .attr('stroke', d => d.target.data.color || d.target.parent.data.color || 'var(--border)')
+                    .attr('stroke-opacity', 0.6)
+                    .attr('d', d => diagonal(d.source, d.target));
+                    
+                link.exit().transition().duration(250).attr('d', d => { const o = {x: source.x, y: source.y}; return diagonal(o, o); }).remove();
+                nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+
+                function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+                function clickNode(event, d) {
                     if (d.data.idx !== undefined) {
                         activeIdx = d.data.idx;
                         localStorage.setItem('b2_active_idx', activeIdx);
                         renderSidebar();
                         renderActiveTopic();
                         switchTab('dashboard');
+                    } else {
+                        if (d.children) { d._children = d.children; d.children = null; }
+                        else { d.children = d._children; d._children = null; }
+                        update(d);
                     }
-                });
-
-            node.append("text")
-                .attr("dy", 4)
-                .attr("x", 10)
-                .attr("text-anchor", "start")
-                .attr("fill", d => d.data.priority === 'root' ? '#ffffff' : 'var(--text-primary)')
-                .attr("font-size", "9px")
-                .attr("font-weight", d => d.data.priority === 'root' || d.data.priority === 'category' ? 'bold' : 'normal')
-                .text(d => d.data.name.length > 25 ? d.data.name.substring(0, 24) + '...' : d.data.name)
-                .on("click", (event, d) => {
-                    if (d.data.idx !== undefined) {
-                        activeIdx = d.data.idx;
-                        localStorage.setItem('b2_active_idx', activeIdx);
-                        renderSidebar();
-                        renderActiveTopic();
-                        switchTab('dashboard');
-                    }
-                });
-
-            svg.call(zoom.transform, d3.zoomIdentity.translate(40, 20).scale(0.85));
+                }
+            }
+            svg.call(zoom.transform, d3.zoomIdentity.translate(95, height / 2).scale(0.8));
         }
 
         // ==========================================
@@ -1954,70 +2035,76 @@
 
         // --- NEW REFACTORED GRAMMATIK VIEW (USES GRAMMATIK.JSON & ON-DEMAND TRANSLATIONS) ---
         function renderGrammar() {
-            const container = document.getElementById('grammar-tab-section');
-            container.innerHTML = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
-                    <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
-                    <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
-                </div>
-            `;
-            const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
-            
-            GRAMMATIK_DATA.forEach((item, index) => {
-                let examplesHtml = "<ul class='list-disc list-inside space-y-2 mt-2 text-xs text-[var(--text-primary)]'>";
-                item.examples.forEach(ex => { 
-                    const encodedEx = encodeURIComponent(stripHtml(ex));
-                    examplesHtml += `
-                        <li class="ml-2 flex items-center justify-between gap-1 pb-1 last:pb-0 select-text">
-                            <span>${ex}</span>
-                            <button onclick="playBlockAudioDirect(event, '${encodedEx}')" class="text-[10px] text-[var(--accent)] hover:underline ml-1">🔊 Play</button>
-                        </li>`; 
-                });
-                examplesHtml += "</ul>";
+            try {
+                const container = document.getElementById('grammar-tab-section');
+                if (!container) return;
 
-                const blockId = `grammatik_${index}`;
-                const translationText = `${item.title}. ${item.description}`;
-                const encodedText = encodeURIComponent(translationText);
-                const isExpanded = expandedContainers.has(blockId);
-
-                grid.innerHTML += `
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
-                                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">${item.level} | ${item.category}</span>
-                                <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
-                            </div>
-                            <h3 class="text-sm font-bold text-[var(--accent)] mt-2">${item.title}</h3>
-                            <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">${item.description}</p>
-                            
-                            <div id="trans-container-${blockId}" class="${isExpanded ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1">
-                                <!-- Loaded dynamically -->
-                            </div>
-
-                            <div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Beispiele</span>
-                                ${examplesHtml}
-                            </div>
-                        </div>
+                container.innerHTML = `
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6">
+                        <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
+                        <p class="text-[10px] text-[var(--text-muted)] mt-0.5 font-sans">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
                     </div>
                 `;
-            });
-            container.appendChild(grid);
+                const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+                
+                GRAMMATIK_DATA.forEach((item, index) => {
+                    let examplesHtml = "<ul class='list-disc list-inside space-y-2 mt-2 text-xs text-[var(--text-primary)] font-sans'>";
+                    item.examples.forEach(ex => { 
+                        const encodedEx = encodeURIComponent(stripHtml(ex));
+                        examplesHtml += `
+                            <li class="ml-2 flex items-center justify-between gap-1 pb-1 last:pb-0 select-text">
+                                <span>${ex}</span>
+                                <button onclick="playBlockAudioDirect(event, '${encodedEx}')" class="text-[10px] text-[var(--accent)] hover:underline ml-1">🔊 Play</button>
+                            </li>`; 
+                    });
+                    examplesHtml += "</ul>";
 
-            // Re-trigger dynamically if any grammar container was already expanded
-            expandedContainers.forEach(blockId => {
-                if (blockId.startsWith('grammatik_')) {
-                    const idx = parseInt(blockId.split('_')[1]);
-                    const item = GRAMMATIK_DATA[idx];
-                    if (item) {
-                        const txt = `${item.title}. ${item.description}`;
-                        const containerDiv = document.getElementById(getTranslationContainerId(blockId));
-                        if (containerDiv) {
-                            fetchAndRenderTranslation(blockId, txt, containerDiv);
+                    const blockId = `grammatik_${index}`;
+                    const translationText = `${item.title}. ${item.description}`;
+                    const encodedText = encodeURIComponent(translationText);
+                    const isExpanded = expandedContainers.has(blockId);
+
+                    grid.innerHTML += `
+                        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between border-b border-[var(--border)] pb-2 font-sans">
+                                    <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">${item.level} | ${item.category}</span>
+                                    <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline">🌐 Translate</button>
+                                </div>
+                                <h3 class="text-sm font-bold text-[var(--accent)] mt-2 font-sans">${item.title}</h3>
+                                <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed font-sans">${item.description}</p>
+                                
+                                <div id="trans-container-${blockId}" class="${isExpanded ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1">
+                                    <!-- Loaded dynamically -->
+                                </div>
+
+                                <div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] font-sans">Beispiele</span>
+                                    ${examplesHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.appendChild(grid);
+
+                // Re-trigger dynamically if any grammar container was already expanded
+                expandedContainers.forEach(blockId => {
+                    if (blockId.startsWith('grammatik_')) {
+                        const idx = parseInt(blockId.split('_')[1]);
+                        const item = GRAMMATIK_DATA[idx];
+                        if (item) {
+                            const txt = `${item.title}. ${item.description}`;
+                            const containerDiv = document.getElementById(getTranslationContainerId(blockId));
+                            if (containerDiv) {
+                                fetchAndRenderTranslation(blockId, txt, containerDiv);
+                            }
                         }
                     }
-                }
-            });
+                });
+            } catch(e) {
+                console.error("Error rendering Grammatik content layout: ", e);
+            }
         }
 
         // Import utility helper
