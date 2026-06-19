@@ -69,7 +69,6 @@
         --shadow-md:     0 4px 12px rgba(0,0,0,0.6);
     }
 
-    /* Elegant learned state transitions and smooth UI morphing */
     body, header, aside, main, .card-transition, #dashboard-controls, .topic-list-item {
         transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
                     border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
@@ -132,30 +131,38 @@
         scrollbar-width: none;
     }
 
-    /* Text Selection Highlights */
+    /* Modern Matte Highlights with micro natural edges */
     .hl-yellow {
         background-color: #fef08a !important;
         color: #1a1a1a !important;
-        border-radius: 2px;
-        padding: 0 2px;
+        border-radius: 4px;
+        padding: 1px 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        margin: 0 1px;
     }
     .hl-blue {
         background-color: #bfdbfe !important;
         color: #1a1a1a !important;
-        border-radius: 2px;
-        padding: 0 2px;
+        border-radius: 4px;
+        padding: 1px 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        margin: 0 1px;
     }
     .hl-red {
         background-color: #fecaca !important;
         color: #1a1a1a !important;
-        border-radius: 2px;
-        padding: 0 2px;
+        border-radius: 4px;
+        padding: 1px 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        margin: 0 1px;
     }
     .hl-green {
         background-color: #bbf7d0 !important;
         color: #1a1a1a !important;
-        border-radius: 2px;
-        padding: 0 2px;
+        border-radius: 4px;
+        padding: 1px 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        margin: 0 1px;
     }
 
     [data-theme="dark"] .hl-yellow { background-color: #713f12 !important; color: #fef08a !important; }
@@ -177,6 +184,17 @@
     }
     [data-theme="dark"] .word-circle {
         border-color: #f43f5e;
+    }
+
+    /* Fixed Sidebar styling variables for emojis */
+    .sidebar-only-emoji {
+        font-size: 1.25rem;
+        width: 1.75rem;
+        height: 1.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
     /* Responsive Sidebar transitions and spacing adjustments */
@@ -1365,15 +1383,22 @@
 
         async function loadTopics() {
             try {
-                const resTopics = await safeFetchJson('./topics.json');
-                const resTemplate = await safeFetchJson('./template.json');
+                // Defensive case sensitivity mappings
+                let resTopics = await safeFetchJson('./Topics.json');
+                if (!resTopics || resTopics.length === 0) {
+                    resTopics = await safeFetchJson('./topics.json');
+                }
+
+                let resTemplate = await safeFetchJson('./Template.json');
+                if (!resTemplate || resTemplate.length === 0) {
+                    resTemplate = await safeFetchJson('./template.json');
+                }
                 
                 let resGrammatik = await safeFetchJson('./Grammatik.json');
                 if (!resGrammatik || resGrammatik.length === 0) {
                     resGrammatik = await safeFetchJson('./grammatik.json');
                 }
 
-                // Highly robust loader for either array or dictionary-wrapped JSON objects
                 let baseTopics = [];
                 if (Array.isArray(resTopics)) {
                     baseTopics = resTopics;
@@ -1730,7 +1755,7 @@
 
         function handleInlineBlur(element, topicId, lang, compoundKey) {
             if (!isEditMode) return;
-            const topic = activeMode === 'classic' ? TOPICS_DATA.find(t => t.id === topicId) : TEMPLATE_DATA.find(t => t.id === topicId);
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!topic) return;
 
             pushToHistory();
@@ -1984,12 +2009,12 @@
 
                 const item = document.createElement('button');
                 
-                // Color Morph on Left Sidebar Items to denote learned state
+                // Color Morph on Left Sidebar Items to denote learned state with full box highlight
                 const activeClass = isActive 
                     ? 'bg-[var(--accent)] text-white shadow-md font-semibold' 
                     : (isLearned 
-                        ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-l-4 border-emerald-500 font-medium'
-                        : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)] hover:translate-x-1'
+                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/10 border-l-4 border-emerald-500 font-semibold shadow-inner'
+                        : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
                       );
 
                 item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item ${activeClass}`;
@@ -2333,12 +2358,12 @@
 
                 const card = document.createElement('div');
                 
-                // High-fidelity Glassmorphic styling with clear modern layout
+                // High-fidelity Glassmorphic styling with clear modern layout & emerald tone if marked done
                 card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-md ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
-                }`;
+                } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
 
                 card.innerHTML = `
                     <div class="flex items-start justify-between gap-2 mb-3">
@@ -2602,7 +2627,7 @@
                             <div class="flex items-center justify-between gap-4 mb-2">
                                 <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
                                 <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">
-                                    <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                    <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                                 </button>
                             </div>
                             <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
@@ -2714,7 +2739,7 @@
                                 <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
                             </div>
                             <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)]">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                             </button>
                         </div>`;
                 });
@@ -2928,7 +2953,6 @@
             }
         }
 
-        // Connect the "Als gelernt markieren" button visually & trigger custom color transitions
         const isLearnedStateToggle = document.getElementById('learned-toggle');
         if (isLearnedStateToggle) {
             isLearnedStateToggle.onclick = () => {
