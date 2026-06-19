@@ -1,35 +1,35 @@
 {
-  "name": "TELC B2 Diskussionstrainer",
+  "name": "TELC B2 Diskussions",
   "short_name": "B2 Trainer",
   "description": "Prüfungsvorbereitung — 52 interaktive B2 Diskussionsthemen",
   "start_url": "./index.html?utm_source=pwa",
   "display": "standalone",
   "orientation": "any",
-  "theme_color": "#2563EB",
+  "theme_color": "#4299a1",
   "background_color": "#F5F4F0",
   "scope": "./",
   "lang": "de",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Circle-icons-chat.svg/192px-Circle-icons-chat.svg.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Circle-icons-chat.svg/192px-Circle-icons-chat.svg.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Circle-icons-chat.svg/512px-Circle-icons-chat.svg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Circle-icons-chat.svg/512px-Circle-icons-chat.svg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
