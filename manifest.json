@@ -1,6 +1,5 @@
- 
 {
-"name": "TELC B2 Trainer — Diskussion & Analyse",
+  "name": "TELC B2 Trainer — Diskussion & Analyse",
   "short_name": "B2 Trainer",
   "description": "Interaktive Vorbereitung & Strukturierte Analyse für B2 Diskussionsthemen",
   "start_url": "./index.html",
