@@ -1,10 +1,10 @@
-const CACHE_NAME = 'b2trainer-v5'; // Version bump forces instant update
+const CACHE_NAME = 'b2trainer-v6'; // Bumped to clear old cache layers
 const OFFLINE_URL = './index.html';
 
-// Matrix includes manifest, assets, and core icons explicitly
 const PRECACHE_ASSETS = [
   './',
   './index.html',
+  './index.html?utm_source=pwa', // CRITICAL: Matches manifest start_url exactly
   './manifest.json',
   './topics.json',
   './icons/icon-192.png',
@@ -16,7 +16,6 @@ const PRECACHE_ASSETS = [
   'https://d3js.org/d3.v7.min.js'
 ];
 
-// Safe installation loop that protects your app from opaque response rejections
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -32,14 +31,13 @@ self.addEventListener('install', event => {
               }
               throw new Error(`Asset fetch error: ${asset}`);
             })
-            .catch(err => console.warn('Precaching skipped for target asset:', asset, err));
+            .catch(err => console.warn('Precaching skipped for:', asset, err));
         })
       ).then(() => self.skipWaiting());
     })
   );
 });
 
-// Clears out v4 and all old caches cleanly
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -54,15 +52,14 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Cache-first with seamless background updates
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    // ignoreSearch: true ensures urls with parameters match their base files cleanly
+    caches.match(event.request, { ignoreSearch: true }).then(cached => {
       const networkFetch = fetch(event.request)
         .then(response => {
-          // Permit both normal local responses and opaque cross-origin assets
           if (response && (response.status === 200 || response.type === 'opaque')) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
