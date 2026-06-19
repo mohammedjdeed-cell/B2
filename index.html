@@ -7,7 +7,8 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;500;600;700;800&family=Noto+Sans+Arabic:wght=300..700&display=swap" rel="stylesheet">
+    <!-- Premium UI Schriftarten: Plus Jakarta Sans für das UI, Outfit für Titel, Noto Sans Arabic für Arabisch -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1900/1900720.png">
@@ -33,55 +34,59 @@
     }
 
     :root {
-        --bg-app:        #F5F4F0;
+        --bg-app:        #F4F4F0;
         --bg-card:       #FFFFFF;
-        --bg-sidebar:    #FAFAF8;
-        --border:        rgba(0,0,0,0.08);
-        --text-primary:  #1A1A1A;
-        --text-muted:    #6B7280;
-        --text-faint:    #9CA3AF;
-        --accent:        #4a7c59;          
-        --accent-light:  #f0f7f3;          
-        --success:       #4a7c59;
-        --success-light: #f0f7f3;
-        --danger:        #c0392b;
-        --danger-light:  #fdf2f2;
-        --amber:         #D97706;
-        --amber-light:   #FFFBEB;
-        --purple:        #7C3AED;
+        --bg-sidebar:    #F9F9F6;
+        --border:        rgba(0,0,0,0.06);
+        --text-primary:  #1C1E1D;
+        --text-muted:    #5E6661;
+        --text-faint:    #949E99;
+        --accent:        #3D6B48;          
+        --accent-light:  #EDF4EF;          
+        --success:       #3D6B48;
+        --success-light: #EDF4EF;
+        --danger:        #B02A1E;
+        --danger-light:  #FDF2F2;
+        --amber:         #C27803;
+        --amber-light:   #FFFDF0;
+        --purple:        #6D28D9;
         --purple-light:  #F5F3FF;
-        --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-        --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
-        --radius-card:   12px;
-        --radius-btn:    8px;
+        --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md:     0 8px 24px rgba(0, 0, 0, 0.06);
+        --radius-card:   16px;
+        --radius-btn:    10px;
         --text-scale:    100%;
     }
 
     [data-theme="dark"] {
-        --bg-app:        #121212; 
-        --bg-card:       #1e1e1e; 
-        --bg-sidebar:    #181818;
-        --border:        #2d2d2d; 
-        --text-primary:  #f3f4f6; 
-        --text-muted:    #9ca3af; 
-        --text-faint:    #4b5563;
-        --accent:        #5a8f6a; 
-        --accent-light:  rgba(90, 143, 106, 0.15);
-        --success:       #5a8f6a;
-        --success-light: #162a1c; 
-        --danger:        #ef4444;
-        --danger-light:  #2e1515; 
-        --amber:         #f59e0b;
-        --amber-light:   rgba(245, 158, 11, 0.15);
-        --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
-        --shadow-md:     0 4px 12px rgba(0,0,0,0.6);
+        --bg-app:        #0F1110; 
+        --bg-card:       #171918; 
+        --bg-sidebar:    #121413;
+        --border:        rgba(255,255,255,0.06); 
+        --text-primary:  #F0F3F1; 
+        --text-muted:    #9AA5A1; 
+        --text-faint:    #4E5754;
+        --accent:        #5B9E6B; 
+        --accent-light:  rgba(91, 158, 107, 0.12);
+        --success:       #5B9E6B;
+        --success-light: #132418; 
+        --danger:        #EF4444;
+        --danger-light:  #2D1515; 
+        --amber:         #F59E0B;
+        --amber-light:   rgba(245, 158, 11, 0.12);
+        --shadow-sm:     0 2px 4px rgba(0,0,0,0.2);
+        --shadow-md:     0 12px 32px rgba(0,0,0,0.4);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
 
     body, header, aside, main, .card-transition, #dashboard-controls, .topic-list-item {
-        transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
-                    border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
-                    color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                    box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                    border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                    color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     button, .clickable-row, #topic-list button {
@@ -116,35 +121,6 @@
         }
     }
 
-    .swipe-container {
-        position: relative;
-        overflow: hidden;
-    }
-    .swipe-row {
-        transition: transform 0.25s ease;
-        position: relative;
-        z-index: 10;
-    }
-    .swipe-actions {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        display: flex;
-        justify-content: flex-end;
-        z-index: 1;
-    }
-
-    .fade-out {
-        opacity: 0;
-        transition: opacity 0.12s ease-out;
-    }
-    .fade-in-active {
-        opacity: 1;
-        transition: opacity 0.12s ease-in;
-    }
-
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
@@ -153,59 +129,28 @@
         scrollbar-width: none;
     }
 
-    /* Modern Matte Highlights with micro rounded corners */
-    .hl-yellow {
-        background-color: #fef08a !important;
-        color: #1a1a1a !important;
-        border-radius: 4px;
-        padding: 1px 4px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        margin: 0 1px;
-    }
-    .hl-blue {
-        background-color: #bfdbfe !important;
-        color: #1a1a1a !important;
-        border-radius: 4px;
-        padding: 1px 4px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        margin: 0 1px;
-    }
-    .hl-red {
-        background-color: #fecaca !important;
-        color: #1a1a1a !important;
-        border-radius: 4px;
-        padding: 1px 4px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        margin: 0 1px;
-    }
-    .hl-green {
-        background-color: #bbf7d0 !important;
-        color: #1a1a1a !important;
-        border-radius: 4px;
-        padding: 1px 4px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        margin: 0 1px;
-    }
+    /* Premium Text-Marker */
+    .hl-yellow { background-color: #FEF08A !important; color: #1A1A1A !important; border-radius: 4px; padding: 1px 4px; }
+    .hl-blue { background-color: #BFDBFE !important; color: #1A1A1A !important; border-radius: 4px; padding: 1px 4px; }
+    .hl-red { background-color: #FECACA !important; color: #1A1A1A !important; border-radius: 4px; padding: 1px 4px; }
+    .hl-green { background-color: #BBF7D0 !important; color: #1A1A1A !important; border-radius: 4px; padding: 1px 4px; }
 
-    [data-theme="dark"] .hl-yellow { background-color: #713f12 !important; color: #fef08a !important; }
-    [data-theme="dark"] .hl-blue { background-color: #1e3a8a !important; color: #bfdbfe !important; }
-    [data-theme="dark"] .hl-red { background-color: #7f1d1d !important; color: #fecaca !important; }
-    [data-theme="dark"] .hl-green { background-color: #14532d !important; color: #bbf7d0 !important; }
+    [data-theme="dark"] .hl-yellow { background-color: #713F12 !important; color: #FEF08A !important; }
+    [data-theme="dark"] .hl-blue { background-color: #1E3A8A !important; color: #BFDBFE !important; }
+    [data-theme="dark"] .hl-red { background-color: #7F1D1D !important; color: #FECACA !important; }
+    [data-theme="dark"] .hl-green { background-color: #14532D !important; color: #BBF7D0 !important; }
 
     .highlight {
-        background-color: rgba(74, 124, 89, 0.15);
+        background-color: rgba(61, 107, 72, 0.12);
         border-bottom: 2px solid var(--accent);
         padding: 0 2px;
         border-radius: 2px;
     }
     .word-circle {
-        border: 2px solid #e11d48;
+        border: 2px solid #E11D48;
         border-radius: 50%;
         padding: 0 4px;
         display: inline-block;
-    }
-    [data-theme="dark"] .word-circle {
-        border-color: #f43f5e;
     }
 
     /* Fixed Sidebar styling variables for emojis */
@@ -219,17 +164,43 @@
         flex-shrink: 0;
     }
 
-    /* Behebt das Emoji-Hover-Problem im Kasten-Raster */
-    .emoji-circle {
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
-        pointer-events: none;
+    /* Rhythmisch animierte Frequenzbalken bei aktiver Sprachausgabe */
+    .soundwave-bar {
+        display: inline-block;
+        width: 2.5px;
+        height: 8px;
+        background-color: currentColor;
+        border-radius: 10px;
+        transition: height 0.15s ease;
     }
-    .group:hover .emoji-circle {
-        transform: scale(1.15) rotate(8deg);
-        background-color: var(--accent-light);
+    .playing .soundwave-bar {
+        animation: soundwave-jump 0.8s ease-in-out infinite alternate;
+    }
+    .playing .soundwave-bar:nth-child(1) { animation-delay: 0.1s; }
+    .playing .soundwave-bar:nth-child(2) { animation-delay: 0.3s; }
+    .playing .soundwave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .playing .soundwave-bar:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes soundwave-jump {
+        0% { height: 4px; }
+        100% { height: 18px; }
     }
 
-    /* Responsive Sidebar transitions and spacing adjustments */
+    /* Interaktives Canvas-Zeichenpad (Freihandzeichnen) */
+    #drawing-canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 25;
+    }
+    #drawing-canvas {
+        pointer-events: auto;
+        cursor: crosshair;
+    }
+
     @media (min-width: 1024px) {
         #sidebar {
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -272,34 +243,34 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
 
-    <!-- Header -->
+    <!-- Header mit elegantem, modernem Layout -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
-        <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-20 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
-            <span class="text-xs font-serif italic text-zinc-400 dark:text-zinc-500">Aa</span>
-            <span class="text-lg font-bold text-zinc-300 dark:text-zinc-600">Ö</span>
-            <span class="text-xs font-serif text-zinc-300 dark:text-zinc-600">gespräch</span>
+        <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-25 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
+            <span class="text-xs font-serif italic text-emerald-600 dark:text-emerald-400">Aa</span>
+            <span class="text-xl font-black text-emerald-700 dark:text-emerald-500">Ö</span>
+            <span class="text-xs font-serif text-emerald-600 dark:text-emerald-400">gespräch</span>
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
             <div class="relative w-10 h-10 flex-shrink-0 select-none">
                 <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="24" fill="#2563EB"/>
+                    <rect width="100" height="100" rx="24" fill="#3D6B48"/>
                     <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
                 </svg>
             </div>
             <div>
-                <h1 class="text-lg font-black text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
+                <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
                 <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Navigation Tabs (Hidden on mobile) -->
+            <!-- Navigation Tabs -->
             <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
             </div>
 
             <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Einstellungen und Werkzeuge">
@@ -308,9 +279,9 @@
         </div>
     </header>
 
-    <!-- Slide-out Universal Hamburger Drawer Menu -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-50 hidden transition-opacity duration-300"></div>
-    <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[300px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-50 transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
+    <!-- Slide-out Universal Hamburger Drawer Menu (z-index angehoben um Überlagerungsfehler zu beheben) -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden transition-opacity duration-300"></div>
+    <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
             <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
                 <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--text-primary)]">⚙️ Einstellungen</h3>
@@ -418,10 +389,15 @@
         </aside>
 
         <!-- Main Scrollable Panel -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)]">
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
+            <!-- Zeichenpad Container (Nur aktivierbar im Edit-Modus) -->
+            <div id="drawing-canvas-container" class="hidden">
+                <canvas id="drawing-canvas"></canvas>
+            </div>
+
             <!-- Streamlined Focus View Controls -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200">
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
                     <div>
@@ -456,11 +432,22 @@
 
             <!-- Content Container -->
             <div id="dashboard-tab-section" class="space-y-6 scalable-content">
-                <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
-                    <span class="text-sm">💡</span>
-                    <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort, um die Formatierungs-Toolbar` zu öffnen.
-                    </p>
+                <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex flex-col gap-2">
+                    <div class="flex items-start gap-2.5">
+                        <span class="text-sm">💡</span>
+                        <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
+                            <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort für die Toolbar. Sie können auch das **Zeichenpad** zur Vorbereitung aktivieren:
+                        </p>
+                    </div>
+                    <!-- Controls für das Freihand-Zeichenpad -->
+                    <div class="flex flex-wrap gap-1.5 pt-1.5 border-t border-[var(--border)]">
+                        <button onclick="toggleDrawingPad()" id="draw-mode-btn" class="px-2.5 py-1 text-[10px] bg-zinc-200 dark:bg-zinc-800 rounded font-bold hover:bg-zinc-300">🖌️ Stift aktivieren</button>
+                        <button onclick="setDrawingColor('#ef4444')" class="w-5 h-5 rounded-full bg-red-500 border border-white"></button>
+                        <button onclick="setDrawingColor('#3b82f6')" class="w-5 h-5 rounded-full bg-blue-500 border border-white"></button>
+                        <button onclick="setDrawingColor('#10b981')" class="w-5 h-5 rounded-full bg-emerald-500 border border-white"></button>
+                        <button onclick="setDrawingHighlighter()" class="px-2 py-0.5 text-[9px] bg-yellow-200 text-yellow-800 font-bold rounded border border-yellow-300">✏️ Textmarker</button>
+                        <button onclick="clearDrawingCanvas()" class="px-2.5 py-1 text-[10px] bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 rounded font-bold ml-auto">Löschen</button>
+                    </div>
                 </div>
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
@@ -492,8 +479,8 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation -->
-            <div class="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/90 backdrop-blur-md border-t border-[var(--border)] pb-safe pt-2 px-4 flex justify-between items-center z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+            <!-- Mobile Bottom Navigation: Modernes, schwebendes "Floating Island" Design (z-index: 40 zur Vorbeugung von Überlagerungen) -->
+            <div class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
                 <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)]">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Thema</span>
@@ -503,7 +490,7 @@
                     <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
                 
-                <button id="mobile-nav-toggle-center" class="relative -top-5 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)]">
+                <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
 
@@ -517,15 +504,15 @@
                 </button>
             </div>
             
-            <button id="mobile-edit-fab" onclick="toggleEditMode()" class="md:hidden fixed bottom-[90px] right-4 w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center z-40 transition-transform active:scale-90">
+            <button id="mobile-edit-fab" onclick="toggleEditMode()" class="md:hidden fixed bottom-[95px] right-4 w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center z-40 transition-transform active:scale-90">
                 <svg id="edit-fab-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
             </button>
         </main>
     </div>
 
-    <!-- Quick Preview Modal -->
+    <!-- Quick Preview Modal (Modernisiert für zweisprachige Zusammenfassungen) -->
     <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-4 shadow-2xl transition-all">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl transition-all">
             <div class="flex justify-between items-start border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
                     <span id="preview-emoji" class="text-3xl">📌</span>
@@ -537,20 +524,18 @@
                 <button onclick="closeQuickPreview()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-1 rounded-full hover:bg-[var(--bg-app)]">✕</button>
             </div>
             
-            <div class="space-y-3.5 max-h-72 overflow-y-auto pr-1">
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
                 <div>
-                    <h4 class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Einleitung</h4>
-                    <p id="preview-einleitung" class="text-xs text-[var(--text-primary)] leading-relaxed italic"></p>
+                    <h4 class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        🇩🇪 Zusammenfassung (Deutsch)
+                    </h4>
+                    <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg"></p>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-[var(--success-light)] p-2.5 rounded-lg border border-[var(--success)]/10">
-                        <h4 class="text-[9px] font-bold text-[var(--success)] uppercase tracking-wider mb-1">Dafür (Pro)</h4>
-                        <ul id="preview-pro" class="text-[10px] text-[var(--text-primary)] list-disc pl-3.5 space-y-1"></ul>
-                    </div>
-                    <div class="bg-[var(--danger-light)] p-2.5 rounded-lg border border-[var(--danger)]/10">
-                        <h4 class="text-[9px] font-bold text-[var(--danger)] uppercase tracking-wider mb-1">Dagegen (Contra)</h4>
-                        <ul id="preview-contra" class="text-[10px] text-[var(--text-primary)] list-disc pl-3.5 space-y-1"></ul>
-                    </div>
+                <div>
+                    <h4 class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1.5 flex items-center justify-end gap-1.5">
+                        الملخص (العربية) 🇸🇾
+                    </h4>
+                    <p id="preview-einleitung-ar" dir="rtl" class="text-xs leading-relaxed font-arabic bg-[var(--bg-app)] p-3 rounded-lg text-right"></p>
                 </div>
             </div>
 
@@ -579,8 +564,11 @@
     <!-- Voice picker panel -->
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
-            <span class="text-xs font-bold text-[var(--text-primary)]">
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg> Stimme wählen
+            <span class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+                Stimme wählen
             </span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
@@ -792,6 +780,15 @@
         const expandedContainers = new Set();
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
+
+        // Freihand-Zeichnen Zustand Variablen
+        let isDrawingActive = false;
+        let drawingCanvas = null;
+        let drawingCtx = null;
+        let isDrawing = false;
+        let drawColor = '#ef4444';
+        let drawWidth = 3;
+        let isHighlighter = false;
 
         function cleanCitationLinks(text) {
             if (!text) return "";
@@ -1188,7 +1185,7 @@
             window.speechSynthesis.cancel();
             
             if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton.classList.remove('playing', 'text-rose-600');
             }
             
             const speed = parseFloat(document.getElementById('voice-picker-speed').value) || 1.0;
@@ -1207,19 +1204,19 @@
             window.currentUtterance = utterance;
 
             if (buttonEl) {
-                buttonEl.classList.add('animate-pulse', 'text-rose-600');
+                buttonEl.classList.add('playing', 'text-rose-600');
                 activeSpeakingButton = buttonEl;
             }
 
             utterance.onend = () => {
-                if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                if (activeSpeakingButton) activeSpeakingButton.classList.remove('playing', 'text-rose-600');
                 activeSpeakingButton = null;
                 window.currentUtterance = null;
             };
 
             utterance.onerror = (e) => {
                 console.warn("TTS Aborted:", e);
-                if (activeSpeakingButton) activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                if (activeSpeakingButton) activeSpeakingButton.classList.remove('playing', 'text-rose-600');
                 activeSpeakingButton = null;
                 window.currentUtterance = null;
             };
@@ -1230,7 +1227,7 @@
         function stopBlockAudio() {
             window.speechSynthesis.cancel();
             if (activeSpeakingButton) {
-                activeSpeakingButton.classList.remove('animate-pulse', 'text-rose-600');
+                activeSpeakingButton.classList.remove('playing', 'text-rose-600');
                 activeSpeakingButton = null;
             }
         }
@@ -1331,8 +1328,8 @@
 
         function switchTab(tabId) {
             activeTab = tabId;
-            const btnClassActive = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
-            const btnClassInactive = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
+            const btnClassActive = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
+            const btnClassInactive = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
 
             ['dashboard', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
@@ -1501,7 +1498,7 @@
                         ],
                         schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
                         schluss_en: "In conclusion, a compromise would make sense.",
-                        schluss_ar: "خلاصة القol هي أن التسوية ستكون منطقية."
+                        schluss_ar: "خلاصة القول هي أن التسوية ستكون منطقية."
                     }];
                 }
 
@@ -1738,39 +1735,55 @@
         }
 
         async function triggerAutoTranslate(element, topicId, compoundKey) {
-            const topic = activeMode === 'classic' ? TOPICS_DATA.find(t => t.id === topicId) : TEMPLATE_DATA.find(t => t.id === topicId);
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!topic) return;
 
             let plainText = element.innerText || element.textContent;
             if (plainText.length < 3) return; 
 
-            if (activeMode === 'classic') {
-                const enKey = compoundKey.replace('_de', '_en');
-                const arKey = compoundKey.replace('_de', '_ar');
-                const enEl = document.getElementById(`en-${compoundKey}`);
-                const arEl = document.getElementById(`ar-${compoundKey}`);
+            const enKey = compoundKey.replace('_de', '_en');
+            const arKey = compoundKey.replace('_de', '_ar');
+            const enEl = document.getElementById(`en-${compoundKey}`);
+            const arEl = document.getElementById(`ar-${compoundKey}`);
 
-                if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...translating...</span>`;
-                if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...ترجمة...</span>`;
+            if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...translating...</span>`;
+            if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...ترجمة...</span>`;
 
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(plainText)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(plainText)}`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                let transEn = "";
+                if (dataEn && dataEn[0]) {
+                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
+                }
+                let transAr = "";
+                if (dataAr && dataAr[0]) {
+                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+                }
+
+                if (!transEn || !transAr) throw new Error();
+
+                setTopicValue(topic, enKey, transEn);
+                setTopicValue(topic, arKey, transAr);
+
+                if(enEl) enEl.innerText = transEn;
+                if(arEl) arEl.innerText = transAr;
+                saveEditsSilent();
+            } catch(e) {
                 try {
                     const [resEn, resAr] = await Promise.all([
-                        fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(plainText)}`),
-                        fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(plainText)}`)
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
                     ]);
-                    const dataEn = await resEn.json();
-                    const dataAr = await resAr.json();
+                    const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
 
-                    let transEn = "";
-                    if (dataEn && dataEn[0]) {
-                        dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
-                    }
-                    let transAr = "";
-                    if (dataAr && dataAr[0]) {
-                        dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
-                    }
-
-                    if (!transEn || !transAr) throw new Error();
+                    const transEn = dataEn.responseData?.translatedText || "";
+                    const transAr = dataAr.responseData?.translatedText || "";
 
                     setTopicValue(topic, enKey, transEn);
                     setTopicValue(topic, arKey, transAr);
@@ -1778,34 +1791,10 @@
                     if(enEl) enEl.innerText = transEn;
                     if(arEl) arEl.innerText = transAr;
                     saveEditsSilent();
-                } catch(e) {
-                    try {
-                        const [resEn, resAr] = await Promise.all([
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
-                        ]);
-                        const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
-
-                        const transEn = dataEn.responseData?.translatedText || "";
-                        const transAr = dataAr.responseData?.translatedText || "";
-
-                        setTopicValue(topic, enKey, transEn);
-                        setTopicValue(topic, arKey, transAr);
-
-                        if(enEl) enEl.innerText = transEn;
-                        if(arEl) arEl.innerText = transAr;
-                        saveEditsSilent();
-                    } catch (err) {
-                        console.warn("Auto-translate network issue.", err);
-                        if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
-                        if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
-                    }
-                }
-            } else {
-                const container = document.getElementById(getTranslationContainerId(compoundKey));
-                if (container && !container.classList.contains('hidden')) {
-                    delete translationCache[compoundKey];
-                    fetchAndRenderTranslation(compoundKey, plainText, container);
+                } catch (err) {
+                    console.warn("Auto-translate network issue.", err);
+                    if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
+                    if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
                 }
             }
         }
@@ -1822,12 +1811,10 @@
                 saveHighlight(topicId, compoundKey, newHtml);
                 setTopicValue(topic, compoundKey, newHtml);
 
-                if (activeMode === 'template') {
-                    delete translationCache[compoundKey];
-                    const container = document.getElementById(getTranslationContainerId(compoundKey));
-                    if (container && !container.classList.contains('hidden')) {
-                        fetchAndRenderTranslation(compoundKey, stripHtml(newHtml), container);
-                    }
+                delete translationCache[compoundKey];
+                const container = document.getElementById(getTranslationContainerId(compoundKey));
+                if (container && !container.classList.contains('hidden')) {
+                    fetchAndRenderTranslation(compoundKey, stripHtml(newHtml), container);
                 }
             } else {
                 let plainText = element.innerText || element.textContent;
@@ -1870,7 +1857,7 @@
 
             container.innerHTML = `
                 <div class="text-[10px] text-purple-500 dark:text-purple-400 animate-pulse font-semibold">
-                    ⏳ Übersetze mit Google Translate...
+                    ⏳ Übersetze...
                 </div>
             `;
 
@@ -2160,8 +2147,13 @@
                         </div>
                         <div class="flex items-center gap-3" onclick="event.stopPropagation();">
                             ${showAudio && textForAudio ? `
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)]">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-105 transition-transform" title="Diesen Block anhören">
+                                <div class="flex items-center gap-0.5">
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                </div>
                             </button>` : ''}
                             ${!isAlwaysOpen ? `
                             <svg id="chevron-${blockKey}" style="transform: rotate(180deg);" class="w-4 h-4 text-[var(--text-muted)] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -2213,8 +2205,11 @@
                             <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
-                        <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform" title="Diesen Block anhören">
-                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                        <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex items-center gap-0.5" title="Diesen Block anhören">
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
                         </button>
                     </div>
                     <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')">
@@ -2485,6 +2480,7 @@
             });
         }
 
+        // Modernisiertes touch-screen Modal (Zeigt nun die prägnante deutsch-arabische Zusammenfassung)
         function showThemaPreview(topic) {
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
@@ -2492,23 +2488,10 @@
             document.getElementById('preview-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
             document.getElementById('preview-category').textContent = topic.category || "Thema";
             document.getElementById('preview-title').textContent = topic.title_de;
-            document.getElementById('preview-einleitung').textContent = stripHtml(topic.einleitung_de);
-
-            const proList = document.getElementById('preview-pro');
-            proList.innerHTML = "";
-            (topic.pro_de || []).slice(0, 2).forEach(p => {
-                const li = document.createElement('li');
-                li.textContent = stripHtml(p);
-                proList.appendChild(li);
-            });
-
-            const contraList = document.getElementById('preview-contra');
-            contraList.innerHTML = "";
-            (topic.contra_de || []).slice(0, 2).forEach(c => {
-                const li = document.createElement('li');
-                li.textContent = stripHtml(c);
-                contraList.appendChild(li);
-            });
+            
+            // Zusammenfassung wird gefüttert aus Einleitung (Deutsch) und der passenden Übersetzung (Arabisch)
+            document.getElementById('preview-einleitung-de').textContent = stripHtml(topic.einleitung_de);
+            document.getElementById('preview-einleitung-ar').textContent = stripHtml(topic.einleitung_ar);
 
             const navBtn = document.getElementById('preview-nav-btn');
             navBtn.onclick = () => {
@@ -2558,10 +2541,17 @@
                 rootEl.classList.add('edit-mode-active');
                 const textEl = document.getElementById('edit-mode-status-text');
                 if (textEl) textEl.textContent = "Edit-Modus: AN";
+                // Zeichenpad Kontroll-Container anzeigen falls Edit-Modus aktiv
+                const banner = document.getElementById('edit-tip-banner');
+                if (banner) banner.classList.remove('hidden');
             } else {
                 rootEl.classList.remove('edit-mode-active');
                 const textEl = document.getElementById('edit-mode-status-text');
                 if (textEl) textEl.textContent = "Edit-Modus umschalten";
+                const banner = document.getElementById('edit-tip-banner');
+                if (banner) banner.classList.add('hidden');
+                // Deaktiviert das Zeichenpad falls der Edit-Modus verlassen wird
+                if (isDrawingActive) toggleDrawingPad();
             }
 
             const isLearned = learnedList.includes(topic.id);
@@ -2579,9 +2569,9 @@
             const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200";
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30";
                 } else {
-                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200";
+                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30";
                 }
             }
 
@@ -2598,24 +2588,28 @@
                 </div>
             `;
 
-            // Both mode states now render fully
             const bannerDiv = document.createElement('div');
             bannerDiv.innerHTML = bannerHtml;
             container.appendChild(bannerDiv);
 
             const deClass = activeView === 'en' ? 'hidden' : '';
-            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? '' : 'hidden';
-            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? '' : 'hidden';
 
             const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
             const savedEinl = getHighlight(topic.id, einlDe);
             const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
             const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
 
+            // Einleitung mit interaktivem Übersetzungsschalter
             const einleitungHtml = `
-                <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
-                <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
-                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic mt-1 select-text" dir="rtl">${cleanEinlAr}</p>
+                <div class="p-1">
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+                        <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                        </button>
+                    </div>
+                    <div id="trans-container-${einlDe}" class="hidden mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                </div>
             `;
             const einleitungCard = document.createElement('div');
             einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
@@ -2624,42 +2618,58 @@
             const proContraParent = document.createElement('div');
             proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
 
+            // Dafür (Pro) Boxen mit interaktiver Übersetzungsoption
             let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
             topic.pro_de.forEach((deVal, index) => {
                 const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
                 const saved = getHighlight(topic.id, skeyDe) || deVal;
                 const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
                 proContent += `
-                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
-                        <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
-                        <div class="flex-1 text-[14px]">
-                            <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
-                            <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
+                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
+                            <div class="flex-1 text-[14px]">
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                            </div>
+                            ${isEditMode ? `
+                            <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                                ✏️
+                            </button>` : ''}
                         </div>
-                        ${isEditMode ? `
-                        <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
-                            ✏️
-                        </button>` : ''}
+                        <div class="flex items-center justify-between border-t border-[var(--border)] pt-1.5 mt-1">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(stripHtml(saved))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                Translate
+                            </button>
+                        </div>
+                        <div id="trans-container-${skeyDe}" class="hidden pt-1 border-t border-[var(--border)]/40 space-y-1"></div>
                     </div>`;
             });
             proContent += `</div>`;
 
+            // Dagegen (Contra) Boxen mit interaktiver Übersetzungsoption
             let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
             topic.contra_de.forEach((deVal, index) => {
                 const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
                 const saved = getHighlight(topic.id, skeyDe) || deVal;
                 const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
                 contraContent += `
-                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
-                        <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
-                        <div class="flex-1 text-[14px]">
-                            <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
-                            <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
+                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
+                            <div class="flex-1 text-[14px]">
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                            </div>
+                            ${isEditMode ? `
+                            <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                                ✏️
+                            </button>` : ''}
                         </div>
-                        ${isEditMode ? `
-                        <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
-                            ✏️
-                        </button>` : ''}
+                        <div class="flex items-center justify-between border-t border-[var(--border)] pt-1.5 mt-1">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${encodeURIComponent(stripHtml(saved))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                Translate
+                            </button>
+                        </div>
+                        <div id="trans-container-${skeyDe}" class="hidden pt-1 border-t border-[var(--border)]/40 space-y-1"></div>
                     </div>`;
             });
             contraContent += `</div>`;
@@ -2690,8 +2700,11 @@
                     <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
                         <div class="flex items-center justify-between gap-4 mb-2">
                             <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
-                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0 flex items-center gap-0.5" title="Diesen Redebeitrag anhören">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
                             </button>
                         </div>
                         <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
@@ -2720,6 +2733,7 @@
             schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de');
             container.appendChild(schlussCard);
 
+            // Re-render offener Übersetzungscontainer nach dem Wechsel der Tabs
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
                 if (containerNode) {
@@ -2730,9 +2744,9 @@
                         let originalText = "";
                         if (blockId.startsWith('pro_de_') || blockId.startsWith('contra_de_')) {
                             const parts = blockId.split('_');
-                            const arr = parts[0] + '_de';
+                            const arrName = parts[0] + '_de';
                             const i = parseInt(parts[2]);
-                            originalText = topic[arr] ? topic[arr][i] : "";
+                            originalText = topic[arrName] ? topic[arrName][i] : "";
                         } else if (blockId.startsWith('dialog_de_')) {
                             const parts = blockId.split('_');
                             const i = parseInt(parts[2]);
@@ -2745,7 +2759,134 @@
                 }
             });
 
+            // Falls das Zeichenpad aktiv ist, passen wir das Canvas an
+            if (isDrawingActive) {
+                resizeDrawingCanvas();
+            }
+
             showResetButton();
+        }
+
+        /* ----------------------------------------------------
+           Interaktives Touch-Zeichenpad & Highlighter Logik
+        ---------------------------------------------------- */
+        function toggleDrawingPad() {
+            isDrawingActive = !isDrawingActive;
+            const container = document.getElementById('drawing-canvas-container');
+            const btn = document.getElementById('draw-mode-btn');
+
+            if (isDrawingActive) {
+                container.classList.remove('hidden');
+                btn.classList.add('bg-[var(--accent)]', 'text-white');
+                btn.textContent = " Stift: AN";
+                initDrawingCanvas();
+            } else {
+                container.classList.add('hidden');
+                btn.classList.remove('bg-[var(--accent)]', 'text-white');
+                btn.textContent = " Stift aktivieren";
+                isDrawing = false;
+            }
+        }
+
+        function initDrawingCanvas() {
+            drawingCanvas = document.getElementById('drawing-canvas');
+            drawingCtx = drawingCanvas.getContext('2d');
+            resizeDrawingCanvas();
+
+            // Touch- und Maus-Events binden
+            drawingCanvas.addEventListener('mousedown', startDrawing);
+            drawingCanvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mouseup', stopDrawing);
+            drawingCanvas.addEventListener('mouseout', stopDrawing);
+
+            drawingCanvas.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                drawingCanvas.dispatchEvent(mouseEvent);
+            }, { passive: true });
+
+            drawingCanvas.addEventListener('touchmove', (e) => {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                drawingCanvas.dispatchEvent(mouseEvent);
+            }, { passive: true });
+
+            drawingCanvas.addEventListener('touchend', () => {
+                const mouseEvent = new MouseEvent('mouseup', {});
+                drawingCanvas.dispatchEvent(mouseEvent);
+            }, { passive: true });
+        }
+
+        function resizeDrawingCanvas() {
+            if (!drawingCanvas) return;
+            const parent = drawingCanvas.parentElement.parentElement; // Haupt-Scrollable-Panel
+            drawingCanvas.width = parent.clientWidth;
+            drawingCanvas.height = parent.scrollHeight;
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            drawingCtx.beginPath();
+            
+            const rect = drawingCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            drawingCtx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const rect = drawingCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            drawingCtx.lineTo(x, y);
+            
+            // Konfiguration für freies Zeichnen oder Highlighter
+            if (isHighlighter) {
+                drawingCtx.strokeStyle = 'rgba(253, 224, 71, 0.45)'; // Transluzentes Gelb
+                drawingCtx.lineWidth = 14;
+                drawingCtx.globalCompositeOperation = 'multiply';
+            } else {
+                drawingCtx.strokeStyle = drawColor;
+                drawingCtx.lineWidth = drawWidth;
+                drawingCtx.globalCompositeOperation = 'source-over';
+            }
+
+            drawingCtx.lineCap = 'round';
+            drawingCtx.lineJoin = 'round';
+            drawingCtx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function setDrawingColor(color) {
+            isHighlighter = false;
+            drawColor = color;
+            drawWidth = 3;
+            if (!isDrawingActive) toggleDrawingPad();
+        }
+
+        function setDrawingHighlighter() {
+            isHighlighter = true;
+            if (!isDrawingActive) toggleDrawingPad();
+        }
+
+        function clearDrawingCanvas() {
+            if (drawingCtx && drawingCanvas) {
+                drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            }
         }
 
         const structuralRedemittel = {
@@ -2801,8 +2942,11 @@
                                 <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
                                 <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
                             </div>
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)]">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
                             </button>
                         </div>`;
                 });
@@ -2832,8 +2976,11 @@
                     const encodedText = encodeURIComponent(cleanText);
                     examplesHtml += `
                         <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
-                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 transition-transform mt-0.5">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 transition-transform mt-0.5 flex gap-0.5">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
                             </button>
                             <span class="flex-1">${ex}</span>
                         </li>`; 
@@ -2913,6 +3060,8 @@
                 if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
                 if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
                 if (tipBanner) tipBanner.classList.add('hidden');
+                // Schaltet Zeichnen aus beim Verlassen des Editiermodus
+                if (isDrawingActive) toggleDrawingPad();
             }
             renderActiveTopic();
         }
