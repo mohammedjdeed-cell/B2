@@ -10,9 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1900/1900720.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4a7c59">
+    <meta name="theme-color" content="#3D6B48">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -230,24 +230,46 @@
     .playing .soundwave-bar:nth-child(3) { animation-delay: 0.2s; height: 12px; }
     .playing .soundwave-bar:nth-child(4) { animation-delay: 0.4s; height: 16px; }
 
-    @keyframes soundwave-jump {
-        0% { transform: scaleY(0.5); }
-        100% { transform: scaleY(1.8); }
+    /* Entfernt Scrollbalken in der gesamten Sidebar für App-Look */
+    #sidebar *::-webkit-scrollbar,
+    #topic-list::-webkit-scrollbar {
+        width: 0 !important;
+        height: 0 !important;
+        display: none !important;
+    }
+    #sidebar *,
+    #topic-list {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+    }
+
+    /* Behebt das Überlappen der Elemente bei eingeklappter Sidebar */
+    #sidebar.sidebar-collapsed .hide-on-collapse,
+    #sidebar.sidebar-collapsed .hide-on-collapse-custom {
+        display: none !important;
+    }
+
+    /* Erzwingt eine konsistente relative Positionierung im Flex-Flow auf Desktop-Bildschirmen */
+    #sidebar {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 40;
+        width: 20rem;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     @media (min-width: 1024px) {
         #sidebar {
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 20rem; 
+            position: relative !important;
+            transform: translateX(0) !important;
+            z-index: 10 !important;
+            width: 20rem !important;
+            max-width: none !important;
         }
         #sidebar.sidebar-collapsed {
             width: 4.5rem !important; 
-        }
-        #sidebar.sidebar-collapsed .hide-on-collapse {
-            display: none !important;
-        }
-        #sidebar.sidebar-collapsed .hide-on-collapse-custom {
-            display: none !important;
         }
         #sidebar.sidebar-collapsed .sidebar-header-flex {
             justify-content: center !important;
@@ -472,7 +494,7 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Overhauled Mind Map Section (Raster is now a dedicated edge-to-edge area) -->
+            <!-- Overhauled Mind Map Section -->
             <section id="mindmap-tab-section" class="hidden flex-col space-y-6 w-full min-h-screen bg-[var(--bg-app)] animate-fade-in pb-28">
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -526,7 +548,7 @@
                 </button>
             </div>
             
-            <!-- Mobile Controls Floating Action Group (Grouped Undo + Edit Actions) -->
+            <!-- Mobile Controls Floating Action Group -->
             <div class="md:hidden fixed bottom-[95px] right-4 flex flex-col gap-3 z-40">
                 <button id="mobile-undo-fab" onclick="undo()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90" title="Rückgängig machen">
                     <span class="text-lg">↩️</span>
@@ -1561,7 +1583,7 @@
                         einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
                         pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
                         pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
-                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
+                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل von أعقاب السجائر."],
                         contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
                         contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
@@ -2555,7 +2577,6 @@
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
 
-            // Hole Thema aus dem aktuell aktiven Modus-Dataset (classic oder template)
             const activeDataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             const currentTopic = activeDataset.find(t => t.id === topic.id) || topic;
 
@@ -2563,7 +2584,6 @@
             document.getElementById('preview-category').textContent = currentTopic.category || "Thema";
             document.getElementById('preview-title').textContent = currentTopic.title_de;
             
-            // Suche nach benutzerdefinierten Anpassungen
             const savedEinlDe = getHighlight(currentTopic.id, "einleitung_de") || currentTopic.einleitung_de;
             const savedEinlAr = getHighlight(currentTopic.id, "einleitung_ar") || currentTopic.einleitung_ar;
 
@@ -2674,7 +2694,7 @@
 
             const einleitungHtml = `
                 <div class="p-1">
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, topic.id, 'de', '${einlDe}')" oninput="handleInlineInput(this, topic.id, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
@@ -2707,7 +2727,7 @@
                         <div class="flex items-start gap-2.5">
                             <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
                             <div class="flex-1 text-[14px]">
-                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, topic.id, 'de', '${skeyDe}')">${saved}</strong>
                             </div>
                             ${isEditMode ? `
                             <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
@@ -2741,7 +2761,7 @@
                         <div class="flex items-start gap-2.5">
                             <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
                             <div class="flex-1 text-[14px]">
-                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, topic.id, 'de', '${skeyDe}')">${saved}</strong>
                             </div>
                             ${isEditMode ? `
                             <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
@@ -2802,7 +2822,7 @@
                         </div>
                         <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
                             <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
-                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77(8.07 15.61 3 18.129"></path></svg> Translate
                             </button>
                             <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
                                 <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
@@ -3088,8 +3108,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
+            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}$.json`);
             downloadAnchor.click();
             downloadAnchor.remove();
         }
@@ -3102,12 +3121,12 @@
             });
         }
 
-        // Swipe-to-Open Geste auf Mobilgeräten für die linke Sidebar
+        // Swipe-to-Open Geste auf Mobilgeräten für die linke Sidebar (Global aktiviert)
         document.addEventListener('touchstart', e => {
             const x = e.touches[0].clientX;
             const y = e.touches[0].clientY;
-            // Aktiviert nur, wenn das Wischen im linken Randbereich (unter 40px) beginnt
-            if (x < 40 && activeTab === 'dashboard') {
+            // Aktiviert, wenn das Wischen im linken Randbereich (unter 40px) beginnt
+            if (x < 40) {
                 touchStartX = x;
                 touchStartY = y;
             }
@@ -3145,7 +3164,7 @@
             }, { passive: true });
         }
 
-        // Optimierte Swipe-Navigation (Weniger empfindlich, verhindert Konflikte mit vertikalem Scrollen)
+        // Optimierte Swipe-Navigation (Nur auf dem Dashboard-Tab aktiv)
         let touchStartX = 0; let touchStartY = 0;
         let touchEndX = 0; let touchEndY = 0;
         let touchStartTime = 0;
@@ -3167,11 +3186,13 @@
         }
 
         function handleSwipeNavigation() {
+            // Verhindert das Navigieren bei Swipe-Gesten auf anderen Tabs wie Kasten-Raster
+            if (activeTab !== 'dashboard') return;
+
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             
-            // Nur als bewusster Swipe werten, wenn schnell (<300ms) und deutlich horizontal dominiert (>100px)
             if (duration < 300 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     navigateTopicStep(-1);
