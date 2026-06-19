@@ -1,28 +1,3236 @@
-{
-  "name": "B2 Trainer — TELC B2 Diskussionstrainer",
-  "short_name": "B2Trainer",
-  "description": "PWA für strukturierte Analyse und interaktive Vorbereitung der TELC B2 Diskussionsthemen",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#F5F4F0",
-  "theme_color": "#4a7c59",
-  "orientation": "any",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/1900/1900720.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/1900/1900720.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "id": "B2TrainerTELC",
-  "categories": [
-    "education",
-    "books"
-  ]
-}
+<!DOCTYPE html>
+<html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
+    <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1900/1900720.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a7c59">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Firebase Web SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <style>
+    /* Binds Tailwind REM units to scale seamlessly with the selection tool */
+    html {
+        font-size: var(--text-scale, 100%) !important;
+    }
+
+    :root {
+        --bg-app:        #F4F4F0;
+        --bg-card:       #FFFFFF;
+        --bg-sidebar:    #F9F9F6;
+        --border:        rgba(0,0,0,0.06);
+        --text-primary:  #1C1E1D;
+        --text-muted:    #5E6661;
+        --text-faint:    #949E99;
+        --accent:        #3D6B48;          
+        --accent-light:  #EDF4EF;          
+        --success:       #3D6B48;
+        --success-light: #EDF4EF;
+        --danger:        #B02A1E;
+        --danger-light:  #FDF2F2;
+        --amber:         #C27803;
+        --amber-light:   #FFFDF0;
+        --purple:        #6D28D9;
+        --purple-light:  #F5F3FF;
+        --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md:     0 8px 24px rgba(0, 0, 0, 0.06);
+        --radius-card:   16px;
+        --radius-btn:    10px;
+        --text-scale:    100%;
+    }
+
+    [data-theme="dark"] {
+        --bg-app:        #0F1110; 
+        --bg-card:       #171918; 
+        --bg-sidebar:    #121413;
+        --border:        rgba(255,255,255,0.06); 
+        --text-primary:  #F0F3F1; 
+        --text-muted:    #9AA5A1; 
+        --text-faint:    #4E5754;
+        --accent:        #5B9E6B; 
+        --accent-light:  rgba(91, 158, 107, 0.12);
+        --success:       #5B9E6B;
+        --success-light: #132418; 
+        --danger:        #EF4444;
+        --danger-light:  #2D1515; 
+        --amber:         #F59E0B;
+        --amber-light:   rgba(245, 158, 11, 0.12);
+        --shadow-sm:     0 2px 4px rgba(0,0,0,0.2);
+        --shadow-md:     0 12px 32px rgba(0,0,0,0.4);
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
+    }
+
+    body, header, aside, main, .card-transition, #dashboard-controls, .topic-list-item {
+        transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                    border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                    color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Native-App-Interaktionsverhalten */
+    * {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    
+    .selectable-text, textarea, input {
+        user-select: text !important;
+    }
+
+    button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    background-color 0.25s ease, 
+                    border-color 0.25s ease, 
+                    box-shadow 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    button:hover, select:hover {
+        transform: translateY(-1px);
+    }
+    button:active, select:active, .sidebar-item:active, .topic-list-item:active {
+        transform: scale(0.96) !important;
+    }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease-out, opacity 0.25s ease-out;
+        opacity: 0;
+    }
+    .accordion-content.expanded {
+        max-height: 2000px; 
+        opacity: 1;
+    }
+
+    @media (max-width: 1023px) {
+        .accordion-content.expanded {
+            max-height: 60vh !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+    @media (min-width: 1024px) {
+        .accordion-content.expanded {
+            max-height: none !important;
+        }
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Premium Text-Marker */
+    .hl-yellow {
+        background: rgba(254, 240, 138, 0.25) !important;
+        color: inherit !important;
+        border-bottom: 2.5px solid rgba(234, 179, 8, 0.85);
+        border-radius: 2px;
+        padding: 1px 3px;
+    }
+    .hl-blue {
+        background: rgba(191, 219, 254, 0.22) !important;
+        color: inherit !important;
+        border-bottom: 2.5px solid rgba(37, 99, 235, 0.85);
+        border-radius: 2px;
+        padding: 1px 3px;
+    }
+    .hl-red {
+        background: rgba(254, 202, 202, 0.22) !important;
+        color: inherit !important;
+        border-bottom: 2.5px solid rgba(220, 38, 38, 0.85);
+        border-radius: 2px;
+        padding: 1px 3px;
+    }
+    .hl-green {
+        background: rgba(187, 247, 208, 0.22) !important;
+        color: inherit !important;
+        border-bottom: 2.5px solid rgba(5, 150, 105, 0.85);
+        border-radius: 2px;
+        padding: 1px 3px;
+    }
+
+    [data-theme="dark"] .hl-yellow { background: rgba(113, 63, 18, 0.3) !important; border-bottom-color: #FEF08A; }
+    [data-theme="dark"] .hl-blue { background: rgba(30, 58, 138, 0.3) !important; border-bottom-color: #BFDBFE; }
+    [data-theme="dark"] .hl-red { background: rgba(127, 29, 29, 0.3) !important; border-bottom-color: #FECACA; }
+    [data-theme="dark"] .hl-green { background: rgba(20, 83, 45, 0.3) !important; border-bottom-color: #BBF7D0; }
+
+    .highlight {
+        background-color: rgba(61, 107, 72, 0.12);
+        border-bottom: 2.5px solid var(--accent);
+        padding: 0 2px;
+        border-radius: 2px;
+    }
+    .word-circle {
+        border: 2px solid #E11D48;
+        border-radius: 50%;
+        padding: 0 4px;
+        display: inline-block;
+    }
+
+    .sidebar-only-emoji {
+        font-size: 1.25rem;
+        width: 1.75rem;
+        height: 1.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .emoji-circle {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
+        pointer-events: none;
+    }
+    .group:hover .emoji-circle {
+        transform: scale(1.15) rotate(8deg);
+        background-color: var(--accent-light);
+    }
+
+    /* Rhythmisch animierte Frequenzbalken */
+    .soundwave-bar {
+        display: inline-block;
+        width: 2.5px;
+        height: 8px;
+        background-color: currentColor;
+        border-radius: 10px;
+        transition: transform 0.15s ease;
+        transform-origin: bottom;
+    }
+    .playing .soundwave-bar {
+        animation: soundwave-jump 0.8s ease-in-out infinite alternate;
+    }
+    .playing .soundwave-bar:nth-child(1) { animation-delay: 0.1s; height: 14px; }
+    .playing .soundwave-bar:nth-child(2) { animation-delay: 0.3s; height: 18px; }
+    .playing .soundwave-bar:nth-child(3) { animation-delay: 0.2s; height: 12px; }
+    .playing .soundwave-bar:nth-child(4) { animation-delay: 0.4s; height: 16px; }
+
+    @keyframes soundwave-jump {
+        0% { transform: scaleY(0.5); }
+        100% { transform: scaleY(1.8); }
+    }
+
+    @media (min-width: 1024px) {
+        #sidebar {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 20rem; 
+        }
+        #sidebar.sidebar-collapsed {
+            width: 4.5rem !important; 
+        }
+        #sidebar.sidebar-collapsed .hide-on-collapse {
+            display: none !important;
+        }
+        #sidebar.sidebar-collapsed .hide-on-collapse-custom {
+            display: none !important;
+        }
+        #sidebar.sidebar-collapsed .sidebar-header-flex {
+            justify-content: center !important;
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        #sidebar.sidebar-collapsed .topic-list-item > div {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        #sidebar.sidebar-collapsed .sidebar-only-emoji {
+            font-size: 1.5rem !important;
+            display: block !important;
+            margin: 0 auto !important;
+            text-align: center !important;
+            width: auto !important;
+            height: auto !important;
+        }
+        #sidebar.sidebar-collapsed .topic-list-item {
+            justify-content: center !important;
+            padding: 0.75rem 0.5rem !important;
+        }
+    }
+</style>
+</head>
+<body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
+
+    <!-- Header mit elegantem, modernem Layout -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
+        <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-25 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
+            <span class="text-xs font-serif italic text-emerald-600 dark:text-emerald-400">Aa</span>
+            <span class="text-xl font-black text-emerald-700 dark:text-emerald-500">Ö</span>
+            <span class="text-xs font-serif text-emerald-600 dark:text-emerald-400">gespräch</span>
+        </div>
+
+        <div class="flex items-center gap-3 relative z-10">
+            <div class="relative w-10 h-10 flex-shrink-0 select-none">
+                <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="24" fill="#3D6B48"/>
+                    <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 relative z-10">
+            <!-- Navigation Tabs -->
+            <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
+            </div>
+
+            <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Einstellungen und Werkzeuge">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Slide-out Universal Hamburger Drawer Menu -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden transition-opacity duration-300"></div>
+    <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
+        <div class="p-5 space-y-6">
+            <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+                <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--text-primary)]">⚙️ Einstellungen</h3>
+                <button id="drawer-close" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EDITIER-WERKZEUGE</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="undo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↩️ Zurück</button>
+                    <button onclick="redo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↪️ Vor</button>
+                </div>
+                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2">
+                    <span id="edit-mode-status-text">Edit-Modus umschalten</span>
+                </button>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">CLOUD-ARBEITSPLATZ</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <div id="drawer-auth-logged-out" class="space-y-2">
+                    <select id="drawer-user-select" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]">
+                        <option value="mohammed">Mohammed</option>
+                        <option value="mai">Mai</option>
+                    </select>
+                    <input type="password" id="drawer-workspace-password" placeholder="Passwort" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="drawer-btn-login" class="w-full min-h-[44px] text-xs bg-[var(--accent)] text-white font-bold rounded">Login</button>
+                        <button id="drawer-btn-signup" class="w-full min-h-[44px] text-xs bg-zinc-600 text-white font-bold rounded">Registrieren</button>
+                    </div>
+                </div>
+                <div id="drawer-auth-logged-in" class="space-y-2 hidden">
+                    <p class="text-xs text-[var(--text-primary)]">Angemeldet als: <span id="drawer-user-display" class="font-bold"></span></p>
+                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded">Logout</button>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">ELEMENT & TEXTGRÖSSE</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
+                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-2 text-xs font-bold rounded">80%</button>
+                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-2 text-xs font-bold rounded">100%</button>
+                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-2 text-xs font-bold rounded">125%</button>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DESIGN & FARBSCHEMA</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
+                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-2 text-xs font-bold rounded">Hell</button>
+                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-2 text-xs font-bold rounded">Dunkel</button>
+                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-2 text-xs font-bold rounded">System</button>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">BACKUP & JSON</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <button onclick="exportTotalBackup()" class="w-full min-h-[44px] text-xs font-bold bg-emerald-600 text-white rounded-lg mb-2">Vollbackup erstellen</button>
+                <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[44px] text-xs font-bold bg-blue-600 text-white rounded-lg">Backup einspielen</button>
+                <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Workspace Container -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:z-auto -translate-x-full lg:translate-x-0 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
+                <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
+                <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 hide-on-collapse">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Fortschritt</span>
+                    <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
+                </div>
+                <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
+                    <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
+                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]">Alle</button>
+                    <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Gelernt</button>
+                    <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]">Offen</button>
+                </div>
+
+                <div class="relative mt-2">
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all shadow-inner select-text" />
+                    <svg class="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
+        </aside>
+
+        <!-- Main Scrollable Panel -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
+            
+            <!-- Streamlined Focus View Controls -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
+                <div class="flex items-center gap-3">
+                    <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
+                    <div>
+                        <div id="active-topic-num"></div>
+                        <h2 id="active-topic-title-de" class="text-lg font-black text-[var(--text-primary)] mt-1 leading-tight">Lade Diskussionsthema...</h2>
+                        <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading...</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:flex gap-2 items-center w-full md:w-auto overflow-x-auto no-scrollbar">
+                    <select id="active-mode" onchange="switchActiveMode(this.value)" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
+                        <option value="classic" selected>Klassisch</option>
+                        <option value="template">Template</option>
+                    </select>
+
+                    <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
+                        <option value="both">DE &amp; EN</option>
+                        <option value="de_ar">DE &amp; AR</option>
+                        <option value="all">DE, EN, AR</option>
+                        <option value="de">Nur DE</option>
+                    </select>
+                    
+                    <button id="learned-toggle" class="col-span-1 w-full md:w-auto text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-2 py-2 border border-[var(--border)] shadow-sm leading-tight shrink-0">
+                        Als gelernt markieren
+                    </button>
+
+                    <button id="reset-edits-btn" disabled class="col-span-1 w-full md:w-auto text-xs bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed whitespace-nowrap shrink-0">
+                        🔄 Zurücksetzen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div id="dashboard-tab-section" class="space-y-6 scalable-content">
+                <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex flex-col gap-2">
+                    <div class="flex items-start gap-2.5">
+                        <span class="text-sm">💡</span>
+                        <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
+                            <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort, um die Formatierungs-Toolbar zu öffnen.
+                        </p>
+                    </div>
+                </div>
+                <div id="active-topic-container" class="space-y-6"></div>
+            </div>
+
+            <!-- Overhauled Mind Map Section (Raster is now a dedicated edge-to-edge area) -->
+            <section id="mindmap-tab-section" class="hidden flex-col space-y-6 w-full min-h-screen bg-[var(--bg-app)] animate-fade-in pb-28">
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-black text-[var(--text-primary)] flex items-center gap-2">
+                            <span>📦 Mind-Map Kasten-Raster</span>
+                        </h3>
+                        <p class="text-xs text-[var(--text-muted)] mt-1">
+                            Alle 52 TELC-Prüfungsthemen im Gesamtüberblick. Prüfungsrelevante Themen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-full sm:w-48 select-text" />
+                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
+                            <option value="all">Alle Kategorien</option>
+                            <option value="Freizeit &amp; Gesundheit">Freizeit &amp; Gesundheit</option>
+                            <option value="Arbeit &amp; Karriere">Arbeit &amp; Karriere</option>
+                            <option value="Umwelt &amp; Mobilität">Umwelt &amp; Mobilität</option>
+                            <option value="Gesellschaft &amp; Politik">Gesellschaft &amp; Politik</option>
+                            <option value="Bildung &amp; Technologie">Bildung &amp; Technologie</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-2"></div>
+            </section>
+
+            <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
+            <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
+
+            <!-- Mobile Bottom Navigation: Floating Island Design -->
+            <div class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
+                <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Thema</span>
+                </button>
+                <button onclick="switchTab('mindmap')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Raster</span>
+                </button>
+                
+                <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+
+                <button onclick="switchTab('redemittel')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Reden</span>
+                </button>
+                <button onclick="switchTab('grammar')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
+                </button>
+            </div>
+            
+            <!-- Mobile Controls Floating Action Group (Grouped Undo + Edit Actions) -->
+            <div class="md:hidden fixed bottom-[95px] right-4 flex flex-col gap-3 z-40">
+                <button id="mobile-undo-fab" onclick="undo()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90" title="Rückgängig machen">
+                    <span class="text-lg">↩️</span>
+                </button>
+                <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90">
+                    <svg id="edit-fab-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Quick Preview Modal -->
+    <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 pt-8 space-y-4 shadow-2xl transition-all relative">
+            <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50">✕</button>
+            
+            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3 pr-8">
+                <span id="preview-emoji" class="text-3xl">📌</span>
+                <div>
+                    <span id="preview-category" class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Kategorie</span>
+                    <h3 id="preview-title" class="text-sm font-black text-[var(--text-primary)]">Thema</h3>
+                </div>
+            </div>
+            
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                <div>
+                    <h4 class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        🇩🇪 Zusammenfassung (Deutsch)
+                    </h4>
+                    <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg break-words whitespace-pre-wrap selectable-text"></p>
+                </div>
+                <div>
+                    <h4 class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1.5 flex items-center justify-end gap-1.5">
+                        الملخص (العربية) 🇸🇾
+                    </h4>
+                    <p id="preview-einleitung-ar" dir="rtl" class="text-xs leading-relaxed font-arabic bg-[var(--bg-app)] p-3 rounded-lg text-right break-words whitespace-pre-wrap selectable-text"></p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeQuickPreview()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all">Schließen</button>
+                <button id="preview-nav-btn" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all flex items-center gap-1">Lernen ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selection formatting toolbar -->
+    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Fett">B</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)]" title="Kreis">⭕</button>
+        <div class="h-5 w-px bg-[var(--border)]"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-200 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-900/50" title="Gelb"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-200 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-900/50" title="Blau"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-200 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-900/50" title="Rot"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-200 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-900/50" title="Grün"></button>
+        <div class="h-5 w-px bg-[var(--border)]"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all" title="Formatierung aufheben">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+    </div>
+
+    <!-- Voice picker panel -->
+    <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
+            <span class="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+                Stimme wählen
+            </span>
+            <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
+        </div>
+        <div id="voice-list-container" class="max-h-40 overflow-y-auto space-y-1 text-[11px] pr-1"></div>
+        <div class="space-y-2 pt-2 border-t border-[var(--border)]">
+            <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
+                <select id="voice-picker-speed" class="text-[11px] bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none">
+                    <option value="0.8">Langsam (0.8x)</option>
+                    <option value="1.0" selected>Normal (1.0x)</option>
+                    <option value="1.2">Schnell (1.2x)</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button id="voice-picker-play" class="flex-1 py-1.5 rounded bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white font-bold text-xs shadow-sm shadow-[var(--accent)]/20">Vorlesen</button>
+                <button id="voice-picker-stop" class="flex-1 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs">Stopp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit block modal -->
+    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-5 space-y-4 shadow-2xl transition-all">
+            <div class="flex justify-between items-center border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[var(--text-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <h3 class="text-sm font-bold text-[var(--text-primary)]">Block bearbeiten</h3>
+                </div>
+                <button onclick="closeBlockEditor()" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Deutsch (DE)</label>
+                        <button id="btn-auto-translate" onclick="autoTranslateBlockModal()" class="text-[9px] bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold px-2 py-0.5 rounded hover:opacity-80 transition-opacity">
+                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Auto-Translate
+                        </button>
+                    </div>
+                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none select-text"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
+                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none select-text"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
+                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none font-arabic select-text"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeBlockEditor()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all">Abbrechen</button>
+                <button onclick="saveBlockEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-[var(--bg-card)] hover:opacity-90 transition-all">Sichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Block -->
+    <script>
+        const STARRED_TOPICS = [4, 8, 14, 15, 17, 18, 19, 21, 22, 26, 27, 30, 31, 34, 38, 39, 41, 43, 48];
+
+        const TOPIC_KEYWORDS = {
+            1: "Rauchen", 2: "Gewaltspiele", 3: "Hochzeit", 4: "Solarium", 5: "Nahrungsergänzung",
+            6: "Elektroautos", 7: "Arbeit bis 75", 8: "Carsharing", 9: "Digitaler Unterricht", 10: "Öffentlicher Dienst",
+            11: "Eigenheim", 12: "Justiz", 13: "Kunst", 14: "Kleidung", 15: "Smartphones",
+            16: "Fernsehen", 17: "Strom", 18: "Zahnarzt", 19: "Bücher", 20: "Alkohol",
+            21: "Blutspende", 22: "Computer", 23: "Wahlen", 24: "Schreiben", 25: "Notizen",
+            26: "Impfung", 27: "Lachen", 28: "Forschung", 29: "Ernährung", 30: "Nachtarbeit",
+            31: "Kriminalität", 32: "Europa", 33: "Politik", 34: "Sport", 35: "Arbeitszeit",
+            36: "Fremdsprachen", 37: "Erfolg", 38: "Studium", 39: "Bus & Bahn", 40: "Wissenschaft",
+            41: "Dialekt", 42: "Meditation", 43: "Fleischkonsum", 44: "Technik", 45: "Bargeldloses Zahlen",
+            46: "Einkaufen", 47: "Taschengeld", 48: "Streaming", 49: "Kochen", 50: "Schule",
+            51: "Tierversuche", 52: "Haustiere"
+        };
+
+        const TOPIC_ICONS = {
+            1: "🚭", 2: "🎮", 3: "💍", 4: "☀️", 5: "💊", 6: "⚡", 7: "👴", 8: "🔄", 
+            9: "🏫", 10: "🪙", 11: "🏡", 12: "⚖️", 13: "🎨", 14: "👔", 15: "📱", 16: "📺", 
+            17: "🔌", 18: "🦷", 19: "📚", 20: "🍷", 21: "🩸", 22: "💻", 23: "🗳️", 24: "✍️", 
+            25: "📝", 26: "💉", 27: "😄", 28: "🧪", 29: "🍕", 30: "🌃", 31: "🔍", 32: "🇪🇺", 
+            33: "🗳️", 34: "🏃", 35: "⏱️", 36: "🇬🇧", 37: "🏆", 38: "🎓", 39: "🚌", 40: "🧪", 
+            41: "🗣️", 42: "🧘", 43: "🐷", 44: "🔌", 45: "💳", 46: "🛍️", 47: "💸", 48: "📺", 
+            49: "🍳", 50: "🏫", 51: "🐭", 52: "🐶"
+        };
+
+        const CONNECTORS = [
+            "Meiner Meinung nach", "Ein weiteres großes Argument", "Zudem wird betont", 
+            "Ich betrachte", "Darüber hinaus", "Anstatt", "Was meine persönlichen Erfahrungen betrifft", 
+            "Vielleicht können wir uns darauf einigen", "Zusammenfassend lässt sich sagen", 
+            "weil", "da", "sodass", "Allerdings", "Einerseits", "andererseits"
+        ];
+
+        const TOPIC_CATEGORIES_LOOKUP = {
+            1: 'Freizeit & Gesundheit', 2: 'Bildung & Technologie', 3: 'Gesellschaft & Politik',
+            4: 'Freizeit & Gesundheit', 5: 'Freizeit & Gesundheit', 6: 'Umwelt & Mobilität',
+            7: 'Arbeit & Karriere', 8: 'Umwelt & Mobilität', 9: 'Bildung & Technologie',
+            10: 'Arbeit & Karriere', 11: 'Umwelt & Mobilität', 12: 'Gesellschaft & Politik',
+            13: 'Freizeit & Gesundheit', 14: 'Bildung & Technologie', 15: 'Bildung & Technologie',
+            16: 'Bildung & Technologie', 17: 'Bildung & Technologie', 18: 'Freizeit & Gesundheit',
+            19: 'Bildung & Technologie', 20: 'Freizeit & Gesundheit', 21: 'Freizeit & Gesundheit',
+            22: 'Bildung & Technologie', 23: 'Gesellschaft & Politik', 24: 'Bildung & Technologie',
+            25: 'Bildung & Technologie', 26: 'Freizeit & Gesundheit', 27: 'Freizeit & Gesundheit',
+            28: 'Freizeit & Gesundheit', 29: 'Freizeit & Gesundheit', 30: 'Gesellschaft & Politik',
+            31: 'Gesellschaft & Politik', 32: 'Gesellschaft & Politik', 33: 'Gesellschaft & Politik',
+            34: 'Freizeit & Gesundheit', 35: 'Arbeit & Karriere', 36: 'Arbeit & Karriere',
+            37: 'Arbeit & Karriere', 38: 'Bildung & Technologie', 39: 'Bildung & Technologie',
+            40: 'Bildung & Technologie', 41: 'Bildung & Technologie', 42: 'Arbeit & Karriere',
+            43: 'Gesellschaft & Politik', 44: 'Bildung & Technologie', 45: 'Bildung & Technologie',
+            46: 'Umwelt & Mobilität', 47: 'Gesellschaft & Politik', 48: 'Bildung & Technologie',
+            49: 'Gesellschaft & Politik', 50: 'Bildung & Technologie', 51: 'Gesellschaft & Politik',
+            52: 'Gesellschaft & Politik'
+        };
+
+        const CATEGORY_SVGS = {
+            'Freizeit & Gesundheit': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><path d="M14 20c2-4 6-6 6-6s4 2 6 6" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/><circle cx="60" cy="20" r="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M55 20h10M60 15v10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Arbeit & Karriere': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="24" height="18" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M16 16h8M16 20h6M16 24h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/><path d="M48 28V16l10-4v16" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="52" y="22" width="4" height="6" fill="#7C3AED"/></svg>`,
+            'Umwelt & Mobilität': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><path d="M10 28c0-8 6-16 14-16s14 8 14 16" stroke="#16A34A" stroke-width="1.5" fill="none"/><circle cx="24" cy="18" r="4" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/><rect x="45" y="20" width="24" height="10" rx="3" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><circle cx="50" cy="32" r="3" fill="#2563EB"/><circle cx="65" cy="32" r="3" fill="#2563EB"/></svg>`,
+            'Gesellschaft & Politik': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="12" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/><path d="M14 24c0-4 2-8 6-8s6 4 6 8" fill="#7C3AED" opacity="0.3"/><circle cx="20" cy="16" r="3" fill="#7C3AED"/><path d="M48 28l8-12 8 12" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 28h8" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            'Bildung & Technologie': `<svg viewBox="0 0 80 40" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/><path d="M14 17h16M14 21h12M14 25h8" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><rect x="50" y="14" width="20" height="14" rx="2" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/><path d="M55 19h10M55 23h7" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        };
+
+        const CATEGORY_STYLES = {
+            'Freizeit & Gesundheit': {
+                lightBg: 'bg-emerald-50/30', lightBorder: 'border-emerald-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-[#2A2A2C] dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/30',
+                activeRing: 'ring-emerald-500/50 dark:ring-emerald-500/30'
+            },
+            'Arbeit & Karriere': {
+                lightBg: 'bg-blue-50/30', lightBorder: 'border-blue-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-blue-100 text-blue-800 dark:bg-[#2A2A2C] dark:text-blue-400 border-blue-200/50 dark:border-blue-900/30',
+                activeRing: 'ring-blue-500/50 dark:ring-blue-500/30'
+            },
+            'Umwelt & Mobilität': {
+                lightBg: 'bg-teal-50/30', lightBorder: 'border-teal-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-teal-100 text-teal-800 dark:bg-[#2A2A2C] dark:text-teal-400 border-teal-200/50 dark:border-teal-900/30',
+                activeRing: 'ring-teal-500/50 dark:ring-teal-500/30'
+            },
+            'Gesellschaft & Politik': {
+                lightBg: 'bg-purple-50/30', lightBorder: 'border-purple-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-purple-100 text-purple-800 dark:bg-[#2A2A2C] dark:text-purple-400 border-purple-200/50 dark:border-purple-900/30',
+                activeRing: 'ring-purple-500/50 dark:ring-purple-500/30'
+            },
+            'Bildung & Technologie': {
+                lightBg: 'bg-amber-50/30', lightBorder: 'border-amber-200',
+                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
+                glow: 'hover:shadow-md',
+                badgeBg: 'bg-amber-100 text-amber-800 dark:bg-[#2A2A2C] dark:text-amber-400 border-amber-200/50 dark:border-amber-900/30',
+                activeRing: 'ring-amber-500/50 dark:ring-amber-500/30'
+            }
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+            authDomain: "b2telc-6e061.firebaseapp.com",
+            databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "b2telc-6e061",
+            storageBucket: "b2telc-6e061.firebasestorage.app",
+            messagingSenderId: "593882455085",
+            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+            measurementId: "G-SPHLVHRL6K"
+        };
+
+        let auth = null;
+        let db = null;
+        if (typeof firebase !== 'undefined') {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+            } catch (e) {
+                console.error("Firebase SDK init failure:", e);
+            }
+        } else {
+            console.warn("Firebase scripts are offline or blocked. Falling back to local storage sandbox.");
+        }
+
+        let TOPICS_DATA = [];
+        let TEMPLATE_DATA = [];
+        let GRAMMATIK_DATA = [];
+        
+        let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
+        let showHighlights = true;
+        let activeView = "both";
+        let isEditMode = false;
+        let activeTab = "dashboard";
+        let currentFilter = "all";
+        let activeMode = localStorage.getItem('b2_active_mode') || "classic";
+        let activeGrammarFilter = "all";
+        
+        let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
+        let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
+        let currentUser = null;
+        let editedTopicIds = [];
+        let editedTemplateIds = [];
+        let activeEditBlockContext = null;
+
+        let undoStack = [];
+        let redoStack = [];
+        
+        const translationCache = {};
+        const expandedContainers = new Set();
+        
+        let textScale = localStorage.getItem('b2_text_scale') || '100%';
+
+        function cleanCitationLinks(text) {
+            if (!text) return "";
+            let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
+            cleaned = cleaned.replace(/\[\d+\]\(https:\/\/[^\s)]+\)/g, "");
+            cleaned = cleaned.replace(/\[\[\d+\]\]/g, "");
+            cleaned = cleaned.replace(/\[\d+\]/g, "");
+            cleaned = cleaned.replace(/\s\s+/g, " "); 
+            return cleaned.trim();
+        }
+
+        async function safeFetchJson(url) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (e) {
+                console.warn(`JSON resource load failed for ${url}:`, e);
+            }
+            return [];
+        }
+
+        let audioUnlocked = false;
+        document.body.addEventListener('click', () => {
+            if (!audioUnlocked && 'speechSynthesis' in window) {
+                const dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0;
+                window.speechSynthesis.speak(dummy);
+                audioUnlocked = true;
+            }
+        }, { once: true });
+
+        function stripHtml(html) {
+            if (!html) return "";
+            let tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        function getTopicValue(topic, compoundKey) {
+            if (!topic) return "";
+            if (compoundKey.startsWith('dialog_')) {
+                const parts = compoundKey.split('_'); 
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
+                return topic.dialog && topic.dialog[idx] ? topic.dialog[idx][lang] : "";
+            } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
+                const parts = compoundKey.split('_');
+                const arrName = parts[0] + '_' + parts[1];
+                const idx = parseInt(parts[2]);
+                return topic[arrName] && topic[arrName][idx] !== undefined ? topic[arrName][idx] : "";
+            } else {
+                return topic[compoundKey] || "";
+            }
+        }
+
+        function setTopicValue(topic, compoundKey, value) {
+            if (!topic) return;
+            if (compoundKey.startsWith('dialog_')) {
+                const parts = compoundKey.split('_');
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
+                if(!topic.dialog) topic.dialog = [];
+                if(!topic.dialog[idx]) topic.dialog[idx] = {};
+                topic.dialog[idx][lang] = value;
+            } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
+                const parts = compoundKey.split('_');
+                const arrName = parts[0] + '_' + parts[1];
+                const idx = parseInt(parts[2]);
+                if(!topic[arrName]) topic[arrName] = [];
+                topic[arrName][idx] = value;
+            } else {
+                topic[compoundKey] = value;
+            }
+        }
+
+        function pushToHistory() {
+            if (undoStack.length > 50) undoStack.shift();
+            const stateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            undoStack.push(JSON.stringify(stateSnapshot));
+            redoStack = []; 
+        }
+
+        // Standardized service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker erfolgreich registriert!', reg))
+                    .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
+            });
+        }
+
+        function undo() {
+            if (undoStack.length === 0) {
+                alert("Keine weiteren Änderungen vorhanden!");
+                return;
+            }
+            const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            redoStack.push(JSON.stringify(currentStateSnapshot));
+            
+            const prevStateSnapshot = JSON.parse(undoStack.pop());
+            TOPICS_DATA = prevStateSnapshot.topics;
+            TEMPLATE_DATA = prevStateSnapshot.template;
+            highlightsStore = prevStateSnapshot.highlights;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            
+            saveEditsSilent();
+            renderSidebar();
+            if(activeTab === 'dashboard') renderActiveTopic();
+            if(activeTab === 'mindmap') renderSimplisticBoxGrid();
+        }
+
+        function redo() {
+            if (redoStack.length === 0) {
+                alert("Nichts zum Wiederholen!");
+                return;
+            }
+            const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
+                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore))
+            };
+            undoStack.push(JSON.stringify(currentStateSnapshot));
+            
+            const nextStateSnapshot = JSON.parse(redoStack.pop());
+            TOPICS_DATA = nextStateSnapshot.topics;
+            TEMPLATE_DATA = nextStateSnapshot.template;
+            highlightsStore = nextStateSnapshot.highlights;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+            
+            saveEditsSilent();
+            renderSidebar();
+            if(activeTab === 'dashboard') renderActiveTopic();
+            if(activeTab === 'mindmap') renderSimplisticBoxGrid();
+        }
+
+        async function saveEditsSilent() {
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (activeMode === 'classic') {
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch(e) { console.error("Fehler:", e); }
+                } else {
+                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+                }
+            } else {
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch(e) { console.error("Fehler:", e); }
+                } else {
+                    localStorage.setItem('edited_template_data_1_52', JSON.stringify(TEMPLATE_DATA));
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+        });
+
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.onclick = () => {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.toggle('sidebar-collapsed');
+            };
+        }
+
+        function saveHighlight(topicId, blockKey, htmlContent) {
+            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+            highlightsStore[topicId][blockKey] = htmlContent;
+            localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+        }
+
+        function getHighlight(topicId, blockKey) {
+            return highlightsStore[topicId]?.[blockKey] || null;
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!isEditMode) return;
+            
+            let editableContainer = e.target;
+            while (editableContainer && editableContainer !== document.body && !editableContainer.hasAttribute('data-block-key')) {
+                editableContainer = editableContainer.parentNode;
+            }
+            if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
+
+            if (e.target.closest('#formatting-toolbar')) return;
+
+            const selection = window.getSelection();
+            if (!selection || !selection.isCollapsed) return;
+
+            const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+            if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
+                hideToolbar();
+                return;
+            }
+
+            const node = range.startContainer;
+            const text = node.data;
+            const offset = range.startOffset;
+
+            const wordRegex = /[a-zA-ZäöüÄÖÜß]+/g;
+            let match;
+            while ((match = wordRegex.exec(text)) !== null) {
+                if (offset >= match.index && offset <= wordRegex.lastIndex) {
+                    const targetRange = document.createRange();
+                    targetRange.setStart(node, match.index);
+                    targetRange.setEnd(node, wordRegex.lastIndex);
+                    
+                    selection.removeAllRanges();
+                    selection.addRange(targetRange);
+                    
+                    handleSelectionChange();
+                    break;
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            if (!isEditMode) return;
+            setTimeout(() => {
+                const selection = window.getSelection();
+                if (!selection || selection.isCollapsed) {
+                    if (!e.target.closest('#formatting-toolbar')) {
+                        hideToolbar();
+                    }
+                } else {
+                    let parent = selection.anchorNode;
+                    let isValidTarget = false;
+                    while (parent) {
+                        if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
+                            isValidTarget = true;
+                            break;
+                        }
+                        parent = parent.parentNode;
+                    }
+                    if (isValidTarget) {
+                        handleSelectionChange();
+                    } else {
+                        hideToolbar();
+                    }
+                }
+            }, 10);
+        });
+
+        function clearAllHighlightsForTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
+                if (highlightsStore[topicId]) {
+                    delete highlightsStore[topicId];
+                    localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                    renderActiveTopic();
+                }
+            }
+        }
+
+        let availableGermanVoices = [];
+        let activeSpeakingButton = null;
+        let globalAudioText = "";
+        let globalAudioBtn = null;
+
+        function populateVoicesList() {
+            const container = document.getElementById('voice-list-container');
+            if (!container) return;
+            container.innerHTML = "";
+            
+            let voices = window.speechSynthesis.getVoices();
+            availableGermanVoices = voices.filter(v => v.lang.startsWith('de'));
+            
+            if (availableGermanVoices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = populateVoicesList;
+                container.innerHTML = "<div class='text-xs text-[var(--text-muted)] p-2 italic'>Lade Stimmen...</div>";
+                return;
+            }
+
+            availableGermanVoices.sort((a, b) => {
+                const getScore = (v) => {
+                    let score = 0; let name = v.name.toLowerCase();
+                    if (name.includes('natural') || name.includes('premium')) score += 100;
+                    if (name.includes('online')) score += 50;
+                    if (name.includes('google')) score += 30; 
+                    if (name.includes('microsoft')) score += 10;
+                    return score;
+                };
+                return getScore(b) - getScore(a) || a.name.localeCompare(b.name);
+            });
+
+            const savedVoice = localStorage.getItem('b2_selected_voice') || '';
+
+            availableGermanVoices.forEach((voice, index) => {
+                const isSelected = voice.name === savedVoice || (savedVoice === '' && index === 0);
+                if (isSelected && savedVoice === '') {
+                    localStorage.setItem('b2_selected_voice', voice.name);
+                }
+                const row = document.createElement('div');
+                row.className = `flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-[var(--accent-light)] text-[var(--accent)] font-semibold' : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)]'}`;
+                
+                let badge = voice.name.toLowerCase().includes('natural') ? "<span class='text-[8px] bg-green-100 text-green-700 px-1 rounded font-bold'>Natural</span>" : 
+                            (voice.name.includes('Microsoft') ? "<span class='text-[8px] bg-blue-100 text-blue-700 px-1 rounded font-bold'>MS</span>" : "<span class='text-[8px] bg-gray-100 text-gray-700 px-1 rounded font-bold'>System</span>");
+                
+                const cleanDisplayLabel = voice.name.replace("Microsoft ", "").replace(" Desktop", "").replace("Online (Natural)", "");
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-1.5 truncate max-w-[160px] select-none">
+                        ${badge}
+                        <span class="truncate" title="${voice.name}">${cleanDisplayLabel}</span>
+                    </div>
+                    <button class="px-2 py-1 text-[9px] bg-zinc-200 dark:bg-zinc-700 rounded-md font-bold hover:opacity-80 transition-opacity" onclick="testVoice(event, '${voice.name}')">Test</button>
+                `;
+                row.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        localStorage.setItem('b2_selected_voice', voice.name);
+                        populateVoicesList();
+                    }
+                };
+                container.appendChild(row);
+            });
+        }
+
+        // Interaktives Audiowiedergabe-System (Touch & Maus optimiert)
+        let audioTouchTimer = null;
+        let audioLongPressed = false;
+        let audioTouchStartX = 0;
+        let audioTouchStartY = 0;
+
+        function handleAudioTouchStart(event, encodedText) {
+            audioLongPressed = false;
+            audioTouchStartX = event.touches[0].clientX;
+            audioTouchStartY = event.touches[0].clientY;
+            
+            if (audioTouchTimer) clearTimeout(audioTouchTimer);
+
+            audioTouchTimer = setTimeout(() => {
+                audioLongPressed = true;
+                openVoicePicker(event, encodedText);
+            }, 600); // 600ms Schwellenwert
+        }
+
+        function handleAudioTouchMove(event) {
+            if (event.touches && event.touches.length > 0) {
+                const moveX = event.touches[0].clientX;
+                const moveY = event.touches[0].clientY;
+                const distance = Math.hypot(moveX - audioTouchStartX, moveY - audioTouchStartY);
+                if (distance > 10) { // Falls gescrollt wird, Long-Press abbrechen
+                    clearTimeout(audioTouchTimer);
+                }
+            }
+        }
+
+        function handleAudioTouchEnd(event, encodedText) {
+            clearTimeout(audioTouchTimer);
+            if (audioLongPressed) {
+                event.preventDefault();
+                return;
+            }
+            event.preventDefault();
+            playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
+        }
+
+        function handleAudioMouseDown(event, encodedText) {
+            if (event.pointerType === 'touch' || 'ontouchstart' in window) return; // Mobilgeräte überspringen
+            audioLongPressed = false;
+            if (audioTouchTimer) clearTimeout(audioTouchTimer);
+            audioTouchTimer = setTimeout(() => {
+                audioLongPressed = true;
+                openVoicePicker(event, encodedText);
+            }, 600);
+        }
+
+        function handleAudioMouseUp(event, encodedText) {
+            if (event.pointerType === 'touch' || 'ontouchstart' in window) return;
+            clearTimeout(audioTouchTimer);
+            if (!audioLongPressed) {
+                playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
+            }
+        }
+
+        function openVoicePicker(event, encodedText) {
+            event.stopPropagation();
+            
+            globalAudioBtn = event.currentTarget; 
+            globalAudioText = decodeURIComponent(encodedText);
+            
+            const panel = document.getElementById('voice-picker-panel');
+            panel.classList.remove('hidden');
+            panel.style.visibility = 'hidden';
+            
+            const rect = globalAudioBtn.getBoundingClientRect();
+            const popoverWidth = panel.offsetWidth || 256;
+            const popoverHeight = panel.offsetHeight || 285;
+
+            let top = rect.bottom + 8;
+            if (rect.bottom + popoverHeight > window.innerHeight) { top = rect.top - popoverHeight - 8; }
+            top = Math.max(8, Math.min(window.innerHeight - popoverHeight - 8, top));
+
+            let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+            left = Math.max(8, Math.min(window.innerWidth - popoverWidth - 8, left));
+
+            panel.style.top = `${top}px`;
+            panel.style.left = `${left}px`;
+            panel.style.visibility = 'visible';
+
+            populateVoicesList();
+        }
+
+        const voicePlayBtn = document.getElementById('voice-picker-play');
+        if (voicePlayBtn) {
+            voicePlayBtn.onclick = () => {
+                playBlockAudio(globalAudioText, globalAudioBtn);
+            };
+        }
+        
+        const voiceStopBtn = document.getElementById('voice-picker-stop');
+        if (voiceStopBtn) {
+            voiceStopBtn.onclick = () => {
+                stopBlockAudio();
+            };
+        }
+
+        function closeVoicePicker() {
+            const pickerPanel = document.getElementById('voice-picker-panel');
+            if (pickerPanel) pickerPanel.classList.add('hidden');
+        }
+
+        function testVoice(event, voiceName) {
+            event.stopPropagation();
+            window.speechSynthesis.cancel();
+            
+            const ut = new SpeechSynthesisUtterance("Das ist ein Test für die Sprachausgabe.");
+            ut.lang = 'de-DE';
+            const voiceObj = availableGermanVoices.find(v => v.name === voiceName);
+            if (voiceObj) ut.voice = voiceObj;
+            
+            window.currentUtterance = ut; 
+            window.speechSynthesis.speak(ut);
+        }
+
+        function playBlockAudio(text, buttonEl) {
+            window.speechSynthesis.cancel();
+            
+            if (activeSpeakingButton) {
+                activeSpeakingButton.classList.remove('playing', 'text-rose-600');
+            }
+            
+            const speed = parseFloat(document.getElementById('voice-picker-speed').value) || 1.0;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = speed;
+
+            const savedVoiceName = localStorage.getItem('b2_selected_voice');
+            let voiceObj = availableGermanVoices.find(v => v.name === savedVoiceName);
+            
+            if (!voiceObj && availableGermanVoices.length > 0) {
+                voiceObj = availableGermanVoices[0];
+            }
+            if (voiceObj) utterance.voice = voiceObj;
+
+            window.currentUtterance = utterance;
+
+            if (buttonEl) {
+                buttonEl.classList.add('playing', 'text-rose-600');
+                activeSpeakingButton = buttonEl;
+            }
+
+            utterance.onend = () => {
+                if (activeSpeakingButton) activeSpeakingButton.classList.remove('playing', 'text-rose-600');
+                activeSpeakingButton = null;
+                window.currentUtterance = null;
+            };
+
+            utterance.onerror = (e) => {
+                console.warn("TTS Aborted:", e);
+                if (activeSpeakingButton) activeSpeakingButton.classList.remove('playing', 'text-rose-600');
+                activeSpeakingButton = null;
+                window.currentUtterance = null;
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopBlockAudio() {
+            window.speechSynthesis.cancel();
+            if (activeSpeakingButton) {
+                activeSpeakingButton.classList.remove('playing', 'text-rose-600');
+                activeSpeakingButton = null;
+            }
+        }
+
+        let currentThemeSetting = localStorage.getItem('b2_theme_setting') || 'system';
+
+        function applyThemeSetting() {
+            const rootEl = document.documentElement;
+            let isDark = false;
+            if (currentThemeSetting === 'dark') {
+                isDark = true;
+            } else if (currentThemeSetting === 'light') {
+                isDark = false;
+            } else {
+                isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            
+            if (isDark) {
+                rootEl.classList.add('dark');
+                rootEl.setAttribute('data-theme', 'dark');
+            } else {
+                rootEl.classList.remove('dark');
+                rootEl.setAttribute('data-theme', 'light');
+            }
+
+            ['light', 'dark', 'system'].forEach(pref => {
+                const btn = document.getElementById(`theme-${pref}-btn`);
+                if (btn) {
+                    if (pref === currentThemeSetting) {
+                        btn.className = "py-1 text-center rounded bg-[var(--accent)] text-white shadow-inner";
+                    } else {
+                        btn.className = "py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                    }
+                }
+            });
+        }
+
+        function setThemePreference(pref) {
+            currentThemeSetting = pref;
+            localStorage.setItem('b2_theme_setting', pref);
+            applyThemeSetting();
+            renderSidebar();
+            if (activeTab === 'dashboard') renderActiveTopic();
+            if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (currentThemeSetting === 'system') {
+                applyThemeSetting();
+            }
+        });
+
+        applyThemeSetting();
+
+        function applyTextScale() {
+            document.documentElement.style.setProperty('--text-scale', textScale);
+            
+            ['80', '100', '125'].forEach(scale => {
+                const btn = document.getElementById(`scale-${scale}`);
+                if (btn) {
+                    if (scale + '%' === textScale) {
+                        btn.className = "py-2 text-xs font-bold text-center rounded bg-[var(--accent)] text-white shadow-inner";
+                    } else {
+                        btn.className = "py-2 text-xs font-bold text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]";
+                    }
+                }
+            });
+        }
+
+        function changeTextScale(scale) {
+            textScale = scale;
+            localStorage.setItem('b2_text_scale', scale);
+            applyTextScale();
+        }
+
+        applyTextScale();
+
+        const drawerMenu = document.getElementById('drawer-menu');
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        const drawerToggle = document.getElementById('menu-drawer-toggle');
+        const drawerClose = document.getElementById('drawer-close');
+
+        function toggleDrawer() {
+            const isOpen = !drawerMenu.classList.contains('translate-x-full');
+            if (isOpen) {
+                drawerMenu.classList.add('translate-x-full');
+                if (drawerOverlay) drawerOverlay.classList.add('hidden');
+            } else {
+                drawerMenu.classList.remove('translate-x-full');
+                if (drawerOverlay) drawerOverlay.classList.remove('hidden');
+                populateVoicesList();
+            }
+        }
+
+        if (drawerToggle) drawerToggle.onclick = toggleDrawer;
+        if (drawerClose) drawerClose.onclick = toggleDrawer;
+        if (drawerOverlay) drawerOverlay.onclick = toggleDrawer;
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            const btnClassActive = "px-3 py-1 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
+            const btnClassInactive = "px-3 py-1 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
+
+            ['dashboard', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}-btn`);
+                if (btn) btn.className = (t === tabId) ? btnClassActive : btnClassInactive;
+                const section = document.getElementById(`${t}-tab-section`);
+                if (section) {
+                    if (t === tabId) {
+                        section.classList.remove('hidden');
+                        section.classList.add(t === 'mindmap' ? 'flex' : 'block');
+                    } else {
+                        section.classList.add('hidden');
+                        section.classList.remove('flex', 'block');
+                    }
+                }
+            });
+
+            if (tabId === 'dashboard') {
+                renderActiveTopic();
+            } else if (tabId === 'mindmap') {
+                renderSimplisticBoxGrid();
+            } else if (tabId === 'redemittel') {
+                renderRedemittel();
+            } else if (tabId === 'grammar') {
+                renderGrammar();
+            }
+            closeSidebarMobile();
+        }
+
+        function closeSidebarMobile() {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+        }
+
+        if (auth) {
+            auth.onAuthStateChanged(async (user) => {
+                const outArea = document.getElementById('drawer-auth-logged-out');
+                const inArea = document.getElementById('drawer-auth-logged-in');
+                if (user) {
+                    currentUser = user;
+                    if(outArea) outArea.classList.add('hidden');
+                    if(inArea) {
+                        inArea.classList.remove('hidden');
+                        const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
+                        const displayEl = document.getElementById('drawer-user-display');
+                        if (displayEl) displayEl.textContent = name;
+                    }
+                } else {
+                    currentUser = null;
+                    if(outArea) outArea.classList.remove('hidden');
+                    if(inArea) inArea.classList.add('hidden');
+                }
+                await loadTopics();
+            });
+        } else {
+            loadTopics();
+        }
+
+        const btnLogin = document.getElementById('drawer-btn-login');
+        if (btnLogin) {
+            btnLogin.onclick = async () => {
+                if (!auth) { alert("Firebase ist offline oder blockiert."); return; }
+                const userKey = document.getElementById('drawer-user-select').value;
+                const password = document.getElementById('drawer-workspace-password').value;
+                const email = `${userKey}@b2telc.com`;
+
+                if (!password) { alert("Passwort erforderlich."); return; }
+                try {
+                    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                    await auth.signInWithEmailAndPassword(email, password);
+                    document.getElementById('drawer-workspace-password').value = "";
+                    toggleDrawer();
+                } catch (err) { alert("Authentifizierungsfehler: " + err.message); }
+            };
+        }
+
+        const btnSignup = document.getElementById('drawer-btn-signup');
+        if (btnSignup) {
+            btnSignup.onclick = async () => {
+                if (!auth) { alert("Firebase ist offline oder blockiert."); return; }
+                const userKey = document.getElementById('drawer-user-select').value;
+                const password = document.getElementById('drawer-workspace-password').value;
+                const email = `${userKey}@b2telc.com`;
+
+                if (!password || password.length < 6) { alert("Mindestens 6 Zeichen erforderlich."); return; }
+                try {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    alert("Konto angelegt.");
+                    document.getElementById('drawer-workspace-password').value = "";
+                    toggleDrawer();
+                } catch (err) { alert("Registrierungsfehler: " + err.message); }
+            };
+        }
+
+        const btnLogout = document.getElementById('drawer-btn-logout');
+        if (btnLogout) {
+            btnLogout.onclick = () => { 
+                if (auth) auth.signOut(); 
+                toggleDrawer(); 
+            };
+        }
+
+        async function loadTopics() {
+            try {
+                let resTopics = await safeFetchJson('./Topics.json');
+                if (!resTopics || resTopics.length === 0) {
+                    resTopics = await safeFetchJson('./topics.json');
+                }
+
+                let resTemplate = await safeFetchJson('./Template.json');
+                if (!resTemplate || resTemplate.length === 0) {
+                    resTemplate = await safeFetchJson('./template.json');
+                }
+                
+                let resGrammatik = await safeFetchJson('./Grammatik.json');
+                if (!resGrammatik || resGrammatik.length === 0) {
+                    resGrammatik = await safeFetchJson('./grammatik.json');
+                }
+
+                let baseTopics = [];
+                if (Array.isArray(resTopics)) {
+                    baseTopics = resTopics;
+                } else if (resTopics && typeof resTopics === 'object') {
+                    baseTopics = Object.values(resTopics);
+                }
+
+                let baseTemplate = [];
+                if (Array.isArray(resTemplate)) {
+                    baseTemplate = resTemplate;
+                } else if (resTemplate && typeof resTemplate === 'object') {
+                    baseTemplate = Object.values(resTemplate);
+                }
+
+                let baseGrammatik = [];
+                if (Array.isArray(resGrammatik)) {
+                    baseGrammatik = resGrammatik;
+                } else if (resGrammatik && typeof resGrammatik === 'object') {
+                    baseGrammatik = Object.values(resGrammatik);
+                }
+
+                if (baseTopics.length === 0) {
+                    baseTopics = [{
+                        id: 1,
+                        title_de: "Rauchen in der Öffentlichkeit verbieten?",
+                        title_en: "Ban smoking in public places?",
+                        category: "Freizeit & Gesundheit",
+                        einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
+                        einleitung_en: "The topic of public smoking has been discussed controversially for years.",
+                        einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
+                        pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
+                        pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
+                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
+                        contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
+                        contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
+                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
+                        pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
+                        pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in المناطق الخالية von التدخin.",
+                        dialog: [
+                            { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل different، يجب auf الجميع اتخاذ القرار بأنفسهم." }
+                        ],
+                        schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
+                        schluss_en: "In conclusion, a compromise would make sense.",
+                        schluss_ar: "خلاصة القول هي أن التسوية ستكون منطقية."
+                    }];
+                }
+
+                if (baseTemplate.length === 0) {
+                    baseTemplate = JSON.parse(JSON.stringify(baseTopics));
+                }
+
+                if (baseGrammatik.length === 0) {
+                    baseGrammatik = [{
+                        level: "B2",
+                        category: "Konjunktionen",
+                        title: "Zweiteilige Konjunktionen",
+                        description: "Sowohl ... als auch drückt eine Ergänzung aus.",
+                        examples: ["Er spricht sowohl Deutsch als auch Englisch.", "Sie ist sowohl intelligent als auch freundlich."]
+                    }];
+                }
+
+                baseGrammatik.forEach(item => {
+                    if (item.title) item.title = cleanCitationLinks(item.title);
+                    if (item.description) item.description = cleanCitationLinks(item.description);
+                    if (item.examples && Array.isArray(item.examples)) {
+                        item.examples = item.examples.map(ex => cleanCitationLinks(ex));
+                    }
+                });
+
+                editedTopicIds = [];
+                editedTemplateIds = [];
+
+                if (currentUser && db) {
+                    const topicsSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
+                    topicsSnapshot.forEach(doc => {
+                        const cloudTopic = doc.data();
+                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                        }
+                        editedTopicIds.push(parseInt(doc.id));
+                    });
+
+                    const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
+                    templatesSnapshot.forEach(doc => {
+                        const cloudTemplate = doc.data();
+                        const idx = baseTemplate.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTemplate[idx] = { ...baseTemplate[idx], ...cloudTemplate };
+                        }
+                        editedTemplateIds.push(parseInt(doc.id));
+                    });
+                } else {
+                    const localEdits = localStorage.getItem('edited_topics_data_1_52');
+                    if (localEdits) {
+                        const parsed = JSON.parse(localEdits);
+                        parsed.forEach(localTopic => {
+                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            if (idx !== -1) {
+                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
+                                editedTopicIds.push(localTopic.id);
+                            }
+                        });
+                    }
+
+                    const localTemplateEdits = localStorage.getItem('edited_template_data_1_52');
+                    if (localTemplateEdits) {
+                        const parsed = JSON.parse(localTemplateEdits);
+                        parsed.forEach(localTemplate => {
+                            const idx = baseTemplate.findIndex(t => t.id === localTemplate.id);
+                            if (idx !== -1) {
+                                baseTemplate[idx] = { ...baseTemplate[idx], ...localTemplate };
+                                editedTemplateIds.push(localTemplate.id);
+                            }
+                        });
+                    }
+                }
+
+                baseTopics.forEach(t => {
+                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
+                });
+                baseTemplate.forEach(t => {
+                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
+                });
+
+                TOPICS_DATA = baseTopics;
+                TEMPLATE_DATA = baseTemplate;
+                GRAMMATIK_DATA = baseGrammatik;
+
+                if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
+                
+                document.getElementById('active-mode').value = activeMode;
+
+                showResetButton();
+                renderSidebar();
+                
+                if (activeTab === 'dashboard') {
+                    renderActiveTopic();
+                } else if (activeTab === 'grammar') {
+                    renderGrammar();
+                } else if (activeTab === 'mindmap') {
+                    renderSimplisticBoxGrid();
+                }
+            } catch (e) {
+                console.error("Fehler beim Initialisieren der Datenschnittstelle:", e);
+            }
+        }
+
+        async function saveEdits() {
+            pushToHistory(); 
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            
+            if (activeMode === 'classic') {
+                if (!editedTopicIds.includes(activeTopic.id)) {
+                    editedTopicIds.push(activeTopic.id);
+                }
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem('edited_topics_data_1_52', JSON.stringify(TOPICS_DATA));
+                }
+            } else {
+                if (!editedTemplateIds.includes(activeTopic.id)) {
+                    editedTemplateIds.push(activeTopic.id);
+                }
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem('edited_template_data_1_52', JSON.stringify(TEMPLATE_DATA));
+                }
+            }
+            showResetButton();
+            renderSidebar();
+        }
+
+        function showResetButton() {
+            const resetBtn = document.getElementById('reset-edits-btn');
+            if (!resetBtn) return;
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const trackerArray = activeMode === 'classic' ? editedTopicIds : editedTemplateIds;
+            
+            if (activeTopic && trackerArray.includes(activeTopic.id)) {
+                resetBtn.removeAttribute('disabled');
+                resetBtn.className = "col-span-1 w-full md:w-auto text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0";
+            } else {
+                resetBtn.setAttribute('disabled', 'true');
+                resetBtn.className = "col-span-1 w-full md:w-auto text-xs bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed whitespace-nowrap shrink-0";
+            }
+        }
+
+        const resetBtnElement = document.getElementById('reset-edits-btn');
+        if (resetBtnElement) {
+            resetBtnElement.onclick = async () => {
+                const resetBtn = document.getElementById('reset-edits-btn');
+                if (resetBtn.hasAttribute('disabled')) return;
+                
+                if (confirm("Möchten Sie alle Änderungen an diesem Thema verwerfen?")) {
+                    pushToHistory();
+                    const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                    if (activeMode === 'classic') {
+                        if (currentUser && db) {
+                            await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).delete();
+                        } else {
+                            let localEdits = JSON.parse(localStorage.getItem('edited_topics_data_1_52')) || [];
+                            localEdits = localEdits.filter(t => t.id !== activeTopic.id);
+                            localStorage.setItem('edited_topics_data_1_52', JSON.stringify(localEdits));
+                        }
+                    } else {
+                        if (currentUser && db) {
+                            await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).delete();
+                        } else {
+                            let localEdits = JSON.parse(localStorage.getItem('edited_template_data_1_52')) || [];
+                            localEdits = localEdits.filter(t => t.id !== activeTopic.id);
+                            localStorage.setItem('edited_template_data_1_52', JSON.stringify(localEdits));
+                        }
+                    }
+                    if (highlightsStore[activeTopic.id]) {
+                        delete highlightsStore[activeTopic.id];
+                        localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                    }
+                    await loadTopics();
+                }
+            };
+        }
+
+        function applyConnectorsHighlight(htmlText) {
+            if (!showHighlights) return htmlText;
+            const temp = document.createElement("div");
+            temp.innerHTML = htmlText;
+            const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
+
+            function highlightNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.nodeValue;
+                    let replaced = false;
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    let safeHTML = div.innerHTML;
+
+                    sorted.forEach(word => {
+                        const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        const regex = new RegExp(`(?<=^|[^a-zA-ZäöüÄÖÜß])${escaped}(?=[^a-zA-ZäöüÄÖÜß]|$)`, 'gi');
+                        if (regex.test(safeHTML)) {
+                            safeHTML = safeHTML.replace(regex, `<span class="highlight">$&</span>`);
+                            replaced = true;
+                        }
+                    });
+
+                    if (replaced) {
+                        const span = document.createElement('span');
+                        span.innerHTML = safeHTML;
+                        if (node.parentNode) {
+                            node.parentNode.replaceChild(span, node);
+                        }
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (!node.classList.contains('highlight') && !node.classList.contains('word-circle') && !node.className.startsWith('hl-')) {
+                        Array.from(node.childNodes).forEach(highlightNode);
+                    }
+                }
+            }
+            Array.from(temp.childNodes).forEach(highlightNode);
+            return temp.innerHTML;
+        }
+
+        let autoTranslateTimer;
+
+        function handleInlineInput(element, topicId, lang, compoundKey) {
+            if (!isEditMode || lang !== 'de') return;
+            clearTimeout(autoTranslateTimer);
+            autoTranslateTimer = setTimeout(() => {
+                triggerAutoTranslate(element, topicId, compoundKey);
+            }, 1200);
+        }
+
+        async function triggerAutoTranslate(element, topicId, compoundKey) {
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
+            let plainText = element.innerText || element.textContent;
+            if (plainText.length < 3) return; 
+
+            const enKey = compoundKey.replace('_de', '_en');
+            const arKey = compoundKey.replace('_de', '_ar');
+            const enEl = document.getElementById(`en-${compoundKey}`);
+            const arEl = document.getElementById(`ar-${compoundKey}`);
+
+            if(enEl) enEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...translating...</span>`;
+            if(arEl) arEl.innerHTML = `<span class="text-purple-500 animate-pulse font-bold">...ترجمة...</span>`;
+
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(plainText)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(plainText)}`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                let transEn = "";
+                if (dataEn && dataEn[0]) {
+                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
+                }
+                let transAr = "";
+                if (dataAr && dataAr[0]) {
+                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+                }
+
+                if (!transEn || !transAr) throw new Error();
+
+                setTopicValue(topic, enKey, transEn);
+                setTopicValue(topic, arKey, transAr);
+
+                if(enEl) enEl.innerText = transEn;
+                if(arEl) arEl.innerText = transAr;
+                saveEditsSilent();
+            } catch(e) {
+                try {
+                    const [resEn, resAr] = await Promise.all([
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
+                    ]);
+                    const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
+
+                    const transEn = dataEn.responseData?.translatedText || "";
+                    const transAr = dataAr.responseData?.translatedText || "";
+
+                    setTopicValue(topic, enKey, transEn);
+                    setTopicValue(topic, arKey, transAr);
+
+                    if(enEl) enEl.innerText = transEn;
+                    if(arEl) arEl.innerText = transAr;
+                    saveEditsSilent();
+                } catch (err) {
+                    console.warn("Auto-translate network issue.", err);
+                    if(enEl) enEl.innerText = getTopicValue(topic, enKey); 
+                    if(arEl) arEl.innerText = getTopicValue(topic, arKey); 
+                }
+            }
+        }
+
+        function handleInlineBlur(element, topicId, lang, compoundKey) {
+            if (!isEditMode) return;
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
+            pushToHistory();
+            
+            if (lang === 'de') {
+                const newHtml = element.innerHTML.trim();
+                saveHighlight(topicId, compoundKey, newHtml);
+                setTopicValue(topic, compoundKey, newHtml);
+
+                delete translationCache[compoundKey];
+                const container = document.getElementById(getTranslationContainerId(compoundKey));
+                if (container && !container.classList.contains('hidden')) {
+                    fetchAndRenderTranslation(compoundKey, stripHtml(newHtml), container);
+                }
+            } else {
+                let plainText = element.innerText || element.textContent;
+                setTopicValue(topic, compoundKey, plainText);
+                element.innerText = plainText;
+            }
+            saveEditsSilent();
+        }
+
+        function getTranslationContainerId(blockId) {
+            return `trans-container-${blockId}`;
+        }
+
+        function toggleTranslation(event, blockId, encodedText) {
+            event.stopPropagation();
+            const container = document.getElementById(getTranslationContainerId(blockId));
+            if (!container) return;
+
+            container.classList.toggle('hidden');
+            if (container.classList.contains('hidden')) {
+                expandedContainers.delete(blockId);
+            } else {
+                expandedContainers.add(blockId);
+                const currentText = decodeURIComponent(encodedText);
+                fetchAndRenderTranslation(blockId, currentText, container);
+            }
+        }
+
+        async function fetchAndRenderTranslation(blockId, text, container) {
+            if (!container) container = document.getElementById(getTranslationContainerId(blockId));
+            if (!container) return;
+
+            const cleanText = stripHtml(text).trim();
+            if (!cleanText) return;
+
+            if (translationCache[blockId]) {
+                renderTranslationHTML(container, translationCache[blockId].en, translationCache[blockId].ar);
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="text-[10px] text-purple-500 dark:text-purple-400 animate-pulse font-semibold">
+                    ⏳ Übersetze...
+                </div>
+            `;
+
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(cleanText)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(cleanText)}`)
+                ]);
+
+                if (!resEn.ok || !resAr.ok) throw new Error();
+
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                let transEn = "";
+                if (dataEn && dataEn[0]) {
+                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
+                }
+
+                let transAr = "";
+                if (dataAr && dataAr[0]) {
+                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+                }
+
+                if (!transEn || !transAr) throw new Error();
+
+                translationCache[blockId] = { en: transEn, ar: transAr };
+                renderTranslationHTML(container, transEn, transAr);
+            } catch (e) {
+                try {
+                    const [resEn, resAr] = await Promise.all([
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&logpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|ar`)
+                    ]);
+
+                    const dataEn = await resEn.json();
+                    const dataAr = await resAr.json();
+
+                    const transEn = dataEn.responseData?.translatedText || "";
+                    const transAr = dataAr.responseData?.translatedText || "";
+
+                    translationCache[blockId] = { en: transEn, ar: transAr };
+                    renderTranslationHTML(container, transEn, transAr);
+                } catch (err) {
+                    console.error("Translation failed on both backends:", err);
+                    container.innerHTML = `
+                        <div class="text-[10px] text-rose-500 font-semibold flex items-center justify-between">
+                            <span>⚠️ API-Limit erreicht.</span>
+                            <button onclick="retryTranslation(event, '${blockId}', '${encodeURIComponent(text)}')" class="px-1.5 py-0.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 font-bold rounded text-[9px] uppercase">Wiederholen</button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function retryTranslation(event, blockId, encodedText) {
+            event.stopPropagation();
+            const container = document.getElementById(getTranslationContainerId(blockId));
+            if (container) {
+                fetchAndRenderTranslation(blockId, decodeURIComponent(encodedText), container);
+            }
+        }
+
+        function renderTranslationHTML(container, enText, arText) {
+            container.innerHTML = `
+                <p class="text-xs italic text-[var(--text-muted)] select-text">${enText}</p>
+                <p class="text-xs text-right leading-relaxed font-medium font-arabic mt-1 select-text" dir="rtl">${arText}</p>
+            `;
+        }
+
+        function switchActiveMode(value) {
+            activeMode = value;
+            localStorage.setItem('b2_active_mode', value);
+            renderSidebar();
+            renderActiveTopic();
+            if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+        }
+
+        function applySelectionFormat(type, value) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+            const range = selection.getRangeAt(0);
+
+            let activeContainer = selection.anchorNode;
+            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+                activeContainer = activeContainer.parentNode;
+            }
+
+            if (!activeContainer) return;
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            if (!blockKey) return; 
+
+            pushToHistory();
+
+            if (type === 'bold') {
+                document.execCommand('bold', false, null);
+            } else if (type === 'highlight') {
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) { document.execCommand('backColor', false, '#FEF08A'); }
+            } else if (type === 'circle') {
+                const span = document.createElement('span');
+                span.className = 'word-circle';
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {}
+            } else if (type === 'clear') {
+                unwrapSelection(range, activeContainer);
+            }
+
+            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
+            activeContainer.dispatchEvent(new Event('blur'));
+            handleSelectionChange();
+        }
+
+        function unwrapSelection(range, activeContainer) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-orange, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight');
+            spans.forEach(span => {
+                if (selection.containsNode(span, true)) {
+                    const parent = span.parentNode;
+                    while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
+                    parent.removeChild(span);
+                }
+            });
+
+            activeContainer.normalize();
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
+            activeContainer.dispatchEvent(new Event('blur'));
+        }
+
+        function handleSelectionChange() {
+            if (!isEditMode) { hideToolbar(); return; }
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) { hideToolbar(); return; }
+            
+            let parent = selection.anchorNode;
+            let isInsideEditable = false;
+            while (parent) {
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
+                    isInsideEditable = true; break;
+                }
+                parent = parent.parentNode;
+            }
+            if (!isInsideEditable) { hideToolbar(); return; }
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const toolbar = document.getElementById('formatting-toolbar');
+            toolbar.classList.remove('hidden');
+
+            const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+            const top = rect.top + window.scrollY - toolbarHeight - 10;
+            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2)));
+
+            toolbar.style.top = `${top}px`;
+            toolbar.style.left = `${left}px`;
+        }
+
+        function hideToolbar() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (toolbar) toolbar.classList.add('hidden');
+        }
+
+        function renderSidebar() {
+            const listContainer = document.getElementById('topic-list');
+            if (!listContainer) return;
+            listContainer.innerHTML = "";
+
+            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+
+            dataset.forEach((topic, index) => {
+                const isLearned = learnedList.includes(topic.id);
+                const isStarred = STARRED_TOPICS.includes(topic.id);
+                const isActive = index === activeIdx;
+
+                if (currentFilter === 'learned' && !isLearned) return;
+                if (currentFilter === 'offen' && isLearned) return;
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
+
+                const item = document.createElement('button');
+                
+                const activeClass = isActive 
+                    ? 'bg-[var(--accent)] text-white shadow-sm font-semibold' 
+                    : (isLearned 
+                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/10 border-l-4 border-emerald-500 font-semibold'
+                        : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
+                      );
+
+                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item ${activeClass}`;
+
+                const emoji = TOPIC_ICONS[topic.id] || "📌";
+                const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
+                const learnMarker = isLearned 
+                    ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
+                    : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <span class="sidebar-only-emoji text-base select-none leading-none">${emoji}</span>
+                        <div class="flex items-center gap-2 truncate hide-on-collapse-custom">
+                            <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
+                            ${starMarker}
+                            <span class="truncate text-xs topic-title font-semibold">${TOPIC_KEYWORDS[topic.id] || topic.title_de}</span>
+                        </div>
+                    </div>
+                    <div class="hide-on-collapse-custom flex-shrink-0">${learnMarker}</div>
+                `;
+
+                item.onclick = () => {
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    closeSidebarMobile();
+                };
+
+                listContainer.appendChild(item);
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            if (dataset.length === 0) return;
+
+            const total = dataset.length;
+            const learnedCount = dataset.filter(t => learnedList.includes(t.id)).length;
+            
+            const progressText = document.getElementById('progress-text');
+            if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
+
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                const percent = (learnedCount / total) * 100;
+                progressBar.style.width = `${percent}%`;
+            }
+        }
+
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            ['all', 'learned', 'offen'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}-btn`);
+                if (btn) {
+                    if (f === filterType) {
+                        btn.className = "py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]";
+                    } else {
+                        btn.className = "py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                    }
+                }
+            });
+            renderSidebar();
+        }
+
+        const searchBarElement = document.getElementById('search-bar');
+        if (searchBarElement) {
+            searchBarElement.addEventListener('input', () => {
+                renderSidebar();
+            });
+        }
+
+        function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
+            const encodedText = encodeURIComponent(stripHtml(textForAudio));
+            const isAlwaysOpen = blockKey === 'einleitung_de';
+            
+            return `
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] overflow-hidden card-transition">
+                    <div onclick="${isAlwaysOpen ? '' : `toggleCardAccordion('${blockKey}')`}" class="flex items-center justify-between p-4 min-h-[44px] cursor-pointer select-none bg-[var(--bg-sidebar)] border-b border-[var(--border)]">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-black uppercase tracking-wider text-[var(--text-primary)]">${title}</span>
+                        </div>
+                        <div class="flex items-center gap-3" onclick="event.stopPropagation();">
+                            ${showAudio && textForAudio ? `
+                            <button ontouchstart="handleAudioTouchStart(event, '${encodedText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onmousedown="handleAudioMouseDown(event, '${encodedText}')" onmouseup="handleAudioMouseUp(event, '${encodedText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>` : ''}
+                            ${!isAlwaysOpen ? `
+                            <svg id="chevron-${blockKey}" style="transform: rotate(180deg);" class="w-4 h-4 text-[var(--text-muted)] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div id="content-block-${blockKey}" class="accordion-content expanded">
+                        <div class="p-5 space-y-4">
+                            ${content}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCardAccordion(blockKey) {
+            const element = document.getElementById(`content-block-${blockKey}`);
+            const chevron = document.getElementById(`chevron-${blockKey}`);
+            if (!element) return;
+
+            if (element.classList.contains('expanded')) {
+                element.classList.remove('expanded');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                element.classList.add('expanded');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function buildTemplateBlockHTML(title, deVal, blockKey, dbField) {
+            const cleanDeText = stripHtml(deVal);
+            const statementSpeechText = encodeURIComponent(cleanDeText);
+            
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isLearned = topic && learnedList.includes(topic.id);
+            
+            const cardBgClass = isLearned 
+                ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
+                : "bg-[var(--bg-card)] border border-[var(--border)]";
+            
+            const titleBulletClass = isLearned 
+                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                : "bg-[var(--accent)]";
+
+            return `
+                <div class="${cardBgClass} border rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in">
+                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
+                        </div>
+                        <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                        </button>
+                    </div>
+                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')">
+                        ${isEditMode ? deVal : applyConnectorsHighlight(deVal)}
+                    </div>
+                    <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
+                        <button onclick="toggleTranslation(event, '${blockKey}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                        </button>
+                        <button onclick="openBlockEditor('${dbField}', false, 0, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit Block
+                        </button>
+                    </div>
+                    <div id="trans-container-${blockKey}" class="${expandedContainers.has(blockKey) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                </div>
+            `;
+        }
+
+        function openBlockEditor(dbField, isArray = false, index = 0, lang = 'de') {
+            const modal = document.getElementById('block-editor-modal');
+            if (!modal) return;
+
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
+            activeEditBlockContext = { dbField, isArray, index, lang };
+
+            let valDe = "";
+            let valEn = "";
+            let valAr = "";
+
+            if (dbField === 'dialog') {
+                const chat = topic.dialog && topic.dialog[index];
+                if (chat) {
+                    valDe = chat.de || "";
+                    valEn = chat.en || "";
+                    valAr = chat.ar || "";
+                }
+            } else if (isArray) {
+                const deKey = dbField;
+                const enKey = dbField.replace('_de', '_en');
+                const arKey = dbField.replace('_de', '_ar');
+
+                valDe = topic[deKey] && topic[deKey][index] !== undefined ? topic[deKey][index] : "";
+                valEn = topic[enKey] && topic[enKey][index] !== undefined ? topic[enKey][index] : "";
+                valAr = topic[arKey] && topic[arKey][index] !== undefined ? topic[arKey][index] : "";
+            } else {
+                const baseField = dbField.replace('_de', '');
+                valDe = topic[`${baseField}_de`] || "";
+                valEn = topic[`${baseField}_en`] || "";
+                valAr = topic[`${baseField}_ar`] || "";
+            }
+
+            const blockKey = isArray ? `${dbField}_${index}` : dbField;
+            const savedHighlight = getHighlight(topic.id, blockKey);
+            if (savedHighlight) {
+                valDe = savedHighlight;
+            }
+
+            document.getElementById('modal-edit-de').value = stripHtml(valDe);
+            document.getElementById('modal-edit-en').value = stripHtml(valEn);
+            document.getElementById('modal-edit-ar').value = stripHtml(valAr);
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeBlockEditor() {
+            const modal = document.getElementById('block-editor-modal');
+            if (modal) modal.classList.add('hidden');
+            activeEditBlockContext = null;
+        }
+
+        async function saveBlockEditor() {
+            if (!activeEditBlockContext) return;
+            const { dbField, isArray, index } = activeEditBlockContext;
+
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
+            pushToHistory();
+
+            const newDe = document.getElementById('modal-edit-de').value.trim();
+            const newEn = document.getElementById('modal-edit-en').value.trim();
+            const newAr = document.getElementById('modal-edit-ar').value.trim();
+
+            const blockKey = isArray ? `${dbField}_${index}` : dbField;
+            
+            if (dbField === 'dialog') {
+                if (!topic.dialog) topic.dialog = [];
+                if (!topic.dialog[index]) topic.dialog[index] = { role: `Speaker ${index % 2 === 0 ? 'A' : 'B'}` };
+                topic.dialog[index].de = newDe;
+                topic.dialog[index].en = newEn;
+                topic.dialog[index].ar = newAr;
+            } else if (isArray) {
+                const deKey = dbField;
+                const enKey = dbField.replace('_de', '_en');
+                const arKey = dbField.replace('_de', '_ar');
+
+                if (!topic[deKey]) topic[deKey] = [];
+                if (!topic[enKey]) topic[enKey] = [];
+                if (!topic[arKey]) topic[arKey] = [];
+
+                topic[deKey][index] = newDe;
+                topic[enKey][index] = newEn;
+                topic[arKey][index] = newAr;
+            } else {
+                const baseField = dbField.replace('_de', '');
+                topic[`${baseField}_de`] = newDe;
+                topic[`${baseField}_en`] = newEn;
+                topic[`${baseField}_ar`] = newAr;
+            }
+
+            saveHighlight(topic.id, blockKey, newDe);
+
+            if (activeMode === 'template') {
+                delete translationCache[blockKey];
+            }
+
+            await saveEdits();
+            closeBlockEditor();
+            renderActiveTopic();
+        }
+
+        async function autoTranslateBlockModal() {
+            const deText = document.getElementById('modal-edit-de').value.trim();
+            if (!deText) {
+                alert("Bitte geben Sie zuerst deutschen Text ein.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-auto-translate');
+            const origLabel = btn.innerHTML;
+            btn.innerHTML = "⏳ Translating...";
+            btn.disabled = true;
+
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(deText)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(deText)}`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                let transEn = "";
+                if (dataEn && dataEn[0]) {
+                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
+                }
+                let transAr = "";
+                if (dataAr && dataAr[0]) {
+                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+                }
+
+                if (transEn) document.getElementById('modal-edit-en').value = transEn;
+                if (transAr) document.getElementById('modal-edit-ar').value = transAr;
+            } catch (e) {
+                try {
+                    const [resEn, resAr] = await Promise.all([
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(deText)}&langpair=de|ar`)
+                    ]);
+                    const dataEn = await resEn.json();
+                    const dataAr = await resAr.json();
+
+                    if (dataEn.responseData?.translatedText) {
+                        document.getElementById('modal-edit-en').value = dataEn.responseData.translatedText;
+                    }
+                    if (dataAr.responseData?.translatedText) {
+                        document.getElementById('modal-edit-ar').value = dataAr.responseData.translatedText;
+                    }
+                } catch(err) {
+                    console.error("Auto-translation in modal failed:", err);
+                    alert("Automatisches Übersetzen ist fehlgeschlagen.");
+                }
+            } finally {
+                btn.innerHTML = origLabel;
+                btn.disabled = false;
+            }
+        }
+
+        // Modern UI Redesign für das Kasten-Raster
+        function renderSimplisticBoxGrid() {
+            const gridContainer = document.getElementById('box-grid-container');
+            if (!gridContainer) return;
+            gridContainer.innerHTML = "";
+
+            const searchVal = document.getElementById('grid-search').value.toLowerCase();
+            const categoryFilter = document.getElementById('grid-category-filter').value;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+
+            dataset.forEach((topic, index) => {
+                const isLearned = learnedList.includes(topic.id);
+                const isStarred = STARRED_TOPICS.includes(topic.id);
+                const isActive = index === activeIdx;
+
+                if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
+                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
+
+                const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
+
+                const card = document.createElement('div');
+                
+                card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
+                    isActive 
+                    ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
+                    : 'shadow-sm'
+                } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-widest ${style.badgeBg} px-2.5 py-1 rounded-full border border-black/5 dark:border-white/5">
+                            ${topic.category || 'Allgemein'}
+                        </span>
+                        <div class="emoji-circle flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/40 rounded-full w-9 h-9 flex-shrink-0">
+                            <span class="text-lg filter drop-shadow-sm">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5 mb-4 flex-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
+                            ${isStarred ? `<span class="text-amber-500 text-xs" title="Sehr wichtiges Prüfungsthema">★</span>` : ''}
+                        </div>
+                        <h4 class="text-xs sm:text-[14px] font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-2 leading-snug">
+                            ${topic.title_de}
+                        </h4>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-[var(--border)] pt-3 mt-auto">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
+                            ${isLearned ? '✨ Gelernt' : '⏳ Offen'}
+                        </span>
+                        <span class="w-2.5 h-2.5 rounded-full ${isLearned ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-zinc-300 dark:bg-zinc-700'}"></span>
+                    </div>
+                `;
+
+                let touchTimer;
+                let isLongPress = false;
+
+                card.addEventListener('touchstart', (e) => {
+                    isLongPress = false;
+                    touchTimer = setTimeout(() => {
+                        isLongPress = true;
+                        showThemaPreview(topic);
+                    }, 600);
+                }, { passive: true });
+
+                card.addEventListener('touchend', (e) => {
+                    clearTimeout(touchTimer);
+                });
+
+                card.addEventListener('touchmove', () => {
+                    clearTimeout(touchTimer);
+                }, { passive: true });
+
+                card.onclick = (e) => {
+                    if (isLongPress) {
+                        isLongPress = false;
+                        return;
+                    }
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    switchTab('dashboard');
+                };
+
+                gridContainer.appendChild(card);
+            });
+        }
+
+        // Schnellvorschau berücksichtigt gewählte Daten (Classic vs. Template) + User-Edits
+        function showThemaPreview(topic) {
+            const modal = document.getElementById('quick-preview-modal');
+            if (!modal) return;
+
+            // Hole Thema aus dem aktuell aktiven Modus-Dataset (classic oder template)
+            const activeDataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const currentTopic = activeDataset.find(t => t.id === topic.id) || topic;
+
+            document.getElementById('preview-emoji').textContent = TOPIC_ICONS[currentTopic.id] || "📌";
+            document.getElementById('preview-category').textContent = currentTopic.category || "Thema";
+            document.getElementById('preview-title').textContent = currentTopic.title_de;
+            
+            // Suche nach benutzerdefinierten Anpassungen
+            const savedEinlDe = getHighlight(currentTopic.id, "einleitung_de") || currentTopic.einleitung_de;
+            const savedEinlAr = getHighlight(currentTopic.id, "einleitung_ar") || currentTopic.einleitung_ar;
+
+            document.getElementById('preview-einleitung-de').textContent = stripHtml(savedEinlDe);
+            document.getElementById('preview-einleitung-ar').textContent = stripHtml(savedEinlAr);
+
+            const navBtn = document.getElementById('preview-nav-btn');
+            navBtn.onclick = () => {
+                const index = activeDataset.findIndex(t => t.id === currentTopic.id);
+                if (index !== -1) {
+                    activeIdx = index;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    switchTab('dashboard');
+                    closeQuickPreview();
+                }
+            };
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeQuickPreview() {
+            const modal = document.getElementById('quick-preview-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function renderActiveTopic() {
+            if (TOPICS_DATA.length === 0) return;
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+
+            document.getElementById('active-topic-num').innerHTML = `
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52</span>
+            `;
+            
+            const deStar = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 text-lg select-none animate-pulse">★</span>` : '';
+            document.getElementById('active-topic-title-de').innerHTML = `${topic.title_de} ${deStar}`;
+            
+            const titleEnEl = document.getElementById('active-topic-title-en');
+            if (activeMode === 'classic') {
+                titleEnEl.textContent = topic.title_en;
+                titleEnEl.classList.remove('hidden');
+            } else {
+                titleEnEl.classList.add('hidden');
+            }
+            
+            document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
+
+            const rootEl = document.documentElement;
+            if (isEditMode) {
+                rootEl.classList.add('edit-mode-active');
+                const textEl = document.getElementById('edit-mode-status-text');
+                if (textEl) textEl.textContent = "Edit-Modus: AN";
+                const banner = document.getElementById('edit-tip-banner');
+                if (banner) banner.classList.remove('hidden');
+            } else {
+                rootEl.classList.remove('edit-mode-active');
+                const textEl = document.getElementById('edit-mode-status-text');
+                if (textEl) textEl.textContent = "Edit-Modus umschalten";
+                const banner = document.getElementById('edit-tip-banner');
+                if (banner) banner.classList.add('hidden');
+            }
+
+            const isLearned = learnedList.includes(topic.id);
+            const learnedBtn = document.getElementById('learned-toggle');
+            if (learnedBtn) {
+                if (isLearned) {
+                    learnedBtn.className = "col-span-1 w-full md:w-auto text-xs bg-[var(--success)] text-white font-bold rounded-lg px-2 py-2 border border-rose-300 transition-all shadow-sm leading-tight shrink-0";
+                    learnedBtn.textContent = "Als offen markieren";
+                } else {
+                    learnedBtn.className = "col-span-1 w-full md:w-auto text-xs bg-[var(--bg-app)] text-[var(--text-primary)] font-bold rounded-lg px-2 py-2 border border-[var(--border)] hover:bg-[var(--bg-card)] transition-all shadow-sm leading-tight shrink-0";
+                    learnedBtn.textContent = "Als gelernt markieren";
+                }
+            }
+
+            const controlsEl = document.getElementById('dashboard-controls');
+            if (controlsEl) {
+                if (isLearned) {
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30";
+                } else {
+                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30";
+                }
+            }
+
+            const container = document.getElementById('active-topic-container');
+            container.innerHTML = "";
+
+            const bannerHtml = `
+                <div class="flex items-center gap-3 bg-[var(--bg-card)] p-4 rounded-[var(--radius-card)] border border-[var(--border)] shadow-[var(--shadow-sm)] animate-fade-in">
+                    <div class="h-10 w-16 opacity-80 flex-shrink-0">${CATEGORY_SVGS[topic.category] || ''}</div>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Kategorie</div>
+                        <div class="text-xs font-bold text-[var(--text-primary)]">${topic.category}</div>
+                    </div>
+                </div>
+            `;
+
+            const bannerDiv = document.createElement('div');
+            bannerDiv.innerHTML = bannerHtml;
+            container.appendChild(bannerDiv);
+
+            const deClass = activeView === 'en' ? 'hidden' : '';
+
+            const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
+            const savedEinl = getHighlight(topic.id, einlDe);
+            const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
+            const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
+
+            const einleitungHtml = `
+                <div class="p-1">
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+                        <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
+                            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                        </button>
+                        <button ontouchstart="handleAudioTouchStart(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" onmousedown="handleAudioMouseDown(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" onmouseup="handleAudioMouseUp(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                            <span class="soundwave-bar"></span>
+                        </button>
+                    </div>
+                    <div id="trans-container-${einlDe}" class="hidden mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                </div>
+            `;
+            const einleitungCard = document.createElement('div');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
+            container.appendChild(einleitungCard);
+
+            const proContraParent = document.createElement('div');
+            proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
+
+            let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
+            topic.pro_de.forEach((deVal, index) => {
+                const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
+                const saved = getHighlight(topic.id, skeyDe) || deVal;
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                const statementSpeechText = encodeURIComponent(stripHtml(saved));
+                proContent += `
+                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
+                            <div class="flex-1 text-[14px]">
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                            </div>
+                            ${isEditMode ? `
+                            <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                                ✏️
+                            </button>` : ''}
+                        </div>
+                        <div class="flex items-center justify-between border-t border-[var(--border)] pt-1.5 mt-1">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
+                                Translate
+                            </button>
+                            <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>
+                        </div>
+                        <div id="trans-container-${skeyDe}" class="hidden pt-1 border-t border-[var(--border)]/40 space-y-1"></div>
+                    </div>`;
+            });
+            proContent += `</div>`;
+
+            let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
+            topic.contra_de.forEach((deVal, index) => {
+                const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
+                const saved = getHighlight(topic.id, skeyDe) || deVal;
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                const statementSpeechText = encodeURIComponent(stripHtml(saved));
+                contraContent += `
+                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
+                            <div class="flex-1 text-[14px]">
+                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                            </div>
+                            ${isEditMode ? `
+                            <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                                ✏️
+                            </button>` : ''}
+                        </div>
+                        <div class="flex items-center justify-between border-t border-[var(--border)] pt-1.5 mt-1">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
+                                Translate
+                            </button>
+                            <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>
+                        </div>
+                        <div id="trans-container-${skeyDe}" class="hidden pt-1 border-t border-[var(--border)]/40 space-y-1"></div>
+                    </div>`;
+            });
+            contraContent += `</div>`;
+
+            const proCard = document.createElement('div');
+            proCard.innerHTML = buildCardWrapper("Dafür (Pro)", proContent, "pro_section", "", 'pro_de', false);
+            const contraCard = document.createElement('div');
+            contraCard.innerHTML = buildCardWrapper("Dagegen (Contra)", contraContent, "contra_section", "", 'contra_de', false);
+
+            proContraParent.appendChild(proCard);
+            proContraParent.appendChild(contraCard);
+            container.appendChild(proContraParent);
+
+            const erfDe = "pers_erfahrung_de";
+            const deValErf = getHighlight(topic.id, erfDe) || topic[erfDe];
+            const erfahrungCard = document.createElement('div');
+            erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
+            container.appendChild(erfahrungCard);
+
+            let dialogHtml = '<div class="space-y-4">';
+            topic.dialog.forEach((chat, index) => {
+                const skeyDe = `dialog_de_${index}`;
+                const deValChat = getHighlight(topic.id, skeyDe) || chat.de;
+                const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
+                const isA = chat.role.includes('A');
+                
+                dialogHtml += `
+                    <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
+                        <div class="flex items-center justify-between gap-4 mb-2">
+                            <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
+                            <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>
+                        </div>
+                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, topic.id, 'de', '${skeyDe}')" oninput="handleInlineInput(this, topic.id, 'de', '${skeyDe}')">
+                            ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
+                        </div>
+                        <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                            </button>
+                            <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                            </button>
+                        </div>
+                        <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                    </div>
+                `;
+            });
+            dialogHtml += '</div>';
+            const dialogCard = document.createElement('div');
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
+            container.appendChild(dialogCard);
+
+            const schlussDe = "schluss_de";
+            const deValSchluss = getHighlight(topic.id, schlussDe) || topic[schlussDe];
+            const schlussCard = document.createElement('div');
+            schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de');
+            container.appendChild(schlussCard);
+
+            expandedContainers.forEach(blockId => {
+                const containerNode = document.getElementById(getTranslationContainerId(blockId));
+                if (containerNode) {
+                    if (translationCache[blockId]) {
+                        renderTranslationHTML(containerNode, translationCache[blockId].en, translationCache[blockId].ar);
+                    } else {
+                        containerNode.innerHTML = `<div class="text-[10px] text-purple-500 animate-pulse font-semibold">⏳ Reloading...</div>`;
+                        let originalText = "";
+                        if (blockId.startsWith('pro_de_') || blockId.startsWith('contra_de_')) {
+                            const parts = blockId.split('_');
+                            const arr = parts[0] + '_de';
+                            const i = parseInt(parts[2]);
+                            originalText = topic[arr] ? topic[arr][i] : "";
+                        } else if (blockId.startsWith('dialog_de_')) {
+                            const parts = blockId.split('_');
+                            const i = parseInt(parts[2]);
+                            originalText = topic.dialog && topic.dialog[i] ? topic.dialog[i].de : "";
+                        } else {
+                            originalText = topic[blockId] || "";
+                        }
+                        fetchAndRenderTranslation(blockId, originalText, containerNode);
+                    }
+                }
+            });
+
+            showResetButton();
+        }
+
+        const structuralRedemittel = {
+            "Meinung äußern": [
+                { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way." },
+                { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role." }
+            ],
+            "Zustimmung": [
+                { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
+                { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
+            ],
+            "Widerspruch": [
+                { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
+                { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there." }
+            ],
+            "Einschränkung": [
+                { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that..." },
+                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice." }
+            ],
+            "Abschluss": [
+                { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
+                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+            ]
+        };
+
+        function renderRedemittel() {
+            const container = document.getElementById('redemittel-tab-section');
+            if (!container) return;
+            container.innerHTML = "";
+
+            let navigationBar = `<div class="sticky top-0 bg-[var(--bg-app)] z-30 py-2 flex gap-1.5 overflow-x-auto no-scrollbar border-b border-[var(--border)] mb-4">`;
+            Object.keys(structuralRedemittel).forEach((cat, idx) => {
+                navigationBar += `
+                    <button onclick="document.getElementById('cat-anchor-${idx}').scrollIntoView({behavior: 'smooth'})" class="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] font-bold text-xs rounded-full whitespace-nowrap min-h-[44px]">
+                        ${cat}
+                    </button>`;
+            });
+            navigationBar += `</div>`;
+            
+            let contentsHtml = `<div class="space-y-6">`;
+            Object.keys(structuralRedemittel).forEach((category, catIdx) => {
+                contentsHtml += `
+                    <div id="cat-anchor-${catIdx}" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-sm">
+                        <span class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest block mb-2">${category}</span>
+                        <div class="h-px bg-[var(--border)] w-full mb-3"></div>
+                        <div class="space-y-3">`;
+                
+                structuralRedemittel[category].forEach(phrase => {
+                    const encodedText = encodeURIComponent(phrase.de);
+                    contentsHtml += `
+                        <div class="flex items-center justify-between p-3 bg-[var(--bg-sidebar)] rounded-lg min-h-[44px] gap-4">
+                            <div class="flex-1">
+                                <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
+                                <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
+                            </div>
+                            <button ontouchstart="handleAudioTouchStart(event, '${encodedText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onmousedown="handleAudioMouseDown(event, '${encodedText}')" onmouseup="handleAudioMouseUp(event, '${encodedText}')" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>
+                        </div>`;
+                });
+                
+                contentsHtml += `</div></div>`;
+            });
+            contentsHtml += `</div>`;
+
+            container.innerHTML = navigationBar + contentsHtml;
+        }
+
+        // Bietet Level-Filterung für Grammatikthemen
+        function setGrammarFilter(lvl) {
+            activeGrammarFilter = lvl;
+            renderGrammar();
+        }
+
+        function renderGrammar() {
+            const container = document.getElementById('grammar-tab-section');
+            if (!container) return;
+            
+            const levels = ["all", "A1", "A2", "B1", "B2"];
+            
+            let filterHtml = `
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
+                    <p class="text-xs text-[var(--text-muted)] mt-1 mb-4">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            `;
+            
+            levels.forEach(lvl => {
+                const isActive = activeGrammarFilter === lvl;
+                const label = lvl === "all" ? "Alle" : lvl;
+                filterHtml += `
+                    <button onclick="setGrammarFilter('${lvl}')" class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all border ${
+                        isActive 
+                        ? 'bg-[var(--accent)] text-white border-transparent shadow-sm' 
+                        : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text-primary)]'
+                    }">${label}</button>
+                `;
+            });
+            
+            filterHtml += `
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = filterHtml;
+            
+            const grid = document.createElement('div'); 
+            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pb-28";
+            
+            const filteredGrammar = GRAMMATIK_DATA.filter(item => {
+                if (activeGrammarFilter === "all") return true;
+                return item.level && item.level.toUpperCase() === activeGrammarFilter.toUpperCase();
+            });
+
+            if (filteredGrammar.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-[var(--text-muted)] italic">Keine Themen für diese Stufe verfügbar.</div>`;
+            }
+
+            filteredGrammar.forEach((item, index) => {
+                let examplesHtml = "<ul class='space-y-2 mt-2 text-xs text-[var(--text-primary)]'>";
+                item.examples.forEach(ex => { 
+                    const cleanText = stripHtml(ex);
+                    const encodedText = encodeURIComponent(cleanText);
+                    examplesHtml += `
+                        <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
+                            <button ontouchstart="handleAudioTouchStart(event, '${encodedText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onmousedown="handleAudioMouseDown(event, '${encodedText}')" onmouseup="handleAudioMouseUp(event, '${encodedText}')" class="audio-btn text-var(--text-muted) hover:text-[var(--accent)] transition-all mt-0.5 flex gap-0.5">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>
+                            <span class="flex-1 select-text">${ex}</span>
+                        </li>`; 
+                });
+                examplesHtml += "</ul>";
+
+                const blockId = `grammatik_${index}`;
+                const translationText = `${item.title}. ${item.description}`;
+                const encodedText = encodeURIComponent(translationText);
+                const isExpanded = expandedContainers.has(blockId);
+
+                grid.innerHTML += `
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col justify-between relative">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
+                                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">${item.level} | ${item.category}</span>
+                                <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                </button>
+                            </div>
+                            <h3 class="text-sm font-bold text-[var(--accent)] mt-2 select-text">${item.title}</h3>
+                            <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed select-text">${item.description}</p>
+                            
+                            <div id="trans-container-${blockId}" class="${isExpanded ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
+
+                            <div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Beispiele</span>
+                                ${examplesHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.appendChild(grid);
+
+            expandedContainers.forEach(blockId => {
+                if (blockId.startsWith('grammatik_')) {
+                    const idx = parseInt(blockId.split('_')[1]);
+                    const item = filteredGrammar[idx];
+                    if (item) {
+                        const txt = `${item.title}. ${item.description}`;
+                        const containerDiv = document.getElementById(getTranslationContainerId(blockId));
+                        if (containerDiv) {
+                            fetchAndRenderTranslation(blockId, txt, containerDiv);
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            
+            const statusLabel = document.querySelector('#drawer-edit-toggle span');
+            const menuStatusLabel = document.getElementById('edit-mode-status-text');
+            const tipBanner = document.getElementById('edit-tip-banner');
+            const fab = document.getElementById('mobile-edit-fab');
+            const drawerToggle = document.getElementById('drawer-edit-toggle');
+            
+            if (isEditMode) {
+                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.add('bg-[var(--accent)]', 'text-white');
+                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                }
+                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
+                if (tipBanner) tipBanner.classList.remove('hidden');
+            } else {
+                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
+                    fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
+                }
+                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
+                if (tipBanner) tipBanner.classList.add('hidden');
+            }
+            renderActiveTopic();
+        }
+
+        const drawerEditToggle = document.getElementById('drawer-edit-toggle');
+        if (drawerEditToggle) {
+            drawerEditToggle.onclick = toggleEditMode;
+        }
+
+        function exportTotalBackup() {
+            const backupObj = {
+                version: "B2Trainer_Unified_Backup_v5",
+                timestamp: new Date().toISOString(),
+                topics: TOPICS_DATA,
+                template: TEMPLATE_DATA,
+                highlights: highlightsStore,
+                learned: learnedList,
+                preferences: {
+                    themeSetting: currentThemeSetting,
+                    textScale: textScale,
+                    activeMode: activeMode,
+                    activeView: activeView
+                }
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        const sidebarElement = document.getElementById('sidebar');
+        const centerToggle = document.getElementById('mobile-nav-toggle-center');
+        if (centerToggle) {
+            centerToggle.addEventListener('click', () => {
+                sidebarElement.classList.toggle('-translate-x-full');
+            });
+        }
+
+        // Swipe-to-Open Geste auf Mobilgeräten für die linke Sidebar
+        document.addEventListener('touchstart', e => {
+            const x = e.touches[0].clientX;
+            const y = e.touches[0].clientY;
+            // Aktiviert nur, wenn das Wischen im linken Randbereich (unter 40px) beginnt
+            if (x < 40 && activeTab === 'dashboard') {
+                touchStartX = x;
+                touchStartY = y;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            const x = e.changedTouches[0].clientX;
+            const y = e.changedTouches[0].clientY;
+            const deltaX = x - touchStartX;
+            const deltaY = y - touchStartY;
+            
+            if (touchStartX < 40 && deltaX > 80 && Math.abs(deltaX) > 2.5 * Math.abs(deltaY)) {
+                if (sidebarElement && sidebarElement.classList.contains('-translate-x-full')) {
+                    sidebarElement.classList.remove('-translate-x-full');
+                }
+            }
+        }, { passive: true });
+
+        // Ermöglicht das Schließen der Sidebar per Links-Swipe auf ihr selbst
+        if (sidebarElement) {
+            sidebarElement.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            sidebarElement.addEventListener('touchend', e => {
+                const x = e.changedTouches[0].clientX;
+                const y = e.changedTouches[0].clientY;
+                const deltaX = x - touchStartX;
+                const deltaY = y - touchStartY;
+                
+                if (deltaX < -60 && Math.abs(deltaX) > 2.5 * Math.abs(deltaY)) {
+                    sidebarElement.classList.add('-translate-x-full');
+                }
+            }, { passive: true });
+        }
+
+        // Optimierte Swipe-Navigation (Weniger empfindlich, verhindert Konflikte mit vertikalem Scrollen)
+        let touchStartX = 0; let touchStartY = 0;
+        let touchEndX = 0; let touchEndY = 0;
+        let touchStartTime = 0;
+
+        const workspacePanel = document.querySelector('main');
+
+        if (workspacePanel) {
+            workspacePanel.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+                touchStartTime = Date.now();
+            }, { passive: true });
+
+            workspacePanel.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipeNavigation();
+            }, { passive: true });
+        }
+
+        function handleSwipeNavigation() {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const duration = Date.now() - touchStartTime;
+            
+            // Nur als bewusster Swipe werten, wenn schnell (<300ms) und deutlich horizontal dominiert (>100px)
+            if (duration < 300 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    navigateTopicStep(-1);
+                } else {
+                    navigateTopicStep(1);
+                }
+            }
+        }
+
+        function navigateTopicStep(direction) {
+            const targetIdx = activeIdx + direction;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            
+            if (targetIdx >= 0 && targetIdx < dataset.length) {
+                const panel = document.querySelector('main');
+                panel.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    activeIdx = targetIdx;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    panel.classList.remove('fade-out');
+                    panel.classList.add('fade-in-active');
+                    setTimeout(() => panel.classList.remove('fade-in-active'), 120);
+                    panel.scrollTop = 0;
+                }, 120);
+            }
+        }
+
+        function handleLearningToggleAnimation(buttonEl, isNowLearned) {
+            if (isNowLearned) {
+                buttonEl.style.transform = "scale(1.05)";
+                buttonEl.classList.add("bg-emerald-600", "text-white");
+                setTimeout(() => {
+                    buttonEl.style.transform = "scale(1)";
+                }, 150);
+            }
+        }
+
+        const isLearnedStateToggle = document.getElementById('learned-toggle');
+        if (isLearnedStateToggle) {
+            isLearnedStateToggle.onclick = () => {
+                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                if (learnedList.includes(activeTopic.id)) {
+                    learnedList = learnedList.filter(id => id !== activeTopic.id);
+                    isLearnedStateToggle.textContent = "Als gelernt markieren";
+                } else {
+                    learnedList.push(activeTopic.id);
+                    isLearnedStateToggle.textContent = "Als offen markieren";
+                    handleLearningToggleAnimation(isLearnedStateToggle, true);
+                }
+                localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+                renderSidebar();
+                updateProgress();
+                renderActiveTopic();
+                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+            };
+        }
+    </script>
+</body>
+</html>
