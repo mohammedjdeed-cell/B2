@@ -1,14 +1,10 @@
-const CACHE_NAME = 'b2-buddy-v2';
+const CACHE_NAME = 'b2-trainer-flaticon-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './style.css', // Falls Ihre CSS-Datei anders heißt, bitte anpassen
-  './app.js',    // Falls Ihre JS-Datei anders heißt, bitte anpassen
-  'https://img.icons8.com/fluency/192/knowledge-sharing.png',
-  'https://img.icons8.com/fluency/512/knowledge-sharing.png'
+  'https://cdn-icons-png.flaticon.com/512/1900/1900720.png'
 ];
 
-// Installieren und Ressourcen cachen
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -18,7 +14,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Alten Cache aufräumen
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,7 +29,6 @@ self.addEventListener('activate', (event) => {
   self.clientsClaim();
 });
 
-// Netzwerk-First mit Cache-Fallback
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
