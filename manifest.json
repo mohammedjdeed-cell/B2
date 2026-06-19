@@ -1,4 +1,3 @@
-
 {
   "name": "TELC B2 Diskussionstrainer",
   "short_name": "B2 Trainer",
@@ -11,18 +10,25 @@
   "scope": "./",
   "lang": "de",
   "icons": [
-    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "./icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "shortcuts": [
     {
       "name": "Zufälliges Thema",
       "short_name": "Zufall",
       "description": "Öffne ein zufälliges Diskussionsthema",
-      "url": "./index.html?action=random",
-      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+      "url": "./index.html?action=random"
     }
   ]
 }
