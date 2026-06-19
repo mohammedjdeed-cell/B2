@@ -1,4 +1,4 @@
-const CACHE_NAME = 'b2trainer-v7'; // Bumped version to hard-reset the cache
+const CACHE_NAME = 'b2trainer-v8'; // Bumped version forces complete system refresh on mobile
 const OFFLINE_URL = './index.html';
 
 const PRECACHE_ASSETS = [
@@ -7,7 +7,7 @@ const PRECACHE_ASSETS = [
   './index.html?utm_source=pwa',
   './manifest.json',
   './topics.json',
-  'https://cdn-icons-png.flaticon.com/512/3406/3406828.png', // External CDN Icon asset
+  'https://cdn-icons-png.flaticon.com/512/3406/3406828.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap',
   'https://cdn.tailwindcss.com',
   'https://d3js.org/d3.v7.min.js'
@@ -18,7 +18,6 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME).then(cache => {
       return Promise.allSettled(
         PRECACHE_ASSETS.map(asset => {
-          // Request cross-origin assets securely with CORS verification
           const requestOptions = asset.startsWith('http') ? { mode: 'cors' } : {};
           const request = new Request(asset, requestOptions);
           
@@ -27,9 +26,9 @@ self.addEventListener('install', event => {
               if (response.ok || response.type === 'opaque') {
                 return cache.put(request, response);
               }
-              throw new Error(`Failed to cache asset: ${asset}`);
+              throw new Error(`Asset fetch error: ${asset}`);
             })
-            .catch(err => console.warn('Precaching bypassed for:', asset, err));
+            .catch(err => console.warn('Precaching skipped for:', asset, err));
         })
       ).then(() => self.skipWaiting());
     })
