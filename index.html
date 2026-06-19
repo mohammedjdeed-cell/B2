@@ -162,14 +162,12 @@
     }
     .hl-red {
         background: rgba(254, 202, 202, 0.22) !important;
-        color: inherit !important;
         border-bottom: 2.5px solid rgba(220, 38, 38, 0.85);
         border-radius: 2px;
         padding: 1px 3px;
     }
     .hl-green {
         background: rgba(187, 247, 208, 0.22) !important;
-        color: inherit !important;
         border-bottom: 2.5px solid rgba(5, 150, 105, 0.85);
         border-radius: 2px;
         padding: 1px 3px;
@@ -212,24 +210,6 @@
         background-color: var(--accent-light);
     }
 
-    /* Rhythmisch animierte Frequenzbalken */
-    .soundwave-bar {
-        display: inline-block;
-        width: 2.5px;
-        height: 8px;
-        background-color: currentColor;
-        border-radius: 10px;
-        transition: transform 0.15s ease;
-        transform-origin: bottom;
-    }
-    .playing .soundwave-bar {
-        animation: soundwave-jump 0.8s ease-in-out infinite alternate;
-    }
-    .playing .soundwave-bar:nth-child(1) { animation-delay: 0.1s; height: 14px; }
-    .playing .soundwave-bar:nth-child(2) { animation-delay: 0.3s; height: 18px; }
-    .playing .soundwave-bar:nth-child(3) { animation-delay: 0.2s; height: 12px; }
-    .playing .soundwave-bar:nth-child(4) { animation-delay: 0.4s; height: 16px; }
-
     /* Entfernt Scrollbalken in der gesamten Sidebar für App-Look */
     #sidebar *::-webkit-scrollbar,
     #topic-list::-webkit-scrollbar {
@@ -249,25 +229,49 @@
         display: none !important;
     }
 
-    /* Erzwingt eine konsistente relative Positionierung im Flex-Flow auf Desktop-Bildschirmen */
+    /* CSS-Keyframes für Wischübergangseffekte */
+    @keyframes slideOutLeft {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(-100%); opacity: 0; }
+    }
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    @keyframes slideInLeft {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .slide-out-left { animation: slideOutLeft 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .slide-in-right { animation: slideInRight 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .slide-out-right { animation: slideOutRight 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .slide-in-left { animation: slideInLeft 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+    /* Sidebar-Basislayout (Fest positioniert auf Handys) */
     #sidebar {
         position: fixed !important;
         top: 0;
         bottom: 0;
         left: 0;
-        z-index: 40;
+        z-index: 50 !important;
         width: 20rem;
         transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    @media (min-width: 1024px) {
+    /* Desktop/Tablet Layout ab 768px: Sidebar schiebt den Inhalt zur Seite (Kein Überlappen) */
+    @media (min-width: 768px) {
         #sidebar {
             position: relative !important;
             transform: translateX(0) !important;
             z-index: 10 !important;
             width: 20rem !important;
-            max-width: none !important;
         }
+        /* Elegante, perfekt ausgerichtete kreisförmige Dock-Buttons bei eingeklappter Sidebar */
         #sidebar.sidebar-collapsed {
             width: 4.5rem !important; 
         }
@@ -276,23 +280,27 @@
             padding-left: 0.5rem !important;
             padding-right: 0.5rem !important;
         }
-        #sidebar.sidebar-collapsed .topic-list-item > div {
-            width: 100% !important;
+        #sidebar.sidebar-collapsed .topic-list-item {
             display: flex !important;
             justify-content: center !important;
+            align-items: center !important;
+            padding: 0.75rem 0 !important;
+            border-radius: 9999px !important;
+            width: 3rem !important;
+            height: 3rem !important;
+            margin: 0.25rem auto !important;
+            border-left: none !important;
+        }
+        #sidebar.sidebar-collapsed .topic-list-item > div {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: auto !important;
             gap: 0 !important;
         }
         #sidebar.sidebar-collapsed .sidebar-only-emoji {
-            font-size: 1.5rem !important;
-            display: block !important;
-            margin: 0 auto !important;
-            text-align: center !important;
-            width: auto !important;
-            height: auto !important;
-        }
-        #sidebar.sidebar-collapsed .topic-list-item {
-            justify-content: center !important;
-            padding: 0.75rem 0.5rem !important;
+            margin: 0 !important;
+            font-size: 1.35rem !important;
         }
     }
 </style>
@@ -408,11 +416,11 @@
         </div>
     </aside>
 
-    <!-- Main Workspace Container -->
-    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+    <!-- Main Workspace Container: Switch to horizontal flow on tablet screens (md:flex-row) -->
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:z-auto -translate-x-full lg:translate-x-0 bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] md:relative md:w-80 md:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-transform md:transition-none duration-300">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors">
@@ -482,7 +490,7 @@
             </div>
 
             <!-- Content Container -->
-            <div id="dashboard-tab-section" class="space-y-6 scalable-content">
+            <div id="dashboard-tab-section" class="space-y-6 scalable-content relative overflow-hidden">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex flex-col gap-2">
                     <div class="flex items-start gap-2.5">
                         <span class="text-sm">💡</span>
@@ -491,7 +499,7 @@
                         </p>
                     </div>
                 </div>
-                <div id="active-topic-container" class="space-y-6"></div>
+                <div id="active-topic-container" class="space-y-6 relative"></div>
             </div>
 
             <!-- Overhauled Mind Map Section -->
@@ -1162,7 +1170,7 @@
             });
         }
 
-        // Interaktives Audiowiedergabe-System (Touch & Maus optimiert)
+        // Interaktives Audiowiedergabe-System (Touch & Maus optimiert mit synchroner Element-Erfassung)
         let audioTouchTimer = null;
         let audioLongPressed = false;
         let audioTouchStartX = 0;
@@ -1173,11 +1181,13 @@
             audioTouchStartX = event.touches[0].clientX;
             audioTouchStartY = event.touches[0].clientY;
             
+            const targetBtn = event.currentTarget || event.target; // Synchron erfassen vor dem Timeout
+
             if (audioTouchTimer) clearTimeout(audioTouchTimer);
 
             audioTouchTimer = setTimeout(() => {
                 audioLongPressed = true;
-                openVoicePicker(event, encodedText);
+                openVoicePicker(event, encodedText, targetBtn);
             }, 600); // 600ms Schwellenwert
         }
 
@@ -1199,16 +1209,19 @@
                 return;
             }
             event.preventDefault();
-            playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
+            playBlockAudio(decodeURIComponent(encodedText), event.currentTarget || event.target);
         }
 
         function handleAudioMouseDown(event, encodedText) {
             if (event.pointerType === 'touch' || 'ontouchstart' in window) return; // Mobilgeräte überspringen
             audioLongPressed = false;
+            
+            const targetBtn = event.currentTarget || event.target; // Synchron erfassen vor dem Timeout
+
             if (audioTouchTimer) clearTimeout(audioTouchTimer);
             audioTouchTimer = setTimeout(() => {
                 audioLongPressed = true;
-                openVoicePicker(event, encodedText);
+                openVoicePicker(event, encodedText, targetBtn);
             }, 600);
         }
 
@@ -1216,17 +1229,28 @@
             if (event.pointerType === 'touch' || 'ontouchstart' in window) return;
             clearTimeout(audioTouchTimer);
             if (!audioLongPressed) {
-                playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
+                playBlockAudio(decodeURIComponent(encodedText), event.currentTarget || event.target);
             }
         }
 
-        function openVoicePicker(event, encodedText) {
-            event.stopPropagation();
+        function handleAudioDblClick(event, encodedText) {
+            openVoicePicker(event, encodedText, event.currentTarget || event.target);
+        }
+
+        function openVoicePicker(event, encodedText, targetBtn) {
+            if (event && typeof event.stopPropagation === 'function') {
+                event.stopPropagation();
+            }
             
-            globalAudioBtn = event.currentTarget; 
+            // Nutzt den synchron übergebenen Button, um null-Objekt-Fehler im Timeout zu verhindern
+            globalAudioBtn = targetBtn || (event ? event.currentTarget || event.target : null); 
+            if (!globalAudioBtn) return;
+            
             globalAudioText = decodeURIComponent(encodedText);
             
             const panel = document.getElementById('voice-picker-panel');
+            if (!panel) return;
+
             panel.classList.remove('hidden');
             panel.style.visibility = 'hidden';
             
@@ -1740,7 +1764,7 @@
             
             if (activeTopic && trackerArray.includes(activeTopic.id)) {
                 resetBtn.removeAttribute('disabled');
-                resetBtn.className = "col-span-1 w-full md:w-auto text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0";
+                resetBtn.className = "col-span-1 w-full md:w-auto text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0";
             } else {
                 resetBtn.setAttribute('disabled', 'true');
                 resetBtn.className = "col-span-1 w-full md:w-auto text-xs bg-[var(--bg-app)] text-[var(--text-faint)] border border-[var(--border)] rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 opacity-45 cursor-not-allowed whitespace-nowrap shrink-0";
@@ -2690,7 +2714,7 @@
             const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
             const savedEinl = getHighlight(topic.id, einlDe);
             const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
-            const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
+            const cleanEinlAr = stripHtml(getTopicValue(topic, cleanEinlAr));
 
             const einleitungHtml = `
                 <div class="p-1">
@@ -3108,7 +3132,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}$.json`);
+            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
             downloadAnchor.click();
             downloadAnchor.remove();
         }
@@ -3165,10 +3189,6 @@
         }
 
         // Optimierte Swipe-Navigation (Nur auf dem Dashboard-Tab aktiv)
-        let touchStartX = 0; let touchStartY = 0;
-        let touchEndX = 0; let touchEndY = 0;
-        let touchStartTime = 0;
-
         const workspacePanel = document.querySelector('main');
 
         if (workspacePanel) {
@@ -3207,19 +3227,28 @@
             const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             
             if (targetIdx >= 0 && targetIdx < dataset.length) {
-                const panel = document.querySelector('main');
-                panel.classList.add('fade-out');
+                const container = document.getElementById('active-topic-container');
+                if (!container) return;
+
+                // Wischrichtung bestimmen
+                const outClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
+                const inClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
+
+                container.classList.add(outClass);
                 
                 setTimeout(() => {
                     activeIdx = targetIdx;
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
                     renderActiveTopic();
-                    panel.classList.remove('fade-out');
-                    panel.classList.add('fade-in-active');
-                    setTimeout(() => panel.classList.remove('fade-in-active'), 120);
-                    panel.scrollTop = 0;
-                }, 120);
+                    
+                    container.classList.remove(outClass);
+                    container.classList.add(inClass);
+                    
+                    setTimeout(() => {
+                        container.classList.remove(inClass);
+                    }, 220);
+                }, 220);
             }
         }
 
