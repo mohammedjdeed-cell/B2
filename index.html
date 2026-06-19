@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght=300..700&display=swap" rel="stylesheet">
 
-    <!-- Hochauflösendes Web-Icon & PWA Manifest -->
-    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/knowledge-sharing.png">
+    <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1900/1900720.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4a7c59">
 
@@ -566,7 +566,7 @@
     <div id="voice-picker-panel" class="hidden fixed z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-[var(--shadow-md)] w-64 space-y-3 transition-all duration-150">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
             <span class="text-xs font-bold text-[var(--text-primary)]">
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg> Stimme wählen
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg> Stimme wählen
             </span>
             <button onclick="closeVoicePicker()" class="w-6 h-6 flex items-center justify-center rounded-full text-xs bg-slate-100 dark:bg-zinc-700 hover:bg-rose-100 text-[var(--text-muted)] hover:text-rose-600 transition-colors">✕</button>
         </div>
@@ -850,6 +850,15 @@
             };
             undoStack.push(JSON.stringify(stateSnapshot));
             redoStack = []; 
+        }
+
+        // Standardized service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker erfolgreich registriert!', reg))
+                    .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
+            });
         }
 
         function undo() {
@@ -2578,7 +2587,7 @@
             const einleitungHtml = `
                 <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
                 <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
-                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
+                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic mt-1 select-text" dir="rtl">${cleanEinlAr}</p>
             `;
             const einleitungCard = document.createElement('div');
             einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
@@ -2693,9 +2702,9 @@
                         let originalText = "";
                         if (blockId.startsWith('pro_de_') || blockId.startsWith('contra_de_')) {
                             const parts = blockId.split('_');
-                            const arr = parts[0] + '_de';
+                            const arrName = parts[0] + '_' + parts[1];
                             const i = parseInt(parts[2]);
-                            originalText = topic[arr] ? topic[arr][i] : "";
+                            originalText = topic[arrName] ? topic[arrName][i] : "";
                         } else if (blockId.startsWith('dialog_de_')) {
                             const parts = blockId.split('_');
                             const i = parseInt(parts[2]);
@@ -2998,16 +3007,6 @@
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-
-        // Registrierung des Service Workers für PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker erfolgreich registriert!', reg))
-                    .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
-            });
-        }
     </script>
 </body>
 </html>
-
