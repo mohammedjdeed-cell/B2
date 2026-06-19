@@ -2,7 +2,7 @@
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,6 +79,8 @@
 
     body {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
     }
 
     body, header, aside, main, .card-transition, #dashboard-controls, .topic-list-item {
@@ -88,7 +90,16 @@
                     box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Verbesserte Interaktions-Übergänge für alle klickbaren UI-Elemente */
+    /* Native-App-Interaktionsverhalten */
+    * {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    
+    .selectable-text, textarea, input {
+        user-select: text !important;
+    }
+
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
                     background-color 0.25s ease, 
@@ -113,7 +124,6 @@
         opacity: 1;
     }
 
-    /* Weiches und unabhängiges Scrolling für Mobilgeräte bei ausgeklappten Bereichen */
     @media (max-width: 1023px) {
         .accordion-content.expanded {
             max-height: 60vh !important;
@@ -135,7 +145,7 @@
         scrollbar-width: none;
     }
 
-    /* Premium Text-Marker mit hoher Transparenz und Unterstreichung statt flachen Balken */
+    /* Premium Text-Marker */
     .hl-yellow {
         background: rgba(254, 240, 138, 0.25) !important;
         color: inherit !important;
@@ -183,7 +193,6 @@
         display: inline-block;
     }
 
-    /* Fixed Sidebar styling variables for emojis */
     .sidebar-only-emoji {
         font-size: 1.25rem;
         width: 1.75rem;
@@ -194,7 +203,6 @@
         flex-shrink: 0;
     }
 
-    /* Behebt das Emoji-Hover-Problem im Kasten-Raster */
     .emoji-circle {
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
         pointer-events: none;
@@ -204,7 +212,7 @@
         background-color: var(--accent-light);
     }
 
-    /* Rhythmisch animierte Frequenzbalken bei aktiver Sprachausgabe */
+    /* Rhythmisch animierte Frequenzbalken */
     .soundwave-bar {
         display: inline-block;
         width: 2.5px;
@@ -305,7 +313,7 @@
         </div>
     </header>
 
-    <!-- Slide-out Universal Hamburger Drawer Menu (z-index angehoben um Überlagerungsfehler zu beheben) -->
+    <!-- Slide-out Universal Hamburger Drawer Menu -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden transition-opacity duration-300"></div>
     <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
@@ -406,7 +414,7 @@
                 </div>
 
                 <div class="relative mt-2">
-                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all shadow-inner" />
+                    <input type="text" id="search-bar" placeholder="Themen filtern..." class="w-full pl-9 pr-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all shadow-inner select-text" />
                     <svg class="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
@@ -464,18 +472,20 @@
                 <div id="active-topic-container" class="space-y-6"></div>
             </div>
 
-            <!-- Modern Grid View -->
-            <section id="mindmap-tab-section" class="hidden bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] flex-col space-y-6">
-                <div class="border-b border-[var(--border)] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- Overhauled Mind Map Section (Raster is now a dedicated edge-to-edge area) -->
+            <section id="mindmap-tab-section" class="hidden flex-col space-y-6 w-full min-h-screen bg-[var(--bg-app)] animate-fade-in pb-28">
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h3 class="text-base font-black text-[var(--text-primary)]">📦 Lern-Raster &amp; Themenauswahl (1-52)</h3>
+                        <h3 class="text-base font-black text-[var(--text-primary)] flex items-center gap-2">
+                            <span>📦 Mind-Map Kasten-Raster</span>
+                        </h3>
                         <p class="text-xs text-[var(--text-muted)] mt-1">
-                            Übersicht über alle Themen. Die wichtigsten 19 Prüfungsthemen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
+                            Alle 52 TELC-Prüfungsthemen im Gesamtüberblick. Prüfungsrelevante Themen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
                         </p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-48" />
-                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-full sm:w-48 select-text" />
+                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
                             <option value="all">Alle Kategorien</option>
                             <option value="Freizeit &amp; Gesundheit">Freizeit &amp; Gesundheit</option>
                             <option value="Arbeit &amp; Karriere">Arbeit &amp; Karriere</option>
@@ -485,13 +495,13 @@
                         </select>
                     </div>
                 </div>
-                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-4"></div>
+                <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation: Modernes, schwebendes "Floating Island" Design (z-index: 40 zur Vorbeugung von Überlagerungen) -->
+            <!-- Mobile Bottom Navigation: Floating Island Design -->
             <div class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
                 <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)]">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -516,16 +526,21 @@
                 </button>
             </div>
             
-            <button id="mobile-edit-fab" onclick="toggleEditMode()" class="md:hidden fixed bottom-[95px] right-4 w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center z-40 transition-transform active:scale-90">
-                <svg id="edit-fab-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-            </button>
+            <!-- Mobile Controls Floating Action Group (Grouped Undo + Edit Actions) -->
+            <div class="md:hidden fixed bottom-[95px] right-4 flex flex-col gap-3 z-40">
+                <button id="mobile-undo-fab" onclick="undo()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90" title="Rückgängig machen">
+                    <span class="text-lg">↩️</span>
+                </button>
+                <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90">
+                    <svg id="edit-fab-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+            </div>
         </main>
     </div>
 
-    <!-- Quick Preview Modal (Modernisiert für zweisprachige Zusammenfassungen ohne Abschneiden) -->
+    <!-- Quick Preview Modal -->
     <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 pt-8 space-y-4 shadow-2xl transition-all relative">
-            <!-- Schließen-Schaltfläche absolut positioniert innerhalb des Modalkörpers -->
             <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50">✕</button>
             
             <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3 pr-8">
@@ -541,13 +556,13 @@
                     <h4 class="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                         🇩🇪 Zusammenfassung (Deutsch)
                     </h4>
-                    <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg break-words whitespace-pre-wrap"></p>
+                    <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg break-words whitespace-pre-wrap selectable-text"></p>
                 </div>
                 <div>
                     <h4 class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1.5 flex items-center justify-end gap-1.5">
                         الملخص (العربية) 🇸🇾
                     </h4>
-                    <p id="preview-einleitung-ar" dir="rtl" class="text-xs leading-relaxed font-arabic bg-[var(--bg-app)] p-3 rounded-lg text-right break-words whitespace-pre-wrap"></p>
+                    <p id="preview-einleitung-ar" dir="rtl" class="text-xs leading-relaxed font-arabic bg-[var(--bg-app)] p-3 rounded-lg text-right break-words whitespace-pre-wrap selectable-text"></p>
                 </div>
             </div>
 
@@ -620,15 +635,15 @@
                             <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Auto-Translate
                         </button>
                     </div>
-                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
+                    <textarea id="modal-edit-de" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none select-text"></textarea>
                 </div>
                 <div>
                     <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Englisch (EN)</label>
-                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none"></textarea>
+                    <textarea id="modal-edit-en" rows="3" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none select-text"></textarea>
                 </div>
                 <div>
                     <label class="block text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Arabisch (AR)</label>
-                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none font-arabic"></textarea>
+                    <textarea id="modal-edit-ar" rows="3" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:ring-1 focus:ring-[var(--accent)] focus:outline-none font-arabic select-text"></textarea>
                 </div>
             </div>
 
@@ -777,6 +792,7 @@
         let activeTab = "dashboard";
         let currentFilter = "all";
         let activeMode = localStorage.getItem('b2_active_mode') || "classic";
+        let activeGrammarFilter = "all";
         
         let learnedList = JSON.parse(localStorage.getItem('learned_topics_1_52')) || [];
         let highlightsStore = JSON.parse(localStorage.getItem('b2_highlights') || '{}');
@@ -1124,32 +1140,62 @@
             });
         }
 
-        // Interaktives Audiowiedergabe-System
+        // Interaktives Audiowiedergabe-System (Touch & Maus optimiert)
         let audioTouchTimer = null;
         let audioLongPressed = false;
+        let audioTouchStartX = 0;
+        let audioTouchStartY = 0;
 
         function handleAudioTouchStart(event, encodedText) {
             audioLongPressed = false;
+            audioTouchStartX = event.touches[0].clientX;
+            audioTouchStartY = event.touches[0].clientY;
+            
+            if (audioTouchTimer) clearTimeout(audioTouchTimer);
+
             audioTouchTimer = setTimeout(() => {
                 audioLongPressed = true;
                 openVoicePicker(event, encodedText);
-            }, 600); // 600ms Schwellenwert für langes Gedrückthalten
+            }, 600); // 600ms Schwellenwert
+        }
+
+        function handleAudioTouchMove(event) {
+            if (event.touches && event.touches.length > 0) {
+                const moveX = event.touches[0].clientX;
+                const moveY = event.touches[0].clientY;
+                const distance = Math.hypot(moveX - audioTouchStartX, moveY - audioTouchStartY);
+                if (distance > 10) { // Falls gescrollt wird, Long-Press abbrechen
+                    clearTimeout(audioTouchTimer);
+                }
+            }
         }
 
         function handleAudioTouchEnd(event, encodedText) {
             clearTimeout(audioTouchTimer);
-            if (!audioLongPressed) {
-                playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
+            if (audioLongPressed) {
+                event.preventDefault();
+                return;
             }
-        }
-
-        function handleAudioClick(event, encodedText) {
-            if (event.pointerType === 'touch') return; // Mobilgeräten via Touch-Listener bedient
+            event.preventDefault();
             playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
         }
 
-        function handleAudioDblClick(event, encodedText) {
-            openVoicePicker(event, encodedText);
+        function handleAudioMouseDown(event, encodedText) {
+            if (event.pointerType === 'touch' || 'ontouchstart' in window) return; // Mobilgeräte überspringen
+            audioLongPressed = false;
+            if (audioTouchTimer) clearTimeout(audioTouchTimer);
+            audioTouchTimer = setTimeout(() => {
+                audioLongPressed = true;
+                openVoicePicker(event, encodedText);
+            }, 600);
+        }
+
+        function handleAudioMouseUp(event, encodedText) {
+            if (event.pointerType === 'touch' || 'ontouchstart' in window) return;
+            clearTimeout(audioTouchTimer);
+            if (!audioLongPressed) {
+                playBlockAudio(decodeURIComponent(encodedText), event.currentTarget);
+            }
         }
 
         function openVoicePicker(event, encodedText) {
@@ -1468,7 +1514,6 @@
 
         async function loadTopics() {
             try {
-                // Defensive case sensitivity mappings
                 let resTopics = await safeFetchJson('./Topics.json');
                 if (!resTopics || resTopics.length === 0) {
                     resTopics = await safeFetchJson('./topics.json');
@@ -1859,7 +1904,6 @@
             return `trans-container-${blockId}`;
         }
 
-        // Steuerung der Übersetzungsanzeige
         function toggleTranslation(event, blockId, encodedText) {
             event.stopPropagation();
             const container = document.getElementById(getTranslationContainerId(blockId));
@@ -2085,7 +2129,6 @@
 
                 const item = document.createElement('button');
                 
-                // Full box translucent emerald fill on learned toggle with elegant solid left border
                 const activeClass = isActive 
                     ? 'bg-[var(--accent)] text-white shadow-sm font-semibold' 
                     : (isLearned 
@@ -2101,7 +2144,6 @@
                     ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
                     : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
-                // Layout optimized to prevent parent wrapper truncation clipping during minimization
                 item.innerHTML = `
                     <div class="flex items-center gap-2.5">
                         <span class="sidebar-only-emoji text-base select-none leading-none">${emoji}</span>
@@ -2179,7 +2221,7 @@
                         </div>
                         <div class="flex items-center gap-3" onclick="event.stopPropagation();">
                             ${showAudio && textForAudio ? `
-                            <button onmousedown="handleAudioTouchStart(event, '${encodedText}')" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onclick="handleAudioClick(event, '${encodedText}')" ondblclick="handleAudioDblClick(event, '${encodedText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Klick: Anhören | Doppelklick: Einstellungen">
+                            <button ontouchstart="handleAudioTouchStart(event, '${encodedText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onmousedown="handleAudioMouseDown(event, '${encodedText}')" onmouseup="handleAudioMouseUp(event, '${encodedText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
@@ -2235,7 +2277,7 @@
                             <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
-                        <button onmousedown="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onclick="handleAudioClick(event, '${statementSpeechText}')" ondblclick="handleAudioDblClick(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Klick: Anhören | Doppelklick: Einstellungen">
+                        <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
                             <span class="soundwave-bar"></span>
                             <span class="soundwave-bar"></span>
                             <span class="soundwave-bar"></span>
@@ -2419,7 +2461,7 @@
             }
         }
 
-        // Modern UI Redesign for the Mind Map (Lern-Raster) Card Grid
+        // Modern UI Redesign für das Kasten-Raster
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2441,14 +2483,12 @@
 
                 const card = document.createElement('div');
                 
-                // High-fidelity Glassmorphic styling with flat design layout & emerald tone if marked done
                 card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
                 } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
 
-                // Integrates .emoji-circle container with pointer-events: none to resolve the hover-conflict
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-2 mb-4">
                         <span class="text-[10px] font-bold uppercase tracking-widest ${style.badgeBg} px-2.5 py-1 rounded-full border border-black/5 dark:border-white/5">
@@ -2510,22 +2550,29 @@
             });
         }
 
-        // Modernisiertes touch-screen Modal (Zeigt nun die prägnante deutsch-arabische Zusammenfassung)
+        // Schnellvorschau berücksichtigt gewählte Daten (Classic vs. Template) + User-Edits
         function showThemaPreview(topic) {
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
 
-            document.getElementById('preview-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
-            document.getElementById('preview-category').textContent = topic.category || "Thema";
-            document.getElementById('preview-title').textContent = topic.title_de;
+            // Hole Thema aus dem aktuell aktiven Modus-Dataset (classic oder template)
+            const activeDataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const currentTopic = activeDataset.find(t => t.id === topic.id) || topic;
+
+            document.getElementById('preview-emoji').textContent = TOPIC_ICONS[currentTopic.id] || "📌";
+            document.getElementById('preview-category').textContent = currentTopic.category || "Thema";
+            document.getElementById('preview-title').textContent = currentTopic.title_de;
             
-            // Zusammenfassung wird gefüttert aus Einleitung (Deutsch) und der passenden Übersetzung (Arabisch)
-            document.getElementById('preview-einleitung-de').textContent = stripHtml(topic.einleitung_de);
-            document.getElementById('preview-einleitung-ar').textContent = stripHtml(topic.einleitung_ar);
+            // Suche nach benutzerdefinierten Anpassungen
+            const savedEinlDe = getHighlight(currentTopic.id, "einleitung_de") || currentTopic.einleitung_de;
+            const savedEinlAr = getHighlight(currentTopic.id, "einleitung_ar") || currentTopic.einleitung_ar;
+
+            document.getElementById('preview-einleitung-de').textContent = stripHtml(savedEinlDe);
+            document.getElementById('preview-einleitung-ar').textContent = stripHtml(savedEinlAr);
 
             const navBtn = document.getElementById('preview-nav-btn');
             navBtn.onclick = () => {
-                const index = (activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA).findIndex(t => t.id === topic.id);
+                const index = activeDataset.findIndex(t => t.id === currentTopic.id);
                 if (index !== -1) {
                     activeIdx = index;
                     localStorage.setItem('b2_active_idx', activeIdx);
@@ -2548,7 +2595,6 @@
             if (TOPICS_DATA.length === 0) return;
             const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
 
-            // Render modern flat-design box index
             document.getElementById('active-topic-num').innerHTML = `
                 <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52</span>
             `;
@@ -2615,7 +2661,6 @@
                 </div>
             `;
 
-            // Both mode states now render fully
             const bannerDiv = document.createElement('div');
             bannerDiv.innerHTML = bannerHtml;
             container.appendChild(bannerDiv);
@@ -2627,7 +2672,6 @@
             const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
             const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
 
-            // Einleitung mit interaktivem Übersetzungsschalter und integriertem TTS Wave-Button
             const einleitungHtml = `
                 <div class="p-1">
                     <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
@@ -2635,7 +2679,7 @@
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                         </button>
-                        <button onmousedown="handleAudioTouchStart(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" ontouchend="handleAudioTouchEnd(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" onclick="handleAudioClick(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" ondblclick="handleAudioDblClick(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Doppelklick: Einstellungen">
+                        <button ontouchstart="handleAudioTouchStart(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" onmousedown="handleAudioMouseDown(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" onmouseup="handleAudioMouseUp(event, '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
                             <span class="soundwave-bar"></span>
                             <span class="soundwave-bar"></span>
                             <span class="soundwave-bar"></span>
@@ -2652,7 +2696,6 @@
             const proContraParent = document.createElement('div');
             proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
 
-            // Dafür (Pro) Boxen mit interaktiver Übersetzungsoption und Soundwave-Button
             let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
             topic.pro_de.forEach((deVal, index) => {
                 const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
@@ -2675,8 +2718,7 @@
                             <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
                                 Translate
                             </button>
-                            <!-- Einzigartiger, rhythmischer Soundwave-Button für jeden einzelnen Pro-Punkt -->
-                            <button onmousedown="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onclick="handleAudioClick(event, '${statementSpeechText}')" ondblclick="handleAudioDblClick(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Doppelklick: Einstellungen">
+                            <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
@@ -2688,7 +2730,6 @@
             });
             proContent += `</div>`;
 
-            // Dagegen (Contra) Boxen mit interaktiver Übersetzungsoption und Soundwave-Button
             let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
             topic.contra_de.forEach((deVal, index) => {
                 const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
@@ -2711,8 +2752,7 @@
                             <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
                                 Translate
                             </button>
-                            <!-- Einzigartiger, rhythmischer Soundwave-Button für jeden einzelnen Contra-Punkt -->
-                            <button onmousedown="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onclick="handleAudioClick(event, '${statementSpeechText}')" ondblclick="handleAudioDblClick(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Doppelklick: Einstellungen">
+                            <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
@@ -2750,14 +2790,14 @@
                     <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
                         <div class="flex items-center justify-between gap-4 mb-2">
                             <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
-                            <button onmousedown="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onclick="handleAudioClick(event, '${statementSpeechText}')" ondblclick="handleAudioDblClick(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Doppelklick: Einstellungen">
+                            <button ontouchstart="handleAudioTouchStart(event, '${statementSpeechText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${statementSpeechText}')" onmousedown="handleAudioMouseDown(event, '${statementSpeechText}')" onmouseup="handleAudioMouseUp(event, '${statementSpeechText}')" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Klick: Anhören | Halten: Stimmenauswahl">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                             </button>
                         </div>
-                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, topic.id, 'de', '${skeyDe}')" oninput="handleInlineInput(this, topic.id, 'de', '${skeyDe}')">
                             ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                         </div>
                         <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
@@ -2783,7 +2823,6 @@
             schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de');
             container.appendChild(schlussCard);
 
-            // Re-render offener Übersetzungscontainer nach dem Wechsel der Tabs
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
                 if (containerNode) {
@@ -2865,7 +2904,7 @@
                                 <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
                                 <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
                             </div>
-                            <button onmousedown="handleAudioTouchStart(event, '${encodedText}')" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onclick="handleAudioClick(event, '${encodedText}')" ondblclick="handleAudioDblClick(event, '${encodedText}')" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5">
+                            <button ontouchstart="handleAudioTouchStart(event, '${encodedText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onmousedown="handleAudioMouseDown(event, '${encodedText}')" onmouseup="handleAudioMouseUp(event, '${encodedText}')" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
@@ -2881,31 +2920,70 @@
             container.innerHTML = navigationBar + contentsHtml;
         }
 
+        // Bietet Level-Filterung für Grammatikthemen
+        function setGrammarFilter(lvl) {
+            activeGrammarFilter = lvl;
+            renderGrammar();
+        }
+
         function renderGrammar() {
             const container = document.getElementById('grammar-tab-section');
             if (!container) return;
-            container.innerHTML = `
+            
+            const levels = ["all", "A1", "A2", "B1", "B2"];
+            
+            let filterHtml = `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
-                    <p class="text-xs text-[var(--text-muted)] mt-1">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
+                    <p class="text-xs text-[var(--text-muted)] mt-1 mb-4">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            `;
+            
+            levels.forEach(lvl => {
+                const isActive = activeGrammarFilter === lvl;
+                const label = lvl === "all" ? "Alle" : lvl;
+                filterHtml += `
+                    <button onclick="setGrammarFilter('${lvl}')" class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all border ${
+                        isActive 
+                        ? 'bg-[var(--accent)] text-white border-transparent shadow-sm' 
+                        : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text-primary)]'
+                    }">${label}</button>
+                `;
+            });
+            
+            filterHtml += `
+                    </div>
                 </div>
             `;
-            const grid = document.createElement('div'); grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
             
-            GRAMMATIK_DATA.forEach((item, index) => {
+            container.innerHTML = filterHtml;
+            
+            const grid = document.createElement('div'); 
+            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pb-28";
+            
+            const filteredGrammar = GRAMMATIK_DATA.filter(item => {
+                if (activeGrammarFilter === "all") return true;
+                return item.level && item.level.toUpperCase() === activeGrammarFilter.toUpperCase();
+            });
+
+            if (filteredGrammar.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-[var(--text-muted)] italic">Keine Themen für diese Stufe verfügbar.</div>`;
+            }
+
+            filteredGrammar.forEach((item, index) => {
                 let examplesHtml = "<ul class='space-y-2 mt-2 text-xs text-[var(--text-primary)]'>";
                 item.examples.forEach(ex => { 
                     const cleanText = stripHtml(ex);
                     const encodedText = encodeURIComponent(cleanText);
                     examplesHtml += `
                         <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
-                            <button onmousedown="handleAudioTouchStart(event, '${encodedText}')" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onclick="handleAudioClick(event, '${encodedText}')" ondblclick="handleAudioDblClick(event, '${encodedText}')" class="audio-btn text-var(--text-muted) hover:text-[var(--accent)] transition-all mt-0.5 flex gap-0.5">
+                            <button ontouchstart="handleAudioTouchStart(event, '${encodedText}')" ontouchmove="handleAudioTouchMove(event)" ontouchend="handleAudioTouchEnd(event, '${encodedText}')" onmousedown="handleAudioMouseDown(event, '${encodedText}')" onmouseup="handleAudioMouseUp(event, '${encodedText}')" class="audio-btn text-var(--text-muted) hover:text-[var(--accent)] transition-all mt-0.5 flex gap-0.5">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                             </button>
-                            <span class="flex-1">${ex}</span>
+                            <span class="flex-1 select-text">${ex}</span>
                         </li>`; 
                 });
                 examplesHtml += "</ul>";
@@ -2924,8 +3002,8 @@
                                     <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                                 </button>
                             </div>
-                            <h3 class="text-sm font-bold text-[var(--accent)] mt-2">${item.title}</h3>
-                            <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed">${item.description}</p>
+                            <h3 class="text-sm font-bold text-[var(--accent)] mt-2 select-text">${item.title}</h3>
+                            <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed select-text">${item.description}</p>
                             
                             <div id="trans-container-${blockId}" class="${isExpanded ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
 
@@ -2942,7 +3020,7 @@
             expandedContainers.forEach(blockId => {
                 if (blockId.startsWith('grammatik_')) {
                     const idx = parseInt(blockId.split('_')[1]);
-                    const item = GRAMMATIK_DATA[idx];
+                    const item = filteredGrammar[idx];
                     if (item) {
                         const txt = `${item.title}. ${item.description}`;
                         const containerDiv = document.getElementById(getTranslationContainerId(blockId));
@@ -3024,8 +3102,53 @@
             });
         }
 
+        // Swipe-to-Open Geste auf Mobilgeräten für die linke Sidebar
+        document.addEventListener('touchstart', e => {
+            const x = e.touches[0].clientX;
+            const y = e.touches[0].clientY;
+            // Aktiviert nur, wenn das Wischen im linken Randbereich (unter 40px) beginnt
+            if (x < 40 && activeTab === 'dashboard') {
+                touchStartX = x;
+                touchStartY = y;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            const x = e.changedTouches[0].clientX;
+            const y = e.changedTouches[0].clientY;
+            const deltaX = x - touchStartX;
+            const deltaY = y - touchStartY;
+            
+            if (touchStartX < 40 && deltaX > 80 && Math.abs(deltaX) > 2.5 * Math.abs(deltaY)) {
+                if (sidebarElement && sidebarElement.classList.contains('-translate-x-full')) {
+                    sidebarElement.classList.remove('-translate-x-full');
+                }
+            }
+        }, { passive: true });
+
+        // Ermöglicht das Schließen der Sidebar per Links-Swipe auf ihr selbst
+        if (sidebarElement) {
+            sidebarElement.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            sidebarElement.addEventListener('touchend', e => {
+                const x = e.changedTouches[0].clientX;
+                const y = e.changedTouches[0].clientY;
+                const deltaX = x - touchStartX;
+                const deltaY = y - touchStartY;
+                
+                if (deltaX < -60 && Math.abs(deltaX) > 2.5 * Math.abs(deltaY)) {
+                    sidebarElement.classList.add('-translate-x-full');
+                }
+            }, { passive: true });
+        }
+
+        // Optimierte Swipe-Navigation (Weniger empfindlich, verhindert Konflikte mit vertikalem Scrollen)
         let touchStartX = 0; let touchStartY = 0;
         let touchEndX = 0; let touchEndY = 0;
+        let touchStartTime = 0;
 
         const workspacePanel = document.querySelector('main');
 
@@ -3033,6 +3156,7 @@
             workspacePanel.addEventListener('touchstart', e => {
                 touchStartX = e.changedTouches[0].screenX;
                 touchStartY = e.changedTouches[0].screenY;
+                touchStartTime = Date.now();
             }, { passive: true });
 
             workspacePanel.addEventListener('touchend', e => {
@@ -3045,8 +3169,10 @@
         function handleSwipeNavigation() {
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
+            const duration = Date.now() - touchStartTime;
             
-            if (Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2.5 * Math.abs(deltaY)) {
+            // Nur als bewusster Swipe werten, wenn schnell (<300ms) und deutlich horizontal dominiert (>100px)
+            if (duration < 300 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     navigateTopicStep(-1);
                 } else {
