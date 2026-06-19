@@ -27,7 +27,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
-    /* Binds Tailwind REM units to scale seamlessly with the selection tool */
+    /* Bindet die Tailwind-Schriftgröße an das Skalierungswerkzeug */
     html {
         font-size: var(--text-scale, 100%) !important;
     }
@@ -88,7 +88,7 @@
                     box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Verbesserte Interaktions-Übergänge für alle klickbaren UI-Elemente */
+    /* Weiche Übergänge für alle interaktiven UI-Elemente */
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
                     background-color 0.25s ease, 
@@ -135,7 +135,7 @@
         scrollbar-width: none;
     }
 
-    /* Premium Text-Marker mit hoher Transparenz und Unterstreichung statt flachen Balken */
+    /* Premium Text-Marker mit hoher Transparenz und Unterstreichung statt flacher Balken */
     .hl-yellow {
         background: rgba(254, 240, 138, 0.25) !important;
         color: inherit !important;
@@ -305,7 +305,7 @@
         </div>
     </header>
 
-    <!-- Slide-out Universal Hamburger Drawer Menu -->
+    <!-- Slide-out Universal Hamburger Drawer Menu (z-index angehoben um Überlagerungsfehler zu beheben) -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden transition-opacity duration-300"></div>
     <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
@@ -497,6 +497,7 @@
     <!-- Quick Preview Modal (Zweisprachige Zusammenfassungen) -->
     <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 pt-8 space-y-4 shadow-2xl transition-all relative">
+            <!-- Schließen-Schaltfläche absolut positioniert innerhalb des Modalkörpers -->
             <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50">✕</button>
             
             <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3 pr-8">
@@ -624,7 +625,7 @@
             31: "Kriminalität", 32: "Europa", 33: "Politik", 34: "Sport", 35: "Arbeitszeit",
             36: "Fremdsprachen", 37: "Erfolg", 38: "Studium", 39: "Bus & Bahn", 40: "Wissenschaft",
             41: "Dialekt", 42: "Meditation", 43: "Fleischkonsum", 44: "Technik", 45: "Bargeldloses Zahlen",
-            46: "Einkaufen", 47: "Tasgeld", 48: "Streaming", 49: "Kochen", 50: "Schule",
+            46: "Einkaufen", 47: "Taschengeld", 48: "Streaming", 49: "Kochen", 50: "Schule",
             51: "Tierversuche", 52: "Haustiere"
         };
 
@@ -765,11 +766,14 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Swipe-Logik für Navigation
-        let swipeStartX = 0;
-        let swipeStartY = 0;
-        let swipeEndX = 0;
-        let swipeEndY = 0;
+        // Freihand-Zeichnen Zustand Variablen
+        let isDrawingActive = false;
+        let drawingCanvas = null;
+        let drawingCtx = null;
+        let isDrawing = false;
+        let drawColor = '#ef4444';
+        let drawWidth = 3;
+        let isHighlighter = false;
 
         function cleanCitationLinks(text) {
             if (!text) return "";
@@ -857,6 +861,15 @@
             undoStack.push(JSON.stringify(stateSnapshot));
             redoStack = []; 
             updateUndoFabVisibility();
+        }
+
+        // Standardized service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker erfolgreich registriert!', reg))
+                    .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
+            });
         }
 
         function undo() {
@@ -1371,6 +1384,16 @@
                     }
                 }
             });
+
+            // Mindmap-Sektion komplett ausdehnen: Blendet die linke Themenliste bei Aktivierung des Rasters aus
+            const sidebar = document.getElementById('sidebar');
+            if (tabId === 'mindmap') {
+                if (sidebar) sidebar.classList.add('hidden');
+            } else {
+                if (sidebar && !sidebar.classList.contains('sidebar-collapsed')) {
+                    sidebar.classList.remove('hidden');
+                }
+            }
 
             if (tabId === 'dashboard') {
                 renderActiveTopic();
@@ -2410,13 +2433,9 @@
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
                 const isStarred = STARRED_TOPICS.includes(topic.id);
-                const isActive = index === activeIdx;
 
                 if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
-
-                // In der Raster-Sektion zeigen wir NICHT das aktuell ausgewählte Thema fokussiert
-                // sondern alle Karten gleichberechtigt für eine echte, saubere Mindmap-Übersicht.
 
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
@@ -2773,9 +2792,9 @@
                         let originalText = "";
                         if (blockId.startsWith('pro_de_') || blockId.startsWith('contra_de_')) {
                             const parts = blockId.split('_');
-                            const arrName = parts[0] + '_de';
+                            const arr = parts[0] + '_de';
                             const i = parseInt(parts[2]);
-                            originalText = topic[arrName] ? topic[arrName][i] : "";
+                            originalText = topic[arr] ? topic[arr][i] : "";
                         } else if (blockId.startsWith('dialog_de_')) {
                             const parts = blockId.split('_');
                             const i = parseInt(parts[2]);
@@ -3047,6 +3066,59 @@
             downloadAnchor.remove();
         }
 
+        function importTotalBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.version && parsed.version.startsWith("B2Trainer")) {
+                        pushToHistory();
+                        TOPICS_DATA = parsed.topics || TOPICS_DATA;
+                        TEMPLATE_DATA = parsed.template || TEMPLATE_DATA;
+                        highlightsStore = parsed.highlights || highlightsStore;
+                        learnedList = parsed.learned || learnedList;
+                        localStorage.setItem('b2_highlights', JSON.stringify(highlightsStore));
+                        localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+                        
+                        if (parsed.preferences) {
+                            currentThemeSetting = parsed.preferences.themeSetting || currentThemeSetting;
+                            textScale = parsed.preferences.textScale || textScale;
+                            activeMode = parsed.preferences.activeMode || activeMode;
+                            activeView = parsed.preferences.activeView || activeView;
+                            
+                            localStorage.setItem('b2_theme_setting', currentThemeSetting);
+                            localStorage.setItem('b2_text_scale', textScale);
+                            localStorage.setItem('b2_active_mode', activeMode);
+                        }
+                        
+                        await saveEditsSilent();
+                        alert("Backup erfolgreich eingespielt!");
+                        location.reload();
+                    } else {
+                        alert("Ungültiges Backup-Format!");
+                    }
+                } catch (err) {
+                    alert("Fehler beim Lesen des Backups: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function updateUndoFabVisibility() {
+            const undoFab = document.getElementById('mobile-undo-fab');
+            if (undoFab) {
+                if (isEditMode && undoStack.length > 0) {
+                    undoFab.classList.add('flex');
+                    undoFab.classList.remove('hidden');
+                } else {
+                    undoFab.classList.add('hidden');
+                    undoFab.classList.remove('flex');
+                }
+            }
+        }
+
         const sidebarElement = document.getElementById('sidebar');
         const centerToggle = document.getElementById('mobile-nav-toggle-center');
         if (centerToggle) {
@@ -3131,19 +3203,6 @@
                 setTimeout(() => {
                     buttonEl.style.transform = "scale(1)";
                 }, 150);
-            }
-        }
-
-        function updateUndoFabVisibility() {
-            const undoFab = document.getElementById('mobile-undo-fab');
-            if (undoFab) {
-                if (isEditMode && undoStack.length > 0) {
-                    undoFab.classList.add('flex');
-                    undoFab.classList.remove('hidden');
-                } else {
-                    undoFab.classList.add('hidden');
-                    undoFab.classList.remove('flex');
-                }
             }
         }
 
