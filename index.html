@@ -7,9 +7,12 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;500;600;700;800&family=Noto+Sans+Arabic:wght=300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght=300..700&display=swap" rel="stylesheet">
 
-    <link class="apple-touch-icon" href="./icons/icon-192.png">
+    <!-- Hochauflösendes Web-Icon & PWA Manifest -->
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/knowledge-sharing.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a7c59">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -200,6 +203,16 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+    }
+
+    /* Behebt das Emoji-Hover-Problem im Kasten-Raster */
+    .emoji-circle {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
+        pointer-events: none;
+    }
+    .group:hover .emoji-circle {
+        transform: scale(1.15) rotate(8deg);
+        background-color: var(--accent-light);
     }
 
     /* Responsive Sidebar transitions and spacing adjustments */
@@ -2111,7 +2124,7 @@
                         <div class="flex items-center gap-3" onclick="event.stopPropagation();">
                             ${showAudio && textForAudio ? `
                             <button onclick="openVoicePicker(event, '${encodedText}')" class="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)]">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                             </button>` : ''}
                             ${!isAlwaysOpen ? `
                             <svg id="chevron-${blockKey}" style="transform: rotate(180deg);" class="w-4 h-4 text-[var(--text-muted)] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -2164,7 +2177,7 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
                         </div>
                         <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform" title="Diesen Block anhören">
-                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                         </button>
                     </div>
                     <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${(activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id}, 'de', '${blockKey}')">
@@ -2373,27 +2386,30 @@
                     : 'shadow-sm'
                 } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
 
+                // Integrates .emoji-circle container with pointer-events: none to resolve the hover-conflict
                 card.innerHTML = `
-                    <div class="flex items-start justify-between gap-2 mb-3">
-                        <span class="text-[9px] font-bold uppercase tracking-widest ${style.badgeBg} px-2.5 py-1 rounded-full border border-black/5 dark:border-white/5">
+                    <div class="flex items-center justify-between gap-2 mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-widest ${style.badgeBg} px-2.5 py-1 rounded-full border border-black/5 dark:border-white/5">
                             ${topic.category || 'Allgemein'}
                         </span>
-                        <span class="text-xl filter drop-shadow-sm">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                        <div class="emoji-circle flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/40 rounded-full w-9 h-9 flex-shrink-0">
+                            <span class="text-lg filter drop-shadow-sm">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                        </div>
                     </div>
-                    <div class="space-y-1 mb-4 flex-1">
+                    <div class="space-y-1.5 mb-4 flex-1">
                         <div class="flex items-center gap-1.5">
                             <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
                             ${isStarred ? `<span class="text-amber-500 text-xs" title="Sehr wichtiges Prüfungsthema">★</span>` : ''}
                         </div>
-                        <h4 class="text-xs sm:text-[13px] font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-2 leading-snug">
+                        <h4 class="text-xs sm:text-[14px] font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-2 leading-snug">
                             ${topic.title_de}
                         </h4>
                     </div>
-                    <div class="flex items-center justify-between border-t border-[var(--border)] pt-2.5 mt-auto">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    <div class="flex items-center justify-between border-t border-[var(--border)] pt-3 mt-auto">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
                             ${isLearned ? '✨ Gelernt' : '⏳ Offen'}
                         </span>
-                        <span class="w-2 h-2 rounded-full ${isLearned ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-zinc-300 dark:bg-zinc-700'}"></span>
+                        <span class="w-2.5 h-2.5 rounded-full ${isLearned ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-zinc-300 dark:bg-zinc-700'}"></span>
                     </div>
                 `;
 
@@ -2638,7 +2654,7 @@
                         <div class="flex items-center justify-between gap-4 mb-2">
                             <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
                             <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                             </button>
                         </div>
                         <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
@@ -2982,6 +2998,16 @@
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
+
+        // Registrierung des Service Workers für PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker erfolgreich registriert!', reg))
+                    .catch(err => console.error('Service Worker Registrierung fehlgeschlagen:', err));
+            });
+        }
     </script>
 </body>
 </html>
+
