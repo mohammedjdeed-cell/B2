@@ -50,27 +50,31 @@
     }
 
     [data-theme="dark"] {
-        --bg-app:        #1c1b18; 
-        --bg-card:       #242320; 
-        --sidebar-bg:    #1c1b18;
-        --border:        #2e2c28; 
-        --text-primary:  #e8e4dc; 
-        --text-muted:    #9a9690; 
-        --text-faint:    #52504c;
+        --bg-app:        #121212; 
+        --bg-card:       #1e1e1e; 
+        --bg-sidebar:    #181818;
+        --border:        #2d2d2d; 
+        --text-primary:  #f3f4f6; 
+        --text-muted:    #9ca3af; 
+        --text-faint:    #4b5563;
         --accent:        #5a8f6a; 
         --accent-light:  rgba(90, 143, 106, 0.15);
         --success:       #5a8f6a;
-        --success-light: #1e2d22; 
-        --danger:        #c0392b;
-        --danger-light:  #2d1e1e; 
-        --amber:         #d97706;
-        --amber-light:   rgba(217, 119, 6, 0.15);
+        --success-light: #162a1c; 
+        --danger:        #ef4444;
+        --danger-light:  #2e1515; 
+        --amber:         #f59e0b;
+        --amber-light:   rgba(245, 158, 11, 0.15);
         --shadow-sm:     0 1px 2px rgba(0,0,0,0.5);
         --shadow-md:     0 4px 12px rgba(0,0,0,0.6);
     }
 
-    body, header, aside, main, .card-transition {
-        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    /* Elegant learned state transitions and smooth UI morphing */
+    body, header, aside, main, .card-transition, #dashboard-controls, .topic-list-item {
+        transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                    border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                    color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     button, .clickable-row, #topic-list button {
@@ -128,14 +132,61 @@
         scrollbar-width: none;
     }
 
+    /* Text Selection Highlights */
+    .hl-yellow {
+        background-color: #fef08a !important;
+        color: #1a1a1a !important;
+        border-radius: 2px;
+        padding: 0 2px;
+    }
+    .hl-blue {
+        background-color: #bfdbfe !important;
+        color: #1a1a1a !important;
+        border-radius: 2px;
+        padding: 0 2px;
+    }
+    .hl-red {
+        background-color: #fecaca !important;
+        color: #1a1a1a !important;
+        border-radius: 2px;
+        padding: 0 2px;
+    }
+    .hl-green {
+        background-color: #bbf7d0 !important;
+        color: #1a1a1a !important;
+        border-radius: 2px;
+        padding: 0 2px;
+    }
+
+    [data-theme="dark"] .hl-yellow { background-color: #713f12 !important; color: #fef08a !important; }
+    [data-theme="dark"] .hl-blue { background-color: #1e3a8a !important; color: #bfdbfe !important; }
+    [data-theme="dark"] .hl-red { background-color: #7f1d1d !important; color: #fecaca !important; }
+    [data-theme="dark"] .hl-green { background-color: #14532d !important; color: #bbf7d0 !important; }
+
+    .highlight {
+        background-color: rgba(74, 124, 89, 0.15);
+        border-bottom: 2px solid var(--accent);
+        padding: 0 2px;
+        border-radius: 2px;
+    }
+    .word-circle {
+        border: 2px solid #e11d48;
+        border-radius: 50%;
+        padding: 0 4px;
+        display: inline-block;
+    }
+    [data-theme="dark"] .word-circle {
+        border-color: #f43f5e;
+    }
+
     /* Responsive Sidebar transitions and spacing adjustments */
     @media (min-width: 1024px) {
         #sidebar {
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 20rem; /* w-80 */
+            width: 20rem; 
         }
         #sidebar.sidebar-collapsed {
-            width: 4.5rem !important; /* minimized width */
+            width: 4.5rem !important; 
         }
         #sidebar.sidebar-collapsed .hide-on-collapse {
             display: none !important;
@@ -148,9 +199,17 @@
             padding-left: 0.5rem !important;
             padding-right: 0.5rem !important;
         }
+        #sidebar.sidebar-collapsed .topic-list-item > div {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
         #sidebar.sidebar-collapsed .sidebar-only-emoji {
-            font-size: 1.35rem;
-            margin: 0 auto;
+            font-size: 1.5rem !important;
+            display: block !important;
+            margin: 0 auto !important;
+            text-align: center !important;
         }
         #sidebar.sidebar-collapsed .topic-list-item {
             justify-content: center !important;
@@ -159,7 +218,7 @@
     }
 </style>
 </head>
-<body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)]">
+<body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
 
     <!-- Header -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
@@ -303,14 +362,14 @@
                 </div>
             </div>
 
-            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1"></nav>
+            <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
         </aside>
 
         <!-- Main Scrollable Panel -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6">
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)]">
             
             <!-- Streamlined Focus View Controls -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border-b border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:border md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 -mx-4 md:mx-0 px-4 mt-[-1rem] md:mt-0 pt-4">
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
                     <div>
@@ -378,8 +437,8 @@
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pt-4"></div>
             </section>
 
-            <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content"></section>
-            <section id="grammar-tab-section" class="hidden space-y-6 scalable-content"></section>
+            <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
+            <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
             <!-- Mobile Bottom Navigation -->
             <div class="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/90 backdrop-blur-md border-t border-[var(--border)] pb-safe pt-2 px-4 flex justify-between items-center z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
@@ -1314,9 +1373,27 @@
                     resGrammatik = await safeFetchJson('./grammatik.json');
                 }
 
-                let baseTopics = Array.isArray(resTopics) && resTopics.length > 0 ? resTopics : [];
-                let baseTemplate = Array.isArray(resTemplate) && resTemplate.length > 0 ? resTemplate : [];
-                let baseGrammatik = Array.isArray(resGrammatik) && resGrammatik.length > 0 ? resGrammatik : [];
+                // Highly robust loader for either array or dictionary-wrapped JSON objects
+                let baseTopics = [];
+                if (Array.isArray(resTopics)) {
+                    baseTopics = resTopics;
+                } else if (resTopics && typeof resTopics === 'object') {
+                    baseTopics = Object.values(resTopics);
+                }
+
+                let baseTemplate = [];
+                if (Array.isArray(resTemplate)) {
+                    baseTemplate = resTemplate;
+                } else if (resTemplate && typeof resTemplate === 'object') {
+                    baseTemplate = Object.values(resTemplate);
+                }
+
+                let baseGrammatik = [];
+                if (Array.isArray(resGrammatik)) {
+                    baseGrammatik = resGrammatik;
+                } else if (resGrammatik && typeof resGrammatik === 'object') {
+                    baseGrammatik = Object.values(resGrammatik);
+                }
 
                 if (baseTopics.length === 0) {
                     baseTopics = [{
@@ -1439,6 +1516,8 @@
                     renderActiveTopic();
                 } else if (activeTab === 'grammar') {
                     renderGrammar();
+                } else if (activeTab === 'mindmap') {
+                    renderSimplisticBoxGrid();
                 }
             } catch (e) {
                 console.error("Fehler beim Initialisieren der Datenschnittstelle:", e);
@@ -1532,7 +1611,6 @@
             temp.innerHTML = htmlText;
             const sorted = [...CONNECTORS].sort((a,b) => b.length - a.length);
 
-            // Safer highlight traversal
             function highlightNode(node) {
                 if (node.nodeType === Node.TEXT_NODE) {
                     let text = node.nodeValue;
@@ -1621,7 +1699,7 @@
                 } catch(e) {
                     try {
                         const [resEn, resAr] = await Promise.all([
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&logpair=de|en`),
                             fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
                         ]);
                         const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
@@ -1742,7 +1820,7 @@
             } catch (e) {
                 try {
                     const [resEn, resAr] = await Promise.all([
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&logpair=de|en`),
                         fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|ar`)
                     ]);
 
@@ -1905,11 +1983,16 @@
                 if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
 
                 const item = document.createElement('button');
-                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item ${
-                    isActive 
+                
+                // Color Morph on Left Sidebar Items to denote learned state
+                const activeClass = isActive 
                     ? 'bg-[var(--accent)] text-white shadow-md font-semibold' 
-                    : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)] hover:translate-x-1'
-                }`;
+                    : (isLearned 
+                        ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-l-4 border-emerald-500 font-medium'
+                        : 'hover:bg-[var(--bg-app)] text-[var(--text-primary)] hover:translate-x-1'
+                      );
+
+                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item ${activeClass}`;
 
                 const emoji = TOPIC_ICONS[topic.id] || "📌";
                 const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
@@ -2228,6 +2311,7 @@
             }
         }
 
+        // Modern UI Redesign for the Mind Map (Lern-Raster) Card Grid
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2248,44 +2332,35 @@
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
                 const card = document.createElement('div');
-                card.className = `group p-4 rounded-xl border cursor-pointer flex flex-col justify-between min-h-[160px] h-auto relative select-none transition-all duration-300 ${style.lightBg} ${style.lightBorder} ${style.darkBg} ${style.darkBorder} hover:-translate-y-1 hover:shadow-md ${
+                
+                // High-fidelity Glassmorphic styling with clear modern layout
+                card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-md ${
                     isActive 
-                    ? `ring-2 ${style.activeRing} shadow-md` 
+                    ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
                 }`;
 
-                const numBadge = `<span class="text-[11px] font-black ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}">#${topic.id}</span>`;
-                const progressBadge = isLearned 
-                    ? `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500" title="Gelernt"></span>`
-                    : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" title="Offen"></span>`;
-                
-                const starBadge = isStarred 
-                    ? `<span class="text-amber-500 text-[10px] font-black animate-pulse" title="Sehr wichtiges Prüfungsthema">★</span>` 
-                    : ``;
-
-                const textClass = "text-[12px] sm:text-[13px] leading-relaxed font-semibold text-[var(--text-primary)] break-words transition-colors duration-200";
-
                 card.innerHTML = `
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="px-2 py-1 rounded-[6px] text-[9px] font-bold uppercase tracking-wider border ${style.badgeBg}">
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <span class="text-[9px] font-bold uppercase tracking-widest ${style.badgeBg} px-2.5 py-1 rounded-full border border-black/5 dark:border-white/5">
                             ${topic.category || 'Allgemein'}
+                        </span>
+                        <span class="text-xl filter drop-shadow-sm">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                    </div>
+                    <div class="space-y-1 mb-4 flex-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-mono font-bold text-[var(--text-muted)]">THEMA #${topic.id}</span>
+                            ${isStarred ? `<span class="text-amber-500 text-xs" title="Sehr wichtiges Prüfungsthema">★</span>` : ''}
                         </div>
-                        <div class="w-8 h-8 rounded-full bg-[var(--bg-app)] flex items-center justify-center text-sm shadow-sm border border-[var(--border)] text-[var(--text-primary)]">
-                            ${TOPIC_ICONS[topic.id] || "📌"}
-                        </div>
+                        <h4 class="text-xs sm:text-[13px] font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-2 leading-snug">
+                            ${topic.title_de}
+                        </h4>
                     </div>
-                    
-                    <div class="flex items-center gap-1.5 mb-1">
-                        ${numBadge}
-                        ${starBadge}
-                    </div>
-                    
-                    <div class="flex-1 py-1">
-                        <p class="${textClass}" style="hyphens: auto; word-break: break-word;">${topic.title_de}</p>
-                    </div>
-                    
-                    <div class="flex items-center justify-end mt-2 pt-2 border-t border-[var(--border)]/50">
-                        ${progressBadge}
+                    <div class="flex items-center justify-between border-t border-[var(--border)] pt-2.5 mt-auto">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                            ${isLearned ? '✨ Gelernt' : '⏳ Offen'}
+                        </span>
+                        <span class="w-2 h-2 rounded-full ${isLearned ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-zinc-300 dark:bg-zinc-700'}"></span>
                     </div>
                 `;
 
@@ -2415,9 +2490,9 @@
             const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border-b p-4 md:rounded-[var(--radius-card)] md:border md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 -mx-4 md:mx-0 px-4 mt-[-1rem] md:mt-0 pt-4";
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200";
                 } else {
-                    controlsEl.className = "bg-[var(--bg-card)] border-b border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:border md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 -mx-4 md:mx-0 px-4 mt-[-1rem] md:mt-0 pt-4";
+                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200";
                 }
             }
 
@@ -2670,7 +2745,7 @@
                     examplesHtml += `
                         <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
                             <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 transition-transform mt-0.5">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                             </button>
                             <span class="flex-1">${ex}</span>
                         </li>`; 
@@ -2851,6 +2926,27 @@
                     buttonEl.style.transform = "scale(1)";
                 }, 150);
             }
+        }
+
+        // Connect the "Als gelernt markieren" button visually & trigger custom color transitions
+        const isLearnedStateToggle = document.getElementById('learned-toggle');
+        if (isLearnedStateToggle) {
+            isLearnedStateToggle.onclick = () => {
+                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                if (learnedList.includes(activeTopic.id)) {
+                    learnedList = learnedList.filter(id => id !== activeTopic.id);
+                    isLearnedStateToggle.textContent = "Als gelernt markieren";
+                } else {
+                    learnedList.push(activeTopic.id);
+                    isLearnedStateToggle.textContent = "Als offen markieren";
+                    handleLearningToggleAnimation(isLearnedStateToggle, true);
+                }
+                localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+                renderSidebar();
+                updateProgress();
+                renderActiveTopic();
+                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+            };
         }
     </script>
 </body>
