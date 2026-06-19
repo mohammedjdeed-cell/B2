@@ -42,8 +42,8 @@
         --amber-light:   #FFFBEB;
         --purple:        #7C3AED;
         --purple-light:  #F5F3FF;
-        --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-        --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+        --shadow-sm:     0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md:     0 2px 4px rgba(0,0,0,0.06);
         --radius-card:   12px;
         --radius-btn:    8px;
         --text-scale:    100%;
@@ -131,7 +131,7 @@
         scrollbar-width: none;
     }
 
-    /* Modern Matte Highlights with micro natural edges */
+    /* Modern Matte Highlights with micro rounded edges (2026 aesthetics) */
     .hl-yellow {
         background-color: #fef08a !important;
         color: #1a1a1a !important;
@@ -186,7 +186,7 @@
         border-color: #f43f5e;
     }
 
-    /* Fixed Sidebar styling variables for emojis */
+    /* Fixed Sidebar sizing variables for emojis */
     .sidebar-only-emoji {
         font-size: 1.25rem;
         width: 1.75rem;
@@ -228,6 +228,8 @@
             display: block !important;
             margin: 0 auto !important;
             text-align: center !important;
+            width: auto !important;
+            height: auto !important;
         }
         #sidebar.sidebar-collapsed .topic-list-item {
             justify-content: center !important;
@@ -391,7 +393,7 @@
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
                     <div>
-                        <span id="active-topic-num" class="px-2 py-0.5 text-[10px] font-bold bg-[var(--accent-light)] text-[var(--accent)] rounded uppercase tracking-wider">Thema --</span>
+                        <div id="active-topic-num"></div>
                         <h2 id="active-topic-title-de" class="text-lg font-black text-[var(--text-primary)] mt-1 leading-tight">Lade Diskussionsthema...</h2>
                         <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading...</h3>
                     </div>
@@ -1383,7 +1385,6 @@
 
         async function loadTopics() {
             try {
-                // Defensive case sensitivity mappings
                 let resTopics = await safeFetchJson('./Topics.json');
                 if (!resTopics || resTopics.length === 0) {
                     resTopics = await safeFetchJson('./topics.json');
@@ -1845,7 +1846,7 @@
             } catch (e) {
                 try {
                     const [resEn, resAr] = await Promise.all([
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&logpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|en`),
                         fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|ar`)
                     ]);
 
@@ -2009,9 +2010,9 @@
 
                 const item = document.createElement('button');
                 
-                // Color Morph on Left Sidebar Items to denote learned state with full box highlight
+                // Full box translucent emerald fill on learned toggle with elegant solid left border
                 const activeClass = isActive 
-                    ? 'bg-[var(--accent)] text-white shadow-md font-semibold' 
+                    ? 'bg-[var(--accent)] text-white shadow-sm font-semibold' 
                     : (isLearned 
                         ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/10 border-l-4 border-emerald-500 font-semibold shadow-inner'
                         : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
@@ -2025,11 +2026,12 @@
                     ? `<span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>` 
                     : `<span class="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
+                // Layout optimized to prevent parent wrapper truncation clipping during minimization
                 item.innerHTML = `
-                    <div class="flex items-center gap-2.5 truncate">
+                    <div class="flex items-center gap-2.5">
                         <span class="sidebar-only-emoji text-base select-none leading-none">${emoji}</span>
                         <div class="flex items-center gap-2 truncate hide-on-collapse-custom">
-                            <span class="text-xs opacity-75 font-mono">#${topic.id}</span>
+                            <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
                             ${starMarker}
                             <span class="truncate text-xs topic-title">${topic.title_de}</span>
                         </div>
@@ -2358,7 +2360,7 @@
 
                 const card = document.createElement('div');
                 
-                // High-fidelity Glassmorphic styling with clear modern layout & emerald tone if marked done
+                // High-fidelity Glassmorphic styling with flat design layout & emerald tone if marked done
                 card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-md ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
@@ -2374,7 +2376,7 @@
                     </div>
                     <div class="space-y-1 mb-4 flex-1">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] font-mono font-bold text-[var(--text-muted)]">THEMA #${topic.id}</span>
+                            <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
                             ${isStarred ? `<span class="text-amber-500 text-xs" title="Sehr wichtiges Prüfungsthema">★</span>` : ''}
                         </div>
                         <h4 class="text-xs sm:text-[13px] font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-2 leading-snug">
@@ -2474,7 +2476,10 @@
             if (TOPICS_DATA.length === 0) return;
             const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
 
-            document.getElementById('active-topic-num').textContent = `Thema ${topic.id} / 52`;
+            // Render modern flat-design box index
+            document.getElementById('active-topic-num').innerHTML = `
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52</span>
+            `;
             
             const deStar = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 text-lg select-none animate-pulse">★</span>` : '';
             document.getElementById('active-topic-title-de').innerHTML = `${topic.title_de} ${deStar}`;
@@ -2534,128 +2539,127 @@
                 </div>
             `;
 
-            if (activeMode === 'classic') {
-                const bannerDiv = document.createElement('div');
-                bannerDiv.innerHTML = bannerHtml;
-                container.appendChild(bannerDiv);
+            // REMOVED THE Classic Mode Only Restriction: Both mode states now render fully 
+            const bannerDiv = document.createElement('div');
+            bannerDiv.innerHTML = bannerHtml;
+            container.appendChild(bannerDiv);
 
-                const deClass = activeView === 'en' ? 'hidden' : '';
-                const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? '' : 'hidden';
-                const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? '' : 'hidden';
+            const deClass = activeView === 'en' ? 'hidden' : '';
+            const enClass = (activeView === 'both' || activeView === 'all' || activeView === 'en') ? '' : 'hidden';
+            const arClass = (activeView === 'de_ar' || activeView === 'all' || activeView === 'ar') ? '' : 'hidden';
 
-                const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
-                const savedEinl = getHighlight(topic.id, einlDe);
-                const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
-                const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
+            const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
+            const savedEinl = getHighlight(topic.id, einlDe);
+            const cleanEinlEn = stripHtml(getTopicValue(topic, einlEn));
+            const cleanEinlAr = stripHtml(getTopicValue(topic, einlAr));
 
-                const einleitungHtml = `
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
-                    <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
-                    <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
-                `;
-                const einleitungCard = document.createElement('div');
-                einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
-                container.appendChild(einleitungCard);
+            const einleitungHtml = `
+                <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                <p id="en-${einlDe}" class="${enClass} text-xs italic text-[var(--text-muted)] mt-2 select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'en', '${einlEn}')">${cleanEinlEn}</p>
+                <p id="ar-${einlDe}" class="${arClass} text-xs text-right mt-2 leading-relaxed font-medium font-arabic select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'ar', '${einlAr}')" dir="rtl">${cleanEinlAr}</p>
+            `;
+            const einleitungCard = document.createElement('div');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
+            container.appendChild(einleitungCard);
 
-                const proContraParent = document.createElement('div');
-                proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
+            const proContraParent = document.createElement('div');
+            proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
 
-                let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
-                topic.pro_de.forEach((deVal, index) => {
-                    const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe) || deVal;
-                    const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    proContent += `
-                        <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
-                            <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
-                            <div class="flex-1 text-[14px]">
-                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
-                                <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
-                            </div>
-                            ${isEditMode ? `
-                            <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
-                                ✏️
-                            </button>` : ''}
-                        </div>`;
-                });
-                proContent += `</div>`;
-
-                let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
-                topic.contra_de.forEach((deVal, index) => {
-                    const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe) || deVal;
-                    const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
-                    contraContent += `
-                        <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
-                            <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
-                            <div class="flex-1 text-[14px]">
-                                <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
-                                <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
-                            </div>
-                            ${isEditMode ? `
-                            <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
-                                ✏️
-                            </button>` : ''}
-                        </div>`;
-                });
-                contraContent += `</div>`;
-
-                const proCard = document.createElement('div');
-                proCard.innerHTML = buildCardWrapper("Dafür (Pro)", proContent, "pro_section", "", 'pro_de', false);
-                const contraCard = document.createElement('div');
-                contraCard.innerHTML = buildCardWrapper("Dagegen (Contra)", contraContent, "contra_section", "", 'contra_de', false);
-
-                proContraParent.appendChild(proCard);
-                proContraParent.appendChild(contraCard);
-                container.appendChild(proContraParent);
-
-                const erfDe = "pers_erfahrung_de";
-                const deValErf = getHighlight(topic.id, erfDe) || topic[erfDe];
-                const erfahrungCard = document.createElement('div');
-                erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
-                container.appendChild(erfahrungCard);
-
-                let dialogHtml = '<div class="space-y-4">';
-                topic.dialog.forEach((chat, index) => {
-                    const skeyDe = `dialog_de_${index}`;
-                    const deValChat = getHighlight(topic.id, skeyDe) || chat.de;
-                    const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
-                    const isA = chat.role.includes('A');
-                    
-                    dialogHtml += `
-                        <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
-                            <div class="flex items-center justify-between gap-4 mb-2">
-                                <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
-                                <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">
-                                    <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
-                                </button>
-                            </div>
-                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
-                                ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
-                            </div>
-                            <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
-                                <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
-                                </button>
-                                <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
-                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
-                                </button>
-                            </div>
-                            <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+            let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
+            topic.pro_de.forEach((deVal, index) => {
+                const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
+                const saved = getHighlight(topic.id, skeyDe) || deVal;
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                proContent += `
+                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
+                        <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
+                        <div class="flex-1 text-[14px]">
+                            <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                            <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
                         </div>
-                    `;
-                });
-                dialogHtml += '</div>';
-                const dialogCard = document.createElement('div');
-                dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
-                container.appendChild(dialogCard);
+                        ${isEditMode ? `
+                        <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                            ✏️
+                        </button>` : ''}
+                    </div>`;
+            });
+            proContent += `</div>`;
 
-                const schlussDe = "schluss_de";
-                const deValSchluss = getHighlight(topic.id, schlussDe) || topic[schlussDe];
-                const schlussCard = document.createElement('div');
-                schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de');
-                container.appendChild(schlussCard);
-            }
+            let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
+            topic.contra_de.forEach((deVal, index) => {
+                const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
+                const saved = getHighlight(topic.id, skeyDe) || deVal;
+                const cleanEn = stripHtml(getTopicValue(topic, skeyEn));
+                contraContent += `
+                    <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex gap-3 items-start min-h-[44px]">
+                        <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
+                        <div class="flex-1 text-[14px]">
+                            <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                            <span class="text-[var(--text-muted)] italic block text-xs mt-0.5">${cleanEn}</span>
+                        </div>
+                        ${isEditMode ? `
+                        <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ml-auto">
+                            ✏️
+                        </button>` : ''}
+                    </div>`;
+            });
+            contraContent += `</div>`;
+
+            const proCard = document.createElement('div');
+            proCard.innerHTML = buildCardWrapper("Dafür (Pro)", proContent, "pro_section", "", 'pro_de', false);
+            const contraCard = document.createElement('div');
+            contraCard.innerHTML = buildCardWrapper("Dagegen (Contra)", contraContent, "contra_section", "", 'contra_de', false);
+
+            proContraParent.appendChild(proCard);
+            proContraParent.appendChild(contraCard);
+            container.appendChild(proContraParent);
+
+            const erfDe = "pers_erfahrung_de";
+            const deValErf = getHighlight(topic.id, erfDe) || topic[erfDe];
+            const erfahrungCard = document.createElement('div');
+            erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de');
+            container.appendChild(erfahrungCard);
+
+            let dialogHtml = '<div class="space-y-4">';
+            topic.dialog.forEach((chat, index) => {
+                const skeyDe = `dialog_de_${index}`;
+                const deValChat = getHighlight(topic.id, skeyDe) || chat.de;
+                const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
+                const isA = chat.role.includes('A');
+                
+                dialogHtml += `
+                    <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
+                        <div class="flex items-center justify-between gap-4 mb-2">
+                            <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
+                            <button onclick="openVoicePicker(event, '${statementSpeechText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-105 active:scale-95 transition-transform flex-shrink-0" title="Diesen Redebeitrag anhören">
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                            </button>
+                        </div>
+                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                            ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
+                        </div>
+                        <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                            </button>
+                            <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1">
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                            </button>
+                        </div>
+                        <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                    </div>
+                `;
+            });
+            dialogHtml += '</div>';
+            const dialogCard = document.createElement('div');
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
+            container.appendChild(dialogCard);
+
+            const schlussDe = "schluss_de";
+            const deValSchluss = getHighlight(topic.id, schlussDe) || topic[schlussDe];
+            const schlussCard = document.createElement('div');
+            schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de');
+            container.appendChild(schlussCard);
 
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
