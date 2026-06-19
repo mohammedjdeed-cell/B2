@@ -24,6 +24,11 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
+    /* Binds Tailwind REM units to scale seamlessly with the selection tool */
+    html {
+        font-size: var(--text-scale, 100%) !important;
+    }
+
     :root {
         --bg-app:        #F5F4F0;
         --bg-card:       #FFFFFF;
@@ -42,8 +47,8 @@
         --amber-light:   #FFFBEB;
         --purple:        #7C3AED;
         --purple-light:  #F5F3FF;
-        --shadow-sm:     0 1px 2px rgba(0,0,0,0.04);
-        --shadow-md:     0 2px 4px rgba(0,0,0,0.06);
+        --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
         --radius-card:   12px;
         --radius-btn:    8px;
         --text-scale:    100%;
@@ -131,7 +136,7 @@
         scrollbar-width: none;
     }
 
-    /* Modern Matte Highlights with micro rounded edges (2026 aesthetics) */
+    /* Modern Matte Highlights with micro rounded corners */
     .hl-yellow {
         background-color: #fef08a !important;
         color: #1a1a1a !important;
@@ -186,7 +191,7 @@
         border-color: #f43f5e;
     }
 
-    /* Fixed Sidebar sizing variables for emojis */
+    /* Fixed Sidebar styling variables for emojis */
     .sidebar-only-emoji {
         font-size: 1.25rem;
         width: 1.75rem;
@@ -427,7 +432,7 @@
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex items-start gap-2.5">
                     <span class="text-sm">💡</span>
                     <p class="text-[11px] text-[var(--text-primary)] leading-relaxed">
-                        <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort, um die Formatierungs-Toolbar zu öffnen.
+                        <strong>Bearbeitungs-Modus aktiv:</strong> Markieren Sie Text oder tippen Sie auf ein Wort, um die Formatierungs-Toolbar` zu öffnen.
                     </p>
                 </div>
                 <div id="active-topic-container" class="space-y-6"></div>
@@ -1237,9 +1242,9 @@
                 const btn = document.getElementById(`scale-${scale}`);
                 if (btn) {
                     if (scale + '%' === textScale) {
-                        btn.className = "py-1 text-center rounded bg-[var(--accent)] text-white shadow-inner";
+                        btn.className = "py-2 text-xs font-bold text-center rounded bg-[var(--accent)] text-white shadow-inner";
                     } else {
-                        btn.className = "py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                        btn.className = "py-2 text-xs font-bold text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]";
                     }
                 }
             });
@@ -1385,6 +1390,7 @@
 
         async function loadTopics() {
             try {
+                // Defensive case sensitivity mappings
                 let resTopics = await safeFetchJson('./Topics.json');
                 if (!resTopics || resTopics.length === 0) {
                     resTopics = await safeFetchJson('./topics.json');
@@ -1725,7 +1731,7 @@
                 } catch(e) {
                     try {
                         const [resEn, resAr] = await Promise.all([
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&logpair=de|en`),
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
                             fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
                         ]);
                         const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
@@ -1846,7 +1852,7 @@
             } catch (e) {
                 try {
                     const [resEn, resAr] = await Promise.all([
-                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|en`),
+                        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&logpair=de|en`),
                         fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=de|ar`)
                     ]);
 
@@ -2014,7 +2020,7 @@
                 const activeClass = isActive 
                     ? 'bg-[var(--accent)] text-white shadow-sm font-semibold' 
                     : (isLearned 
-                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/10 border-l-4 border-emerald-500 font-semibold shadow-inner'
+                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/10 border-l-4 border-emerald-500 font-semibold'
                         : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
                       );
 
@@ -2361,7 +2367,7 @@
                 const card = document.createElement('div');
                 
                 // High-fidelity Glassmorphic styling with flat design layout & emerald tone if marked done
-                card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-md ${
+                card.className = `group p-5 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[170px] h-auto relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
