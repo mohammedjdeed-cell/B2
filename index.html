@@ -597,7 +597,6 @@
             measurementId: "G-SPHLVHRL6K"
         };
 
-        // Defensive Firebase initialization
         let auth = null;
         let db = null;
         if (typeof firebase !== 'undefined') {
@@ -649,7 +648,6 @@
             return cleaned.trim();
         }
 
-        // Extremely safe utility fetch to handle network or JSON parsing errors cleanly
         async function safeFetchJson(url) {
             try {
                 const response = await fetch(url);
@@ -1277,7 +1275,6 @@
 
         async function loadTopics() {
             try {
-                // Fetch defensive files securely
                 const resTopics = await safeFetchJson('./topics.json');
                 const resTemplate = await safeFetchJson('./template.json');
                 
@@ -1592,7 +1589,7 @@
                 } catch(e) {
                     try {
                         const [resEn, resAr] = await Promise.all([
-                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|en`),
+                            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&logpair=de|en`),
                             fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(plainText)}&langpair=de|ar`)
                         ]);
                         const [dataEn, dataAr] = await Promise.all([resEn.json(), resAr.json()]);
@@ -1961,7 +1958,7 @@
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] overflow-hidden card-transition">
                     <div onclick="${isAlwaysOpen ? '' : `toggleCardAccordion('${blockKey}')`}" class="flex items-center justify-between p-4 min-h-[44px] cursor-pointer select-none bg-[var(--bg-sidebar)] border-b border-[var(--border)]">
                         <div class="flex items-center gap-2">
-                            <span class="text-[11px] font-black uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
+                            <span class="text-[11px] font-black uppercase tracking-wider text-[var(--text-primary)]">${title}</span>
                         </div>
                         <div class="flex items-center gap-3" onclick="event.stopPropagation();">
                             ${showAudio && textForAudio ? `
@@ -1969,12 +1966,14 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                             </button>` : ''}
                             ${!isAlwaysOpen ? `
-                            <svg id="chevron-${blockKey}" class="w-4 h-4 text-[var(--text-muted)] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg id="chevron-${blockKey}" style="transform: rotate(180deg);" class="w-4 h-4 text-[var(--text-muted)] transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             ` : ''}
                         </div>
                     </div>
-                    <div id="content-block-${blockKey}" class="accordion-content ${isAlwaysOpen ? 'expanded' : ''} p-5 space-y-4">
-                        ${content}
+                    <div id="content-block-${blockKey}" class="accordion-content expanded">
+                        <div class="p-5 space-y-4">
+                            ${content}
+                        </div>
                     </div>
                 </div>
             `;
@@ -2003,7 +2002,7 @@
             
             const cardBgClass = isLearned 
                 ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
-                : "bg-[var(--bg-card)] border-[var(--border)]";
+                : "bg-[var(--bg-card)] border border-[var(--border)]";
             
             const titleBulletClass = isLearned 
                 ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
@@ -2520,7 +2519,7 @@
                 container.appendChild(dialogCard);
 
                 const schlussDe = "schluss_de";
-                const deValSchluss = getHighlight(topic.id, schlussDe) || topic[sclussDe];
+                const deValSchluss = getHighlight(topic.id, schlussDe) || topic[schlussDe];
                 const schlussCard = document.createElement('div');
                 schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de');
                 container.appendChild(schlussCard);
@@ -2639,7 +2638,7 @@
                     examplesHtml += `
                         <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
                             <button onclick="openVoicePicker(event, '${encodedText}')" class="text-var(--text-muted) hover:text-[var(--accent)] hover:scale-110 transition-transform mt-0.5">
-                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+                                <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 100 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
                             </button>
                             <span class="flex-1">${ex}</span>
                         </li>`; 
@@ -2760,7 +2759,6 @@
             });
         }
 
-        // Swipe Navigation Configuration
         let touchStartX = 0; let touchStartY = 0;
         let touchEndX = 0; let touchEndY = 0;
 
