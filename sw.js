@@ -1,4 +1,4 @@
-const CACHE_NAME = 'b2trainer-v8'; // Bumped version forces complete system refresh on mobile
+const CACHE_NAME = 'b2trainer-v10'; // Bumped version to force mobile asset clear
 const OFFLINE_URL = './index.html';
 
 const PRECACHE_ASSETS = [
@@ -7,7 +7,8 @@ const PRECACHE_ASSETS = [
   './index.html?utm_source=pwa',
   './manifest.json',
   './topics.json',
-  'https://cdn-icons-png.flaticon.com/512/3406/3406828.png',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Circle-icons-chat.svg/192px-Circle-icons-chat.svg.png',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Circle-icons-chat.svg/512px-Circle-icons-chat.svg.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Noto+Sans+Arabic:wght@300..700&display=swap',
   'https://cdn.tailwindcss.com',
   'https://d3js.org/d3.v7.min.js'
