@@ -1,7 +1,7 @@
 {
-  "name": "TELC B2 Trainer — Diskussionstrainer",
-  "short_name": "B2 Trainer",
-  "description": "Interaktive Vorbereitung & Strukturierte Analyse für die TELC B2 Diskussionsthemen",
+  "name": "B2 Trainer — TELC B2 Diskussionstrainer",
+  "short_name": "B2Trainer",
+  "description": "PWA für strukturierte Analyse und interaktive Vorbereitung der TELC B2 Diskussionsthemen",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F5F4F0",
@@ -9,74 +9,20 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "https://img.icons8.com/fluency/192/knowledge-sharing.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/1900/1900720.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "https://img.icons8.com/fluency/512/knowledge-sharing.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/1900/1900720.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
+  ],
+  "id": "B2TrainerTELC",
+  "categories": [
+    "education",
+    "books"
   ]
 }
 
-3. Die Service Worker Datei (sw.js)
-
-Erstellen Sie eine Datei mit dem Namen sw.js in Ihrem Projektverzeichnis. Dieser
-Code stellt sicher, dass alle statischen Ressourcen und die Cloud-Icons gecacht
-werden, damit die App auch ohne aktive Internetverbindung nutzbar ist:
-
-const CACHE_NAME = 'b2-trainer-v1';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  'https://img.icons8.com/fluency/192/knowledge-sharing.png',
-  'https://img.icons8.com/fluency/512/knowledge-sharing.png'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
-      );
-    })
-  );
-  self.clientsClaim();
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        return caches.match(event.request);
-      })
-  );
-});
