@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&family=Outfit:wght=300;400;500;600;700;800&family=Noto+Sans+Arabic:wght=300..700&display=swap" rel="stylesheet">
 
     <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
@@ -282,6 +282,11 @@
         transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* Specificity fix: Force sidebar visible on mobile when 'sidebar-open' class is toggled */
+    #sidebar.sidebar-open {
+        transform: translateX(0) !important;
+    }
+
     /* Settings Drawer & Overlay Custom Styles */
     #drawer-overlay {
         opacity: 0;
@@ -459,7 +464,7 @@
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer">
@@ -725,6 +730,19 @@
 
     <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
+        // Global Firebase Configuration Object (Prevent ReferenceErrors)
+        // If you define your credentials here or in a separate file, it will load correctly.
+        if (typeof firebaseConfig === 'undefined') {
+            window.firebaseConfig = {
+                apiKey: "YOUR_API_KEY_HERE",
+                authDomain: "b2-trainer.firebaseapp.com",
+                projectId: "b2-trainer",
+                storageBucket: "b2-trainer.appspot.com",
+                messagingSenderId: "123456789012",
+                appId: "1:123456789012:web:abcdef123456"
+            };
+        }
+
         let touchStartX = 0; 
         let touchStartY = 0;
         let touchEndX = 0; 
@@ -785,7 +803,6 @@
             52: 'Gesellschaft & Politik'
         };
 
-        // Modernized high-end 2026 SVGs with soft gradients
         const CATEGORY_SVGS = {
             'Freizeit & Gesundheit': `
                 <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -895,9 +912,15 @@
         let db = null;
         if (typeof firebase !== 'undefined') {
             try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
+                // Safely read configurations (Checks global fallback variables cleanly)
+                const config = typeof firebaseConfig !== 'undefined' ? firebaseConfig : window.firebaseConfig;
+                if (config && config.apiKey && !config.apiKey.includes("YOUR_API_KEY")) {
+                    firebase.initializeApp(config);
+                    auth = firebase.auth();
+                    db = firebase.firestore();
+                } else {
+                    console.warn("Firebase initialized in local sandbox mode. Custom config is unconfigured.");
+                }
             } catch (e) {
                 console.error("Firebase SDK init failure:", e);
             }
@@ -1583,8 +1606,8 @@
         function closeSidebarMobile() {
             if (window.innerWidth < 1024) {
                 const sidebar = document.getElementById('sidebar');
-                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
-                    sidebar.classList.add('-translate-x-full');
+                if (sidebar && sidebar.classList.contains('sidebar-open')) {
+                    sidebar.classList.remove('sidebar-open');
                 }
             }
         }
@@ -1616,7 +1639,11 @@
         const btnLogin = document.getElementById('drawer-btn-login');
         if (btnLogin) {
             btnLogin.onclick = async () => {
-                if (!auth) { alert("Firebase ist offline oder blockiert."); return; }
+                // Friendly error boundary helper if config is left as placeholder
+                if (!auth) { 
+                    alert("Firebase ist offline, blockiert oder unkonfiguriert. Bitte konfigurieren Sie Ihre 'firebaseConfig' Zugangsdaten im HTML-Quellcode."); 
+                    return; 
+                }
                 const userKey = document.getElementById('drawer-user-select').value;
                 const password = document.getElementById('drawer-workspace-password').value;
                 const email = `${userKey}@b2telc.com`;
@@ -1634,7 +1661,10 @@
         const btnSignup = document.getElementById('drawer-btn-signup');
         if (btnSignup) {
             btnSignup.onclick = async () => {
-                if (!auth) { alert("Firebase ist offline oder blockiert."); return; }
+                if (!auth) { 
+                    alert("Firebase ist offline, blockiert oder unkonfiguriert. Bitte konfigurieren Sie Ihre 'firebaseConfig' Zugangsdaten im HTML-Quellcode."); 
+                    return; 
+                }
                 const userKey = document.getElementById('drawer-user-select').value;
                 const password = document.getElementById('drawer-workspace-password').value;
                 const email = `${userKey}@b2telc.com`;
@@ -2238,14 +2268,14 @@
             if (!isInsideEditable) { hideToolbar(); return; }
 
             const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
+            const r = range.getBoundingClientRect();
             const toolbar = document.getElementById('formatting-toolbar');
             toolbar.classList.remove('hidden');
 
             const toolbarWidth = toolbar.offsetWidth || 180;
             const toolbarHeight = toolbar.offsetHeight || 42;
-            const top = rect.top + window.scrollY - toolbarHeight - 10;
-            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, rect.left + window.scrollX + (rect.width / 2) - (toolbarWidth / 2)));
+            const top = r.top + window.scrollY - toolbarHeight - 10;
+            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, r.left + window.scrollX + (r.width / 2) - (toolbarWidth / 2)));
 
             toolbar.style.top = `${top}px`;
             toolbar.style.left = `${left}px`;
@@ -2881,7 +2911,7 @@
 
             let proContent = `<div class="space-y-3 w-full bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
             topic.pro_de.forEach((deVal, index) => {
-                const skeyDe = `pro_de_${index}`; const skeyEn = `pro_en_${index}`;
+                const skeyDe = `pro_de_${index}`;
                 const saved = getHighlight(topic.id, skeyDe) || deVal;
                 const statementSpeechText = encodeURIComponent(stripHtml(saved));
                 proContent += `
@@ -2914,7 +2944,7 @@
 
             let contraContent = `<div class="space-y-3 w-full bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
             topic.contra_de.forEach((deVal, index) => {
-                const skeyDe = `contra_de_${index}`; const skeyEn = `contra_en_${index}`;
+                const skeyDe = `contra_de_${index}`;
                 const saved = getHighlight(topic.id, skeyDe) || deVal;
                 const statementSpeechText = encodeURIComponent(stripHtml(saved));
                 contraContent += `
@@ -3274,51 +3304,50 @@
             downloadAnchor.remove();
         }
 
-        // Clean native instant responsive click listeners for mobile navigation elements
-        document.addEventListener('DOMContentLoaded', () => {
-            // Central Hamburger Themes Button (mobile bottom nav center button)
-            const mobileCenterNavToggle = document.getElementById('mobile-nav-toggle-center');
-            if (mobileCenterNavToggle) {
-                mobileCenterNavToggle.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar) {
-                        sidebar.classList.toggle('-translate-x-full');
-                    }
-                });
-            }
+        // --- DIRECT DOM EVENT BINDINGS (Bypassing DOMContentLoaded to ensure instant binding) ---
 
-            // Top Header Settings Menu Toggle Button
-            const menuDrawerToggle = document.getElementById('menu-drawer-toggle');
-            if (menuDrawerToggle) {
-                menuDrawerToggle.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleDrawer();
-                });
-            }
+        // Central Hamburger Themes Button (mobile bottom nav center button)
+        const mobileCenterNavToggle = document.getElementById('mobile-nav-toggle-center');
+        if (mobileCenterNavToggle) {
+            mobileCenterNavToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) {
+                    sidebar.classList.toggle('sidebar-open');
+                }
+            });
+        }
 
-            // Drawer Close Button
-            const drawerCloseBtn = document.getElementById('drawer-close');
-            if (drawerCloseBtn) {
-                drawerCloseBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleDrawer();
-                });
-            }
+        // Top Header Settings Menu Toggle Button
+        const menuDrawerToggle = document.getElementById('menu-drawer-toggle');
+        if (menuDrawerToggle) {
+            menuDrawerToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleDrawer();
+            });
+        }
 
-            // Drawer Backdrop Overlay
-            const drawerOverlayBtn = document.getElementById('drawer-overlay');
-            if (drawerOverlayBtn) {
-                drawerOverlayBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleDrawer();
-                });
-            }
-        });
+        // Drawer Close Button
+        const drawerCloseBtn = document.getElementById('drawer-close');
+        if (drawerCloseBtn) {
+            drawerCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleDrawer();
+            });
+        }
+
+        // Drawer Backdrop Overlay
+        const drawerOverlayBtn = document.getElementById('drawer-overlay');
+        if (drawerOverlayBtn) {
+            drawerOverlayBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleDrawer();
+            });
+        }
 
         // Global Horizontal Gestures Handler
         document.addEventListener('touchstart', e => {
@@ -3357,7 +3386,7 @@
                 // Swiping Left to Right -> Open Sidebar or Close Drawer
                 if (deltaX > 0) {
                     if (touchStartX < screenWidth * 0.25) {
-                        if (sidebar) sidebar.classList.remove('-translate-x-full');
+                        if (sidebar) sidebar.classList.add('sidebar-open');
                     } else if (drawer && !drawer.classList.contains('translate-x-full')) {
                         drawer.classList.add('translate-x-full');
                         if (overlay) {
@@ -3378,8 +3407,8 @@
                             }
                             populateVoicesList();
                         }
-                    } else if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
-                        sidebar.classList.add('-translate-x-full');
+                    } else if (sidebar && sidebar.classList.contains('sidebar-open')) {
+                        sidebar.classList.remove('sidebar-open');
                     }
                 }
             } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
@@ -3394,9 +3423,9 @@
         // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
         document.addEventListener('click', e => {
             const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+            if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
                 if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center')) {
-                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('sidebar-open');
                 }
             }
         });
