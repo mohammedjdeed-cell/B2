@@ -491,7 +491,7 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
         </aside>
 
-        <!-- Main Scrollable Panel -->
+        <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
             <!-- Streamlined Focus View Controls -->
@@ -570,7 +570,7 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation: Floating Island Design -->
+            <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
                 <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -785,7 +785,7 @@
             52: 'Gesellschaft & Politik'
         };
 
-        // Modernized high-end 2026 SVGs with soft mesh gradients
+        // Modernized high-end 2026 SVGs with soft gradients
         const CATEGORY_SVGS = {
             'Freizeit & Gesundheit': `
                 <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -935,7 +935,7 @@
 
         function cleanCitationLinks(text) {
             if (!text) return "";
-            let cleaned = text.replace(/\[\[\d+\]\]class="cursor-pointer" \(https:\/\/[^\s)]+\)/g, "");
+            let cleaned = text.replace(/\[\[\d+\]\]\(https:\/\/[^\s)]+\)/g, "");
             cleaned = cleaned.replace(/\[\d+\]\(https:\/\/[^\s)]+\)/g, "");
             cleaned = cleaned.replace(/\[\[\d+\]\]/g, "");
             cleaned = cleaned.replace(/\[\d+\]/g, "");
@@ -3216,3 +3216,258 @@
         function toggleEditMode() {
             isEditMode = !isEditMode;
             
+            const statusLabel = document.querySelector('#drawer-edit-toggle span');
+            const menuStatusLabel = document.getElementById('edit-mode-status-text');
+            const tipBanner = document.getElementById('edit-tip-banner');
+            const fab = document.getElementById('mobile-edit-fab');
+            const drawerToggle = document.getElementById('drawer-edit-toggle');
+            
+            if (isEditMode) {
+                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.add('bg-[var(--accent)]', 'text-white');
+                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                }
+                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
+                if (tipBanner) tipBanner.classList.remove('hidden');
+            } else {
+                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
+                    fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
+                }
+                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
+                if (tipBanner) tipBanner.classList.add('hidden');
+            }
+            renderActiveTopic();
+        }
+
+        const drawerEditToggle = document.getElementById('drawer-edit-toggle');
+        if (drawerEditToggle) {
+            drawerEditToggle.onclick = toggleEditMode;
+        }
+
+        function exportTotalBackup() {
+            const backupObj = {
+                version: "B2Trainer_Unified_Backup_v5",
+                timestamp: new Date().toISOString(),
+                topics: TOPICS_DATA,
+                template: TEMPLATE_DATA,
+                highlights: highlightsStore,
+                learned: learnedList,
+                preferences: {
+                    themeSetting: currentThemeSetting,
+                    textScale: textScale,
+                    activeMode: activeMode,
+                    activeView: activeView
+                }
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Clean native instant responsive click listeners for mobile navigation elements
+        document.addEventListener('DOMContentLoaded', () => {
+            // Central Hamburger Themes Button (mobile bottom nav center button)
+            const mobileCenterNavToggle = document.getElementById('mobile-nav-toggle-center');
+            if (mobileCenterNavToggle) {
+                mobileCenterNavToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) {
+                        sidebar.classList.toggle('-translate-x-full');
+                    }
+                });
+            }
+
+            // Top Header Settings Menu Toggle Button
+            const menuDrawerToggle = document.getElementById('menu-drawer-toggle');
+            if (menuDrawerToggle) {
+                menuDrawerToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+
+            // Drawer Close Button
+            const drawerCloseBtn = document.getElementById('drawer-close');
+            if (drawerCloseBtn) {
+                drawerCloseBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+
+            // Drawer Backdrop Overlay
+            const drawerOverlayBtn = document.getElementById('drawer-overlay');
+            if (drawerOverlayBtn) {
+                drawerOverlayBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+        });
+
+        // Global Horizontal Gestures Handler
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const duration = Date.now() - touchStartTime;
+            const screenWidth = window.innerWidth;
+
+            // Ignore gestures originating or ending inside floating elements or menu actions
+            const target = e.target;
+            if (target.closest('#mobile-bottom-nav') || 
+                target.closest('#sidebar') || 
+                target.closest('#drawer-menu') || 
+                target.closest('#quick-preview-modal') || 
+                target.closest('#block-editor-modal') ||
+                target.closest('select') || 
+                target.closest('textarea') || 
+                target.closest('input')) {
+                return;
+            }
+
+            if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
+                const sidebar = document.getElementById('sidebar');
+                const drawer = document.getElementById('drawer-menu');
+                const overlay = document.getElementById('drawer-overlay');
+
+                // Swiping Left to Right -> Open Sidebar or Close Drawer
+                if (deltaX > 0) {
+                    if (touchStartX < screenWidth * 0.25) {
+                        if (sidebar) sidebar.classList.remove('-translate-x-full');
+                    } else if (drawer && !drawer.classList.contains('translate-x-full')) {
+                        drawer.classList.add('translate-x-full');
+                        if (overlay) {
+                            overlay.classList.add('hidden');
+                            overlay.classList.remove('opacity-100');
+                        }
+                    }
+                } 
+                // Swiping Right to Left -> Open Drawer or Close Sidebar
+                else {
+                    if (touchStartX > screenWidth * 0.75) {
+                        if (drawer) {
+                            drawer.classList.remove('translate-x-full');
+                            if (overlay) {
+                                overlay.classList.remove('hidden');
+                                void overlay.offsetWidth;
+                                overlay.classList.add('opacity-100');
+                            }
+                            populateVoicesList();
+                        }
+                    } else if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                }
+            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    navigateTopicStep(-1);
+                } else {
+                    navigateTopicStep(1);
+                }
+            }
+        }, { passive: true });
+
+        // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
+        document.addEventListener('click', e => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center')) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+        });
+
+        function navigateTopicStep(direction) {
+            const targetIdx = activeIdx + direction;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            
+            if (targetIdx >= 0 && targetIdx < dataset.length) {
+                const container = document.getElementById('active-topic-container');
+                if (!container) return;
+
+                const outClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
+                const inClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
+
+                container.classList.add(outClass);
+                
+                setTimeout(() => {
+                    activeIdx = targetIdx;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    
+                    container.classList.remove(outClass);
+                    container.classList.add(inClass);
+                    
+                    setTimeout(() => {
+                        container.classList.remove(inClass);
+                    }, 220);
+                }, 220);
+            }
+        }
+
+        function handleLearningToggleAnimation(buttonEl, isNowLearned) {
+            if (isNowLearned) {
+                buttonEl.style.transform = "scale(1.08) rotate(1deg)";
+                buttonEl.classList.add("ring-4", "ring-emerald-400/40");
+                
+                const mainContainer = document.querySelector('main');
+                if (mainContainer) {
+                    mainContainer.style.transition = 'none';
+                    mainContainer.style.background = 'rgba(16, 185, 129, 0.15)';
+                    void mainContainer.offsetWidth; 
+                    mainContainer.style.transition = 'background 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                    mainContainer.style.background = '';
+                }
+
+                setTimeout(() => {
+                    buttonEl.style.transform = "scale(1)";
+                    buttonEl.classList.remove("ring-4", "ring-emerald-400/40");
+                }, 300);
+            }
+        }
+
+        const isLearnedStateToggle = document.getElementById('learned-toggle');
+        if (isLearnedStateToggle) {
+            isLearnedStateToggle.onclick = () => {
+                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                if (learnedList.includes(activeTopic.id)) {
+                    learnedList = learnedList.filter(id => id !== activeTopic.id);
+                } else {
+                    learnedList.push(activeTopic.id);
+                    handleLearningToggleAnimation(isLearnedStateToggle, true);
+                }
+                localStorage.setItem('learned_topics_1_52', JSON.stringify(learnedList));
+                renderSidebar();
+                updateProgress();
+                renderActiveTopic();
+                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+            };
+        }
+    </script>
+</body>
+</html>
