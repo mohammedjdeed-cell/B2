@@ -949,7 +949,7 @@
             }
         }, { once: true });
 
-        // Instant touch and click setup to circumvent mobile delay issues
+        // Instant touch and click setup to circumvent mobile/tablet delay issues
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const drawer = document.getElementById('drawer-menu');
@@ -1619,10 +1619,10 @@
                         category: "Freizeit & Gesundheit",
                         einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
                         einleitung_en: "The topic of public smoking has been discussed controversially for years.",
-                        einleitung_ar: "موضوع التدخين in الأماكن العامة يثير الجدل منذ سنوات.",
+                        einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
                         pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
                         pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
-                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل von أعقاب السجائر."],
+                        pro_ar: ["حماية صحة غير المدخnin.", "نفايات أقل von أعقاب السجائر."],
                         contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
                         contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
                         contra_ar: ["تقييد الحرية الشخصية.", "خsائر اقتصادية لقطاع المطاعم."],
@@ -1643,12 +1643,14 @@
                     baseTemplate = JSON.parse(JSON.stringify(baseTopics));
                 }
 
-                // Preserve original pristine copies for true active topic rollback (Problem 4!)
-                if (typeof window.PRISTINE_TOPICS === 'undefined') {
-                    window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
-                }
-                if (typeof window.PRISTINE_TEMPLATE === 'undefined') {
-                    window.PRISTINE_TEMPLATE = JSON.parse(JSON.stringify(baseTemplate));
+                if (baseGrammatik.length === 0) {
+                    baseGrammatik = [{
+                        level: "B2",
+                        category: "Konjunktionen",
+                        title: "Zweiteilige Konjunktionen",
+                        description: "Sowohl ... als auch drückt eine Ergänzung aus.",
+                        examples: ["Er spricht sowohl Deutsch als auch Englisch.", "Sie ist sowohl intelligent als auch freundlich."]
+                    }];
                 }
 
                 baseGrammatik.forEach(item => {
@@ -1661,6 +1663,10 @@
 
                 editedTopicIds = [];
                 editedTemplateIds = [];
+
+                // Store deep references of original JSON to serve as rollback baselines
+                if (!window.PRISTINE_TOPICS) window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
+                if (!window.PRISTINE_TEMPLATE) window.PRISTINE_TEMPLATE = JSON.parse(JSON.stringify(baseTemplate));
 
                 // Resolve isolated user scope suffix
                 const suffix = getSelectedUserSuffix();
@@ -1801,46 +1807,71 @@
             alert(`Erfolgreich gespeichert! Thema ${activeTopic.id} wurde gesichert.`);
         }
 
+        // Secure password re-authentication verification helpers (Problem 4!)
+        async function verifyUserPassword(password) {
+            if (!currentUser) return true;
+            try {
+                const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, password);
+                await currentUser.reauthenticateWithCredential(credential);
+                return true;
+            } catch (e) {
+                alert("Falsches Passwort! Aktion abgebrochen.");
+                return false;
+            }
+        }
+
+        async function confirmSecureDeletion(message) {
+            if (currentUser) {
+                const pwd = prompt(`${message}\n\nBitte geben Sie zur Bestätigung das Passwort Ihres Kontos (${currentUser.email}) ein:`);
+                if (!pwd) return false;
+                return await verifyUserPassword(pwd);
+            } else {
+                const confirmPhrase = prompt(`${message}\n\nBitte geben Sie zur Bestätigung das Sicherheitswort "LÖSCHEN" ein:`);
+                return confirmPhrase === "LÖSCHEN";
+            }
+        }
+
         // Pristine Factory-Reset restoring pristine templates even after saving progress! (Problem 4!)
         async function resetCurrentTopic() {
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!activeTopic) return;
 
-            if (confirm(`Möchten Sie dieses Thema wirklich komplett in den Originalzustand zurücksetzen? Alle Ihre Änderungen und Markierungen für dieses Thema gehen verloren.`)) {
-                pushToHistory();
-                const topicId = activeTopic.id;
+            const isConfirmed = await confirmSecureDeletion(`Möchten Sie dieses Thema wirklich komplett in den Originalzustand zurücksetzen? Alle Ihre Änderungen und Markierungen für dieses Thema gehen verloren.`);
+            if (!isConfirmed) return;
 
-                // Load factory original clean copy
-                if (activeMode === 'classic') {
-                    const original = window.PRISTINE_TOPICS.find(t => t.id === topicId);
-                    if (original) TOPICS_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
-                } else {
-                    const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
-                    if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
-                }
+            pushToHistory();
+            const topicId = activeTopic.id;
 
-                // Delete custom highlights for this topic
-                if (highlightsStore[topicId]) {
-                    delete highlightsStore[topicId];
-                }
-
-                const suffix = getSelectedUserSuffix();
-                localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-
-                // Clear remote cloud databases if online
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection(activeMode === 'classic' ? 'edited_topics' : 'edited_templates').doc(topicId.toString()).delete();
-                        await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
-                    } catch(e) { console.error("Factory Reset Cloud sync failure:", e); }
-                } else {
-                    localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
-                    localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
-                }
-
-                await loadTopics();
-                alert("Änderungen wurden zurückgesetzt!");
+            // Load factory original clean copy
+            if (activeMode === 'classic') {
+                const original = window.PRISTINE_TOPICS.find(t => t.id === topicId);
+                if (original) TOPICS_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            } else {
+                const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
+                if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
             }
+
+            // Delete custom highlights for this topic
+            if (highlightsStore[topicId]) {
+                delete highlightsStore[topicId];
+            }
+
+            const suffix = getSelectedUserSuffix();
+            localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+
+            // Clear remote cloud databases if online
+            if (currentUser && db) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).collection(activeMode === 'classic' ? 'edited_topics' : 'edited_templates').doc(topicId.toString()).delete();
+                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
+                } catch(e) { console.error("Factory Reset Cloud sync failure:", e); }
+            } else {
+                localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
+                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+            }
+
+            await loadTopics();
+            alert("Änderungen wurden zurückgesetzt!");
         }
 
         function showResetButton() {
@@ -2429,6 +2460,70 @@
             modal.classList.remove('hidden');
         }
 
+        // Complete Unified Backup Import (Restores Progress, Highlights, and Text edits instantly)
+        async function importTotalBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.version && (data.topics || data.template)) {
+                        pushToHistory();
+                        
+                        const suffix = getSelectedUserSuffix();
+                        
+                        if (data.topics) TOPICS_DATA = data.topics;
+                        if (data.template) TEMPLATE_DATA = data.template;
+                        if (data.highlights) highlightsStore = data.highlights;
+                        if (data.learned) learnedList = data.learned;
+                        
+                        // Save imported states locally
+                        localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
+                        localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+                        localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
+                        localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                        
+                        // Sync to Cloud if online
+                        if (currentUser && db) {
+                            alert("Importiere Backup in die Cloud... Bitte warten.");
+                            
+                            // Save progress
+                            await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').set({ learned: learnedList });
+                            
+                            // Save highlights
+                            for (const topicId in highlightsStore) {
+                                await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set(highlightsStore[topicId]);
+                            }
+                            
+                            // Save custom topic edits
+                            for (const topic of TOPICS_DATA) {
+                                if (editedTopicIds.includes(topic.id)) {
+                                    await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(topic.id.toString()).set(topic);
+                                }
+                            }
+                            // Save custom template edits
+                            for (const temp of TEMPLATE_DATA) {
+                                if (editedTemplateIds.includes(temp.id)) {
+                                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(temp.id.toString()).set(temp);
+                                }
+                            }
+                        }
+                        
+                        alert("Backup erfolgreich importiert und synchronisiert!");
+                        await loadTopics();
+                    } else {
+                        alert("Ungültiges Backup-Format!");
+                    }
+                } catch (err) {
+                    console.error("Backup Import Error:", err);
+                    alert("Fehler beim Einlesen des Backups.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function closeQuickPreview() {
             const modal = document.getElementById('quick-preview-modal');
             if (modal) modal.classList.add('hidden');
@@ -2680,7 +2775,7 @@
                             ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                         </div>
                         <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
-                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
+                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 cursor-pointer">
                                 <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                             </button>
                             <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
