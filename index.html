@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
+    <link class="cursor-pointer" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3D6B48">
 
@@ -491,7 +491,7 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
         </aside>
 
-        <!-- Main Scrollable Panel -->
+        <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
             <!-- Streamlined Focus View Controls -->
@@ -570,8 +570,8 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation: Floating Island Design -->
-            <div class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
+            <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
+            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
                 <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Thema</span>
@@ -847,8 +847,8 @@
                         </linearGradient>
                     </defs>
                     <path d="M12 2L2 7l10 5 10-5-10-5z" fill="url(#grad-bildung)" fill-opacity="0.15" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 17l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17l10 5 10-5" stroke="url(--grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12l10 5 10-5" stroke="url(--grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             `
         };
@@ -1559,38 +1559,38 @@
             }
         }
 
-        // Helper for super responsive and instantaneous touch triggers
-        function bindInstantTouch(elementId, callback) {
+        // Bulletproof instantaneous touch button handler (prevents mobile ghost clicks & bubbling)
+        function makeButtonResponsive(elementId, callback) {
             const el = document.getElementById(elementId);
             if (!el) return;
 
-            let touchTriggered = false;
-
-            el.addEventListener('touchstart', (e) => {
-                touchTriggered = true;
+            const handler = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 callback(e);
-            }, { passive: false });
+            };
 
-            el.addEventListener('click', (e) => {
-                if (touchTriggered) {
-                    touchTriggered = false;
-                    return;
-                }
-                e.preventDefault();
-                e.stopPropagation();
-                callback(e);
-            });
+            el.addEventListener('touchend', handler, { passive: false });
+            el.addEventListener('click', handler);
         }
 
-        bindInstantTouch('menu-drawer-toggle', () => { toggleDrawer(); });
-        bindInstantTouch('mobile-nav-toggle-center', () => {
+        makeButtonResponsive('menu-drawer-toggle', () => { toggleDrawer(); });
+        makeButtonResponsive('mobile-nav-toggle-center', () => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar) sidebar.classList.toggle('-translate-x-full');
         });
-        bindInstantTouch('drawer-close', () => { toggleDrawer(); });
-        bindInstantTouch('drawer-overlay', () => { toggleDrawer(); });
+        makeButtonResponsive('drawer-close', () => { toggleDrawer(); });
+        makeButtonResponsive('drawer-overlay', () => { toggleDrawer(); });
+
+        // Isolate floating island bottom navigation to prevent swipe bubbling to parent containers
+        const mobileBottomNav = document.getElementById('mobile-bottom-nav');
+        if (mobileBottomNav) {
+            ['touchstart', 'touchmove', 'touchend', 'click', 'mousedown', 'mouseup'].forEach(evtName => {
+                mobileBottomNav.addEventListener(evtName, (e) => {
+                    e.stopPropagation();
+                }, { passive: evtName.startsWith('touch') });
+            });
+        }
 
         function switchTab(tabId) {
             activeTab = tabId;
@@ -1759,7 +1759,7 @@
                         pers_erfahrung_ar: "أna شخصياً لا أدخن وأشعر براحة أكبر in المناطق الخالية von التدخin.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
-                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل different، يجب auf الجميع اتخاذ القرار بأنeesm." }
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل different، يجب auf الجميع اتخاذ القرار بأنفسهم." }
                         ],
                         schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
                         schluss_en: "In conclusion, a compromise would make sense.",
@@ -3093,7 +3093,7 @@
             ],
             "Abschluss": [
                 { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
-                { de: "Zusammenfassend lässt sich sagen, dass we eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
             ]
         };
 
@@ -3374,11 +3374,11 @@
             }
         }, { passive: true });
 
-        // Tap-outside topics-sidebar to dismiss on mobile
+        // Tap-outside topics-sidebar to dismiss on mobile (protecting bottom nav touches)
         document.addEventListener('touchstart', e => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
-                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-nav-toggle-center')) {
+                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center')) {
                     sidebar.classList.add('-translate-x-full');
                 }
             }
