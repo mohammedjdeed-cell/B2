@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
-    <link class="cursor-pointer" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3D6B48">
 
@@ -377,7 +377,7 @@
             </div>
 
             <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Einstellungen und Werkzeuge">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
         </div>
     </header>
@@ -389,7 +389,7 @@
             <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
                 <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--text-primary)]">⚙️ Einstellungen</h3>
                 <button id="drawer-close" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
@@ -491,7 +491,7 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
         </aside>
 
-        <!-- Main Workspace Container -->
+        <!-- Main Scrollable Panel -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
             <!-- Streamlined Focus View Controls -->
@@ -570,27 +570,27 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
+            <!-- Mobile Bottom Navigation: Floating Island Design -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
                 <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Thema</span>
                 </button>
                 <button onclick="switchTab('mindmap')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
                 
                 <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)] cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
 
                 <button onclick="switchTab('redemittel')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Reden</span>
                 </button>
                 <button onclick="switchTab('grammar')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
                 </button>
             </div>
@@ -601,7 +601,7 @@
                     <span class="text-lg">↩️</span>
                 </button>
                 <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90">
-                    <svg id="edit-fab-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <svg id="edit-fab-icon" class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
             </div>
         </main>
@@ -653,7 +653,7 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-200 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-900/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="Formatierung aufheben">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </button>
     </div>
 
@@ -725,12 +725,6 @@
 
     <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
-        let touchStartX = 0; 
-        let touchStartY = 0;
-        let touchEndX = 0; 
-        let touchEndY = 0;
-        let touchStartTime = 0;
-
         const STARRED_TOPICS = [4, 8, 14, 15, 17, 18, 19, 21, 22, 26, 27, 30, 31, 34, 38, 39, 41, 43, 48];
 
         const TOPIC_KEYWORDS = {
@@ -785,7 +779,6 @@
             52: 'Gesellschaft & Politik'
         };
 
-        // Modernized high-end 2026 SVGs with soft mesh gradients
         const CATEGORY_SVGS = {
             'Freizeit & Gesundheit': `
                 <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -847,8 +840,8 @@
                         </linearGradient>
                     </defs>
                     <path d="M12 2L2 7l10 5 10-5-10-5z" fill="url(#grad-bildung)" fill-opacity="0.15" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 17l10 5 10-5" stroke="url(--grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12l10 5 10-5" stroke="url(--grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             `
         };
@@ -890,31 +883,6 @@
                 activeRing: 'ring-amber-500/50 dark:ring-amber-500/30'
             }
         };
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
-            authDomain: "b2telc-6e061.firebaseapp.com",
-            databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "b2telc-6e061",
-            storageBucket: "b2telc-6e061.firebasestorage.app",
-            messagingSenderId: "593882455085",
-            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
-            measurementId: "G-SPHLVHRL6K"
-        };
-
-        let auth = null;
-        let db = null;
-        if (typeof firebase !== 'undefined') {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-            } catch (e) {
-                console.error("Firebase SDK init failure:", e);
-            }
-        } else {
-            console.warn("Firebase scripts are offline or blocked. Falling back to local storage sandbox.");
-        }
 
         let TOPICS_DATA = [];
         let TEMPLATE_DATA = [];
@@ -1559,39 +1527,6 @@
             }
         }
 
-        // Bulletproof instantaneous touch button handler (prevents mobile ghost clicks & bubbling)
-        function makeButtonResponsive(elementId, callback) {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-
-            const handler = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                callback(e);
-            };
-
-            el.addEventListener('touchend', handler, { passive: false });
-            el.addEventListener('click', handler);
-        }
-
-        makeButtonResponsive('menu-drawer-toggle', () => { toggleDrawer(); });
-        makeButtonResponsive('mobile-nav-toggle-center', () => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.classList.toggle('-translate-x-full');
-        });
-        makeButtonResponsive('drawer-close', () => { toggleDrawer(); });
-        makeButtonResponsive('drawer-overlay', () => { toggleDrawer(); });
-
-        // Isolate floating island bottom navigation to prevent swipe bubbling to parent containers
-        const mobileBottomNav = document.getElementById('mobile-bottom-nav');
-        if (mobileBottomNav) {
-            ['touchstart', 'touchmove', 'touchend', 'click', 'mousedown', 'mouseup'].forEach(evtName => {
-                mobileBottomNav.addEventListener(evtName, (e) => {
-                    e.stopPropagation();
-                }, { passive: evtName.startsWith('touch') });
-            });
-        }
-
         function switchTab(tabId) {
             activeTab = tabId;
             const btnClassActive = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
@@ -1753,7 +1688,7 @@
                         pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل von أعقاب السجائر."],
                         contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
                         contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
-                        contra_ar: ["تقييد الحرية الشخصية.", "خsائر اقتصادية لقطاع المطاعم."],
+                        contra_ar: ["تقييد الحرية الشخصية.", "خsائر اقتصادية لقطاع المطاعm."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
                         pers_erfahrung_ar: "أna شخصياً لا أدخن وأشعر براحة أكبر in المناطق الخالية von التدخin.",
@@ -3316,6 +3251,52 @@
             downloadAnchor.remove();
         }
 
+        // Clean native instant responsive click listeners for mobile navigation elements
+        document.addEventListener('DOMContentLoaded', () => {
+            // Central Hamburger Themes Button (mobile bottom nav center button)
+            const mobileCenterNavToggle = document.getElementById('mobile-nav-toggle-center');
+            if (mobileCenterNavToggle) {
+                mobileCenterNavToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) {
+                        sidebar.classList.toggle('-translate-x-full');
+                    }
+                });
+            }
+
+            // Top Header Settings Menu Toggle Button
+            const menuDrawerToggle = document.getElementById('menu-drawer-toggle');
+            if (menuDrawerToggle) {
+                menuDrawerToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+
+            // Drawer Close Button
+            const drawerCloseBtn = document.getElementById('drawer-close');
+            if (drawerCloseBtn) {
+                drawerCloseBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+
+            // Drawer Backdrop Overlay
+            const drawerOverlayBtn = document.getElementById('drawer-overlay');
+            if (drawerOverlayBtn) {
+                drawerOverlayBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+        });
+
         // Global Horizontal Gestures Handler
         document.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
@@ -3331,6 +3312,19 @@
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             const screenWidth = window.innerWidth;
+
+            // Ignore gestures originating or ending inside floating elements or menu actions
+            const target = e.target;
+            if (target.closest('#mobile-bottom-nav') || 
+                target.closest('#sidebar') || 
+                target.closest('#drawer-menu') || 
+                target.closest('#quick-preview-modal') || 
+                target.closest('#block-editor-modal') ||
+                target.closest('select') || 
+                target.closest('textarea') || 
+                target.closest('input')) {
+                return;
+            }
 
             if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
                 const sidebar = document.getElementById('sidebar');
@@ -3374,15 +3368,15 @@
             }
         }, { passive: true });
 
-        // Tap-outside topics-sidebar to dismiss on mobile (protecting bottom nav touches)
-        document.addEventListener('touchstart', e => {
+        // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
+        document.addEventListener('click', e => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
                 if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center')) {
                     sidebar.classList.add('-translate-x-full');
                 }
             }
-        }, { passive: true });
+        });
 
         function navigateTopicStep(direction) {
             const targetIdx = activeIdx + direction;
