@@ -658,7 +658,7 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-200 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-900/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="Formatierung aufheben">
-            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 016.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </button>
     </div>
 
@@ -730,18 +730,17 @@
 
     <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
-        // Global Firebase Configuration Object (Prevent ReferenceErrors)
-        // If you define your credentials here or in a separate file, it will load correctly.
-        if (typeof firebaseConfig === 'undefined') {
-            window.firebaseConfig = {
-                apiKey: "YOUR_API_KEY_HERE",
-                authDomain: "b2-trainer.firebaseapp.com",
-                projectId: "b2-trainer",
-                storageBucket: "b2-trainer.appspot.com",
-                messagingSenderId: "123456789012",
-                appId: "1:123456789012:web:abcdef123456"
-            };
-        }
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
+            authDomain: "b2telc-6e061.firebaseapp.com",
+            databaseURL: "https://b2telc-6e061-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "b2telc-6e061",
+            storageBucket: "b2telc-6e061.firebasestorage.app",
+            messagingSenderId: "593882455085",
+            appId: "1:593882455085:web:6a0a531ea4d1e0e950aca4",
+            measurementId: "G-SPHLVHRL6K"
+        };
 
         let touchStartX = 0; 
         let touchStartY = 0;
@@ -912,15 +911,9 @@
         let db = null;
         if (typeof firebase !== 'undefined') {
             try {
-                // Safely read configurations (Checks global fallback variables cleanly)
-                const config = typeof firebaseConfig !== 'undefined' ? firebaseConfig : window.firebaseConfig;
-                if (config && config.apiKey && !config.apiKey.includes("YOUR_API_KEY")) {
-                    firebase.initializeApp(config);
-                    auth = firebase.auth();
-                    db = firebase.firestore();
-                } else {
-                    console.warn("Firebase initialized in local sandbox mode. Custom config is unconfigured.");
-                }
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
             } catch (e) {
                 console.error("Firebase SDK init failure:", e);
             }
@@ -987,6 +980,52 @@
                 audioUnlocked = true;
             }
         }, { once: true });
+
+        // Instant touch and click setup to circumvent mobile delay issues
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const drawer = document.getElementById('drawer-menu');
+            const overlay = document.getElementById('drawer-overlay');
+
+            // Bottom Navigation Sidebar toggle
+            const toggleCenter = document.getElementById('mobile-nav-toggle-center');
+            if (toggleCenter) {
+                toggleCenter.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (sidebar) sidebar.classList.toggle('sidebar-open');
+                });
+            }
+
+            // Top Menu Drawer toggle
+            const toggleMenu = document.getElementById('menu-drawer-toggle');
+            if (toggleMenu) {
+                toggleMenu.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+
+            // Drawer Close Button
+            const closeBtn = document.getElementById('drawer-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+
+            // Overlay Close
+            if (overlay) {
+                overlay.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDrawer();
+                });
+            }
+        });
 
         function stripHtml(html) {
             if (!html) return "";
@@ -1639,9 +1678,8 @@
         const btnLogin = document.getElementById('drawer-btn-login');
         if (btnLogin) {
             btnLogin.onclick = async () => {
-                // Friendly error boundary helper if config is left as placeholder
                 if (!auth) { 
-                    alert("Firebase ist offline, blockiert oder unkonfiguriert. Bitte konfigurieren Sie Ihre 'firebaseConfig' Zugangsdaten im HTML-Quellcode."); 
+                    alert("Firebase ist offline, blockiert oder unkonfiguriert. Bitte überprüfen Sie Ihre Internetverbindung."); 
                     return; 
                 }
                 const userKey = document.getElementById('drawer-user-select').value;
@@ -1662,7 +1700,7 @@
         if (btnSignup) {
             btnSignup.onclick = async () => {
                 if (!auth) { 
-                    alert("Firebase ist offline, blockiert oder unkonfiguriert. Bitte konfigurieren Sie Ihre 'firebaseConfig' Zugangsdaten im HTML-Quellcode."); 
+                    alert("Firebase ist offline, blockiert oder unkonfiguriert. Bitte überprüfen Sie Ihre Internetverbindung."); 
                     return; 
                 }
                 const userKey = document.getElementById('drawer-user-select').value;
@@ -3302,51 +3340,6 @@
             downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
             downloadAnchor.click();
             downloadAnchor.remove();
-        }
-
-        // --- DIRECT DOM EVENT BINDINGS (Bypassing DOMContentLoaded to ensure instant binding) ---
-
-        // Central Hamburger Themes Button (mobile bottom nav center button)
-        const mobileCenterNavToggle = document.getElementById('mobile-nav-toggle-center');
-        if (mobileCenterNavToggle) {
-            mobileCenterNavToggle.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar) {
-                    sidebar.classList.toggle('sidebar-open');
-                }
-            });
-        }
-
-        // Top Header Settings Menu Toggle Button
-        const menuDrawerToggle = document.getElementById('menu-drawer-toggle');
-        if (menuDrawerToggle) {
-            menuDrawerToggle.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDrawer();
-            });
-        }
-
-        // Drawer Close Button
-        const drawerCloseBtn = document.getElementById('drawer-close');
-        if (drawerCloseBtn) {
-            drawerCloseBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDrawer();
-            });
-        }
-
-        // Drawer Backdrop Overlay
-        const drawerOverlayBtn = document.getElementById('drawer-overlay');
-        if (drawerOverlayBtn) {
-            drawerOverlayBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDrawer();
-            });
         }
 
         // Global Horizontal Gestures Handler
