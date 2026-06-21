@@ -307,46 +307,76 @@
         background: radial-gradient(circle at 80% 15%, rgba(16, 185, 129, 0.12), var(--bg-app) 75%) !important;
     }
 
-    /* Desktop/Tablet Layout ab 1024px: Sidebar schiebt den Inhalt zur Seite (Kein Überlappen) */
-    @media (min-width: 1024px) {
-        #sidebar {
-            position: relative !important;
-            transform: translateX(0) !important;
-            z-index: 10 !important;
-            width: 20rem !important;
+   /* Desktop/Tablet Layout ab 1024px: Sidebar schiebt den Inhalt zur Seite (Kein Überlappen) */
+        @media (min-width: 1024px) {
+            #sidebar {
+                position: relative !important;
+                transform: translateX(0) !important;
+                z-index: 10 !important;
+                width: 20rem !important;
+            }
+            /* Elegante, perfekt ausgerichtete kreisförmige Dock-Buttons bei eingeklappter Sidebar */
+            #sidebar.sidebar-collapsed {
+                width: 4.5rem !important; 
+            }
+            #sidebar.sidebar-collapsed .sidebar-header-flex {
+                justify-content: center !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .topic-list-item {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding: 0.75rem 0 !important;
+                border-radius: 9999px !important;
+                width: 3rem !important;
+                height: 3rem !important;
+                margin: 0.25rem auto !important;
+                border-left: none !important;
+                position: relative !important; /* Added to act as the coordinate system for the badge */
+            }
+            
+            /* Centers the emoji perfectly in the dead center of the circular button */
+            #sidebar.sidebar-collapsed .topic-list-item > div:first-child {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                height: 100% !important;
+                gap: 0 !important;
+            }
+            
+            /* Positions the progress dot absolutely as an elegant corner status badge */
+            #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom {
+                display: flex !important;
+                position: absolute !important;
+                bottom: 3px !important;
+                right: 3px !important;
+                width: auto !important;
+                height: auto !important;
+                pointer-events: none !important;
+            }
+            
+            /* Gives the status dot a clean ring border matching the background context */
+            #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom span {
+                border: 2px solid var(--bg-sidebar) !important;
+                width: 10px !important;
+                height: 10px !important;
+                box-sizing: border-box !important;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+            }
+            
+            /* Dynamically blends the ring border with the green accent when selected */
+            #sidebar.sidebar-collapsed .topic-list-item.bg-\[var\(--accent\)\] > div.hide-on-collapse-custom span {
+                border-color: var(--accent) !important;
+            }
+
+            #sidebar.sidebar-collapsed .sidebar-only-emoji {
+                margin: 0 !important;
+                font-size: 1.35rem !important;
+            }
         }
-        /* Elegante, perfekt ausgerichtete kreisförmige Dock-Buttons bei eingeklappter Sidebar */
-        #sidebar.sidebar-collapsed {
-            width: 4.5rem !important; 
-        }
-        #sidebar.sidebar-collapsed .sidebar-header-flex {
-            justify-content: center !important;
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-        #sidebar.sidebar-collapsed .topic-list-item {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            padding: 0.75rem 0 !important;
-            border-radius: 9999px !important;
-            width: 3rem !important;
-            height: 3rem !important;
-            margin: 0.25rem auto !important;
-            border-left: none !important;
-        }
-        #sidebar.sidebar-collapsed .topic-list-item > div {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            width: auto !important;
-            gap: 0 !important;
-        }
-        #sidebar.sidebar-collapsed .sidebar-only-emoji {
-            margin: 0 !important;
-            font-size: 1.35rem !important;
-        }
-    }
 </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
