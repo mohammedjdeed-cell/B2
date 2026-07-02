@@ -100,6 +100,12 @@
         user-select: text !important;
     }
 
+    /* Ensures highlighted text can be cleanly selected and behaves like standard text */
+    .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
                     background-color 0.25s ease, 
@@ -418,6 +424,13 @@
                 <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
             </div>
 
+            <!-- Page Reload Button -->
+            <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+                </svg>
+            </button>
+
             <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Einstellungen und Werkzeuge">
                 <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
@@ -444,6 +457,14 @@
                 </div>
                 <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2">
                     <span id="edit-mode-status-text">Edit-Modus umschalten</span>
+                </button>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EINSTELLUNGEN</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <button onclick="window.location.reload();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2">
+                    <span>🔄 Seite neu laden</span>
                 </button>
             </div>
 
@@ -612,6 +633,22 @@
                     <!-- Print to PDF Button integrated into Control Bar -->
                     <button onclick="printCurrentTopic()" class="col-span-1 w-full md:w-auto text-xs bg-teal-600 hover:bg-teal-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>📄 PDF Export</span>
+                    </button>
+
+                    <!-- Desktop Edit Button (Visual design matches theme accent) -->
+                    <button id="desktop-edit-btn" onclick="toggleEditMode()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
+                        <svg id="desktop-edit-icon" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        <span id="desktop-edit-text">Editieren</span>
+                    </button>
+
+                    <!-- Desktop Undo Button (Visual design matches neutral theme context) -->
+                    <button id="desktop-undo-btn" onclick="undo()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
+                        <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                        </svg>
+                        <span>Zurück</span>
                     </button>
 
                     <button id="reset-edits-btn" class="col-span-1 w-full md:w-auto text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0">
@@ -1455,6 +1492,7 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        // Stops speaking immediately
         function stopBlockAudio() {
             window.speechSynthesis.cancel();
             if (activeSpeakingButton) {
@@ -2362,10 +2400,6 @@
 
             saveHighlight(topic.id, blockKey, newDe);
 
-            if (activeMode === 'template') {
-                delete translationCache[blockKey];
-            }
-
             await saveEdits();
             closeBlockEditor();
             renderActiveTopic();
@@ -2569,7 +2603,7 @@
             return highlighted;
         }
 
-        // Toggle Translation visibility and trigger automatic generation
+        // Toggle Translation visibility and trigger automatic generation (Caches key dynamically to literal text)
         function toggleTranslation(event, blockId, encodedText) {
             if (event) {
                 event.preventDefault();
@@ -2578,14 +2612,15 @@
             const container = document.getElementById(`trans-container-${blockId}`);
             if (!container) return;
 
+            const originalText = decodeURIComponent(encodedText);
+            const cacheKey = originalText.trim();
+
             if (container.classList.contains('hidden')) {
                 container.classList.remove('hidden');
                 expandedContainers.add(blockId);
                 
-                const originalText = decodeURIComponent(encodedText);
-                
-                if (translationCache[blockId]) {
-                    renderTranslationHTML(container, translationCache[blockId].en, translationCache[blockId].ar);
+                if (translationCache[cacheKey]) {
+                    renderTranslationHTML(container, translationCache[cacheKey].en, translationCache[cacheKey].ar);
                 } else {
                     container.innerHTML = `<div class="text-[10px] text-purple-500 animate-pulse font-semibold">⏳ Übersetzung wird geladen...</div>`;
                     fetchAndRenderTranslation(blockId, originalText, container);
@@ -2615,8 +2650,10 @@
             `;
         }
 
+        // Resolves literal text lookup keys securely to prevent translations remaining stuck
         async function fetchAndRenderTranslation(blockId, originalText, containerNode) {
             const cleanText = stripHtml(originalText).trim();
+            const cacheKey = originalText.trim();
             if (!cleanText) {
                 renderTranslationHTML(containerNode, "", "");
                 return;
@@ -2638,7 +2675,7 @@
                     dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
                 }
 
-                translationCache[blockId] = { en: transEn, ar: transAr };
+                translationCache[cacheKey] = { en: transEn, ar: transAr };
                 renderTranslationHTML(containerNode, transEn, transAr);
             } catch (e) {
                 try {
@@ -2652,7 +2689,7 @@
                     const transEn = dataEn.responseData?.translatedText || "Translation failed.";
                     const transAr = dataAr.responseData?.translatedText || "Translation failed.";
 
-                    translationCache[blockId] = { en: transEn, ar: transAr };
+                    translationCache[cacheKey] = { en: transEn, ar: transAr };
                     renderTranslationHTML(containerNode, transEn, transAr);
                 } catch (err) {
                     console.error("Translation failed entirely:", err);
@@ -2776,18 +2813,48 @@
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
             const rootEl = document.documentElement;
+            const statusLabel = document.querySelector('#drawer-edit-toggle span');
+            const menuStatusLabel = document.getElementById('edit-mode-status-text');
+            const tipBanner = document.getElementById('edit-tip-banner');
+            const fab = document.getElementById('mobile-edit-fab');
+            const drawerToggle = document.getElementById('drawer-edit-toggle');
+            const desktopEditBtn = document.getElementById('desktop-edit-btn');
+            const desktopEditText = document.getElementById('desktop-edit-text');
+
             if (isEditMode) {
                 rootEl.classList.add('edit-mode-active');
-                const textEl = document.getElementById('edit-mode-status-text');
-                if (textEl) textEl.textContent = "Edit-Modus: AN";
-                const banner = document.getElementById('edit-tip-banner');
-                if (banner) banner.classList.remove('hidden');
+                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
+                if (tipBanner) tipBanner.classList.remove('hidden');
+                
+                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.add('bg-[var(--accent)]', 'text-white');
+                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                }
+                if (desktopEditBtn) {
+                    desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
+                    document.getElementById('desktop-edit-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                }
+                if (desktopEditText) desktopEditText.textContent = "Editieren: AN";
             } else {
                 rootEl.classList.remove('edit-mode-active');
-                const textEl = document.getElementById('edit-mode-status-text');
-                if (textEl) textEl.textContent = "Edit-Modus umschalten";
-                const banner = document.getElementById('edit-tip-banner');
-                if (banner) banner.classList.add('hidden');
+                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
+                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
+                if (tipBanner) tipBanner.classList.add('hidden');
+                
+                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
+                if (fab) {
+                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
+                    fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
+                }
+                if (desktopEditBtn) {
+                    desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
+                    document.getElementById('desktop-edit-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
+                }
+                if (desktopEditText) desktopEditText.textContent = "Editieren";
             }
 
             const isLearned = learnedList.includes(topic.id);
@@ -3054,23 +3121,27 @@
             expandedContainers.forEach(blockId => {
                 const containerNode = document.getElementById(getTranslationContainerId(blockId));
                 if (containerNode) {
-                    if (translationCache[blockId]) {
-                        renderTranslationHTML(containerNode, translationCache[blockId].en, translationCache[blockId].ar);
+                    let originalText = "";
+                    if (blockId.startsWith('pro_de_') || blockId.startsWith('contra_de_')) {
+                        const parts = blockId.split('_');
+                        const arr = parts[0] + '_de';
+                        const i = parseInt(parts[2]);
+                        originalText = topic[arr] ? topic[arr][i] : "";
+                    } else if (blockId.startsWith('dialog_de_')) {
+                        const parts = blockId.split('_');
+                        const i = parseInt(parts[2]);
+                        originalText = topic.dialog && topic.dialog[i] ? topic.dialog[i].de : "";
+                    } else {
+                        originalText = topic[blockId] || "";
+                    }
+                    const savedText = getHighlight(topic.id, blockId);
+                    if (savedText) originalText = savedText;
+
+                    const cacheKey = originalText.trim();
+                    if (translationCache[cacheKey]) {
+                        renderTranslationHTML(containerNode, translationCache[cacheKey].en, translationCache[cacheKey].ar);
                     } else {
                         containerNode.innerHTML = `<div class="text-[10px] text-purple-500 animate-pulse font-semibold">⏳ Reloading...</div>`;
-                        let originalText = "";
-                        if (blockId.startsWith('pro_de_') || blockId.startsWith('contra_de_')) {
-                            const parts = blockId.split('_');
-                            const arr = parts[0] + '_de';
-                            const i = parseInt(parts[2]);
-                            originalText = topic[arr] ? topic[arr][i] : "";
-                        } else if (blockId.startsWith('dialog_de_')) {
-                            const parts = blockId.split('_');
-                            const i = parseInt(parts[2]);
-                            originalText = topic.dialog && topic.dialog[i] ? topic.dialog[i].de : "";
-                        } else {
-                            originalText = topic[blockId] || "";
-                        }
                         fetchAndRenderTranslation(blockId, originalText, containerNode);
                     }
                 }
@@ -3098,7 +3169,7 @@
             ],
             "Abschluss": [
                 { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
-                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+                { de: "Zusammenfassend lässt sich sagen, dass we eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
             ]
         };
 
@@ -3132,570 +3203,4 @@
                                 <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
                                 <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
                             </div>
-                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5 cursor-pointer">
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                            </button>
-                        </div>`;
-                });
-                
-                contentsHtml += `</div></div>`;
-            });
-            contentsHtml += `</div>`;
-
-            container.innerHTML = navigationBar + contentsHtml;
-        }
-
-        // Bietet Level-Filterung für Grammatikthemen
-        function setGrammarFilter(lvl) {
-            activeGrammarFilter = lvl;
-            renderGrammar();
-        }
-
-        function renderGrammar() {
-            const container = document.getElementById('grammar-tab-section');
-            if (!container) return;
-            
-            const levels = ["all", "A1", "A2", "B1", "B2"];
-            
-            let filterHtml = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
-                    <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
-                    <p class="text-xs text-[var(--text-muted)] mt-1 mb-4">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
-                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            `;
-            
-            levels.forEach(lvl => {
-                const isActive = activeGrammarFilter === lvl;
-                const label = lvl === "all" ? "Alle" : lvl;
-                filterHtml += `
-                    <button onclick="setGrammarFilter('${lvl}')" class="px-3.5 py-1.5 text-xs font-bold rounded-full transition-all border cursor-pointer ${
-                        isActive 
-                        ? 'bg-[var(--accent)] text-white border-transparent shadow-sm' 
-                        : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text-primary)]'
-                    }">${label}</button>
-                `;
-            });
-            
-            filterHtml += `
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = filterHtml;
-            
-            const grid = document.createElement('div'); 
-            grid.className = "grid grid-cols-1 md:grid-cols-2 gap-6 pb-28";
-            
-            const filteredGrammar = GRAMMATIK_DATA.filter(item => {
-                if (activeGrammarFilter === "all") return true;
-                return item.level && item.level.toUpperCase() === activeGrammarFilter.toUpperCase();
-            });
-
-            if (filteredGrammar.length === 0) {
-                grid.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-[var(--text-muted)] italic">Keine Themen für diese Stufe verfügbar.</div>`;
-            }
-
-            filteredGrammar.forEach((item, index) => {
-                let examplesHtml = "<ul class='space-y-2 mt-2 text-xs text-[var(--text-primary)]'>";
-                item.examples.forEach(ex => { 
-                    const cleanText = stripHtml(ex);
-                    const encodedText = encodeURIComponent(cleanText);
-                    examplesHtml += `
-                        <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
-                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn text-var(--text-muted) hover:text-[var(--accent)] transition-all mt-0.5 flex gap-0.5 cursor-pointer">
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                            </button>
-                            <span class="flex-1 select-text">${ex}</span>
-                        </li>`; 
-                });
-                examplesHtml += "</ul>";
-
-                const blockId = `grammatik_${index}`;
-                const translationText = `${item.title}. ${item.description}`;
-                const encodedText = encodeURIComponent(translationText);
-                const isExpanded = expandedContainers.has(blockId);
-
-                grid.innerHTML += `
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col justify-between relative">
-                        <div>
-                            <div class="flex items-center justify-between border-b border-[var(--border)] pb-2">
-                                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">${item.level} | ${item.category}</span>
-                                <button onclick="toggleTranslation(event, '${blockId}', '${encodedText}')" class="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 cursor-pointer">
-                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
-                                </button>
-                            </div>
-                            <h3 class="text-sm font-bold text-[var(--accent)] mt-2 select-text">${item.title}</h3>
-                            <p class="text-[11px] text-[var(--text-muted)] mt-2 leading-relaxed select-text">${item.description}</p>
-                            
-                            <div id="trans-container-${blockId}" class="${isExpanded ? '' : 'hidden'} mt-2 pt-2 border-t border-[var(--border)] space-y-1"></div>
-
-                            <div class="mt-3 bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Beispiele</span>
-                                ${examplesHtml}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.appendChild(grid);
-
-            expandedContainers.forEach(blockId => {
-                if (blockId.startsWith('grammatik_')) {
-                    const idx = parseInt(blockId.split('_')[1]);
-                    const item = filteredGrammar[idx];
-                    if (item) {
-                        const txt = `${item.title}. ${item.description}`;
-                        const containerDiv = document.getElementById(getTranslationContainerId(blockId));
-                        if (containerDiv) {
-                            fetchAndRenderTranslation(blockId, txt, containerDiv);
-                        }
-                    }
-                }
-            });
-        }
-
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            
-            const statusLabel = document.querySelector('#drawer-edit-toggle span');
-            const menuStatusLabel = document.getElementById('edit-mode-status-text');
-            const tipBanner = document.getElementById('edit-tip-banner');
-            const fab = document.getElementById('mobile-edit-fab');
-            const drawerToggle = document.getElementById('drawer-edit-toggle');
-            
-            if (isEditMode) {
-                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
-                if (fab) {
-                    fab.classList.add('bg-[var(--accent)]', 'text-white');
-                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
-                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
-                }
-                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
-                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
-                if (tipBanner) tipBanner.classList.remove('hidden');
-            } else {
-                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
-                if (fab) {
-                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
-                    fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
-                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
-                }
-                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
-                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
-                if (tipBanner) tipBanner.classList.add('hidden');
-            }
-            renderActiveTopic();
-        }
-
-        const drawerEditToggle = document.getElementById('drawer-edit-toggle');
-        if (drawerEditToggle) {
-            drawerEditToggle.onclick = toggleEditMode;
-        }
-
-        function exportTotalBackup() {
-            const backupObj = {
-                version: "B2Trainer_Unified_Backup_v5",
-                timestamp: new Date().toISOString(),
-                topics: TOPICS_DATA,
-                template: TEMPLATE_DATA,
-                highlights: highlightsStore,
-                learned: learnedList,
-                preferences: {
-                    themeSetting: currentThemeSetting,
-                    textScale: textScale,
-                    activeMode: activeMode,
-                    activeView: activeView
-                }
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        // Helper download engine
-        function downloadFile(content, fileName, contentType) {
-            const a = document.createElement("a");
-            const file = new Blob([content], {type: contentType});
-            a.href = URL.createObjectURL(file);
-            a.download = fileName;
-            a.click();
-            URL.revokeObjectURL(a.href);
-        }
-
-        // Exports clean, raw array for your GitHub 'topics.json'
-        function exportRawTopics() {
-            const rawData = JSON.stringify(TOPICS_DATA, null, 2);
-            downloadFile(rawData, 'topics.json', 'application/json');
-        }
-
-        // Exports clean, raw array for your GitHub 'template.json'
-        function exportRawTemplate() {
-            const rawData = JSON.stringify(TEMPLATE_DATA, null, 2);
-            downloadFile(rawData, 'template.json', 'application/json');
-        }
-
-        // Exports clean, raw array for your GitHub 'Grammatik.json'
-        function exportRawGrammar() {
-            const rawData = JSON.stringify(GRAMMATIK_DATA, null, 2);
-            downloadFile(rawData, 'Grammatik.json', 'application/json');
-        }
-
-        // Smart Importer that handles both full backups and raw list files
-        async function importTotalBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    const suffix = getSelectedUserSuffix();
-                    
-                    // 1. Detect if it is a Unified Full Backup
-                    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.version) {
-                        pushToHistory();
-                        if (parsed.topics) TOPICS_DATA = parsed.topics;
-                        if (parsed.template) TEMPLATE_DATA = parsed.template;
-                        if (parsed.highlights) highlightsStore = parsed.highlights;
-                        if (parsed.learned) learnedList = parsed.learned;
-                        
-                        localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
-                        localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-                        localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
-                        localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
-                        
-                        alert("Vollbackup erfolgreich importiert!");
-                    } 
-                    // 2. Detect if it is a Raw Array (topics.json, template.json, Grammatik.json)
-                    else if (Array.isArray(parsed)) {
-                        if (parsed.length === 0) {
-                            alert("Die importierte Datei ist leer.");
-                            return;
-                        }
-                        
-                        pushToHistory();
-                        const sample = parsed[0];
-                        
-                        // Case A: Grammatik.json Detection
-                        if (sample.level !== undefined || sample.examples !== undefined) {
-                            GRAMMATIK_DATA = parsed;
-                            alert("Grammatik-Daten (Grammatik.json) erfolgreich aktualisiert!");
-                            if (activeTab === 'grammar') renderGrammar();
-                            return;
-                        }
-                        
-                        // Case B: Topics vs. Template Selector
-                        const modeChoice = confirm("Handelt es sich bei dieser Datei um klassische Themen (topics.json)? \n\n[OK] = Ja, klassische Themen (topics.json)\n[Abbrechen] = Nein, Vorlagen (template.json)");
-                        
-                        if (modeChoice) {
-                            TOPICS_DATA = parsed;
-                            localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
-                            alert("Klassische Themen (topics.json) erfolgreich eingelesen!");
-                        } else {
-                            TEMPLATE_DATA = parsed;
-                            localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
-                            alert("Vorlagen (template.json) erfolgreich eingelesen!");
-                        }
-                    } else {
-                        alert("Ungültiges Dateiformat!");
-                        return;
-                    }
-                    
-                    await saveEditsSilent();
-                    renderSidebar();
-                    if (activeTab === 'dashboard') renderActiveTopic();
-                    if (activeTab === 'mindmap') renderSimplisticBoxGrid();
-                    
-                } catch (err) {
-                    console.error("Import Error:", err);
-                    alert("Fehler beim Einlesen der JSON-Datei.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Prints current active topic beautifully to PDF (Handles both German, English, and Arabic RTL natively)
-        function printCurrentTopic() {
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-            if (!topic) return;
-
-            // Retrieve highlights or fallback to pristine text
-            const einleitung = getHighlight(topic.id, "einleitung_de") || topic.einleitung_de;
-            const persErfahrung = getHighlight(topic.id, "pers_erfahrung_de") || topic.pers_erfahrung_de;
-            const schluss = getHighlight(topic.id, "schluss_de") || topic.schluss_de;
-
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="de">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Thema ${topic.id}: ${stripHtml(topic.title_de)}</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-                    <style>
-                        body {
-                            font-family: 'Plus Jakarta Sans', sans-serif;
-                            color: #1C1E1D;
-                            padding: 40px;
-                            line-height: 1.6;
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .arabic {
-                            font-family: 'Noto Sans Arabic', sans-serif;
-                            direction: rtl;
-                            text-align: right;
-                            color: #6D28D9;
-                            font-size: 15px;
-                        }
-                        h1 { font-size: 22px; color: #3D6B48; border-bottom: 2px solid #3D6B48; padding-bottom: 8px; margin-bottom: 4px; }
-                        h2 { font-size: 14px; margin-top: 24px; color: #5E6661; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-                        .section { margin-bottom: 20px; page-break-inside: avoid; }
-                        .grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; }
-                        .card { background: #F9F9F6; border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px; }
-                        .pro { border-left: 4px solid #3D6B48; }
-                        .contra { border-left: 4px solid #B02A1E; }
-                        .dialog-bubble { background: #F4F4F0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; page-break-inside: avoid; }
-                        .dialog-A { background: #EDF4EF; border-left: 3px solid #3D6B48; }
-                        .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
-                        .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
-                        .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
-                        .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
-                        .hl-green { background: rgba(187, 247, 208, 0.3); border-bottom: 2px solid rgba(5, 150, 105, 0.85); padding: 1px 3px; }
-                        .word-circle { border: 2px solid #E11D48; border-radius: 50%; padding: 0 4px; display: inline-block; }
-                        ul { padding-left: 20px; margin: 8px 0; }
-                        li { margin-bottom: 6px; font-size: 13px; }
-                        @media print {
-                            body { padding: 0; }
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
-                        <span style="font-size: 11px; font-weight: bold; color: #949E99; text-transform: uppercase;">TELC B2 Diskussionstrainer</span>
-                        <button onclick="window.print()" style="padding: 8px 16px; background-color: #3D6B48; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">PDF speichern / drucken</button>
-                    </div>
-
-                    <h1>Thema ${topic.id}: ${topic.title_de}</h1>
-                    <p style="font-style: italic; color: #5E6661; margin-top: -4px; font-size: 13px;">${topic.title_en || ''}</p>
-                    <p class="arabic" style="font-weight: bold; margin-top: -10px; margin-bottom: 25px;">${topic.title_ar || ''}</p>
-
-                    <div class="section">
-                        <h2>1. Einleitung / Kontext</h2>
-                        <div style="font-size: 14px; margin-bottom: 10px;">${einleitung}</div>
-                        <div class="arabic">${topic.einleitung_ar || ''}</div>
-                    </div>
-
-                    <div class="section grid">
-                        <div class="card pro">
-                            <strong style="color: #3D6B48; font-size: 13px; text-transform: uppercase;">Dafür (Pro):</strong>
-                            <ul style="font-size: 13px;">
-                                ${topic.pro_de.map((p, i) => `<li>${getHighlight(topic.id, `pro_de_${i}`) || p}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="card contra">
-                            <strong style="color: #B02A1E; font-size: 13px; text-transform: uppercase;">Dagegen (Contra):</strong>
-                            <ul style="font-size: 13px;">
-                                ${topic.contra_de.map((c, i) => `<li>${getHighlight(topic.id, `contra_de_${i}`) || c}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h2>2. Persönliche Erfahrung</h2>
-                        <div style="font-size: 14px; margin-bottom: 10px;">${persErfahrung}</div>
-                        <div class="arabic">${topic.pers_erfahrung_ar || ''}</div>
-                    </div>
-
-                    <div class="section">
-                        <h2>3. Dialog-Struktur (Schritt für Schritt)</h2>
-                        ${topic.dialog.map((chat, i) => `
-                            <div class="dialog-bubble ${chat.role.includes('A') ? 'dialog-A' : ''}">
-                                <strong style="font-size: 11px; text-transform: uppercase; color: #5E6661;">${chat.role}</strong>
-                                <div style="font-size: 13.5px; margin-top: 4px;">${getHighlight(topic.id, `dialog_de_${i}`) || chat.de}</div>
-                                <div class="arabic" style="margin-top: 6px;">${chat.ar || ''}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="section">
-                        <h2>4. Fazit / Abschluss</h2>
-                        <div style="font-size: 14px; margin-bottom: 10px;">${schluss}</div>
-                        <div class="arabic">${topic.schluss_ar || ''}</div>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
-
-        // Global Horizontal Gestures Handler
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            touchStartTime = Date.now();
-        }, { passive: true });
-
-        document.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].clientX;
-            touchEndY = e.changedTouches[0].clientY;
-            
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-            const duration = Date.now() - touchStartTime;
-            const screenWidth = window.innerWidth;
-
-            // Ignore gestures originating or ending inside floating elements or menu actions
-            const target = e.target;
-            if (target.closest('#mobile-bottom-nav') || 
-                target.closest('#sidebar') || 
-                target.closest('#drawer-menu') || 
-                target.closest('#quick-preview-modal') || 
-                target.closest('#block-editor-modal') ||
-                target.closest('select') || 
-                target.closest('textarea') || 
-                target.closest('input')) {
-                return;
-            }
-
-            if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
-                const sidebar = document.getElementById('sidebar');
-                const drawer = document.getElementById('drawer-menu');
-                const overlay = document.getElementById('drawer-overlay');
-
-                // Swiping Left to Right -> Open Sidebar or Close Drawer
-                if (deltaX > 0) {
-                    if (touchStartX < screenWidth * 0.25) {
-                        if (sidebar) sidebar.classList.add('sidebar-open');
-                    } else if (drawer && !drawer.classList.contains('translate-x-full')) {
-                        drawer.classList.add('translate-x-full');
-                        if (overlay) {
-                            overlay.classList.add('hidden');
-                            overlay.classList.remove('opacity-100');
-                        }
-                    }
-                } 
-                // Swiping Right to Left -> Open Drawer or Close Sidebar
-                else {
-                    if (touchStartX > screenWidth * 0.75) {
-                        if (drawer) {
-                            drawer.classList.remove('translate-x-full');
-                            if (overlay) {
-                                overlay.classList.remove('hidden');
-                                void overlay.offsetWidth;
-                                overlay.classList.add('opacity-100');
-                            }
-                            populateVoicesList();
-                        }
-                    } else if (sidebar && sidebar.classList.contains('sidebar-open')) {
-                        sidebar.classList.remove('sidebar-open');
-                    }
-                }
-            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
-                if (deltaX > 0) {
-                    navigateTopicStep(-1);
-                } else {
-                    navigateTopicStep(1);
-                }
-            }
-        }, { passive: true });
-
-        // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
-        document.addEventListener('click', e => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
-                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center') && !e.target.closest('#tablet-sidebar-toggle')) {
-                    sidebar.classList.remove('sidebar-open');
-                }
-            }
-        });
-
-        function navigateTopicStep(direction) {
-            const targetIdx = activeIdx + direction;
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
-            
-            if (targetIdx >= 0 && targetIdx < dataset.length) {
-                const container = document.getElementById('active-topic-container');
-                if (!container) return;
-
-                const outClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
-                const inClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
-
-                container.classList.add(outClass);
-                
-                setTimeout(() => {
-                    activeIdx = targetIdx;
-                    localStorage.setItem('b2_active_idx', activeIdx);
-                    renderSidebar();
-                    renderActiveTopic();
-                    
-                    container.classList.remove(outClass);
-                    container.classList.add(inClass);
-                    
-                    setTimeout(() => {
-                        container.classList.remove(inClass);
-                    }, 220);
-                }, 220);
-            }
-        }
-
-        function handleLearningToggleAnimation(buttonEl, isNowLearned) {
-            if (isNowLearned) {
-                buttonEl.style.transform = "scale(1.08) rotate(1deg)";
-                buttonEl.classList.add("ring-4", "ring-emerald-400/40");
-                
-                const mainContainer = document.querySelector('main');
-                if (mainContainer) {
-                    mainContainer.style.transition = 'none';
-                    mainContainer.style.background = 'rgba(16, 185, 129, 0.15)';
-                    void mainContainer.offsetWidth; 
-                    mainContainer.style.transition = 'background 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-                    mainContainer.style.background = '';
-                }
-
-                setTimeout(() => {
-                    buttonEl.style.transform = "scale(1)";
-                    buttonEl.classList.remove("ring-4", "ring-emerald-400/40");
-                }, 300);
-            }
-        }
-
-        const isLearnedStateToggle = document.getElementById('learned-toggle');
-        if (isLearnedStateToggle) {
-            isLearnedStateToggle.onclick = async () => {
-                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-                if (learnedList.includes(activeTopic.id)) {
-                    learnedList = learnedList.filter(id => id !== activeTopic.id);
-                } else {
-                    learnedList.push(activeTopic.id);
-                    handleLearningToggleAnimation(isLearnedStateToggle, true);
-                }
-                
-                const suffix = getSelectedUserSuffix();
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').set({ learned: learnedList });
-                    } catch(e) { console.error("Fortschritt-Sync-Fehler:", e); }
-                } else {
-                    localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
-                }
-                
-                renderSidebar();
-                updateProgress();
-                renderActiveTopic();
-                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
-            };
-        }
-    </script>
-</body>
-</html>
+                            <button onclick="playBlockAudio(decodeURIComponent('${encoded
