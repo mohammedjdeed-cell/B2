@@ -100,7 +100,7 @@
     main, main *, 
     .selectable-text, .selectable-text *, 
     textarea, input, 
-    [contenteditable="true"], [contenteditable="true"] *, 
+    [contenteditable], [contenteditable] *, 
     .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle,
     strong, b, p, span, li, h1, h2, h3, h4, h5, h6 {
         user-select: text !important;
@@ -439,7 +439,7 @@
             </button>
 
             <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Einstellungen und Werkzeuge">
-                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 00-1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
         </div>
     </header>
@@ -1728,6 +1728,29 @@
             };
         }
 
+        // Auto-migration routine that parses legacy (non-mode suffixed) keys in local highlights store 
+        // to separate them properly into classic and template formats.
+        // It maps legacy entries strictly to template namespace as all previous edits were done in template mode.
+        function runHighlightsMigration() {
+            let migrated = false;
+            for (let key in highlightsStore) {
+                if (/^\d+$/.test(key) && highlightsStore[key] && typeof highlightsStore[key] === 'object' && !Array.isArray(highlightsStore[key])) {
+                    const templateKey = `${key}_template`;
+                    
+                    if (!highlightsStore[templateKey]) {
+                        highlightsStore[templateKey] = JSON.parse(JSON.stringify(highlightsStore[key]));
+                        migrated = true;
+                    }
+                    
+                    delete highlightsStore[key];
+                }
+            }
+            if (migrated) {
+                const suffix = getSelectedUserSuffix();
+                localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+            }
+        }
+
         async function loadTopics() {
             try {
                 let resTopics = await safeFetchJson('./Topics.json');
@@ -1763,10 +1786,10 @@
                         pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
                         contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
                         contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
-                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
+                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعm."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية von التدخين.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
                             { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار." }
@@ -1868,6 +1891,9 @@
                     learnedList = JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
+
+                // Run automatic highlight partition migration
+                runHighlightsMigration();
 
                 baseTopics.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
@@ -2982,7 +3008,7 @@
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${isEditMode ? `
-                                    <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
+                                    <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
                                     <button onclick="deleteArgument('pro_de', ${index})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
                                     ` : ''}
                                 </div>
@@ -3157,7 +3183,7 @@
             ],
             "Zustimmung": [
                 { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
-                { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
+                { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
             ],
             "Widerspruch": [
                 { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
@@ -3487,6 +3513,7 @@
                         return;
                     }
                     
+                    runHighlightsMigration();
                     await saveEditsSilent();
                     renderSidebar();
                     if (activeTab === 'dashboard') renderActiveTopic();
