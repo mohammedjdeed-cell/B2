@@ -1300,15 +1300,29 @@
         }
 
         async function saveHighlight(topicId, blockKey, htmlContent) {
-            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
-            highlightsStore[topicId][blockKey] = htmlContent;
+            const modePrefix = activeMode === 'classic' ? 'classic' : 'template';
+            const storeKey = `${modePrefix}_${topicId}`;
+            
+            if (!highlightsStore[storeKey]) highlightsStore[storeKey] = {};
+            highlightsStore[storeKey][blockKey] = htmlContent;
+            
+            if (activeMode === 'template') {
+                if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+                highlightsStore[topicId][blockKey] = htmlContent;
+            }
             
             const suffix = getSelectedUserSuffix();
             if (currentUser && db) {
                 try {
-                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set({
+                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(storeKey).set({
                         [blockKey]: htmlContent
                     }, { merge: true });
+                    
+                    if (activeMode === 'template') {
+                        await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set({
+                            [blockKey]: htmlContent
+                        }, { merge: true });
+                    }
                 } catch(e) { console.error("Highlights-Sync-Fehler:", e); }
             } else {
                 localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
@@ -1316,7 +1330,11 @@
         }
 
         function getHighlight(topicId, blockKey) {
-            return highlightsStore[topicId]?.[blockKey] || null;
+            if (activeMode === 'classic') {
+                return highlightsStore[`classic_${topicId}`]?.[blockKey] || null;
+            } else {
+                return highlightsStore[`template_${topicId}`]?.[blockKey] || highlightsStore[topicId]?.[blockKey] || null;
+            }
         }
 
         document.addEventListener('click', function(e) {
@@ -1391,8 +1409,18 @@
             if (TOPICS_DATA.length === 0) return;
             const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
-                if (highlightsStore[topicId]) {
+                const modePrefix = activeMode === 'classic' ? 'classic' : 'template';
+                const storeKey = `${modePrefix}_${topicId}`;
+                let deleted = false;
+                if (highlightsStore[storeKey]) {
+                    delete highlightsStore[storeKey];
+                    deleted = true;
+                }
+                if (activeMode === 'template' && highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
+                    deleted = true;
+                }
+                if (deleted) {
                     localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
                     renderActiveTopic();
                 }
@@ -1757,7 +1785,7 @@
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in den rauchfreien Zonen.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
                             { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
@@ -1981,7 +2009,12 @@
             }
 
             // Delete custom highlights for this topic
-            if (highlightsStore[topicId]) {
+            const modePrefix = activeMode === 'classic' ? 'classic' : 'template';
+            const storeKey = `${modePrefix}_${topicId}`;
+            if (highlightsStore[storeKey]) {
+                delete highlightsStore[storeKey];
+            }
+            if (activeMode === 'template' && highlightsStore[topicId]) {
                 delete highlightsStore[topicId];
             }
 
@@ -1992,7 +2025,10 @@
             if (currentUser && db) {
                 try {
                     await db.collection('users').doc(currentUser.uid).collection(activeMode === 'classic' ? 'edited_topics' : 'edited_templates').doc(topicId.toString()).delete();
-                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
+                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(storeKey).delete();
+                    if (activeMode === 'template') {
+                        await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
+                    }
                 } catch(e) { console.error("Factory Reset Cloud sync failure:", e); }
             } else {
                 localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
@@ -2585,23 +2621,6 @@
             modal.classList.remove('hidden');
         }
 
-        function closeQuickPreview() {
-            const modal = document.getElementById('quick-preview-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        // Dynamic highlights application for Connectors
-        function applyConnectorsHighlight(text) {
-            if (!text) return "";
-            let highlighted = text;
-            CONNECTORS.forEach(conn => {
-                const escapedConn = conn.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                const regex = new RegExp(`\\b${escapedConn}\\b`, 'gi');
-                highlighted = highlighted.replace(regex, (matched) => `<span class="highlight">${matched}</span>`);
-            });
-            return highlighted;
-        }
-
         // Toggle Translation visibility and trigger automatic generation
         function toggleTranslation(event, blockId, encodedText) {
             if (event) {
@@ -2765,16 +2784,22 @@
             if (topic[arKey]) topic[arKey].splice(index, 1);
 
             const blockKey = `${field}_${index}`;
-            if (highlightsStore[topic.id] && highlightsStore[topic.id][blockKey]) {
-                delete highlightsStore[topic.id][blockKey];
+            const modePrefix = activeMode === 'classic' ? 'classic' : 'template';
+            const storeKey = `${modePrefix}_${topic.id}`;
+            const legacyStoreKey = topic.id;
+
+            const targetStore = highlightsStore[storeKey] || (activeMode === 'template' ? highlightsStore[legacyStoreKey] : null);
+
+            if (targetStore && targetStore[blockKey]) {
+                delete targetStore[blockKey];
             }
             const len = (topic[deKey] || []).length;
             for (let i = index; i <= len; i++) {
                 const nextKey = `${field}_${i + 1}`;
                 const currentKey = `${field}_${i}`;
-                if (highlightsStore[topic.id] && highlightsStore[topic.id][nextKey] !== undefined) {
-                    highlightsStore[topic.id][currentKey] = highlightsStore[topic.id][nextKey];
-                    delete highlightsStore[topic.id][nextKey];
+                if (targetStore && targetStore[nextKey] !== undefined) {
+                    targetStore[currentKey] = targetStore[nextKey];
+                    delete targetStore[nextKey];
                 }
             }
 
@@ -2790,8 +2815,21 @@
         }
 
         function renderActiveTopic() {
-            if (TOPICS_DATA.length === 0) return;
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (TOPICS_DATA.length === 0 || TEMPLATE_DATA.length === 0) return;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            
+            // Safety guard: clamp activeIdx to the bounds of the current active dataset
+            if (activeIdx >= dataset.length) {
+                activeIdx = dataset.length - 1;
+                if (activeIdx < 0) activeIdx = 0;
+                localStorage.setItem('b2_active_idx', activeIdx);
+            }
+            
+            const topic = dataset[activeIdx];
+            if (!topic) {
+                console.warn("No active topic found for index:", activeIdx);
+                return;
+            }
 
             document.getElementById('active-topic-num').innerHTML = `
                 <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52</span>
@@ -3163,11 +3201,11 @@
             ],
             "Einschränkung": [
                 { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that..." },
-                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice." }
+                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "Ich doubt that this approach works in practice." }
             ],
             "Abschluss": [
                 { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
-                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+                { de: "Zusammenfassend lässt sich sagen, dass we eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
             ]
         };
 
