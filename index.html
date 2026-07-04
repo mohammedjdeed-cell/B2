@@ -418,10 +418,11 @@
         <div class="flex items-center gap-3 relative z-10">
             <!-- Navigation Tabs -->
             <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
+                <button onclick="switchTab('template')" id="tab-template-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📝 Template</button>
+                <button onclick="switchTab('classic')" id="tab-classic-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🏛️ Klassisch</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Kasten-Raster</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📚 Grammatik</button>
             </div>
 
             <!-- Page Reload Button -->
@@ -609,11 +610,7 @@
                 </div>
 
                 <div class="grid grid-cols-2 md:flex gap-2 items-center w-full md:w-auto overflow-x-auto no-scrollbar">
-                    <select id="active-mode" onchange="switchActiveMode(this.value)" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
-                        <option value="classic" selected>Klassisch</option>
-                        <option value="template">Template</option>
-                    </select>
-
+                    
                     <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
                         <option value="both">DE &amp; EN</option>
                         <option value="de_ar">DE &amp; AR</option>
@@ -626,7 +623,7 @@
                     </button>
 
                     <!-- Manual Sichern Button next to Learned Toggler -->
-                    <button id="save-progress-btn" onclick="saveEditsManual()" class="col-span-1 w-full md:w-auto text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
+                    <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control col-span-1 w-full md:w-auto text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>💾 Sichern</span>
                     </button>
 
@@ -636,7 +633,7 @@
                     </button>
 
                     <!-- Desktop Edit Button (Visual design matches theme accent) -->
-                    <button id="desktop-edit-btn" onclick="toggleEditMode()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
+                    <button id="desktop-edit-btn" onclick="toggleEditMode()" class="edit-only-control hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
                         <svg id="desktop-edit-icon" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                         </svg>
@@ -644,14 +641,14 @@
                     </button>
 
                     <!-- Desktop Undo Button (Visual design matches neutral theme context) -->
-                    <button id="desktop-undo-btn" onclick="undo()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
+                    <button id="desktop-undo-btn" onclick="undo()" class="edit-only-control hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
                         <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
                         </svg>
                         <span>Zurück</span>
                     </button>
 
-                    <button id="reset-edits-btn" class="col-span-1 w-full md:w-auto text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0">
+                    <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control col-span-1 w-full md:w-auto text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0">
                         🔄 Zurücksetzen
                     </button>
                 </div>
@@ -702,24 +699,24 @@
 
             <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
-                <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
-                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Thema</span>
+                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Template</span>
                 </button>
-                <button onclick="switchTab('mindmap')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Raster</span>
+                <button onclick="switchTab('classic')" id="mob-tab-classic" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Klassisch</span>
                 </button>
                 
-                <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)] cursor-pointer">
+                <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)] cursor-pointer" title="Menü umschalten">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
 
-                <button onclick="switchTab('redemittel')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Reden</span>
+                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
-                <button onclick="switchTab('grammar')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
                     <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
                 </button>
@@ -1027,17 +1024,15 @@
         let showHighlights = true;
         let activeView = "both";
         let isEditMode = false;
-        let activeTab = "dashboard";
+        let activeTab = "template"; // Start at dashboard/template
         let currentFilter = "all";
-        let activeMode = localStorage.getItem('b2_active_mode') || "classic";
         let activeGrammarFilter = "all";
         
         let learnedList = [];
         let highlightsStore = {};
         let currentUser = null;
-        let editedTopicIds = [];
         let editedTemplateIds = [];
-        let activeEditBlockContext = null;
+        let currentEditModalParams = null;
 
         let undoStack = [];
         let redoStack = [];
@@ -1149,15 +1144,6 @@
                     }
                 });
             }
-
-            // Overhauled manual Pristine Reset binding
-            const resetBtn = document.getElementById('reset-edits-btn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    resetCurrentTopic();
-                });
-            }
         });
 
         function stripHtml(html) {
@@ -1169,11 +1155,10 @@
 
         function getTopicValue(topic, compoundKey) {
             if (!topic) return "";
-            if (compoundKey.startsWith('dialog_') || compoundKey.startsWith('template_dialog_')) {
-                const isTemplate = compoundKey.startsWith('template_dialog_');
+            if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_'); 
-                const lang = isTemplate ? parts[2] : parts[1];
-                const idx = parseInt(isTemplate ? parts[3] : parts[2]);
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
                 return topic.dialog && topic.dialog[idx] ? topic.dialog[idx][lang] : "";
             } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
                 const parts = compoundKey.split('_');
@@ -1187,11 +1172,10 @@
 
         function setTopicValue(topic, compoundKey, value) {
             if (!topic) return;
-            if (compoundKey.startsWith('dialog_') || compoundKey.startsWith('template_dialog_')) {
-                const isTemplate = compoundKey.startsWith('template_dialog_');
+            if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_');
-                const lang = isTemplate ? parts[2] : parts[1];
-                const idx = parseInt(isTemplate ? parts[3] : parts[2]);
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
                 if(!topic.dialog) topic.dialog = [];
                 if(!topic.dialog[idx]) topic.dialog[idx] = {};
                 topic.dialog[idx][lang] = value;
@@ -1209,7 +1193,6 @@
         function pushToHistory() {
             if (undoStack.length > 50) undoStack.shift();
             const stateSnapshot = {
-                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
@@ -1232,21 +1215,19 @@
                 return;
             }
             const currentStateSnapshot = {
-                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             redoStack.push(JSON.stringify(currentStateSnapshot));
             
             const prevStateSnapshot = JSON.parse(undoStack.pop());
-            TOPICS_DATA = prevStateSnapshot.topics;
             TEMPLATE_DATA = prevStateSnapshot.template;
             highlightsStore = prevStateSnapshot.highlights;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
             saveEditsSilent();
             renderSidebar();
-            if(activeTab === 'dashboard') renderActiveTopic();
+            if(activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
@@ -1256,42 +1237,31 @@
                 return;
             }
             const currentStateSnapshot = {
-                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             undoStack.push(JSON.stringify(currentStateSnapshot));
             
             const nextStateSnapshot = JSON.parse(redoStack.pop());
-            TOPICS_DATA = nextStateSnapshot.topics;
             TEMPLATE_DATA = nextStateSnapshot.template;
             highlightsStore = nextStateSnapshot.highlights;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
             saveEditsSilent();
             renderSidebar();
-            if(activeTab === 'dashboard') renderActiveTopic();
+            if(activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
         async function saveEditsSilent() {
-            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-            if (activeMode === 'classic') {
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
-                    } catch(e) { console.error("Fehler:", e); }
-                } else {
-                    localStorage.setItem(`edited_topics_data_1_52_${getSelectedUserSuffix()}`, JSON.stringify(TOPICS_DATA));
-                }
+            const activeTopic = TEMPLATE_DATA[activeIdx];
+            const suffix = getSelectedUserSuffix();
+            if (currentUser && db) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                } catch(e) { console.error("Fehler:", e); }
             } else {
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
-                    } catch(e) { console.error("Fehler:", e); }
-                } else {
-                    localStorage.setItem(`edited_template_data_1_52_${getSelectedUserSuffix()}`, JSON.stringify(TEMPLATE_DATA));
-                }
+                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
             }
         }
 
@@ -1328,8 +1298,13 @@
             return highlightsStore[topicId]?.[blockKey] || null;
         }
 
+        function getSavedText(topicId, blockKey, fallback, isClassic) {
+            if (isClassic) return fallback;
+            return getHighlight(topicId, blockKey) || fallback;
+        }
+
         document.addEventListener('click', function(e) {
-            if (!isEditMode) return;
+            if (!isEditMode || activeTab === 'classic') return;
             
             let editableContainer = e.target;
             while (editableContainer && editableContainer !== document.body && !editableContainer.hasAttribute('data-block-key')) {
@@ -1377,7 +1352,7 @@
         });
 
         document.addEventListener('mouseup', function(e) {
-            if (!isEditMode) return;
+            if (!isEditMode || activeTab === 'classic') return;
             setTimeout(() => {
                 const selection = window.getSelection();
                 if (!selection || selection.isCollapsed) {
@@ -1404,8 +1379,8 @@
         });
 
         function clearAllHighlightsForTopic() {
-            if (TOPICS_DATA.length === 0) return;
-            const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            if (TEMPLATE_DATA.length === 0) return;
+            const topicId = TEMPLATE_DATA[activeIdx].id;
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
                 if (highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
@@ -1553,7 +1528,7 @@
             localStorage.setItem('b2_theme_setting', pref);
             applyThemeSetting();
             renderSidebar();
-            if (activeTab === 'dashboard') renderActiveTopic();
+            if (activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
             if (activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
@@ -1619,30 +1594,85 @@
             const btnClassActive = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
             const btnClassInactive = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
 
-            ['dashboard', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
+            ['template', 'classic', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 if (btn) btn.className = (t === tabId) ? btnClassActive : btnClassInactive;
+                
                 const section = document.getElementById(`${t}-tab-section`);
                 if (section) {
-                    if (t === tabId) {
+                    if (t === tabId && t !== 'template' && t !== 'classic') {
                         section.classList.remove('hidden');
                         section.classList.add(t === 'mindmap' ? 'flex' : 'block');
-                    } else {
+                    } else if (t !== 'template' && t !== 'classic') {
                         section.classList.add('hidden');
                         section.classList.remove('flex', 'block');
                     }
                 }
+                
+                // Update mobile bottom nav icons if present
+                const mobBtn = document.getElementById(`mob-tab-${t}`);
+                if (mobBtn) {
+                    if (t === tabId) {
+                        mobBtn.classList.add('text-[var(--accent)]');
+                        mobBtn.classList.remove('text-[var(--text-muted)]');
+                    } else {
+                        mobBtn.classList.add('text-[var(--text-muted)]');
+                        mobBtn.classList.remove('text-[var(--accent)]');
+                    }
+                }
             });
 
-            if (tabId === 'dashboard') {
+            const dashboardSection = document.getElementById('dashboard-tab-section');
+            const controls = document.getElementById('dashboard-controls');
+            
+            if (tabId === 'template' || tabId === 'classic') {
+                dashboardSection.classList.remove('hidden');
+                controls.classList.remove('hidden');
+                controls.classList.add('flex');
+                
+                // Hide or show edit buttons based on tab
+                const editControls = document.querySelectorAll('.edit-only-control');
+                editControls.forEach(el => {
+                    if (tabId === 'classic') {
+                        el.classList.add('hidden');
+                        if (el.tagName !== 'BUTTON' || (el.id !== 'save-progress-btn' && el.id !== 'reset-edits-btn' && el.id !== 'desktop-edit-btn' && el.id !== 'desktop-undo-btn')) {
+                            el.classList.remove('md:flex', 'flex');
+                        }
+                    } else {
+                        el.classList.remove('hidden');
+                        if (el.id === 'desktop-edit-btn' || el.id === 'desktop-undo-btn') {
+                            el.classList.add('md:flex');
+                        }
+                    }
+                });
+                
+                // Floating Action Buttons for mobile
+                const fab = document.getElementById('mobile-edit-fab');
+                const undoFab = document.getElementById('mobile-undo-fab');
+                if (tabId === 'classic') {
+                    if (fab) fab.style.display = 'none';
+                    if (undoFab) undoFab.style.display = 'none';
+                } else {
+                    if (fab) fab.style.display = 'flex';
+                    if (undoFab) undoFab.style.display = 'flex';
+                }
+
                 renderActiveTopic();
-            } else if (tabId === 'mindmap') {
-                renderSimplisticBoxGrid();
-            } else if (tabId === 'redemittel') {
-                renderRedemittel();
-            } else if (tabId === 'grammar') {
-                renderGrammar();
+            } else {
+                dashboardSection.classList.add('hidden');
+                controls.classList.add('hidden');
+                controls.classList.remove('flex');
+                
+                const fab = document.getElementById('mobile-edit-fab');
+                const undoFab = document.getElementById('mobile-undo-fab');
+                if (fab) fab.style.display = 'none';
+                if (undoFab) undoFab.style.display = 'none';
             }
+
+            if (tabId === 'mindmap') renderSimplisticBoxGrid();
+            if (tabId === 'redemittel') renderRedemittel();
+            if (tabId === 'grammar') renderGrammar();
+            
             closeSidebarMobile();
         }
 
@@ -1781,11 +1811,23 @@
             if (!activeListElement) return;
             pushToHistory();
 
-            let text = activeListElement.innerText || activeListElement.textContent;
-            let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            let html = activeListElement.innerHTML;
             
+            // Normalize block elements to newlines to split easily while preserving inline HTML
+            let processed = html
+                .replace(/<br\s*[\/]?>/gi, '\n')
+                .replace(/<div[^>]*>/gi, '\n')
+                .replace(/<\/div>/gi, '\n')
+                .replace(/<p[^>]*>/gi, '\n')
+                .replace(/<\/p>/gi, '\n');
+
+            let lines = processed.split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length > 0 && l !== '&nbsp;');
+            
+            // Strip leading bullet characters (like - or *) safely regardless of wrapping inline HTML tags
             lines = lines.map(line => {
-                return line.replace(/^[-_*•\s]+/, '').trim();
+                return line.replace(/^((?:<[^>]+>|\s)*)[-_*•]\s+/, '$1');
             });
 
             if (lines.length === 0) lines = ["Neuer Punkt..."];
@@ -1798,13 +1840,13 @@
             hideListHelper();
 
             const blockKey = activeListElement.getAttribute('data-block-key');
-            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
             saveHighlight(activeTopicId, blockKey, activeListElement.innerHTML);
             activeListElement.dispatchEvent(new Event('blur'));
         }
 
         document.addEventListener('keyup', function(e) {
-            if (!isEditMode) return;
+            if (!isEditMode || activeTab === 'classic') return;
             const target = e.target;
             if (!target || !target.hasAttribute('contenteditable')) return;
 
@@ -1892,7 +1934,6 @@
                     }
                 });
 
-                editedTopicIds = [];
                 editedTemplateIds = [];
 
                 if (!window.PRISTINE_TOPICS) window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
@@ -1900,25 +1941,33 @@
 
                 const suffix = getSelectedUserSuffix();
 
+                // Static strictly read-only Classic data
+                TOPICS_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TOPICS));
+                
+                // Editable Template data
+                TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
+
                 if (currentUser && db) {
+                    // Smart Matching: Map older user edits from classic 'edited_topics' to TEMPLATE_DATA
                     const topicsSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
                     topicsSnapshot.forEach(doc => {
                         const cloudTopic = doc.data();
-                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        const idx = TEMPLATE_DATA.findIndex(t => t.id === parseInt(doc.id));
                         if (idx !== -1) {
-                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                            TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTopic };
+                            editedTemplateIds.push(parseInt(doc.id));
                         }
-                        editedTopicIds.push(parseInt(doc.id));
                     });
 
+                    // Map specific 'edited_templates' overrides on top
                     const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
                     templatesSnapshot.forEach(doc => {
                         const cloudTemplate = doc.data();
-                        const idx = baseTemplate.findIndex(t => t.id === parseInt(doc.id));
+                        const idx = TEMPLATE_DATA.findIndex(t => t.id === parseInt(doc.id));
                         if (idx !== -1) {
-                            baseTemplate[idx] = { ...baseTemplate[idx], ...cloudTemplate };
+                            TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTemplate };
+                            if (!editedTemplateIds.includes(parseInt(doc.id))) editedTemplateIds.push(parseInt(doc.id));
                         }
-                        editedTemplateIds.push(parseInt(doc.id));
                     });
 
                     const progressDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').get();
@@ -1934,14 +1983,15 @@
                         highlightsStore[doc.id] = doc.data();
                     });
                 } else {
+                    // Smart Matching for local storage
                     const localEdits = localStorage.getItem(`edited_topics_data_1_52_${suffix}`);
                     if (localEdits) {
                         const parsed = JSON.parse(localEdits);
                         parsed.forEach(localTopic => {
-                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            const idx = TEMPLATE_DATA.findIndex(t => t.id === localTopic.id);
                             if (idx !== -1) {
-                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
-                                editedTopicIds.push(localTopic.id);
+                                TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localTopic };
+                                editedTemplateIds.push(localTopic.id);
                             }
                         });
                     }
@@ -1950,10 +2000,10 @@
                     if (localTemplateEdits) {
                         const parsed = JSON.parse(localTemplateEdits);
                         parsed.forEach(localTemplate => {
-                            const idx = baseTemplate.findIndex(t => t.id === localTemplate.id);
+                            const idx = TEMPLATE_DATA.findIndex(t => t.id === localTemplate.id);
                             if (idx !== -1) {
-                                baseTemplate[idx] = { ...baseTemplate[idx], ...localTemplate };
-                                editedTemplateIds.push(localTemplate.id);
+                                TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localTemplate };
+                                if (!editedTemplateIds.includes(localTemplate.id)) editedTemplateIds.push(localTemplate.id);
                             }
                         });
                     }
@@ -1962,72 +2012,37 @@
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
 
-                // Auto-Migration for Old Dialogue Edits and aligning memory arrays
+                // Auto-Migration for Old Dialogue Edits
                 for (const topicId in highlightsStore) {
                     const topicHighlights = highlightsStore[topicId];
                     if (topicHighlights && typeof topicHighlights === 'object') {
                         for (const key in topicHighlights) {
-                            if (key.startsWith('dialog_de_')) {
-                                const index = key.split('_')[2];
-                                const templateKey = `template_dialog_de_${index}`;
-                                if (topicHighlights[templateKey] === undefined) {
-                                    topicHighlights[templateKey] = topicHighlights[key];
+                            if (key.startsWith('template_dialog_de_')) {
+                                const index = key.split('_')[3];
+                                const classicKey = `dialog_de_${index}`;
+                                if (topicHighlights[classicKey] === undefined) {
+                                    topicHighlights[classicKey] = topicHighlights[key];
                                 }
                             }
                         }
                     }
                 }
 
-                // Align all non-dialog global fields across classic and template datasets on load
-                baseTopics.forEach((t, i) => {
-                    const temp = baseTemplate[i];
-                    if (temp) {
-                        const globalFields = [
-                            'einleitung_de', 'einleitung_en', 'einleitung_ar',
-                            'pers_erfahrung_de', 'pers_erfahrung_en', 'pers_erfahrung_ar',
-                            'schluss_de', 'schluss_en', 'schluss_ar',
-                            'pro_de', 'pro_en', 'pro_ar',
-                            'contra_de', 'contra_en', 'contra_ar'
-                        ];
-                        globalFields.forEach(f => {
-                            if (temp[f] !== undefined && t[f] === undefined) {
-                                t[f] = JSON.parse(JSON.stringify(temp[f]));
-                            } else if (t[f] !== undefined && temp[f] === undefined) {
-                                temp[f] = JSON.parse(JSON.stringify(t[f]));
-                            } else if (temp[f] !== undefined && t[f] !== undefined) {
-                                if (Array.isArray(temp[f])) {
-                                    if (temp[f].length > t[f].length) {
-                                        t[f] = JSON.parse(JSON.stringify(temp[f]));
-                                    } else {
-                                        temp[f] = JSON.parse(JSON.stringify(t[f]));
-                                    }
-                                } else {
-                                    t[f] = temp[f];
-                                }
-                            }
-                        });
-                    }
-                });
-
-                baseTopics.forEach(t => {
+                TOPICS_DATA.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
                 });
-                baseTemplate.forEach(t => {
+                TEMPLATE_DATA.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
                 });
 
-                TOPICS_DATA = baseTopics;
-                TEMPLATE_DATA = baseTemplate;
                 GRAMMATIK_DATA = baseGrammatik;
 
                 if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
                 
-                document.getElementById('active-mode').value = activeMode;
-
                 showResetButton();
                 renderSidebar();
                 
-                if (activeTab === 'dashboard') {
+                if (activeTab === 'template' || activeTab === 'classic') {
                     renderActiveTopic();
                 } else if (activeTab === 'grammar') {
                     renderGrammar();
@@ -2041,40 +2056,27 @@
 
         async function saveEdits() {
             pushToHistory(); 
-            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const activeTopic = TEMPLATE_DATA[activeIdx];
             const suffix = getSelectedUserSuffix();
 
-            if (activeMode === 'classic') {
-                if (!editedTopicIds.includes(activeTopic.id)) {
-                    editedTopicIds.push(activeTopic.id);
-                }
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
-                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
-                } else {
-                    localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
-                }
+            if (!editedTemplateIds.includes(activeTopic.id)) {
+                editedTemplateIds.push(activeTopic.id);
+            }
+            if (currentUser && db) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
             } else {
-                if (!editedTemplateIds.includes(activeTopic.id)) {
-                    editedTemplateIds.push(activeTopic.id);
-                }
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
-                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
-                } else {
-                    localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
-                }
+                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
             }
             showResetButton();
             renderSidebar();
         }
 
         async function saveEditsManual() {
-            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const activeTopic = TEMPLATE_DATA[activeIdx];
             await saveEdits();
-            alert(`Erfolgreich gespeichert! Thema ${activeTopic.id} wurde gesichert.`);
+            alert(`Erfolgreich gespeichert! Template ${activeTopic.id} wurde gesichert.`);
         }
 
         async function verifyUserPassword(password) {
@@ -2101,22 +2103,17 @@
         }
 
         async function resetCurrentTopic() {
-            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const activeTopic = TEMPLATE_DATA[activeIdx];
             if (!activeTopic) return;
 
-            const isConfirmed = await confirmSecureDeletion("Möchten Sie dieses Thema wirklich komplett in den Originalzustand zurücksetzen?");
+            const isConfirmed = await confirmSecureDeletion("Möchten Sie dieses Template wirklich komplett in den Originalzustand zurücksetzen?");
             if (!isConfirmed) return;
 
             pushToHistory();
             const topicId = activeTopic.id;
 
-            if (activeMode === 'classic') {
-                const original = window.PRISTINE_TOPICS.find(t => t.id === topicId);
-                if (original) TOPICS_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
-            } else {
-                const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
-                if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
-            }
+            const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
+            if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
 
             if (highlightsStore[topicId]) {
                 delete highlightsStore[topicId];
@@ -2127,11 +2124,10 @@
 
             if (currentUser && db) {
                 try {
-                    await db.collection('users').doc(currentUser.uid).collection(activeMode === 'classic' ? 'edited_topics' : 'edited_templates').doc(topicId.toString()).delete();
+                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(topicId.toString()).delete();
                     await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
                 } catch(e) { console.error("Cloud-Löschfehler:", e); }
             } else {
-                localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
                 localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
             }
 
@@ -2184,7 +2180,7 @@
                 unwrapSelection(range, activeContainer);
             }
 
-            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
             saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
             handleSelectionChange();
@@ -2207,13 +2203,13 @@
 
             activeContainer.normalize();
             const blockKey = activeContainer.getAttribute('data-block-key');
-            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
+            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
             saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
         }
 
         function handleSelectionChange() {
-            if (!isEditMode) { hideToolbar(); return; }
+            if (!isEditMode || activeTab === 'classic') { hideToolbar(); return; }
             const selection = window.getSelection();
             if (!selection || selection.isCollapsed || selection.rangeCount === 0) { hideToolbar(); return; }
             
@@ -2252,7 +2248,7 @@
             listContainer.innerHTML = "";
 
             const searchVal = document.getElementById('search-bar').value.toLowerCase();
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
@@ -2307,7 +2303,7 @@
         }
 
         function updateProgress() {
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             if (dataset.length === 0) return;
 
             const total = dataset.length;
@@ -2391,11 +2387,11 @@
             }
         }
 
-        function buildTemplateBlockHTML(title, deVal, blockKey, dbField, topicId) {
+        function buildTemplateBlockHTML(title, deVal, blockKey, dbField, topicId, currentEditMode, isClassic) {
             const cleanDeText = stripHtml(deVal);
             const statementSpeechText = encodeURIComponent(cleanDeText);
             
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const topic = isClassic ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const isLearned = topic && learnedList.includes(topic.id);
             const finalTopicId = topicId || (topic ? topic.id : 0);
             
@@ -2421,14 +2417,14 @@
                             <span class="soundwave-bar"></span>
                         </button>
                     </div>
-                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
-                        ${isEditMode ? deVal : applyConnectorsHighlight(deVal)}
+                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
+                        ${currentEditMode ? deVal : applyConnectorsHighlight(deVal)}
                     </div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
                         <button onclick="toggleTranslation(event, '${blockKey}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                         </button>
-                        <button onclick="openBlockEditor('${dbField}', false, 0, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
+                        <button onclick="openBlockEditor('${dbField}', false, 0, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${currentEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit Block
                         </button>
                     </div>
@@ -2445,7 +2441,7 @@
 
             const searchVal = document.getElementById('grid-search').value.toLowerCase();
             const categoryFilter = document.getElementById('grid-category-filter').value;
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
@@ -2521,7 +2517,8 @@
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
                     renderActiveTopic();
-                    switchTab('dashboard');
+                    // Keep the current main tab context if they clicked on the raster, just switch to it.
+                    switchTab(activeTab === 'classic' ? 'classic' : 'template');
                 };
 
                 gridContainer.appendChild(card);
@@ -2533,15 +2530,15 @@
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
 
-            const activeDataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const activeDataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             const currentTopic = activeDataset.find(t => t.id === topic.id) || topic;
 
             document.getElementById('preview-emoji').textContent = TOPIC_ICONS[currentTopic.id] || "📌";
             document.getElementById('preview-category').textContent = currentTopic.category || "Thema";
             document.getElementById('preview-title').textContent = currentTopic.title_de;
             
-            const savedEinlDe = getHighlight(currentTopic.id, "einleitung_de") || currentTopic.einleitung_de;
-            const savedEinlAr = getHighlight(currentTopic.id, "einleitung_ar") || currentTopic.einleitung_ar;
+            const savedEinlDe = getSavedText(currentTopic.id, "einleitung_de", currentTopic.einleitung_de, activeTab === 'classic');
+            const savedEinlAr = getSavedText(currentTopic.id, "einleitung_ar", currentTopic.einleitung_ar, activeTab === 'classic');
 
             document.getElementById('preview-einleitung-de').textContent = stripHtml(savedEinlDe);
             document.getElementById('preview-einleitung-ar').textContent = stripHtml(savedEinlAr);
@@ -2554,7 +2551,7 @@
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
                     renderActiveTopic();
-                    switchTab('dashboard');
+                    switchTab(activeTab === 'classic' ? 'classic' : 'template');
                     closeQuickPreview();
                 }
             };
@@ -2668,28 +2665,21 @@
                     renderTranslationHTML(containerNode, transEn, transAr);
                 } catch (err) {
                     console.error("Translation failed entirely:", err);
-                    renderTranslationHTML(containerNode, "Failed to load translation.", "fشل تحميل الترجمة.");
+                    renderTranslationHTML(containerNode, "Failed to load translation.", "فشل تحميل الترجمة.");
                 }
             }
         }
 
         function handleInlineBlur(element, topicId, lang, blockKey) {
+            if (activeTab === 'classic') return;
             const textVal = element.textContent.trim();
             const htmlVal = element.innerHTML.trim();
             
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const topic = TEMPLATE_DATA[activeIdx];
             if (!topic || topic.id !== topicId) return;
 
             saveHighlight(topic.id, blockKey, htmlVal);
             setTopicValue(topic, blockKey, textVal);
-
-            const isDialogBlock = blockKey.startsWith('dialog_de_') || blockKey.startsWith('template_dialog_de_');
-            if (!isDialogBlock) {
-                const otherTopic = activeMode === 'classic' ? TEMPLATE_DATA[activeIdx] : TOPICS_DATA[activeIdx];
-                if (otherTopic && otherTopic.id === topicId) {
-                    setTopicValue(otherTopic, blockKey, textVal);
-                }
-            }
             
             saveEditsSilent();
         }
@@ -2700,19 +2690,13 @@
 
         function addProArgument() {
             pushToHistory();
-            const classicTopic = TOPICS_DATA[activeIdx];
-            const templateTopic = TEMPLATE_DATA[activeIdx];
-
-            [classicTopic, templateTopic].forEach(topic => {
-                if (topic) {
-                    if (!topic.pro_de) topic.pro_de = [];
-                    if (!topic.pro_en) topic.pro_en = [];
-                    if (!topic.pro_ar) topic.pro_ar = [];
-                    topic.pro_de.push("Neues Pro-Argument...");
-                    topic.pro_en.push("New pro argument...");
-                    topic.pro_ar.push("حجة مؤيدة جديدة...");
-                }
-            });
+            const topic = TEMPLATE_DATA[activeIdx];
+            if (!topic.pro_de) topic.pro_de = [];
+            if (!topic.pro_en) topic.pro_en = [];
+            if (!topic.pro_ar) topic.pro_ar = [];
+            topic.pro_de.push("Neues Pro-Argument...");
+            topic.pro_en.push("New pro argument...");
+            topic.pro_ar.push("حجة مؤيدة جديدة...");
             
             saveEditsSilent();
             renderActiveTopic();
@@ -2720,19 +2704,13 @@
 
         function addContraArgument() {
             pushToHistory();
-            const classicTopic = TOPICS_DATA[activeIdx];
-            const templateTopic = TEMPLATE_DATA[activeIdx];
-
-            [classicTopic, templateTopic].forEach(topic => {
-                if (topic) {
-                    if (!topic.contra_de) topic.contra_de = [];
-                    if (!topic.contra_en) topic.contra_en = [];
-                    if (!topic.contra_ar) topic.contra_ar = [];
-                    topic.contra_de.push("Neues Kontra-Argument...");
-                    topic.contra_en.push("New contra argument...");
-                    topic.contra_ar.push("حجة معارضة جديدة...");
-                }
-            });
+            const topic = TEMPLATE_DATA[activeIdx];
+            if (!topic.contra_de) topic.contra_de = [];
+            if (!topic.contra_en) topic.contra_en = [];
+            if (!topic.contra_ar) topic.contra_ar = [];
+            topic.contra_de.push("Neues Kontra-Argument...");
+            topic.contra_en.push("New contra argument...");
+            topic.contra_ar.push("حجة معارضة جديدة...");
             
             saveEditsSilent();
             renderActiveTopic();
@@ -2743,28 +2721,24 @@
 
             pushToHistory();
 
-            const classicTopic = TOPICS_DATA[activeIdx];
-            const templateTopic = TEMPLATE_DATA[activeIdx];
+            const topic = TEMPLATE_DATA[activeIdx];
+            if (topic) {
+                const deKey = field;
+                const enKey = field.replace('_de', '_en');
+                const arKey = field.replace('_de', '_ar');
 
-            [classicTopic, templateTopic].forEach(topic => {
-                if (topic) {
-                    const deKey = field;
-                    const enKey = field.replace('_de', '_en');
-                    const arKey = field.replace('_de', '_ar');
+                if (topic[deKey]) topic[deKey].splice(index, 1);
+                if (topic[enKey]) topic[enKey].splice(index, 1);
+                if (topic[arKey]) topic[arKey].splice(index, 1);
+            }
 
-                    if (topic[deKey]) topic[deKey].splice(index, 1);
-                    if (topic[enKey]) topic[enKey].splice(index, 1);
-                    if (topic[arKey]) topic[arKey].splice(index, 1);
-                }
-            });
-
-            const activeTopicId = classicTopic ? classicTopic.id : (templateTopic ? templateTopic.id : 0);
+            const activeTopicId = topic ? topic.id : 0;
             if (activeTopicId) {
                 const blockKey = `${field}_${index}`;
                 if (highlightsStore[activeTopicId] && highlightsStore[activeTopicId][blockKey]) {
                     delete highlightsStore[activeTopicId][blockKey];
                 }
-                const len = (classicTopic[field] || []).length;
+                const len = (topic[field] || []).length;
                 for (let i = index; i <= len; i++) {
                     const nextKey = `${field}_${i + 1}`;
                     const currentKey = `${field}_${i}`;
@@ -2779,26 +2753,123 @@
             renderActiveTopic();
         }
 
-        function switchActiveMode(val) {
-            activeMode = val;
-            localStorage.setItem('b2_active_mode', activeMode);
-            renderSidebar();
+        function openBlockEditor(field, isArray, index, lang) {
+            currentEditModalParams = { field, isArray, index, lang };
+            const topic = TEMPLATE_DATA[activeIdx];
+            let textDe = "", textEn = "", textAr = "";
+
+            if (isArray) {
+                if (field === 'dialog') {
+                    textDe = topic.dialog[index].de || "";
+                    textEn = topic.dialog[index].en || "";
+                    textAr = topic.dialog[index].ar || "";
+                } else {
+                    textDe = topic[field] ? topic[field][index] : "";
+                    textEn = topic[field.replace('_de', '_en')] ? topic[field.replace('_de', '_en')][index] : "";
+                    textAr = topic[field.replace('_de', '_ar')] ? topic[field.replace('_de', '_ar')][index] : "";
+                }
+            } else {
+                textDe = topic[field] || "";
+                textEn = topic[field.replace('_de', '_en')] || "";
+                textAr = topic[field.replace('_de', '_ar')] || "";
+            }
+
+            document.getElementById('modal-edit-de').value = textDe;
+            document.getElementById('modal-edit-en').value = textEn;
+            document.getElementById('modal-edit-ar').value = textAr;
+
+            document.getElementById('block-editor-modal').classList.remove('hidden');
+        }
+
+        function closeBlockEditor() {
+            document.getElementById('block-editor-modal').classList.add('hidden');
+            currentEditModalParams = null;
+        }
+
+        function saveBlockEditor() {
+            if (!currentEditModalParams) return;
+            pushToHistory();
+            const { field, isArray, index } = currentEditModalParams;
+            const topic = TEMPLATE_DATA[activeIdx];
+            
+            const textDe = document.getElementById('modal-edit-de').value;
+            const textEn = document.getElementById('modal-edit-en').value;
+            const textAr = document.getElementById('modal-edit-ar').value;
+
+            if (isArray) {
+                if (field === 'dialog') {
+                    topic.dialog[index].de = textDe;
+                    topic.dialog[index].en = textEn;
+                    topic.dialog[index].ar = textAr;
+                } else {
+                    if (!topic[field]) topic[field] = [];
+                    topic[field][index] = textDe;
+                    const fieldEn = field.replace('_de', '_en');
+                    const fieldAr = field.replace('_de', '_ar');
+                    if (!topic[fieldEn]) topic[fieldEn] = [];
+                    topic[fieldEn][index] = textEn;
+                    if (!topic[fieldAr]) topic[fieldAr] = [];
+                    topic[fieldAr][index] = textAr;
+                }
+            } else {
+                topic[field] = textDe;
+                topic[field.replace('_de', '_en')] = textEn;
+                topic[field.replace('_de', '_ar')] = textAr;
+            }
+
+            saveEditsSilent();
             renderActiveTopic();
+            closeBlockEditor();
+        }
+
+        async function autoTranslateBlockModal() {
+            const textDe = document.getElementById('modal-edit-de').value;
+            if (!textDe) return;
+            
+            const btn = document.getElementById('btn-auto-translate');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = "⏳ Lädt...";
+            btn.disabled = true;
+
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(textDe)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(textDe)}`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                let transEn = "";
+                if (dataEn && dataEn[0]) dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
+                
+                let transAr = "";
+                if (dataAr && dataAr[0]) dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
+
+                document.getElementById('modal-edit-en').value = transEn;
+                document.getElementById('modal-edit-ar').value = transAr;
+            } catch (e) {
+                alert("Übersetzung fehlgeschlagen.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         function renderActiveTopic() {
             if (TOPICS_DATA.length === 0) return;
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isClassic = activeTab === 'classic';
+            const topic = isClassic ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const currentEditMode = isClassic ? false : isEditMode;
 
             document.getElementById('active-topic-num').innerHTML = `
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52 ${isClassic ? '(Klassisch)' : ''}</span>
             `;
             
             const deStar = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 text-lg select-none animate-pulse">★</span>` : '';
             document.getElementById('active-topic-title-de').innerHTML = `${topic.title_de} ${deStar}`;
             
             const titleEnEl = document.getElementById('active-topic-title-en');
-            if (activeMode === 'classic') {
+            if (isClassic) {
                 titleEnEl.textContent = topic.title_en;
                 titleEnEl.classList.remove('hidden');
             } else {
@@ -2808,48 +2879,10 @@
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
             const rootEl = document.documentElement;
-            const statusLabel = document.querySelector('#drawer-edit-toggle span');
-            const menuStatusLabel = document.getElementById('edit-mode-status-text');
-            const tipBanner = document.getElementById('edit-tip-banner');
-            const fab = document.getElementById('mobile-edit-fab');
-            const drawerToggle = document.getElementById('drawer-edit-toggle');
-            const desktopEditBtn = document.getElementById('desktop-edit-btn');
-            const desktopEditText = document.getElementById('desktop-edit-text');
-
-            if (isEditMode) {
+            if (currentEditMode) {
                 rootEl.classList.add('edit-mode-active');
-                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
-                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
-                if (tipBanner) tipBanner.classList.remove('hidden');
-                
-                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
-                if (fab) {
-                    fab.classList.add('bg-[var(--accent)]', 'text-white');
-                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
-                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
-                }
-                if (desktopEditBtn) {
-                    desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
-                }
-                if (desktopEditText) desktopEditText.textContent = "Editieren: AN";
             } else {
                 rootEl.classList.remove('edit-mode-active');
-                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
-                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
-                if (tipBanner) tipBanner.classList.add('hidden');
-                
-                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
-                if (fab) {
-                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
-                    fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
-                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
-                }
-                if (desktopEditBtn) {
-                    desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
-                }
-                if (desktopEditText) desktopEditText.textContent = "Editieren";
             }
 
             const isLearned = learnedList.includes(topic.id);
@@ -2930,17 +2963,17 @@
 
             const deClass = activeView === 'en' ? 'hidden' : '';
 
-            const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
-            const savedEinl = getHighlight(topic.id, einlDe);
+            const einlDe = "einleitung_de"; 
+            const savedEinl = getSavedText(topic.id, einlDe, topic[einlDe], isClassic);
 
             const einleitungHtml = `
                 <div class="p-1">
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]) : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
-                        <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
+                        <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                         </button>
-                        <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
+                        <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(stripHtml(savedEinl))}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
                             <span class="soundwave-bar"></span>
                             <span class="soundwave-bar"></span>
                             <span class="soundwave-bar"></span>
@@ -2951,7 +2984,7 @@
                 </div>
             `;
             const einleitungCard = document.createElement('div');
-            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl || topic[einlDe], 'einleitung_de');
+            einleitungCard.innerHTML = buildCardWrapper("1. Einleitung / Context", einleitungHtml, einlDe, savedEinl, 'einleitung_de');
             container.appendChild(einleitungCard);
 
             const proContraParent = document.createElement('div');
@@ -2964,17 +2997,17 @@
             if (topic.pro_de && topic.pro_de.length > 0) {
                 topic.pro_de.forEach((deVal, index) => {
                     const skeyDe = `pro_de_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe) || deVal;
+                    const saved = getSavedText(topic.id, skeyDe, deVal, isClassic);
                     const statementSpeechText = encodeURIComponent(stripHtml(saved));
                     proContent += `
                         <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
                             <div class="flex items-start gap-2.5">
                                 <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
                                 <div class="flex-1 text-[14px]">
-                                    <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                    <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
-                                    ${isEditMode ? `
+                                    ${currentEditMode ? `
                                     <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
                                     <button onclick="deleteArgument('pro_de', ${index})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
                                     ` : ''}
@@ -2997,7 +3030,7 @@
             } else {
                 proContent += `<p class="text-xs text-[var(--text-muted)] italic py-2">Keine Argumente vorhanden.</p>`;
             }
-            if (isEditMode) {
+            if (currentEditMode) {
                 proContent += `
                     <button onclick="addProArgument()" class="w-full min-h-[38px] py-2 mt-2 text-xs font-bold bg-[#edf4ef] hover:bg-[#deece1] text-[#3d6b48] dark:bg-[#132418] dark:text-[#5b9e6b] rounded-lg border border-dashed border-[#3d6b48]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
                         <span>➕ Pro-Argument hinzufügen</span>
@@ -3010,17 +3043,17 @@
             if (topic.contra_de && topic.contra_de.length > 0) {
                 topic.contra_de.forEach((deVal, index) => {
                     const skeyDe = `contra_de_${index}`;
-                    const saved = getHighlight(topic.id, skeyDe) || deVal;
+                    const saved = getSavedText(topic.id, skeyDe, deVal, isClassic);
                     const statementSpeechText = encodeURIComponent(stripHtml(saved));
                     contraContent += `
                         <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
                             <div class="flex items-start gap-2.5">
                                 <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
                                 <div class="flex-1 text-[14px]">
-                                    <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                    <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
-                                    ${isEditMode ? `
+                                    ${currentEditMode ? `
                                     <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
                                     <button onclick="deleteArgument('contra_de', ${index})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
                                     ` : ''}
@@ -3043,7 +3076,7 @@
             } else {
                 contraContent += `<p class="text-xs text-[var(--text-muted)] italic py-2">Keine Argumente vorhanden.</p>`;
             }
-            if (isEditMode) {
+            if (currentEditMode) {
                 contraContent += `
                     <button onclick="addContraArgument()" class="w-full min-h-[38px] py-2 mt-2 text-xs font-bold bg-[#fdf2f2] hover:bg-[#fbe3e3] text-[#b02a1e] dark:bg-[#2d1515] dark:text-[#ef4444] rounded-lg border border-dashed border-[#b02a1e]/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
                         <span>➕ Kontra-Argument hinzufügen</span>
@@ -3062,21 +3095,15 @@
             container.appendChild(proContraParent);
 
             const erfDe = "pers_erfahrung_de";
-            const deValErf = getHighlight(topic.id, erfDe) || topic[erfDe];
+            const deValErf = getSavedText(topic.id, erfDe, topic[erfDe], isClassic);
             const erfahrungCard = document.createElement('div');
-            erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de', topic.id);
+            erfahrungCard.innerHTML = buildTemplateBlockHTML("4. Persönliche Erfahrung", deValErf, erfDe, 'pers_erfahrung_de', topic.id, currentEditMode, isClassic);
             container.appendChild(erfahrungCard);
 
             let dialogHtml = '<div class="space-y-4">';
             topic.dialog.forEach((chat, index) => {
-                const skeyDe = activeMode === 'template' ? `template_dialog_de_${index}` : `dialog_de_${index}`;
-                let deValChat = getHighlight(topic.id, skeyDe);
-                if (!deValChat && activeMode === 'template') {
-                    deValChat = getHighlight(topic.id, `dialog_de_${index}`);
-                }
-                if (!deValChat) {
-                    deValChat = chat.de;
-                }
+                const skeyDe = `dialog_de_${index}`;
+                let deValChat = getSavedText(topic.id, skeyDe, chat.de, isClassic);
                 
                 const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
                 const isA = chat.role.includes('A');
@@ -3092,14 +3119,14 @@
                                 <span class="soundwave-bar"></span>
                             </button>
                         </div>
-                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
-                            ${isEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
+                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                            ${currentEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                         </div>
                         <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
                             <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                                 <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                             </button>
-                            <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${isEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
+                            <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${currentEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
                                 <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
                             </button>
                         </div>
@@ -3113,9 +3140,9 @@
             container.appendChild(dialogCard);
 
             const schlussDe = "schluss_de";
-            const deValSchluss = getHighlight(topic.id, schlussDe) || topic[schlussDe];
+            const deValSchluss = getSavedText(topic.id, schlussDe, topic[schlussDe], isClassic);
             const schlussCard = document.createElement('div');
-            schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de', topic.id);
+            schlussCard.innerHTML = buildTemplateBlockHTML("6. Fazit / Abschluss", deValSchluss, schlussDe, 'schluss_de', topic.id, currentEditMode, isClassic);
             container.appendChild(schlussCard);
 
             expandedContainers.forEach(blockId => {
@@ -3129,13 +3156,14 @@
                         originalText = topic[arr] ? topic[arr][i] : "";
                     } else if (blockId.startsWith('dialog_de_') || blockId.startsWith('template_dialog_de_')) {
                         const parts = blockId.split('_');
-                        const isTemplate = blockId.startsWith('template_dialog_de_');
-                        const i = parseInt(isTemplate ? parts[3] : parts[2]);
+                        const isTemplateBlock = blockId.startsWith('template_dialog_de_');
+                        const i = parseInt(isTemplateBlock ? parts[3] : parts[2]);
                         originalText = topic.dialog && topic.dialog[i] ? topic.dialog[i].de : "";
                     } else {
                         originalText = topic[blockId] || "";
                     }
-                    const savedText = getHighlight(topic.id, blockId);
+                    
+                    const savedText = getSavedText(topic.id, blockId, originalText, isClassic);
                     if (savedText) originalText = savedText;
 
                     const cacheKey = originalText.trim();
@@ -3337,6 +3365,11 @@
         }
 
         function toggleEditMode() {
+            if (activeTab === 'classic') {
+                alert("Der Klassisch-Modus ist schreibgeschützt. Bitte wechseln Sie zum Template-Tab, um zu bearbeiten.");
+                return;
+            }
+            
             isEditMode = !isEditMode;
             
             const statusLabel = document.querySelector('#drawer-edit-toggle span');
@@ -3390,15 +3423,14 @@
             const backupObj = {
                 version: "B2Trainer_Unified_Backup_v5",
                 timestamp: new Date().toISOString(),
-                topics: TOPICS_DATA,
-                template: TEMPLATE_DATA,
+                topics: TOPICS_DATA,     // Included for backward compatibility/safeguard
+                template: TEMPLATE_DATA, // Main editable dataset
                 highlights: highlightsStore,
                 learned: learnedList,
                 preferences: {
                     themeSetting: currentThemeSetting,
                     textScale: textScale,
-                    activeMode: activeMode,
-                    activeView: activeView
+                    activeTab: activeTab
                 }
             };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
@@ -3452,8 +3484,8 @@
                         
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-                        localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                        // No longer persisting edited_topics locally since they are strictly classic/read-only.
                         
                         alert("Vollbackup erfolgreich importiert!");
                     } 
@@ -3477,8 +3509,7 @@
                         
                         if (modeChoice) {
                             TOPICS_DATA = parsed;
-                            localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
-                            alert("Klassische Themen erfolgreich eingelesen!");
+                            alert("Klassische Themen erfolgreich eingelesen! (Schreibgeschützt)");
                         } else {
                             TEMPLATE_DATA = parsed;
                             localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
@@ -3491,7 +3522,7 @@
                     
                     await saveEditsSilent();
                     renderSidebar();
-                    if (activeTab === 'dashboard') renderActiveTopic();
+                    if (activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
                     
                 } catch (err) {
@@ -3503,12 +3534,13 @@
         }
 
         function printCurrentTopic() {
-            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isClassic = activeTab === 'classic';
+            const topic = isClassic ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!topic) return;
 
-            const einleitung = getHighlight(topic.id, "einleitung_de") || topic.einleitung_de;
-            const persErfahrung = getHighlight(topic.id, "pers_erfahrung_de") || topic.pers_erfahrung_de;
-            const schluss = getHighlight(topic.id, "schluss_de") || topic.schluss_de;
+            const einleitung = getSavedText(topic.id, "einleitung_de", topic.einleitung_de, isClassic);
+            const persErfahrung = getSavedText(topic.id, "pers_erfahrung_de", topic.pers_erfahrung_de, isClassic);
+            const schluss = getSavedText(topic.id, "schluss_de", topic.schluss_de, isClassic);
 
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
@@ -3577,13 +3609,13 @@
                         <div class="card pro">
                             <strong style="color: #3D6B48; font-size: 13px; text-transform: uppercase;">Dafür (Pro):</strong>
                             <ul style="font-size: 13px;">
-                                ${topic.pro_de.map((p, i) => `<li>${getHighlight(topic.id, `pro_de_${i}`) || p}</li>`).join('')}
+                                ${topic.pro_de.map((p, i) => `<li>${getSavedText(topic.id, `pro_de_${i}`, p, isClassic)}</li>`).join('')}
                             </ul>
                         </div>
                         <div class="card contra">
                             <strong style="color: #B02A1E; font-size: 13px; text-transform: uppercase;">Dagegen (Contra):</strong>
                             <ul style="font-size: 13px;">
-                                ${topic.contra_de.map((c, i) => `<li>${getHighlight(topic.id, `contra_de_${i}`) || c}</li>`).join('')}
+                                ${topic.contra_de.map((c, i) => `<li>${getSavedText(topic.id, `contra_de_${i}`, c, isClassic)}</li>`).join('')}
                             </ul>
                         </div>
                     </div>
@@ -3599,7 +3631,7 @@
                         ${topic.dialog.map((chat, i) => `
                             <div class="dialog-bubble ${chat.role.includes('A') ? 'dialog-A' : ''}">
                                 <strong style="font-size: 11px; text-transform: uppercase; color: #5E6661;">${chat.role}</strong>
-                                <div style="font-size: 13.5px; margin-top: 4px;">${getHighlight(topic.id, `dialog_de_${i}`) || chat.de}</div>
+                                <div style="font-size: 13.5px; margin-top: 4px;">${getSavedText(topic.id, `dialog_de_${i}`, chat.de, isClassic)}</div>
                                 <div class="arabic" style="margin-top: 6px;">${chat.ar || ''}</div>
                             </div>
                         `).join('')}
@@ -3674,7 +3706,7 @@
                         sidebar.classList.remove('sidebar-open');
                     }
                 }
-            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+            } else if ((activeTab === 'template' || activeTab === 'classic') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     navigateTopicStep(-1);
                 } else {
@@ -3694,7 +3726,7 @@
 
         function navigateTopicStep(direction) {
             const targetIdx = activeIdx + direction;
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             
             if (targetIdx >= 0 && targetIdx < dataset.length) {
                 const container = document.getElementById('active-topic-container');
@@ -3745,7 +3777,7 @@
         const isLearnedStateToggle = document.getElementById('learned-toggle');
         if (isLearnedStateToggle) {
             isLearnedStateToggle.onclick = async () => {
-                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                const activeTopic = activeTab === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
                 if (learnedList.includes(activeTopic.id)) {
                     learnedList = learnedList.filter(id => id !== activeTopic.id);
                 } else {
