@@ -396,7 +396,7 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Sidebar toggle for tablet/mobile views where sidebar is off-screen (< 1024px) -->
+            <!-- Sidebar toggle for mobile/tablet in the natural top left corner -->
             <button id="tablet-sidebar-toggle" class="lg:hidden p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Themenliste öffnen">
                 <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -609,31 +609,32 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:flex gap-2 items-center w-full md:w-auto overflow-x-auto no-scrollbar">
+                <!-- Unified Control Bar (Consistent h-9, px-3.5, rounded-lg, text-xs) -->
+                <div class="flex items-center w-full overflow-x-auto no-scrollbar gap-2 pb-1">
                     
-                    <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
+                    <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="h-9 text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0 cursor-pointer">
                         <option value="both">DE &amp; EN</option>
                         <option value="de_ar">DE &amp; AR</option>
                         <option value="all">DE, EN, AR</option>
                         <option value="de">Nur DE</option>
                     </select>
                     
-                    <button id="learned-toggle" class="col-span-1 w-full md:w-auto text-xs font-bold rounded-lg px-4 py-2.5 transition-all shadow-sm leading-tight shrink-0 cursor-pointer">
-                        Als gelernt markieren
+                    <button id="learned-toggle" class="h-9 text-xs font-bold rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]">
+                        <!-- Dynamic content via JS -->
                     </button>
 
                     <!-- Manual Sichern Button next to Learned Toggler -->
-                    <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control col-span-1 w-full md:w-auto text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
+                    <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-9 text-xs bg-indigo-600 hover:bg-indigo-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>💾 Sichern</span>
                     </button>
 
                     <!-- Print to PDF Button integrated into Control Bar -->
-                    <button onclick="printCurrentTopic()" class="col-span-1 w-full md:w-auto text-xs bg-teal-600 hover:bg-teal-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
+                    <button onclick="printCurrentTopic()" class="h-9 text-xs bg-teal-600 hover:bg-teal-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>📄 PDF Export</span>
                     </button>
 
                     <!-- Desktop Edit Button (Visual design matches theme accent) -->
-                    <button id="desktop-edit-btn" onclick="toggleEditMode()" class="edit-only-control hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
+                    <button id="desktop-edit-btn" onclick="toggleEditMode()" class="edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] hover:bg-[var(--bg-app)] rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0">
                         <svg id="desktop-edit-icon" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                         </svg>
@@ -641,14 +642,14 @@
                     </button>
 
                     <!-- Desktop Undo Button (Visual design matches neutral theme context) -->
-                    <button id="desktop-undo-btn" onclick="undo()" class="edit-only-control hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
+                    <button id="desktop-undo-btn" onclick="undo()" class="edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0">
                         <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
                         </svg>
                         <span>Zurück</span>
                     </button>
 
-                    <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control col-span-1 w-full md:w-auto text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-lg px-3 py-2 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0">
+                    <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-9 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5">
                         🔄 Zurücksetzen
                     </button>
                 </div>
@@ -697,27 +698,26 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
-            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
-                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
-                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            <!-- Mobile Bottom Navigation: Rebuilt as a standard 5-tab floating dock -->
+            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-3 flex justify-between items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Template</span>
                 </button>
-                <button onclick="switchTab('classic')" id="mob-tab-classic" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                <button onclick="switchTab('classic')" id="mob-tab-classic" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Klassisch</span>
                 </button>
-                
-                <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)] cursor-pointer" title="Menü umschalten">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-
-                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
-                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                <button onclick="switchTab('redemittel')" id="mob-tab-redemittel" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Reden</span>
+                </button>
+                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
                 </button>
             </div>
@@ -1086,17 +1086,7 @@
             const drawer = document.getElementById('drawer-menu');
             const overlay = document.getElementById('drawer-overlay');
 
-            // Bottom Navigation Sidebar toggle
-            const toggleCenter = document.getElementById('mobile-nav-toggle-center');
-            if (toggleCenter) {
-                toggleCenter.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (sidebar) sidebar.classList.toggle('sidebar-open');
-                });
-            }
-
-            // Tablet/Header Menu Sidebar toggle (Critical for portrait 12 inch tablets!)
+            // Tablet/Header Menu Sidebar toggle (Critical for portrait 12 inch tablets AND Mobile!)
             const tabletToggle = document.getElementById('tablet-sidebar-toggle');
             if (tabletToggle) {
                 tabletToggle.addEventListener('click', (e) => {
@@ -2890,20 +2880,16 @@
             if (learnedBtn) {
                 if (isLearned) {
                     learnedBtn.innerHTML = `
-                        <span class="flex items-center gap-1.5 justify-center">
-                            <span class="text-emerald-500 animate-bounce">✓</span>
-                            <span>Thema Gelernt</span>
-                        </span>
+                        <span class="text-emerald-500 animate-bounce text-sm">✓</span>
+                        <span>Gelernt</span>
                     `;
-                    learnedBtn.className = "col-span-1 w-full md:w-auto text-xs bg-emerald-600/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 rounded-xl px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 hover:bg-emerald-600 hover:text-white hover:border-transparent active:scale-95 cursor-pointer";
+                    learnedBtn.className = "h-9 text-xs bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 border border-emerald-500/30 rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5";
                 } else {
                     learnedBtn.innerHTML = `
-                        <span class="flex items-center gap-1.5 justify-center">
-                            <span class="text-zinc-400">⚡</span>
-                            <span>Als gelernt markieren</span>
-                        </span>
+                        <span class="text-zinc-400 text-sm">⚡</span>
+                        <span>Als gelernt markieren</span>
                     `;
-                    learnedBtn.className = "col-span-1 w-full md:w-auto text-xs bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border)] rounded-xl px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 hover:border-emerald-500/30 active:scale-95 cursor-pointer";
+                    learnedBtn.className = "h-9 text-xs bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 hover:bg-[var(--bg-app)] hover:border-emerald-500/30";
                 }
             }
 
@@ -3388,7 +3374,7 @@
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
                 }
                 if (desktopEditBtn) {
-                    desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
+                    desktopEditBtn.className = "edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0";
                     desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
                 }
                 if (desktopEditText) desktopEditText.textContent = "Editieren: AN";
@@ -3403,7 +3389,7 @@
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
                 if (desktopEditBtn) {
-                    desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
+                    desktopEditBtn.className = "edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0";
                     desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
                 }
                 if (desktopEditText) desktopEditText.textContent = "Editieren";
