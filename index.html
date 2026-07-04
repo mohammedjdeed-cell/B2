@@ -21,11 +21,6 @@
         }
     </script>
     
-    <!-- Firebase Web SDK Compat -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
     <style>
     /* Binds Tailwind REM units to scale seamlessly with the selection tool */
     html {
@@ -384,6 +379,10 @@
             }
         }
 </style>
+<!-- Firebase Web SDK Compat -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
 
@@ -1300,14 +1299,15 @@
         }
 
         async function saveHighlight(topicId, blockKey, htmlContent) {
+            const modeKey = `${activeMode}_${blockKey}`;
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
-            highlightsStore[topicId][blockKey] = htmlContent;
+            highlightsStore[topicId][modeKey] = htmlContent;
             
             const suffix = getSelectedUserSuffix();
             if (currentUser && db) {
                 try {
                     await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set({
-                        [blockKey]: htmlContent
+                        [modeKey]: htmlContent
                     }, { merge: true });
                 } catch(e) { console.error("Highlights-Sync-Fehler:", e); }
             } else {
@@ -1316,7 +1316,12 @@
         }
 
         function getHighlight(topicId, blockKey) {
-            return highlightsStore[topicId]?.[blockKey] || null;
+            if (activeMode === 'classic') {
+                return highlightsStore[topicId]?.[`classic_${blockKey}`] || null;
+            } else {
+                // Backward-compatible fallback logic to preserve existing template edits seamlessly
+                return highlightsStore[topicId]?.[`template_${blockKey}`] || highlightsStore[topicId]?.[blockKey] || null;
+            }
         }
 
         document.addEventListener('click', function(e) {
@@ -1392,7 +1397,13 @@
             const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
                 if (highlightsStore[topicId]) {
-                    delete highlightsStore[topicId];
+                    Object.keys(highlightsStore[topicId]).forEach(k => {
+                        if (activeMode === 'classic' && k.startsWith('classic_')) {
+                            delete highlightsStore[topicId][k];
+                        } else if (activeMode === 'template' && (k.startsWith('template_') || !k.startsWith('classic_'))) {
+                            delete highlightsStore[topicId][k];
+                        }
+                    });
                     localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
                     renderActiveTopic();
                 }
@@ -1757,7 +1768,7 @@
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in der Öffentlichkeit...",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
                             { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
@@ -1982,7 +1993,13 @@
 
             // Delete custom highlights for this topic
             if (highlightsStore[topicId]) {
-                delete highlightsStore[topicId];
+                Object.keys(highlightsStore[topicId]).forEach(k => {
+                    if (activeMode === 'classic' && k.startsWith('classic_')) {
+                        delete highlightsStore[topicId][k];
+                    } else if (activeMode === 'template' && (k.startsWith('template_') || !k.startsWith('classic_'))) {
+                        delete highlightsStore[topicId][k];
+                    }
+                });
             }
 
             const suffix = getSelectedUserSuffix();
@@ -2765,16 +2782,34 @@
             if (topic[arKey]) topic[arKey].splice(index, 1);
 
             const blockKey = `${field}_${index}`;
-            if (highlightsStore[topic.id] && highlightsStore[topic.id][blockKey]) {
-                delete highlightsStore[topic.id][blockKey];
+            const modeBlockKey = `${activeMode}_${blockKey}`;
+            
+            if (highlightsStore[topic.id]) {
+                if (highlightsStore[topic.id][modeBlockKey]) {
+                    delete highlightsStore[topic.id][modeBlockKey];
+                }
+                if (activeMode === 'template' && highlightsStore[topic.id][blockKey]) {
+                    delete highlightsStore[topic.id][blockKey];
+                }
             }
+            
             const len = (topic[deKey] || []).length;
             for (let i = index; i <= len; i++) {
                 const nextKey = `${field}_${i + 1}`;
                 const currentKey = `${field}_${i}`;
-                if (highlightsStore[topic.id] && highlightsStore[topic.id][nextKey] !== undefined) {
-                    highlightsStore[topic.id][currentKey] = highlightsStore[topic.id][nextKey];
-                    delete highlightsStore[topic.id][nextKey];
+                
+                const nextModeKey = `${activeMode}_${nextKey}`;
+                const currentModeKey = `${activeMode}_${currentKey}`;
+                
+                if (highlightsStore[topic.id]) {
+                    if (highlightsStore[topic.id][nextModeKey] !== undefined) {
+                        highlightsStore[topic.id][currentModeKey] = highlightsStore[topic.id][nextModeKey];
+                        delete highlightsStore[topic.id][nextModeKey];
+                    }
+                    if (activeMode === 'template' && highlightsStore[topic.id][nextKey] !== undefined) {
+                        highlightsStore[topic.id][currentKey] = highlightsStore[topic.id][nextKey];
+                        delete highlightsStore[topic.id][nextKey];
+                    }
                 }
             }
 
@@ -3687,101 +3722,4 @@
                         sidebar.classList.remove('sidebar-open');
                     }
                 }
-            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
-                if (deltaX > 0) {
-                    navigateTopicStep(-1);
-                } else {
-                    navigateTopicStep(1);
-                }
-            }
-        }, { passive: true });
-
-        // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
-        document.addEventListener('click', e => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
-                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center') && !e.target.closest('#tablet-sidebar-toggle')) {
-                    sidebar.classList.remove('sidebar-open');
-                }
-            }
-        });
-
-        function navigateTopicStep(direction) {
-            const targetIdx = activeIdx + direction;
-            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
-            
-            if (targetIdx >= 0 && targetIdx < dataset.length) {
-                const container = document.getElementById('active-topic-container');
-                if (!container) return;
-
-                const outClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
-                const inClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
-
-                container.classList.add(outClass);
-                
-                setTimeout(() => {
-                    activeIdx = targetIdx;
-                    localStorage.setItem('b2_active_idx', activeIdx);
-                    renderSidebar();
-                    renderActiveTopic();
-                    
-                    container.classList.remove(outClass);
-                    container.classList.add(inClass);
-                    
-                    setTimeout(() => {
-                        container.classList.remove(inClass);
-                    }, 220);
-                }, 220);
-            }
-        }
-
-        function handleLearningToggleAnimation(buttonEl, isNowLearned) {
-            if (isNowLearned) {
-                buttonEl.style.transform = "scale(1.08) rotate(1deg)";
-                buttonEl.classList.add("ring-4", "ring-emerald-400/40");
-                
-                const mainContainer = document.querySelector('main');
-                if (mainContainer) {
-                    mainContainer.style.transition = 'none';
-                    mainContainer.style.background = 'rgba(16, 185, 129, 0.15)';
-                    void mainContainer.offsetWidth; 
-                    mainContainer.style.transition = 'background 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-                    mainContainer.style.background = '';
-                }
-
-                setTimeout(() => {
-                    buttonEl.style.transform = "scale(1)";
-                    buttonEl.classList.remove("ring-4", "ring-emerald-400/40");
-                }, 300);
-            }
-        }
-
-        const isLearnedStateToggle = document.getElementById('learned-toggle');
-        if (isLearnedStateToggle) {
-            isLearnedStateToggle.onclick = async () => {
-                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
-                if (learnedList.includes(activeTopic.id)) {
-                    learnedList = learnedList.filter(id => id !== activeTopic.id);
-                } else {
-                    learnedList.push(activeTopic.id);
-                    handleLearningToggleAnimation(isLearnedStateToggle, true);
-                }
-                
-                const suffix = getSelectedUserSuffix();
-                if (currentUser && db) {
-                    try {
-                        await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').set({ learned: learnedList });
-                    } catch(e) { console.error("Fortschritt-Sync-Fehler:", e); }
-                } else {
-                    localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
-                }
-                
-                renderSidebar();
-                updateProgress();
-                renderActiveTopic();
-                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
-            };
-        }
-    </script>
-</body>
-</html>
+            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) >
