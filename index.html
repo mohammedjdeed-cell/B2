@@ -90,20 +90,27 @@
                     box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Native-App-Interaktionsverhalten */
+    /* Native App Interaction Behavior */
     * {
         -webkit-tap-highlight-color: transparent;
         user-select: none;
     }
     
-    .selectable-text, textarea, input {
-        user-select: text !important;
-    }
-
-    /* Ensures highlighted text can be cleanly selected and behaves like standard text */
-    .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle {
+    /* Explicitly make all actual readable/editable text 100% selectable */
+    main, main *, 
+    .selectable-text, .selectable-text *, 
+    textarea, input, 
+    [contenteditable="true"], [contenteditable="true"] *, 
+    .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle,
+    strong, b, p, span, li, h1, h2, h3, h4, h5, h6 {
         user-select: text !important;
         -webkit-user-select: text !important;
+    }
+
+    /* Prevent bottom floating nav and interactive UI icons from being highlightable during swipe/tap */
+    button, button *, select, select *, .audio-btn, .audio-btn *, #mobile-bottom-nav, #mobile-bottom-nav * {
+        user-select: none !important;
+        -webkit-user-select: none !important;
     }
 
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
@@ -635,7 +642,7 @@
                         <span>📄 PDF Export</span>
                     </button>
 
-                    <!-- Desktop Edit Button -->
+                    <!-- Desktop Edit Button (Visual design matches theme accent) -->
                     <button id="desktop-edit-btn" onclick="toggleEditMode()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
                         <svg id="desktop-edit-icon" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
@@ -643,7 +650,7 @@
                         <span id="desktop-edit-text">Editieren</span>
                     </button>
 
-                    <!-- Desktop Undo Button -->
+                    <!-- Desktop Undo Button (Visual design matches neutral theme context) -->
                     <button id="desktop-undo-btn" onclick="undo()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
                         <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
@@ -693,13 +700,14 @@
                         </select>
                     </div>
                 </div>
+                <!-- Robust adaptive grid to prevent tiny squeezed columns on horizontal orientation tablet screens -->
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation -->
+            <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
                 <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -804,7 +812,7 @@
         </div>
     </div>
 
-    <!-- Selection formatting toolbar -->
+    <!-- Selection formatting toolbar with Eraser tool -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Kreis">⭕</button>
@@ -814,10 +822,11 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-200 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-900/50 cursor-pointer" title="Rot"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-200 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-900/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="Formatierung löschen">🧹 Radieren</button>
+        <!-- Eraser Tool Button -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
     </div>
 
-    <!-- Script Block -->
+    <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -1038,7 +1047,6 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Evaluates active user suffix dynamically based on dropdown selection
         function getSelectedUserSuffix() {
             const userSelect = document.getElementById('drawer-user-select');
             return userSelect ? userSelect.value : 'mohammed';
@@ -1076,13 +1084,11 @@
             }
         }, { once: true });
 
-        // Instant touch and click setup to circumvent mobile/tablet delay issues
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const drawer = document.getElementById('drawer-menu');
             const overlay = document.getElementById('drawer-overlay');
 
-            // Bottom Navigation Sidebar toggle
             const toggleCenter = document.getElementById('mobile-nav-toggle-center');
             if (toggleCenter) {
                 toggleCenter.addEventListener('click', (e) => {
@@ -1092,7 +1098,6 @@
                 });
             }
 
-            // Tablet/Header Menu Sidebar toggle (Critical for portrait 12 inch tablets!)
             const tabletToggle = document.getElementById('tablet-sidebar-toggle');
             if (tabletToggle) {
                 tabletToggle.addEventListener('click', (e) => {
@@ -1102,7 +1107,6 @@
                 });
             }
 
-            // Top Menu Drawer toggle
             const toggleMenu = document.getElementById('menu-drawer-toggle');
             if (toggleMenu) {
                 toggleMenu.addEventListener('click', (e) => {
@@ -1112,7 +1116,6 @@
                 });
             }
 
-            // Drawer Close Button
             const closeBtn = document.getElementById('drawer-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', (e) => {
@@ -1122,7 +1125,6 @@
                 });
             }
 
-            // Overlay Close
             if (overlay) {
                 overlay.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1131,7 +1133,6 @@
                 });
             }
 
-            // Dropdown user selection triggers offline data-reload cleanly
             const userSelectEl = document.getElementById('drawer-user-select');
             if (userSelectEl) {
                 userSelectEl.addEventListener('change', () => {
@@ -1141,7 +1142,6 @@
                 });
             }
 
-            // Overhauled manual Pristine Reset binding
             const resetBtn = document.getElementById('reset-edits-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', (e) => {
@@ -1206,7 +1206,6 @@
             redoStack = []; 
         }
 
-        // Standardized service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -1318,10 +1317,6 @@
             const storeKey = `${topicId}_${activeMode}`;
             if (highlightsStore[storeKey] && highlightsStore[storeKey][blockKey] !== undefined) {
                 return highlightsStore[storeKey][blockKey];
-            }
-            // Legacy fallback to support prior non-suffixed keys
-            if (highlightsStore[topicId] && highlightsStore[topicId][blockKey] !== undefined) {
-                return highlightsStore[topicId][blockKey];
             }
             return null;
         }
@@ -1459,7 +1454,6 @@
             });
         }
 
-        // Direct Audio Playback
         function playBlockAudio(text, buttonEl) {
             if (activeSpeakingButton && activeSpeakingButton === buttonEl) {
                 stopBlockAudio();
@@ -1772,7 +1766,7 @@
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر in der Öffentlichkeit.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية von التدخين.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
                             { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار." }
@@ -3620,7 +3614,6 @@
             printWindow.document.close();
         }
 
-        // Touch Gestures
         document.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
