@@ -90,27 +90,20 @@
                     box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Native App Interaction Behavior */
+    /* Native-App-Interaktionsverhalten */
     * {
         -webkit-tap-highlight-color: transparent;
         user-select: none;
     }
     
-    /* Explicitly make all actual readable/editable text 100% selectable */
-    main, main *, 
-    .selectable-text, .selectable-text *, 
-    textarea, input, 
-    [contenteditable], [contenteditable] *, 
-    .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle,
-    strong, b, p, span, li, h1, h2, h3, h4, h5, h6 {
+    .selectable-text, textarea, input {
         user-select: text !important;
-        -webkit-user-select: text !important;
     }
 
-    /* Prevent bottom floating nav and interactive UI icons from being highlightable during swipe/tap */
-    button, button *, select, select *, .audio-btn, .audio-btn *, #mobile-bottom-nav, #mobile-bottom-nav * {
-        user-select: none !important;
-        -webkit-user-select: none !important;
+    /* Ensures highlighted text can be cleanly selected and behaves like standard text */
+    .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle {
+        user-select: text !important;
+        -webkit-user-select: text !important;
     }
 
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
@@ -439,7 +432,7 @@
             </button>
 
             <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Einstellungen und Werkzeuge">
-                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 00-1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
         </div>
     </header>
@@ -1047,6 +1040,7 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
+        // Evaluates active user suffix dynamically based on dropdown selection
         function getSelectedUserSuffix() {
             const userSelect = document.getElementById('drawer-user-select');
             return userSelect ? userSelect.value : 'mohammed';
@@ -1084,11 +1078,13 @@
             }
         }, { once: true });
 
+        // Instant touch and click setup to circumvent mobile/tablet delay issues
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const drawer = document.getElementById('drawer-menu');
             const overlay = document.getElementById('drawer-overlay');
 
+            // Bottom Navigation Sidebar toggle
             const toggleCenter = document.getElementById('mobile-nav-toggle-center');
             if (toggleCenter) {
                 toggleCenter.addEventListener('click', (e) => {
@@ -1098,6 +1094,7 @@
                 });
             }
 
+            // Tablet/Header Menu Sidebar toggle (Critical for portrait 12 inch tablets!)
             const tabletToggle = document.getElementById('tablet-sidebar-toggle');
             if (tabletToggle) {
                 tabletToggle.addEventListener('click', (e) => {
@@ -1107,6 +1104,7 @@
                 });
             }
 
+            // Top Menu Drawer toggle
             const toggleMenu = document.getElementById('menu-drawer-toggle');
             if (toggleMenu) {
                 toggleMenu.addEventListener('click', (e) => {
@@ -1116,6 +1114,7 @@
                 });
             }
 
+            // Drawer Close Button
             const closeBtn = document.getElementById('drawer-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', (e) => {
@@ -1125,6 +1124,7 @@
                 });
             }
 
+            // Overlay Close
             if (overlay) {
                 overlay.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1133,6 +1133,7 @@
                 });
             }
 
+            // Dropdown user selection triggers offline data-reload cleanly
             const userSelectEl = document.getElementById('drawer-user-select');
             if (userSelectEl) {
                 userSelectEl.addEventListener('change', () => {
@@ -1142,6 +1143,7 @@
                 });
             }
 
+            // Overhauled manual Pristine Reset binding
             const resetBtn = document.getElementById('reset-edits-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', (e) => {
@@ -1206,6 +1208,7 @@
             redoStack = []; 
         }
 
+        // Standardized service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -1297,14 +1300,13 @@
         }
 
         async function saveHighlight(topicId, blockKey, htmlContent) {
-            const storeKey = `${topicId}_${activeMode}`;
-            if (!highlightsStore[storeKey]) highlightsStore[storeKey] = {};
-            highlightsStore[storeKey][blockKey] = htmlContent;
+            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+            highlightsStore[topicId][blockKey] = htmlContent;
             
             const suffix = getSelectedUserSuffix();
             if (currentUser && db) {
                 try {
-                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(storeKey).set({
+                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set({
                         [blockKey]: htmlContent
                     }, { merge: true });
                 } catch(e) { console.error("Highlights-Sync-Fehler:", e); }
@@ -1314,11 +1316,7 @@
         }
 
         function getHighlight(topicId, blockKey) {
-            const storeKey = `${topicId}_${activeMode}`;
-            if (highlightsStore[storeKey] && highlightsStore[storeKey][blockKey] !== undefined) {
-                return highlightsStore[storeKey][blockKey];
-            }
-            return null;
+            return highlightsStore[topicId]?.[blockKey] || null;
         }
 
         document.addEventListener('click', function(e) {
@@ -1392,18 +1390,9 @@
         function clearAllHighlightsForTopic() {
             if (TOPICS_DATA.length === 0) return;
             const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
-            const storeKey = `${topicId}_${activeMode}`;
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
-                let deleted = false;
-                if (highlightsStore[storeKey]) {
-                    delete highlightsStore[storeKey];
-                    deleted = true;
-                }
                 if (highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
-                    deleted = true;
-                }
-                if (deleted) {
                     localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
                     renderActiveTopic();
                 }
@@ -1454,6 +1443,7 @@
             });
         }
 
+        // Simplistic Direct Audio Playback for absolute Android stability (No gestures required)
         function playBlockAudio(text, buttonEl) {
             if (activeSpeakingButton && activeSpeakingButton === buttonEl) {
                 stopBlockAudio();
@@ -1663,6 +1653,7 @@
                         const displayEl = document.getElementById('drawer-user-display');
                         if (displayEl) displayEl.textContent = name;
 
+                        // Align local select dropdown profile with the logged-in cloud profile
                         const userKey = user.email.split('@')[0];
                         const userSelect = document.getElementById('drawer-user-select');
                         if (userSelect) userSelect.value = userKey;
@@ -1728,29 +1719,6 @@
             };
         }
 
-        // Auto-migration routine that parses legacy (non-mode suffixed) keys in local highlights store 
-        // to separate them properly into classic and template formats.
-        // It maps legacy entries strictly to template namespace as all previous edits were done in template mode.
-        function runHighlightsMigration() {
-            let migrated = false;
-            for (let key in highlightsStore) {
-                if (/^\d+$/.test(key) && highlightsStore[key] && typeof highlightsStore[key] === 'object' && !Array.isArray(highlightsStore[key])) {
-                    const templateKey = `${key}_template`;
-                    
-                    if (!highlightsStore[templateKey]) {
-                        highlightsStore[templateKey] = JSON.parse(JSON.stringify(highlightsStore[key]));
-                        migrated = true;
-                    }
-                    
-                    delete highlightsStore[key];
-                }
-            }
-            if (migrated) {
-                const suffix = getSelectedUserSuffix();
-                localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-            }
-        }
-
         async function loadTopics() {
             try {
                 let resTopics = await safeFetchJson('./Topics.json');
@@ -1786,13 +1754,13 @@
                         pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
                         contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
                         contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
-                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعm."],
+                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
                         pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
-                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار." }
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
                         ],
                         schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
                         schluss_en: "In conclusion, a compromise would make sense.",
@@ -1825,12 +1793,15 @@
                 editedTopicIds = [];
                 editedTemplateIds = [];
 
+                // Store deep references of original JSON to serve as rollback baselines
                 if (!window.PRISTINE_TOPICS) window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
                 if (!window.PRISTINE_TEMPLATE) window.PRISTINE_TEMPLATE = JSON.parse(JSON.stringify(baseTemplate));
 
+                // Resolve isolated user scope suffix
                 const suffix = getSelectedUserSuffix();
 
                 if (currentUser && db) {
+                    // Online: Retrieve specific topic edits for logged-in user
                     const topicsSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
                     topicsSnapshot.forEach(doc => {
                         const cloudTopic = doc.data();
@@ -1841,6 +1812,7 @@
                         editedTopicIds.push(parseInt(doc.id));
                     });
 
+                    // Online: Retrieve specific template edits for logged-in user
                     const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
                     templatesSnapshot.forEach(doc => {
                         const cloudTemplate = doc.data();
@@ -1851,6 +1823,7 @@
                         editedTemplateIds.push(parseInt(doc.id));
                     });
 
+                    // Online: Fetch user-specific progress list
                     const progressDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').get();
                     if (progressDoc.exists && progressDoc.data().learned) {
                         learnedList = progressDoc.data().learned;
@@ -1858,12 +1831,14 @@
                         learnedList = [];
                     }
 
+                    // Online: Fetch user-specific highlights store
                     highlightsStore = {};
                     const highlightsSnapshot = await db.collection('users').doc(currentUser.uid).collection('highlights').get();
                     highlightsSnapshot.forEach(doc => {
                         highlightsStore[doc.id] = doc.data();
                     });
                 } else {
+                    // Offline Sandbox fallback - Loads local prefixed variables
                     const localEdits = localStorage.getItem(`edited_topics_data_1_52_${suffix}`);
                     if (localEdits) {
                         const parsed = JSON.parse(localEdits);
@@ -1891,9 +1866,6 @@
                     learnedList = JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
-
-                // Run automatic highlight partition migration
-                runHighlightsMigration();
 
                 baseTopics.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
@@ -1957,12 +1929,14 @@
             renderSidebar();
         }
 
+        // Manual Save Progress Action Handler (Problem 4!)
         async function saveEditsManual() {
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             await saveEdits();
             alert(`Erfolgreich gespeichert! Thema ${activeTopic.id} wurde gesichert.`);
         }
 
+        // Secure password re-authentication verification helpers (Problem 4!)
         async function verifyUserPassword(password) {
             if (!currentUser) return true;
             try {
@@ -1986,6 +1960,7 @@
             }
         }
 
+        // Pristine Factory-Reset restoring pristine templates even after saving progress! (Problem 4!)
         async function resetCurrentTopic() {
             const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!activeTopic) return;
@@ -1995,7 +1970,6 @@
 
             pushToHistory();
             const topicId = activeTopic.id;
-            const storeKey = `${topicId}_${activeMode}`;
 
             // Load factory original clean copy
             if (activeMode === 'classic') {
@@ -2007,9 +1981,6 @@
             }
 
             // Delete custom highlights for this topic
-            if (highlightsStore[storeKey]) {
-                delete highlightsStore[storeKey];
-            }
             if (highlightsStore[topicId]) {
                 delete highlightsStore[topicId];
             }
@@ -2021,7 +1992,6 @@
             if (currentUser && db) {
                 try {
                     await db.collection('users').doc(currentUser.uid).collection(activeMode === 'classic' ? 'edited_topics' : 'edited_templates').doc(topicId.toString()).delete();
-                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(storeKey).delete();
                     await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
                 } catch(e) { console.error("Factory Reset Cloud sync failure:", e); }
             } else {
@@ -2034,6 +2004,7 @@
         }
 
         function showResetButton() {
+            // Keep reset button active to let users revert to Pristine data anytime!
             const resetBtn = document.getElementById('reset-edits-btn');
             if (resetBtn) {
                 resetBtn.removeAttribute('disabled');
@@ -2084,6 +2055,7 @@
             handleSelectionChange();
         }
 
+        // Eraser logic that accurately strips custom style spans on user request
         function unwrapSelection(range, activeContainer) {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
@@ -2488,6 +2460,7 @@
             }
         }
 
+        // Overlap-resistant card-rendering for simplistic overview matrix
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2508,12 +2481,15 @@
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
                 const card = document.createElement('div');
+                
+                // Stable flexible layout structure to prevent squeezed content overlaps on landscape/portrait rotation
                 card.className = `group p-4 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[210px] h-full relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
                 } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
 
+                // Categories Badge configured with strict boundaries to prevent breaking lines
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-1.5 mb-2 w-full overflow-hidden">
                         <span class="text-[9px] font-extrabold uppercase tracking-wider ${style.badgeBg} px-2 py-0.5 rounded-full border border-black/5 dark:border-white/5 truncate max-w-[125px] whitespace-nowrap">
@@ -2575,6 +2551,7 @@
             });
         }
 
+        // Schnellvorschau berücksichtigt gewählte Daten (Classic vs. Template) + User-Edits
         function showThemaPreview(topic) {
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
@@ -2613,6 +2590,7 @@
             if (modal) modal.classList.add('hidden');
         }
 
+        // Dynamic highlights application for Connectors
         function applyConnectorsHighlight(text) {
             if (!text) return "";
             let highlighted = text;
@@ -2624,6 +2602,7 @@
             return highlighted;
         }
 
+        // Toggle Translation visibility and trigger automatic generation
         function toggleTranslation(event, blockId, encodedText) {
             if (event) {
                 event.preventDefault();
@@ -2730,7 +2709,7 @@
         }
 
         function handleInlineInput(element, topicId, lang, blockKey) {
-            // Unused
+            // Track updates on type if required
         }
 
         function addProArgument() {
@@ -2785,23 +2764,14 @@
             if (topic[enKey]) topic[enKey].splice(index, 1);
             if (topic[arKey]) topic[arKey].splice(index, 1);
 
-            const storeKey = `${topic.id}_${activeMode}`;
             const blockKey = `${field}_${index}`;
-            if (highlightsStore[storeKey] && highlightsStore[storeKey][blockKey] !== undefined) {
-                delete highlightsStore[storeKey][blockKey];
-            }
-            if (highlightsStore[topic.id] && highlightsStore[topic.id][blockKey] !== undefined) {
+            if (highlightsStore[topic.id] && highlightsStore[topic.id][blockKey]) {
                 delete highlightsStore[topic.id][blockKey];
             }
-
             const len = (topic[deKey] || []).length;
             for (let i = index; i <= len; i++) {
                 const nextKey = `${field}_${i + 1}`;
                 const currentKey = `${field}_${i}`;
-                if (highlightsStore[storeKey] && highlightsStore[storeKey][nextKey] !== undefined) {
-                    highlightsStore[storeKey][currentKey] = highlightsStore[storeKey][nextKey];
-                    delete highlightsStore[storeKey][nextKey];
-                }
                 if (highlightsStore[topic.id] && highlightsStore[topic.id][nextKey] !== undefined) {
                     highlightsStore[topic.id][currentKey] = highlightsStore[topic.id][nextKey];
                     delete highlightsStore[topic.id][nextKey];
@@ -2907,6 +2877,7 @@
                 }
             }
 
+            // Sync color shifting Completed-State in workspace
             const mainContainer = document.querySelector('main');
             if (mainContainer) {
                 if (isLearned) {
@@ -2928,6 +2899,7 @@
             const container = document.getElementById('active-topic-container');
             container.innerHTML = "";
 
+            // Star Banner Highlights for crucial elements
             if (STARRED_TOPICS.includes(topic.id)) {
                 const starBanner = document.createElement('div');
                 starBanner.innerHTML = `
@@ -3008,7 +2980,7 @@
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${isEditMode ? `
-                                    <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
+                                    <button onclick="openBlockEditor('pro_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
                                     <button onclick="deleteArgument('pro_de', ${index})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
                                     ` : ''}
                                 </div>
@@ -3054,7 +3026,7 @@
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${isEditMode ? `
-                                    <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
+                                    <button onclick="openBlockEditor('contra_de', true, ${index}, 'de')" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
                                     <button onclick="deleteArgument('contra_de', ${index})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
                                     ` : ''}
                                 </div>
@@ -3183,7 +3155,7 @@
             ],
             "Zustimmung": [
                 { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
-                { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
+                { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
             ],
             "Widerspruch": [
                 { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
@@ -3245,6 +3217,7 @@
             container.innerHTML = navigationBar + contentsHtml;
         }
 
+        // Bietet Level-Filterung für Grammatikthemen
         function setGrammarFilter(lvl) {
             activeGrammarFilter = lvl;
             renderGrammar();
@@ -3434,6 +3407,7 @@
             downloadAnchor.remove();
         }
 
+        // Helper download engine
         function downloadFile(content, fileName, contentType) {
             const a = document.createElement("a");
             const file = new Blob([content], {type: contentType});
@@ -3443,21 +3417,25 @@
             URL.revokeObjectURL(a.href);
         }
 
+        // Exports clean, raw array for your GitHub 'topics.json'
         function exportRawTopics() {
             const rawData = JSON.stringify(TOPICS_DATA, null, 2);
             downloadFile(rawData, 'topics.json', 'application/json');
         }
 
+        // Exports clean, raw array for your GitHub 'template.json'
         function exportRawTemplate() {
             const rawData = JSON.stringify(TEMPLATE_DATA, null, 2);
             downloadFile(rawData, 'template.json', 'application/json');
         }
 
+        // Exports clean, raw array for your GitHub 'Grammatik.json'
         function exportRawGrammar() {
             const rawData = JSON.stringify(GRAMMATIK_DATA, null, 2);
             downloadFile(rawData, 'Grammatik.json', 'application/json');
         }
 
+        // Smart Importer that handles both full backups and raw list files
         async function importTotalBackup(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -3468,6 +3446,7 @@
                     const parsed = JSON.parse(e.target.result);
                     const suffix = getSelectedUserSuffix();
                     
+                    // 1. Detect if it is a Unified Full Backup
                     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.version) {
                         pushToHistory();
                         if (parsed.topics) TOPICS_DATA = parsed.topics;
@@ -3481,7 +3460,9 @@
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
                         
                         alert("Vollbackup erfolgreich importiert!");
-                    } else if (Array.isArray(parsed)) {
+                    } 
+                    // 2. Detect if it is a Raw Array (topics.json, template.json, Grammatik.json)
+                    else if (Array.isArray(parsed)) {
                         if (parsed.length === 0) {
                             alert("Die importierte Datei ist leer.");
                             return;
@@ -3490,13 +3471,15 @@
                         pushToHistory();
                         const sample = parsed[0];
                         
+                        // Case A: Grammatik.json Detection
                         if (sample.level !== undefined || sample.examples !== undefined) {
                             GRAMMATIK_DATA = parsed;
-                            alert("Grammatik-Daten erfolgreich aktualisiert!");
+                            alert("Grammatik-Daten (Grammatik.json) erfolgreich aktualisiert!");
                             if (activeTab === 'grammar') renderGrammar();
                             return;
                         }
                         
+                        // Case B: Topics vs. Template Selector
                         const modeChoice = confirm("Handelt es sich bei dieser Datei um klassische Themen (topics.json)? \n\n[OK] = Ja, klassische Themen (topics.json)\n[Abbrechen] = Nein, Vorlagen (template.json)");
                         
                         if (modeChoice) {
@@ -3513,7 +3496,6 @@
                         return;
                     }
                     
-                    runHighlightsMigration();
                     await saveEditsSilent();
                     renderSidebar();
                     if (activeTab === 'dashboard') renderActiveTopic();
@@ -3527,10 +3509,12 @@
             reader.readAsText(file);
         }
 
+        // Prints current active topic beautifully to PDF (Handles both German, English, and Arabic RTL natively)
         function printCurrentTopic() {
             const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!topic) return;
 
+            // Retrieve highlights or fallback to pristine text
             const einleitung = getHighlight(topic.id, "einleitung_de") || topic.einleitung_de;
             const persErfahrung = getHighlight(topic.id, "pers_erfahrung_de") || topic.pers_erfahrung_de;
             const schluss = getHighlight(topic.id, "schluss_de") || topic.schluss_de;
@@ -3641,6 +3625,7 @@
             printWindow.document.close();
         }
 
+        // Global Horizontal Gestures Handler
         document.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
@@ -3656,6 +3641,7 @@
             const duration = Date.now() - touchStartTime;
             const screenWidth = window.innerWidth;
 
+            // Ignore gestures originating or ending inside floating elements or menu actions
             const target = e.target;
             if (target.closest('#mobile-bottom-nav') || 
                 target.closest('#sidebar') || 
@@ -3673,6 +3659,7 @@
                 const drawer = document.getElementById('drawer-menu');
                 const overlay = document.getElementById('drawer-overlay');
 
+                // Swiping Left to Right -> Open Sidebar or Close Drawer
                 if (deltaX > 0) {
                     if (touchStartX < screenWidth * 0.25) {
                         if (sidebar) sidebar.classList.add('sidebar-open');
@@ -3683,7 +3670,9 @@
                             overlay.classList.remove('opacity-100');
                         }
                     }
-                } else {
+                } 
+                // Swiping Right to Left -> Open Drawer or Close Sidebar
+                else {
                     if (touchStartX > screenWidth * 0.75) {
                         if (drawer) {
                             drawer.classList.remove('translate-x-full');
@@ -3707,6 +3696,7 @@
             }
         }, { passive: true });
 
+        // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
         document.addEventListener('click', e => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
