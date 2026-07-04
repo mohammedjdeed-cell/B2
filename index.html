@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
-    <!-- Web-Icon & PWA Manifest -->
+    <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
     <link class="rounded-full" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3D6B48">
@@ -100,7 +100,7 @@
         user-select: text !important;
     }
 
-    /* Stellt sicher, dass Formatierungen die Textauswahl nicht blockieren */
+    /* Ensures highlighted text can be cleanly selected and behaves like standard text */
     .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
         user-select: text !important;
         -webkit-user-select: text !important;
@@ -314,75 +314,75 @@
     }
 
    /* Desktop/Tablet Layout ab 1024px: Sidebar schiebt den Inhalt zur Seite (Kein Überlappen) */
-    @media (min-width: 1024px) {
-        #sidebar {
-            position: relative !important;
-            transform: translateX(0) !important;
-            z-index: 10 !important;
-            width: 20rem !important;
-        }
-        /* Elegante, perfekt ausgerichtete kreisförmige Dock-Buttons bei eingeklappter Sidebar */
-        #sidebar.sidebar-collapsed {
-            width: 4.5rem !important; 
-        }
-        #sidebar.sidebar-collapsed .sidebar-header-flex {
-            justify-content: center !important;
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
-        }
-        #sidebar.sidebar-collapsed .topic-list-item {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            padding: 0.75rem 0 !important;
-            border-radius: 9999px !important;
-            width: 3rem !important;
-            height: 3rem !important;
-            margin: 0.25rem auto !important;
-            border-left: none !important;
-            position: relative !important; /* Coordinate system for the status ring badge */
-        }
-        
-        /* Centers the emoji perfectly in the dead center of the circular button */
-        #sidebar.sidebar-collapsed .topic-list-item > div:first-child {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            width: 100% !important;
-            height: 100% !important;
-            gap: 0 !important;
-        }
-        
-        /* Positions the progress dot absolutely as an elegant corner status badge */
-        #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom {
-            display: flex !important;
-            position: absolute !important;
-            bottom: 3px !important;
-            right: 3px !important;
-            width: auto !important;
-            height: auto !important;
-            pointer-events: none !important;
-        }
-        
-        /* Gives the status dot a clean ring border matching the background context */
-        #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom span {
-            border: 2px solid var(--bg-sidebar) !important;
-            width: 10px !important;
-            height: 10px !important;
-            box-sizing: border-box !important;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
-        }
-        
-        /* Dynamically blends the ring border with the green accent when selected */
-        #sidebar.sidebar-collapsed .topic-list-item.bg-\[var\(--accent\)\] > div.hide-on-collapse-custom span {
-            border-color: var(--accent) !important;
-        }
+        @media (min-width: 1024px) {
+            #sidebar {
+                position: relative !important;
+                transform: translateX(0) !important;
+                z-index: 10 !important;
+                width: 20rem !important;
+            }
+            /* Elegante, perfekt ausgerichtete kreisförmige Dock-Buttons bei eingeklappter Sidebar */
+            #sidebar.sidebar-collapsed {
+                width: 4.5rem !important; 
+            }
+            #sidebar.sidebar-collapsed .sidebar-header-flex {
+                justify-content: center !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            #sidebar.sidebar-collapsed .topic-list-item {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding: 0.75rem 0 !important;
+                border-radius: 9999px !important;
+                width: 3rem !important;
+                height: 3rem !important;
+                margin: 0.25rem auto !important;
+                border-left: none !important;
+                position: relative !important; /* Added to act as the coordinate system for the badge */
+            }
+            
+            /* Centers the emoji perfectly in the dead center of the circular button */
+            #sidebar.sidebar-collapsed .topic-list-item > div:first-child {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                height: 100% !important;
+                gap: 0 !important;
+            }
+            
+            /* Positions the progress dot absolutely as an elegant corner status badge */
+            #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom {
+                display: flex !important;
+                position: absolute !important;
+                bottom: 3px !important;
+                right: 3px !important;
+                width: auto !important;
+                height: auto !important;
+                pointer-events: none !important;
+            }
+            
+            /* Gives the status dot a clean ring border matching the background context */
+            #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom span {
+                border: 2px solid var(--bg-sidebar) !important;
+                width: 10px !important;
+                height: 10px !important;
+                box-sizing: border-box !important;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+            }
+            
+            /* Dynamically blends the ring border with the green accent when selected */
+            #sidebar.sidebar-collapsed .topic-list-item.bg-\[var\(--accent\)\] > div.hide-on-collapse-custom span {
+                border-color: var(--accent) !important;
+            }
 
-        #sidebar.sidebar-collapsed .sidebar-only-emoji {
-            margin: 0 !important;
-            font-size: 1.35rem !important;
+            #sidebar.sidebar-collapsed .sidebar-only-emoji {
+                margin: 0 !important;
+                font-size: 1.35rem !important;
+            }
         }
-    }
 </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -416,13 +416,12 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Navigation Tabs (Desktop & Tablet) -->
-            <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)] shrink-0">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📝 Workspace (Entwurf)</button>
-                <button onclick="switchTab('klassisch')" id="tab-klassisch-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📜 Klassisch (Ref)</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Kasten-Raster</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📚 Grammatik</button>
+            <!-- Navigation Tabs -->
+            <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">📖 Dashboard</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📦 Kasten-Raster</button>
+                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">🗣️ Redemittel</button>
+                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)]">📚 Grammatik</button>
             </div>
 
             <!-- Page Reload Button -->
@@ -438,7 +437,7 @@
         </div>
     </header>
 
-    <!-- Drawer Menu -->
+    <!-- Slide-out Universal Hamburger Drawer Menu -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
     <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
@@ -458,6 +457,14 @@
                 </div>
                 <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2">
                     <span id="edit-mode-status-text">Edit-Modus umschalten</span>
+                </button>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EINSTELLUNGEN</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <button onclick="window.location.reload();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2">
+                    <span>🔄 Seite neu laden</span>
                 </button>
             </div>
 
@@ -522,8 +529,9 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DATEN-STEUERUNG</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 
+                <!-- Smart Unified File Importer -->
                 <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[44px] text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
-                    <span>📥 Datei einspielen (Backup)</span>
+                    <span>📥 Datei einspielen (Backup / GitHub-JSON)</span>
                 </button>
                 <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
                 
@@ -534,8 +542,11 @@
                 
                 <div class="h-px bg-[var(--border)]/60 w-full my-2"></div>
                 
-                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-1">Exportieren</span>
+                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-1">GitHub-Rohdateien exportieren</span>
                 <div class="grid grid-cols-1 gap-2">
+                    <button onclick="exportRawTopics()" class="w-full min-h-[34px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-md cursor-pointer transition-colors">
+                        📤 topics.json exportieren
+                    </button>
                     <button onclick="exportRawTemplate()" class="w-full min-h-[34px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-md cursor-pointer transition-colors">
                         📤 template.json exportieren
                     </button>
@@ -547,7 +558,7 @@
         </div>
     </aside>
 
-    <!-- Main Workspace -->
+    <!-- Main Workspace Container -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
@@ -586,7 +597,7 @@
         <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-            <!-- Workspace Mode Control Bar -->
+            <!-- Streamlined Focus View Controls -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
@@ -598,10 +609,10 @@
                 </div>
 
                 <div class="grid grid-cols-2 md:flex gap-2 items-center w-full md:w-auto overflow-x-auto no-scrollbar">
-                    <div class="px-3 py-2 bg-emerald-50 dark:bg-emerald-950/30 text-[var(--accent)] rounded-lg font-extrabold text-[10px] tracking-wider uppercase border border-emerald-200/50 flex items-center gap-1 shrink-0">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Workspace-Entwurf
-                    </div>
+                    <select id="active-mode" onchange="switchActiveMode(this.value)" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
+                        <option value="classic" selected>Klassisch</option>
+                        <option value="template">Template</option>
+                    </select>
 
                     <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="w-full md:w-auto text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 py-2 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0">
                         <option value="both">DE &amp; EN</option>
@@ -614,14 +625,17 @@
                         Als gelernt markieren
                     </button>
 
+                    <!-- Manual Sichern Button next to Learned Toggler -->
                     <button id="save-progress-btn" onclick="saveEditsManual()" class="col-span-1 w-full md:w-auto text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>💾 Sichern</span>
                     </button>
 
+                    <!-- Print to PDF Button integrated into Control Bar -->
                     <button onclick="printCurrentTopic()" class="col-span-1 w-full md:w-auto text-xs bg-teal-600 hover:bg-teal-700 text-white rounded-lg px-4 py-2.5 font-extrabold tracking-wide transition-all shadow-sm duration-300 active:scale-95 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>📄 PDF Export</span>
                     </button>
 
+                    <!-- Desktop Edit Button (Visual design matches theme accent) -->
                     <button id="desktop-edit-btn" onclick="toggleEditMode()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
                         <svg id="desktop-edit-icon" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
@@ -629,6 +643,7 @@
                         <span id="desktop-edit-text">Editieren</span>
                     </button>
 
+                    <!-- Desktop Undo Button (Visual design matches neutral theme context) -->
                     <button id="desktop-undo-btn" onclick="undo()" class="hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0">
                         <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
@@ -642,7 +657,7 @@
                 </div>
             </div>
 
-            <!-- Dashboard / Workspace section -->
+            <!-- Content Container -->
             <div id="dashboard-tab-section" class="space-y-6 scalable-content relative overflow-hidden">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex flex-col gap-2">
                     <div class="flex items-start gap-2.5">
@@ -655,10 +670,7 @@
                 <div id="active-topic-container" class="space-y-6 relative"></div>
             </div>
 
-            <!-- Static "Klassisch (Ref)" Section -->
-            <section id="klassisch-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
-
-            <!-- Mind Map Section -->
+            <!-- Overhauled Mind Map Section -->
             <section id="mindmap-tab-section" class="hidden flex-col space-y-6 w-full min-h-screen bg-[var(--bg-app)] animate-fade-in pb-28">
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -681,32 +693,35 @@
                         </select>
                     </div>
                 </div>
+                <!-- Robust adaptive grid to prevent tiny squeezed columns on horizontal orientation tablet screens -->
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation (Unified 5-Tab bar) -->
-            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-3 flex justify-between items-center z-40 shadow-xl gap-0.5">
-                <button onclick="switchTab('dashboard')" id="mob-dashboard-btn" class="flex flex-col items-center gap-1 py-2 flex-1 text-[var(--accent)] cursor-pointer">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span class="text-[8px] font-bold tracking-tight">Thema</span>
+            <!-- Mobile Bottom Navigation: Floating Island Design (Outside Swipes flow) -->
+            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/80 backdrop-blur-lg border border-white/20 dark:border-zinc-800/40 rounded-3xl pb-safe pt-2 px-6 flex justify-between items-center z-40 shadow-xl">
+                <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Thema</span>
                 </button>
-                <button onclick="switchTab('klassisch')" id="mob-klassisch-btn" class="flex flex-col items-center gap-1 py-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span class="text-[8px] font-bold tracking-tight">Klassisch</span>
+                <button onclick="switchTab('mindmap')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
-                <button id="mobile-nav-toggle-center" class="relative -top-5 bg-[var(--accent)] text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)] cursor-pointer shrink-0">
-                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                
+                <button id="mobile-nav-toggle-center" class="relative -top-6 bg-[var(--accent)] text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-[var(--bg-app)] cursor-pointer">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <button onclick="switchTab('mindmap')" id="mob-mindmap-btn" class="flex flex-col items-center gap-1 py-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="text-[8px] font-bold tracking-tight">Raster</span>
+
+                <button onclick="switchTab('redemittel')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Reden</span>
                 </button>
-                <button onclick="switchTab('redemittel')" id="mob-redemittel-btn" class="flex flex-col items-center gap-1 py-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                    <span class="text-[8px] font-bold tracking-tight">Reden</span>
+                <button onclick="switchTab('grammar')" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                    <svg class="w-6 h-6 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
                 </button>
             </div>
             
@@ -800,6 +815,7 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-200 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-900/50 cursor-pointer" title="Rot"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-200 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-900/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
+        <!-- Eraser Tool Button -->
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
     </div>
 
@@ -810,6 +826,7 @@
         <button onmousedown="event.preventDefault()" onclick="hideListHelper()" class="px-2 py-1 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer">Ignorieren</button>
     </div>
 
+    <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -998,6 +1015,8 @@
             } catch (e) {
                 console.error("Firebase SDK init failure:", e);
             }
+        } else {
+            console.warn("Firebase scripts are offline or blocked. Falling back to local storage sandbox.");
         }
 
         let TOPICS_DATA = [];
@@ -1005,24 +1024,30 @@
         let GRAMMATIK_DATA = [];
         
         let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
+        let showHighlights = true;
         let activeView = "both";
         let isEditMode = false;
         let activeTab = "dashboard";
         let currentFilter = "all";
+        let activeMode = localStorage.getItem('b2_active_mode') || "classic";
         let activeGrammarFilter = "all";
         
         let learnedList = [];
         let highlightsStore = {};
         let currentUser = null;
-        let currentEditFieldContext = null;
+        let editedTopicIds = [];
+        let editedTemplateIds = [];
+        let activeEditBlockContext = null;
 
         let undoStack = [];
         let redoStack = [];
         
         const translationCache = {};
         const expandedContainers = new Set();
+        
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
+        // Evaluates active user suffix dynamically based on dropdown selection
         function getSelectedUserSuffix() {
             const userSelect = document.getElementById('drawer-user-select');
             return userSelect ? userSelect.value : 'mohammed';
@@ -1060,11 +1085,13 @@
             }
         }, { once: true });
 
+        // Instant touch and click setup to circumvent mobile/tablet delay issues
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const drawer = document.getElementById('drawer-menu');
             const overlay = document.getElementById('drawer-overlay');
 
+            // Bottom Navigation Sidebar toggle
             const toggleCenter = document.getElementById('mobile-nav-toggle-center');
             if (toggleCenter) {
                 toggleCenter.addEventListener('click', (e) => {
@@ -1074,6 +1101,7 @@
                 });
             }
 
+            // Tablet/Header Menu Sidebar toggle (Critical for portrait 12 inch tablets!)
             const tabletToggle = document.getElementById('tablet-sidebar-toggle');
             if (tabletToggle) {
                 tabletToggle.addEventListener('click', (e) => {
@@ -1083,6 +1111,7 @@
                 });
             }
 
+            // Top Menu Drawer toggle
             const toggleMenu = document.getElementById('menu-drawer-toggle');
             if (toggleMenu) {
                 toggleMenu.addEventListener('click', (e) => {
@@ -1092,6 +1121,7 @@
                 });
             }
 
+            // Drawer Close Button
             const closeBtn = document.getElementById('drawer-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', (e) => {
@@ -1101,6 +1131,7 @@
                 });
             }
 
+            // Overlay Close
             if (overlay) {
                 overlay.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1109,6 +1140,7 @@
                 });
             }
 
+            // Dropdown user selection triggers offline data-reload cleanly
             const userSelectEl = document.getElementById('drawer-user-select');
             if (userSelectEl) {
                 userSelectEl.addEventListener('change', () => {
@@ -1118,6 +1150,7 @@
                 });
             }
 
+            // Overhauled manual Pristine Reset binding
             const resetBtn = document.getElementById('reset-edits-btn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', (e) => {
@@ -1176,6 +1209,7 @@
         function pushToHistory() {
             if (undoStack.length > 50) undoStack.shift();
             const stateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
@@ -1183,6 +1217,7 @@
             redoStack = []; 
         }
 
+        // Standardized service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -1197,12 +1232,14 @@
                 return;
             }
             const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             redoStack.push(JSON.stringify(currentStateSnapshot));
             
             const prevStateSnapshot = JSON.parse(undoStack.pop());
+            TOPICS_DATA = prevStateSnapshot.topics;
             TEMPLATE_DATA = prevStateSnapshot.template;
             highlightsStore = prevStateSnapshot.highlights;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
@@ -1210,7 +1247,6 @@
             saveEditsSilent();
             renderSidebar();
             if(activeTab === 'dashboard') renderActiveTopic();
-            if(activeTab === 'klassisch') renderKlassischRef();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
@@ -1220,12 +1256,14 @@
                 return;
             }
             const currentStateSnapshot = {
+                topics: JSON.parse(JSON.stringify(TOPICS_DATA)),
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             undoStack.push(JSON.stringify(currentStateSnapshot));
             
             const nextStateSnapshot = JSON.parse(redoStack.pop());
+            TOPICS_DATA = nextStateSnapshot.topics;
             TEMPLATE_DATA = nextStateSnapshot.template;
             highlightsStore = nextStateSnapshot.highlights;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
@@ -1233,18 +1271,27 @@
             saveEditsSilent();
             renderSidebar();
             if(activeTab === 'dashboard') renderActiveTopic();
-            if(activeTab === 'klassisch') renderKlassischRef();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
         async function saveEditsSilent() {
-            const activeTopic = TEMPLATE_DATA[activeIdx];
-            if (currentUser && db) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
-                } catch(e) { console.error("Fehler:", e); }
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (activeMode === 'classic') {
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch(e) { console.error("Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_topics_data_1_52_${getSelectedUserSuffix()}`, JSON.stringify(TOPICS_DATA));
+                }
             } else {
-                localStorage.setItem(`edited_template_data_1_52_${getSelectedUserSuffix()}`, JSON.stringify(TEMPLATE_DATA));
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch(e) { console.error("Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_template_data_1_52_${getSelectedUserSuffix()}`, JSON.stringify(TEMPLATE_DATA));
+                }
             }
         }
 
@@ -1357,8 +1404,8 @@
         });
 
         function clearAllHighlightsForTopic() {
-            if (TEMPLATE_DATA.length === 0) return;
-            const topicId = TEMPLATE_DATA[activeIdx].id;
+            if (TOPICS_DATA.length === 0) return;
+            const topicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
                 if (highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
@@ -1507,7 +1554,6 @@
             applyThemeSetting();
             renderSidebar();
             if (activeTab === 'dashboard') renderActiveTopic();
-            if (activeTab === 'klassisch') renderKlassischRef();
             if (activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
@@ -1542,6 +1588,9 @@
 
         applyTextScale();
 
+        const drawerMenu = document.getElementById('drawer-menu');
+        const drawerOverlay = document.getElementById('drawer-overlay');
+
         function toggleDrawer() {
             const drawerMenu = document.getElementById('drawer-menu');
             const drawerOverlay = document.getElementById('drawer-overlay');
@@ -1558,7 +1607,7 @@
                 drawerMenu.classList.remove('translate-x-full');
                 if (drawerOverlay) {
                     drawerOverlay.classList.remove('hidden');
-                    void drawerOverlay.offsetWidth;
+                    void drawerOverlay.offsetWidth; // Force Reflow
                     drawerOverlay.classList.add('opacity-100');
                 }
                 populateVoicesList();
@@ -1570,7 +1619,7 @@
             const btnClassActive = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
             const btnClassInactive = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
 
-            ['dashboard', 'klassisch', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
+            ['dashboard', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 if (btn) btn.className = (t === tabId) ? btnClassActive : btnClassInactive;
                 const section = document.getElementById(`${t}-tab-section`);
@@ -1583,23 +1632,10 @@
                         section.classList.remove('flex', 'block');
                     }
                 }
-
-                const mobBtn = document.getElementById(`mob-${t}-btn`);
-                if (mobBtn) {
-                    if (t === tabId) {
-                        mobBtn.classList.add('text-[var(--accent)]');
-                        mobBtn.classList.remove('text-[var(--text-muted)]');
-                    } else {
-                        mobBtn.classList.remove('text-[var(--accent)]');
-                        mobBtn.classList.add('text-[var(--text-muted)]');
-                    }
-                }
             });
 
             if (tabId === 'dashboard') {
                 renderActiveTopic();
-            } else if (tabId === 'klassisch') {
-                renderKlassischRef();
             } else if (tabId === 'mindmap') {
                 renderSimplisticBoxGrid();
             } else if (tabId === 'redemittel') {
@@ -1639,7 +1675,7 @@
                 } else {
                     currentUser = null;
                     if(outArea) outArea.classList.remove('hidden');
-                    if(inArea) iArea.classList.add('hidden');
+                    if(inArea) inArea.classList.add('hidden');
                 }
                 await loadTopics();
             });
@@ -1697,6 +1733,7 @@
             };
         }
 
+        /* Modern Bullet Point Logic & floating Word-style detector */
         let activeListElement = null;
 
         function getCaretCoordinates() {
@@ -1744,73 +1781,26 @@
             if (!activeListElement) return;
             pushToHistory();
 
-            let html = activeListElement.innerHTML;
+            let text = activeListElement.innerText || activeListElement.textContent;
+            let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             
-            let cleanHtml = html.replace(/<br\s*\/?>/gi, "[SPLIT]");
-            cleanHtml = cleanHtml.replace(/<\/div>\s*<div>/gi, "[SPLIT]");
-            cleanHtml = cleanHtml.replace(/<div>/gi, "").replace(/<\/div>/gi, "");
-            cleanHtml = cleanHtml.replace(/<\/p>\s*<p>/gi, "[SPLIT]");
-            cleanHtml = cleanHtml.replace(/<p>/gi, "").replace(/<\/p>/gi, "");
-            
-            let rawParts = cleanHtml.split("[SPLIT]");
-            let listItems = [];
-            
-            rawParts.forEach(part => {
-                let tempDiv = document.createElement('div');
-                tempDiv.innerHTML = part;
-                let plainText = tempDiv.textContent || tempDiv.innerText || "";
-                
-                let leadingMarkerRegex = /^([-_*•\s]|&nbsp;)+/;
-                if (leadingMarkerRegex.test(plainText)) {
-                    let originalHtml = part.trim();
-                    let match = plainText.match(leadingMarkerRegex);
-                    if (match) {
-                        let charsToStrip = match[0].length;
-                        stripLeadingCharsFromNode(tempDiv, charsToStrip);
-                        originalHtml = tempDiv.innerHTML.trim();
-                    }
-                    if (originalHtml) listItems.push(originalHtml);
-                } else {
-                    let trimmed = part.trim();
-                    if (trimmed) listItems.push(trimmed);
-                }
+            lines = lines.map(line => {
+                return line.replace(/^[-_*•\s]+/, '').trim();
             });
-            
-            if (listItems.length === 0) {
-                listItems = ["Neuer Punkt..."];
-            }
+
+            if (lines.length === 0) lines = ["Neuer Punkt..."];
 
             const listHtml = `<ul class="list-disc pl-5 space-y-1.5 mt-2 mb-2 text-xs text-[var(--text-primary)]">` + 
-                listItems.map(item => `<li class="leading-relaxed select-text">${item}</li>`).join('') + 
+                lines.map(line => `<li class="leading-relaxed select-text">${line}</li>`).join('') + 
                 `</ul>`;
 
             activeListElement.innerHTML = listHtml;
             hideListHelper();
 
             const blockKey = activeListElement.getAttribute('data-block-key');
-            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
+            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
             saveHighlight(activeTopicId, blockKey, activeListElement.innerHTML);
             activeListElement.dispatchEvent(new Event('blur'));
-        }
-
-        function stripLeadingCharsFromNode(node, count) {
-            if (count <= 0) return;
-            for (let i = 0; i < node.childNodes.length; i++) {
-                let child = node.childNodes[i];
-                if (child.nodeType === Node.TEXT_NODE) {
-                    let text = child.textContent;
-                    if (text.length <= count) {
-                        count -= text.length;
-                        child.textContent = "";
-                    } else {
-                        child.textContent = text.substring(count);
-                        count = 0;
-                    }
-                } else if (child.nodeType === Node.ELEMENT_NODE) {
-                    stripLeadingCharsFromNode(child, count);
-                    return;
-                }
-            }
         }
 
         document.addEventListener('keyup', function(e) {
@@ -1852,6 +1842,48 @@
                 let baseTemplate = Array.isArray(resTemplate) ? resTemplate : (resTemplate && typeof resTemplate === 'object' ? Object.values(resTemplate) : []);
                 let baseGrammatik = Array.isArray(resGrammatik) ? resGrammatik : (resGrammatik && typeof resGrammatik === 'object' ? Object.values(resGrammatik) : []);
 
+                if (baseTopics.length === 0) {
+                    baseTopics = [{
+                        id: 1,
+                        title_de: "Rauchen in der Öffentlichkeit verbieten?",
+                        title_en: "Ban smoking in public places?",
+                        category: "Freizeit & Gesundheit",
+                        einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
+                        einleitung_en: "The topic of public smoking has been discussed controversially for years.",
+                        einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
+                        pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
+                        pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
+                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
+                        contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
+                        contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
+                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
+                        pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
+                        pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية von التدخين.",
+                        dialog: [
+                            { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
+                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
+                        ],
+                        schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
+                        schluss_en: "In conclusion, a compromise would make sense.",
+                        schluss_ar: "خلاصة القول هي أن التسوية ستكون منطقية."
+                    }];
+                }
+
+                if (baseTemplate.length === 0) {
+                    baseTemplate = JSON.parse(JSON.stringify(baseTopics));
+                }
+
+                if (baseGrammatik.length === 0) {
+                    baseGrammatik = [{
+                        level: "B2",
+                        category: "Konjunktionen",
+                        title: "Zweiteilige Konjunktionen",
+                        description: "Sowohl ... als auch drückt eine Ergänzung aus.",
+                        examples: ["Er spricht sowohl Deutsch als auch Englisch.", "Sie ist sowohl intelligent als auch freundlich."]
+                    }];
+                }
+
                 baseGrammatik.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
                     if (item.description) item.description = cleanCitationLinks(item.description);
@@ -1860,13 +1892,25 @@
                     }
                 });
 
+                editedTopicIds = [];
+                editedTemplateIds = [];
+
                 if (!window.PRISTINE_TOPICS) window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
                 if (!window.PRISTINE_TEMPLATE) window.PRISTINE_TEMPLATE = JSON.parse(JSON.stringify(baseTemplate));
 
                 const suffix = getSelectedUserSuffix();
 
-                // 1. Laden des editierbaren Workspace-Datensatzes
                 if (currentUser && db) {
+                    const topicsSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
+                    topicsSnapshot.forEach(doc => {
+                        const cloudTopic = doc.data();
+                        const idx = baseTopics.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            baseTopics[idx] = { ...baseTopics[idx], ...cloudTopic };
+                        }
+                        editedTopicIds.push(parseInt(doc.id));
+                    });
+
                     const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
                     templatesSnapshot.forEach(doc => {
                         const cloudTemplate = doc.data();
@@ -1874,10 +1918,15 @@
                         if (idx !== -1) {
                             baseTemplate[idx] = { ...baseTemplate[idx], ...cloudTemplate };
                         }
+                        editedTemplateIds.push(parseInt(doc.id));
                     });
 
                     const progressDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').get();
-                    learnedList = (progressDoc.exists && progressDoc.data().learned) ? progressDoc.data().learned : [];
+                    if (progressDoc.exists && progressDoc.data().learned) {
+                        learnedList = progressDoc.data().learned;
+                    } else {
+                        learnedList = [];
+                    }
 
                     highlightsStore = {};
                     const highlightsSnapshot = await db.collection('users').doc(currentUser.uid).collection('highlights').get();
@@ -1885,6 +1934,18 @@
                         highlightsStore[doc.id] = doc.data();
                     });
                 } else {
+                    const localEdits = localStorage.getItem(`edited_topics_data_1_52_${suffix}`);
+                    if (localEdits) {
+                        const parsed = JSON.parse(localEdits);
+                        parsed.forEach(localTopic => {
+                            const idx = baseTopics.findIndex(t => t.id === localTopic.id);
+                            if (idx !== -1) {
+                                baseTopics[idx] = { ...baseTopics[idx], ...localTopic };
+                                editedTopicIds.push(localTopic.id);
+                            }
+                        });
+                    }
+
                     const localTemplateEdits = localStorage.getItem(`edited_template_data_1_52_${suffix}`);
                     if (localTemplateEdits) {
                         const parsed = JSON.parse(localTemplateEdits);
@@ -1892,6 +1953,7 @@
                             const idx = baseTemplate.findIndex(t => t.id === localTemplate.id);
                             if (idx !== -1) {
                                 baseTemplate[idx] = { ...baseTemplate[idx], ...localTemplate };
+                                editedTemplateIds.push(localTemplate.id);
                             }
                         });
                     }
@@ -1900,41 +1962,52 @@
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
 
-                // 2. SMART MATCHING: Migration
-                const localClassicEdits = localStorage.getItem(`edited_topics_data_1_52_${suffix}`);
-                if (localClassicEdits) {
-                    try {
-                        const classicEdits = JSON.parse(localClassicEdits);
-                        classicEdits.forEach(classicTopic => {
-                            const targetTemplateIdx = baseTemplate.findIndex(t => t.id === classicTopic.id);
-                            if (targetTemplateIdx !== -1) {
-                                const fieldsToMigrate = [
-                                    'einleitung_de', 'einleitung_en', 'einleitung_ar',
-                                    'pers_erfahrung_de', 'pers_erfahrung_en', 'pers_erfahrung_ar',
-                                    'schluss_de', 'schluss_en', 'schluss_ar',
-                                    'pro_de', 'pro_en', 'pro_ar',
-                                    'contra_de', 'contra_en', 'contra_ar'
-                                ];
-                                fieldsToMigrate.forEach(field => {
-                                    if (classicTopic[field] !== undefined) {
-                                        baseTemplate[targetTemplateIdx][field] = JSON.parse(JSON.stringify(classicTopic[field]));
+                // Auto-Migration for Old Dialogue Edits and aligning memory arrays
+                for (const topicId in highlightsStore) {
+                    const topicHighlights = highlightsStore[topicId];
+                    if (topicHighlights && typeof topicHighlights === 'object') {
+                        for (const key in topicHighlights) {
+                            if (key.startsWith('dialog_de_')) {
+                                const index = key.split('_')[2];
+                                const templateKey = `template_dialog_de_${index}`;
+                                if (topicHighlights[templateKey] === undefined) {
+                                    topicHighlights[templateKey] = topicHighlights[key];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Align all non-dialog global fields across classic and template datasets on load
+                baseTopics.forEach((t, i) => {
+                    const temp = baseTemplate[i];
+                    if (temp) {
+                        const globalFields = [
+                            'einleitung_de', 'einleitung_en', 'einleitung_ar',
+                            'pers_erfahrung_de', 'pers_erfahrung_en', 'pers_erfahrung_ar',
+                            'schluss_de', 'schluss_en', 'schluss_ar',
+                            'pro_de', 'pro_en', 'pro_ar',
+                            'contra_de', 'contra_en', 'contra_ar'
+                        ];
+                        globalFields.forEach(f => {
+                            if (temp[f] !== undefined && t[f] === undefined) {
+                                t[f] = JSON.parse(JSON.stringify(temp[f]));
+                            } else if (t[f] !== undefined && temp[f] === undefined) {
+                                temp[f] = JSON.parse(JSON.stringify(t[f]));
+                            } else if (temp[f] !== undefined && t[f] !== undefined) {
+                                if (Array.isArray(temp[f])) {
+                                    if (temp[f].length > t[f].length) {
+                                        t[f] = JSON.parse(JSON.stringify(temp[f]));
+                                    } else {
+                                        temp[f] = JSON.parse(JSON.stringify(t[f]));
                                     }
-                                });
-                                if (classicTopic.dialog) {
-                                    if (!baseTemplate[targetTemplateIdx].dialog) baseTemplate[targetTemplateIdx].dialog = [];
-                                    classicTopic.dialog.forEach((chat, cIdx) => {
-                                        if (!baseTemplate[targetTemplateIdx].dialog[cIdx]) baseTemplate[targetTemplateIdx].dialog[cIdx] = {};
-                                        if (chat.de) baseTemplate[targetTemplateIdx].dialog[cIdx].de = chat.de;
-                                        if (chat.en) baseTemplate[targetTemplateIdx].dialog[cIdx].en = chat.en;
-                                        if (chat.ar) baseTemplate[targetTemplateIdx].dialog[cIdx].ar = chat.ar;
-                                    });
+                                } else {
+                                    t[f] = temp[f];
                                 }
                             }
                         });
-                    } catch (migrationErr) {
-                        console.warn("Smart Matching Migration übersprungen:", migrationErr);
                     }
-                }
+                });
 
                 baseTopics.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
@@ -1943,19 +2016,19 @@
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
                 });
 
-                TOPICS_DATA = baseTopics; 
-                TEMPLATE_DATA = baseTemplate; 
+                TOPICS_DATA = baseTopics;
+                TEMPLATE_DATA = baseTemplate;
                 GRAMMATIK_DATA = baseGrammatik;
 
-                if (activeIdx >= TEMPLATE_DATA.length) activeIdx = 0;
+                if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
                 
+                document.getElementById('active-mode').value = activeMode;
+
                 showResetButton();
                 renderSidebar();
                 
                 if (activeTab === 'dashboard') {
                     renderActiveTopic();
-                } else if (activeTab === 'klassisch') {
-                    renderKlassischRef();
                 } else if (activeTab === 'grammar') {
                     renderGrammar();
                 } else if (activeTab === 'mindmap') {
@@ -1968,24 +2041,40 @@
 
         async function saveEdits() {
             pushToHistory(); 
-            const activeTopic = TEMPLATE_DATA[activeIdx];
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const suffix = getSelectedUserSuffix();
 
-            if (currentUser && db) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
-                } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+            if (activeMode === 'classic') {
+                if (!editedTopicIds.includes(activeTopic.id)) {
+                    editedTopicIds.push(activeTopic.id);
+                }
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_topics').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
+                }
             } else {
-                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                if (!editedTemplateIds.includes(activeTopic.id)) {
+                    editedTemplateIds.push(activeTopic.id);
+                }
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                }
             }
             showResetButton();
             renderSidebar();
         }
 
         async function saveEditsManual() {
-            const activeTopic = TEMPLATE_DATA[activeIdx];
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             await saveEdits();
-            alert(`Erfolgreich gespeichert! Thema ${activeTopic.id} wurde im Workspace gesichert.`);
+            alert(`Erfolgreich gespeichert! Thema ${activeTopic.id} wurde gesichert.`);
         }
 
         async function verifyUserPassword(password) {
@@ -2012,17 +2101,22 @@
         }
 
         async function resetCurrentTopic() {
-            const activeTopic = TEMPLATE_DATA[activeIdx];
+            const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!activeTopic) return;
 
-            const isConfirmed = await confirmSecureDeletion("Möchten Sie Ihren Entwurf im Workspace für dieses Thema wirklich komplett in den Originalzustand zurücksetzen?");
+            const isConfirmed = await confirmSecureDeletion("Möchten Sie dieses Thema wirklich komplett in den Originalzustand zurücksetzen?");
             if (!isConfirmed) return;
 
             pushToHistory();
             const topicId = activeTopic.id;
 
-            const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
-            if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            if (activeMode === 'classic') {
+                const original = window.PRISTINE_TOPICS.find(t => t.id === topicId);
+                if (original) TOPICS_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            } else {
+                const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
+                if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            }
 
             if (highlightsStore[topicId]) {
                 delete highlightsStore[topicId];
@@ -2033,15 +2127,16 @@
 
             if (currentUser && db) {
                 try {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(topicId.toString()).delete();
+                    await db.collection('users').doc(currentUser.uid).collection(activeMode === 'classic' ? 'edited_topics' : 'edited_templates').doc(topicId.toString()).delete();
                     await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
                 } catch(e) { console.error("Cloud-Löschfehler:", e); }
             } else {
+                localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
                 localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
             }
 
             await loadTopics();
-            alert("Workspace-Entwurf zurückgesetzt!");
+            alert("Zurückgesetzt!");
         }
 
         function showResetButton() {
@@ -2089,7 +2184,7 @@
                 unwrapSelection(range, activeContainer);
             }
 
-            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
+            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
             saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
             handleSelectionChange();
@@ -2112,7 +2207,7 @@
 
             activeContainer.normalize();
             const blockKey = activeContainer.getAttribute('data-block-key');
-            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
+            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
             saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
         }
@@ -2146,21 +2241,6 @@
             toolbar.style.left = `${left}px`;
         }
 
-        function handleInlineBlur(element, topicId, lang, blockKey) {
-            const textVal = element.textContent.trim();
-            const htmlVal = element.innerHTML.trim();
-            
-            const topic = TEMPLATE_DATA[activeIdx];
-            if (!topic || topic.id !== topicId) return;
-
-            saveHighlight(topic.id, blockKey, htmlVal);
-            setTopicValue(topic, blockKey, textVal);
-
-            saveEditsSilent();
-        }
-
-        function handleInlineInput(element, topicId, lang, blockKey) {}
-
         function hideToolbar() {
             const toolbar = document.getElementById('formatting-toolbar');
             if (toolbar) toolbar.classList.add('hidden');
@@ -2172,7 +2252,7 @@
             listContainer.innerHTML = "";
 
             const searchVal = document.getElementById('search-bar').value.toLowerCase();
-            const dataset = TEMPLATE_DATA;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
@@ -2216,11 +2296,7 @@
                     activeIdx = index;
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
-                    if (activeTab === 'dashboard') {
-                        renderActiveTopic();
-                    } else if (activeTab === 'klassisch') {
-                        renderKlassischRef();
-                    }
+                    renderActiveTopic();
                     closeSidebarMobile();
                 };
 
@@ -2231,7 +2307,7 @@
         }
 
         function updateProgress() {
-            const dataset = TEMPLATE_DATA;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             if (dataset.length === 0) return;
 
             const total = dataset.length;
@@ -2269,7 +2345,7 @@
             });
         }
 
-        function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true) {
+        function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
             const encodedText = encodeURIComponent(stripHtml(textForAudio));
             const isAlwaysOpen = blockKey === 'einleitung_de';
             
@@ -2319,7 +2395,7 @@
             const cleanDeText = stripHtml(deVal);
             const statementSpeechText = encodeURIComponent(cleanDeText);
             
-            const topic = TEMPLATE_DATA[activeIdx];
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             const isLearned = topic && learnedList.includes(topic.id);
             const finalTopicId = topicId || (topic ? topic.id : 0);
             
@@ -2361,6 +2437,7 @@
             `;
         }
 
+        // Overlap-resistant card-rendering for simplistic overview matrix
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2368,7 +2445,7 @@
 
             const searchVal = document.getElementById('grid-search').value.toLowerCase();
             const categoryFilter = document.getElementById('grid-category-filter').value;
-            const dataset = TEMPLATE_DATA;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
@@ -2381,12 +2458,15 @@
                 const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
 
                 const card = document.createElement('div');
+                
+                // Stable flexible layout structure to prevent squeezed content overlaps on landscape/portrait rotation
                 card.className = `group p-4 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[210px] h-full relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
                 } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
 
+                // Categories Badge configured with strict boundaries to prevent breaking lines
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-1.5 mb-2 w-full overflow-hidden">
                         <span class="text-[9px] font-extrabold uppercase tracking-wider ${style.badgeBg} px-2 py-0.5 rounded-full border border-black/5 dark:border-white/5 truncate max-w-[125px] whitespace-nowrap">
@@ -2440,6 +2520,7 @@
                     activeIdx = index;
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
+                    renderActiveTopic();
                     switchTab('dashboard');
                 };
 
@@ -2447,11 +2528,13 @@
             });
         }
 
+        // Schnellvorschau berücksichtigt gewählte Daten (Classic vs. Template) + User-Edits
         function showThemaPreview(topic) {
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
 
-            const currentTopic = TEMPLATE_DATA.find(t => t.id === topic.id) || topic;
+            const activeDataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const currentTopic = activeDataset.find(t => t.id === topic.id) || topic;
 
             document.getElementById('preview-emoji').textContent = TOPIC_ICONS[currentTopic.id] || "📌";
             document.getElementById('preview-category').textContent = currentTopic.category || "Thema";
@@ -2465,11 +2548,12 @@
 
             const navBtn = document.getElementById('preview-nav-btn');
             navBtn.onclick = () => {
-                const index = TEMPLATE_DATA.findIndex(t => t.id === currentTopic.id);
+                const index = activeDataset.findIndex(t => t.id === currentTopic.id);
                 if (index !== -1) {
                     activeIdx = index;
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
+                    renderActiveTopic();
                     switchTab('dashboard');
                     closeQuickPreview();
                 }
@@ -2483,6 +2567,7 @@
             if (modal) modal.classList.add('hidden');
         }
 
+        // Dynamic highlights application for Connectors
         function applyConnectorsHighlight(text) {
             if (!text) return "";
             let highlighted = text;
@@ -2494,6 +2579,7 @@
             return highlighted;
         }
 
+        // Toggle Translation visibility and trigger automatic generation
         function toggleTranslation(event, blockId, encodedText) {
             if (event) {
                 event.preventDefault();
@@ -2582,152 +2668,127 @@
                     renderTranslationHTML(containerNode, transEn, transAr);
                 } catch (err) {
                     console.error("Translation failed entirely:", err);
-                    renderTranslationHTML(containerNode, "Failed to load translation.", "فشل تحميل الترجمة.");
+                    renderTranslationHTML(containerNode, "Failed to load translation.", "fشل تحميل الترجمة.");
                 }
             }
         }
 
-        let currentEditFieldContext = null;
+        function handleInlineBlur(element, topicId, lang, blockKey) {
+            const textVal = element.textContent.trim();
+            const htmlVal = element.innerHTML.trim();
+            
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic || topic.id !== topicId) return;
 
-        function openBlockEditor(field, isArray, index, lang) {
-            currentEditFieldContext = { field, isArray, index, lang };
-            const modal = document.getElementById('block-editor-modal');
-            if (!modal) return;
+            saveHighlight(topic.id, blockKey, htmlVal);
+            setTopicValue(topic, blockKey, textVal);
 
-            const topic = TEMPLATE_DATA[activeIdx];
-            if (!topic) return;
+            const isDialogBlock = blockKey.startsWith('dialog_de_') || blockKey.startsWith('template_dialog_de_');
+            if (!isDialogBlock) {
+                const otherTopic = activeMode === 'classic' ? TEMPLATE_DATA[activeIdx] : TOPICS_DATA[activeIdx];
+                if (otherTopic && otherTopic.id === topicId) {
+                    setTopicValue(otherTopic, blockKey, textVal);
+                }
+            }
+            
+            saveEditsSilent();
+        }
 
-            let deVal = "";
-            let enVal = "";
-            let arVal = "";
+        function handleInlineInput(element, topicId, lang, blockKey) {
+            // Placeholder logic to keep layout reactive
+        }
 
-            if (isArray) {
-                if (field === 'dialog') {
-                    const chat = topic.dialog[index];
-                    if (chat) {
-                        deVal = getHighlight(topic.id, `template_dialog_de_${index}`) || chat.de || "";
-                        enVal = chat.en || "";
-                        arVal = chat.ar || "";
-                    }
-                } else {
+        function addProArgument() {
+            pushToHistory();
+            const classicTopic = TOPICS_DATA[activeIdx];
+            const templateTopic = TEMPLATE_DATA[activeIdx];
+
+            [classicTopic, templateTopic].forEach(topic => {
+                if (topic) {
+                    if (!topic.pro_de) topic.pro_de = [];
+                    if (!topic.pro_en) topic.pro_en = [];
+                    if (!topic.pro_ar) topic.pro_ar = [];
+                    topic.pro_de.push("Neues Pro-Argument...");
+                    topic.pro_en.push("New pro argument...");
+                    topic.pro_ar.push("حجة مؤيدة جديدة...");
+                }
+            });
+            
+            saveEditsSilent();
+            renderActiveTopic();
+        }
+
+        function addContraArgument() {
+            pushToHistory();
+            const classicTopic = TOPICS_DATA[activeIdx];
+            const templateTopic = TEMPLATE_DATA[activeIdx];
+
+            [classicTopic, templateTopic].forEach(topic => {
+                if (topic) {
+                    if (!topic.contra_de) topic.contra_de = [];
+                    if (!topic.contra_en) topic.contra_en = [];
+                    if (!topic.contra_ar) topic.contra_ar = [];
+                    topic.contra_de.push("Neues Kontra-Argument...");
+                    topic.contra_en.push("New contra argument...");
+                    topic.contra_ar.push("حجة معارضة جديدة...");
+                }
+            });
+            
+            saveEditsSilent();
+            renderActiveTopic();
+        }
+
+        function deleteArgument(field, index) {
+            if (!confirm("Möchten Sie dieses Argument wirklich löschen?")) return;
+
+            pushToHistory();
+
+            const classicTopic = TOPICS_DATA[activeIdx];
+            const templateTopic = TEMPLATE_DATA[activeIdx];
+
+            [classicTopic, templateTopic].forEach(topic => {
+                if (topic) {
                     const deKey = field;
                     const enKey = field.replace('_de', '_en');
                     const arKey = field.replace('_de', '_ar');
-                    deVal = (topic[deKey] && topic[deKey][index]) || "";
-                    enVal = (topic[enKey] && topic[enKey][index]) || "";
-                    arVal = (topic[arKey] && topic[arKey][index]) || "";
+
+                    if (topic[deKey]) topic[deKey].splice(index, 1);
+                    if (topic[enKey]) topic[enKey].splice(index, 1);
+                    if (topic[arKey]) topic[arKey].splice(index, 1);
                 }
-            } else {
-                deVal = getHighlight(topic.id, field) || topic[field] || "";
-                enVal = topic[field.replace('_de', '_en')] || "";
-                arVal = topic[field.replace('_de', '_ar')] || "";
-            }
+            });
 
-            document.getElementById('modal-edit-de').value = stripHtml(deVal);
-            document.getElementById('modal-edit-en').value = stripHtml(enVal);
-            document.getElementById('modal-edit-ar').value = stripHtml(arVal);
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeBlockEditor() {
-            const modal = document.getElementById('block-editor-modal');
-            if (modal) modal.classList.add('hidden');
-            currentEditFieldContext = null;
-        }
-
-        async function saveBlockEditor() {
-            if (!currentEditFieldContext) return;
-            const { field, isArray, index } = currentEditFieldContext;
-
-            const deVal = document.getElementById('modal-edit-de').value.trim();
-            const enVal = document.getElementById('modal-edit-en').value.trim();
-            const arVal = document.getElementById('modal-edit-ar').value.trim();
-
-            pushToHistory();
-            const topic = TEMPLATE_DATA[activeIdx];
-
-            if (field === 'dialog') {
-                if (!topic.dialog) topic.dialog = [];
-                if (!topic.dialog[index]) topic.dialog[index] = { role: `Sprecher ${index % 2 === 0 ? 'A' : 'B'}` };
-                
-                topic.dialog[index].de = deVal;
-                topic.dialog[index].en = enVal;
-                topic.dialog[index].ar = arVal;
-                
-                const skeyDe = `template_dialog_de_${index}`;
-                saveHighlight(topic.id, skeyDe, deVal);
-            } else if (isArray) {
-                const deKey = field;
-                const enKey = field.replace('_de', '_en');
-                const arKey = field.replace('_de', '_ar');
-                
-                if (!topic[deKey]) topic[deKey] = [];
-                if (!topic[enKey]) topic[enKey] = [];
-                if (!topic[arKey]) topic[arKey] = [];
-                
-                topic[deKey][index] = deVal;
-                topic[enKey][index] = enVal;
-                topic[arKey][index] = arVal;
-                
+            const activeTopicId = classicTopic ? classicTopic.id : (templateTopic ? templateTopic.id : 0);
+            if (activeTopicId) {
                 const blockKey = `${field}_${index}`;
-                saveHighlight(topic.id, blockKey, deVal);
-            } else {
-                topic[field] = deVal;
-                topic[field.replace('_de', '_en')] = enVal;
-                topic[field.replace('_de', '_ar')] = arVal;
-                
-                saveHighlight(topic.id, field, deVal);
+                if (highlightsStore[activeTopicId] && highlightsStore[activeTopicId][blockKey]) {
+                    delete highlightsStore[activeTopicId][blockKey];
+                }
+                const len = (classicTopic[field] || []).length;
+                for (let i = index; i <= len; i++) {
+                    const nextKey = `${field}_${i + 1}`;
+                    const currentKey = `${field}_${i}`;
+                    if (highlightsStore[activeTopicId] && highlightsStore[activeTopicId][nextKey] !== undefined) {
+                        highlightsStore[activeTopicId][currentKey] = highlightsStore[activeTopicId][nextKey];
+                        delete highlightsStore[activeTopicId][nextKey];
+                    }
+                }
             }
 
-            await saveEditsSilent();
+            saveEditsSilent();
             renderActiveTopic();
-            closeBlockEditor();
         }
 
-        async function autoTranslateBlockModal() {
-            const deText = document.getElementById('modal-edit-de').value.trim();
-            if (!deText) {
-                alert("Bitte tragen Sie zuerst deutschen Text ein.");
-                return;
-            }
-            const btn = document.getElementById('btn-auto-translate');
-            const originalText = btn.textContent;
-            btn.textContent = "⏳ Übersetze...";
-            btn.disabled = true;
-
-            try {
-                const [resEn, resAr] = await Promise.all([
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(deText)}`),
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(deText)}`)
-                ]);
-                const dataEn = await resEn.json();
-                const dataAr = await resAr.json();
-
-                let transEn = "";
-                if (dataEn && dataEn[0]) {
-                    dataEn[0].forEach(s => { if (s[0]) transEn += s[0]; });
-                }
-                let transAr = "";
-                if (dataAr && dataAr[0]) {
-                    dataAr[0].forEach(s => { if (s[0]) transAr += s[0]; });
-                }
-
-                document.getElementById('modal-edit-en').value = transEn;
-                document.getElementById('modal-edit-ar').value = transAr;
-            } catch (e) {
-                console.error("Auto-translation in modal failed:", e);
-                alert("Automatische Übersetzung fehlgeschlagen. Bitte manuell eintragen.");
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
+        function switchActiveMode(val) {
+            activeMode = val;
+            localStorage.setItem('b2_active_mode', activeMode);
+            renderSidebar();
+            renderActiveTopic();
         }
 
-        // Rendert den editierbaren Workspace-Tab (Dashboard)
         function renderActiveTopic() {
-            if (TEMPLATE_DATA.length === 0) return;
-            const topic = TEMPLATE_DATA[activeIdx];
+            if (TOPICS_DATA.length === 0) return;
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
 
             document.getElementById('active-topic-num').innerHTML = `
                 <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52</span>
@@ -2737,8 +2798,12 @@
             document.getElementById('active-topic-title-de').innerHTML = `${topic.title_de} ${deStar}`;
             
             const titleEnEl = document.getElementById('active-topic-title-en');
-            titleEnEl.textContent = topic.title_en;
-            titleEnEl.classList.remove('hidden');
+            if (activeMode === 'classic') {
+                titleEnEl.textContent = topic.title_en;
+                titleEnEl.classList.remove('hidden');
+            } else {
+                titleEnEl.classList.add('hidden');
+            }
             
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
@@ -2865,7 +2930,7 @@
 
             const deClass = activeView === 'en' ? 'hidden' : '';
 
-            const einlDe = "einleitung_de";
+            const einlDe = "einleitung_de"; const einlEn = "einleitung_en"; const einlAr = "einleitung_ar";
             const savedEinl = getHighlight(topic.id, einlDe);
 
             const einleitungHtml = `
@@ -3004,8 +3069,11 @@
 
             let dialogHtml = '<div class="space-y-4">';
             topic.dialog.forEach((chat, index) => {
-                const skeyDe = `template_dialog_de_${index}`;
+                const skeyDe = activeMode === 'template' ? `template_dialog_de_${index}` : `dialog_de_${index}`;
                 let deValChat = getHighlight(topic.id, skeyDe);
+                if (!deValChat && activeMode === 'template') {
+                    deValChat = getHighlight(topic.id, `dialog_de_${index}`);
+                }
                 if (!deValChat) {
                     deValChat = chat.de;
                 }
@@ -3041,7 +3109,7 @@
             });
             dialogHtml += '</div>';
             const dialogCard = document.createElement('div');
-            dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true);
+            dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
             container.appendChild(dialogCard);
 
             const schlussDe = "schluss_de";
@@ -3059,9 +3127,10 @@
                         const arr = parts[0] + '_de';
                         const i = parseInt(parts[2]);
                         originalText = topic[arr] ? topic[arr][i] : "";
-                    } else if (blockId.startsWith('template_dialog_de_')) {
+                    } else if (blockId.startsWith('dialog_de_') || blockId.startsWith('template_dialog_de_')) {
                         const parts = blockId.split('_');
-                        const i = parseInt(parts[3]);
+                        const isTemplate = blockId.startsWith('template_dialog_de_');
+                        const i = parseInt(isTemplate ? parts[3] : parts[2]);
                         originalText = topic.dialog && topic.dialog[i] ? topic.dialog[i].de : "";
                     } else {
                         originalText = topic[blockId] || "";
@@ -3080,110 +3149,6 @@
             });
 
             showResetButton();
-        }
-
-        // Rendert den schreibgeschützten statischen Klassisch-Referenztag
-        function renderKlassischRef() {
-            const container = document.getElementById('klassisch-tab-section');
-            if (!container) return;
-            
-            const topic = TOPICS_DATA[activeIdx];
-            if (!topic) {
-                container.innerHTML = `<p class="text-xs text-[var(--text-muted)] italic p-4">Kein Thema geladen...</p>`;
-                return;
-            }
-
-            let proContent = `<div class="space-y-2 bg-[#f0f7f3] dark:bg-[#1e2d22] p-3 rounded-lg border-l-4 border-[#4a7c59]">`;
-            if (topic.pro_de && topic.pro_de.length > 0) {
-                topic.pro_de.forEach(pro => {
-                    proContent += `<p class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-semibold mb-1">• ${pro}</p>`;
-                });
-            } else {
-                proContent += `<p class="text-xs text-[var(--text-muted)] italic">Keine Argumente vorhanden.</p>`;
-            }
-            proContent += `</div>`;
-
-            let contraContent = `<div class="space-y-2 bg-[#fdf2f2] dark:bg-[#2d1e1e] p-3 rounded-lg border-l-4 border-[#c0392b]">`;
-            if (topic.contra_de && topic.contra_de.length > 0) {
-                topic.contra_de.forEach(contra => {
-                    contraContent += `<p class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-semibold mb-1">• ${contra}</p>`;
-                });
-            } else {
-                contraContent += `<p class="text-xs text-[var(--text-muted)] italic">Keine Argumente vorhanden.</p>`;
-            }
-            contraContent += `</div>`;
-
-            let dialogHtml = `<div class="space-y-3">`;
-            if (topic.dialog) {
-                topic.dialog.forEach((chat) => {
-                    const isA = chat.role.includes('A');
-                    dialogHtml += `
-                        <div class="p-3.5 rounded-xl border border-[var(--border)] max-w-[95%] ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
-                            <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role}</span>
-                            <p class="text-xs text-[var(--text-primary)] leading-relaxed mt-2 select-text font-medium">${chat.de}</p>
-                            <p class="text-xs text-[var(--text-muted)] leading-relaxed mt-1 select-text italic">${chat.en}</p>
-                            <p dir="rtl" class="font-arabic text-purple-600 dark:text-purple-400 leading-relaxed text-right mt-1.5 select-text">${chat.ar || ''}</p>
-                        </div>`;
-                });
-            }
-            dialogHtml += `</div>`;
-
-            container.innerHTML = `
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] p-4 rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] space-y-2 mb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Statische Referenz (topics.json)</span>
-                    </div>
-                    <h2 class="text-lg font-black text-[var(--text-primary)] leading-tight mt-1 flex items-center gap-2">
-                        <span>${TOPIC_ICONS[topic.id] || "📌"}</span>
-                        <span>Thema ${topic.id}: ${topic.title_de}</span>
-                    </h2>
-                    <p class="text-xs italic text-[var(--text-muted)] mt-0.5">${topic.title_en || ''}</p>
-                </div>
-
-                <div class="grid grid-cols-1 gap-6 pb-28">
-                    <!-- Einleitung -->
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] p-5 space-y-3">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-[var(--accent)]">1. Einleitung</span>
-                        <p class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium">${topic.einleitung_de}</p>
-                        <p class="text-xs text-[var(--text-muted)] leading-relaxed select-text italic">${topic.einleitung_en}</p>
-                        <p dir="rtl" class="font-arabic text-purple-600 dark:text-purple-400 leading-relaxed text-right select-text">${topic.einleitung_ar}</p>
-                    </div>
-
-                    <!-- Pro/Contra Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-[#4a7c59] block mb-3">2. Dafür (Pro)</span>
-                            ${proContent}
-                        </div>
-                        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)]">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-[#c0392b] block mb-3">3. Dagegen (Contra)</span>
-                            ${contraContent}
-                        </div>
-                    </div>
-
-                    <!-- Persönliche Erfahrung -->
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] space-y-3">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-[var(--accent)]">4. Persönliche Erfahrung</span>
-                        <p class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium">${topic.pers_erfahrung_de}</p>
-                        <p class="text-xs text-[var(--text-muted)] leading-relaxed select-text italic">${topic.pers_erfahrung_en}</p>
-                        <p dir="rtl" class="font-arabic text-purple-600 dark:text-purple-400 leading-relaxed text-right select-text">${topic.pers_erfahrung_ar}</p>
-                    </div>
-
-                    <!-- Dialog-Struktur -->
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] space-y-4">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-[var(--accent)] block border-b border-[var(--border)] pb-2">5. Dialog Struktur</span>
-                        ${dialogHtml}
-                    </div>
-
-                    <!-- Fazit -->
-                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] space-y-3">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-[var(--accent)]">6. Fazit / Abschluss</span>
-                        <p class="text-xs text-[var(--text-primary)] leading-relaxed select-text font-medium">${topic.schluss_de}</p>
-                        <p class="text-xs text-[var(--text-muted)] leading-relaxed select-text italic">${topic.schluss_en}</p>
-                        <p dir="rtl" class="font-arabic text-purple-600 dark:text-purple-400 leading-relaxed text-right select-text">${topic.schluss_ar}</p>
-                    </div>
-                </div>
-            `;
         }
 
         const structuralRedemittel = {
@@ -3432,6 +3397,7 @@
                 preferences: {
                     themeSetting: currentThemeSetting,
                     textScale: textScale,
+                    activeMode: activeMode,
                     activeView: activeView
                 }
             };
@@ -3450,6 +3416,11 @@
             a.download = fileName;
             a.click();
             URL.revokeObjectURL(a.href);
+        }
+
+        function exportRawTopics() {
+            const rawData = JSON.stringify(TOPICS_DATA, null, 2);
+            downloadFile(rawData, 'topics.json', 'application/json');
         }
 
         function exportRawTemplate() {
@@ -3481,6 +3452,7 @@
                         
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+                        localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
                         
                         alert("Vollbackup erfolgreich importiert!");
@@ -3490,17 +3462,28 @@
                             alert("Die importierte Datei ist leer.");
                             return;
                         }
+                        
                         pushToHistory();
                         const sample = parsed[0];
+                        
                         if (sample.level !== undefined || sample.examples !== undefined) {
                             GRAMMATIK_DATA = parsed;
                             alert("Grammatik-Daten erfolgreich aktualisiert!");
                             if (activeTab === 'grammar') renderGrammar();
                             return;
                         }
-                        TEMPLATE_DATA = parsed;
-                        localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
-                        alert("Vorlagen erfolgreich eingelesen!");
+                        
+                        const modeChoice = confirm("Handelt es sich bei dieser Datei um klassische Themen (topics.json)? \n\n[OK] = Ja, klassische Themen (topics.json)\n[Abbrechen] = Nein, Vorlagen (template.json)");
+                        
+                        if (modeChoice) {
+                            TOPICS_DATA = parsed;
+                            localStorage.setItem(`edited_topics_data_1_52_${suffix}`, JSON.stringify(TOPICS_DATA));
+                            alert("Klassische Themen erfolgreich eingelesen!");
+                        } else {
+                            TEMPLATE_DATA = parsed;
+                            localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                            alert("Vorlagen erfolgreich eingelesen!");
+                        }
                     } else {
                         alert("Ungültiges Dateiformat!");
                         return;
@@ -3509,7 +3492,6 @@
                     await saveEditsSilent();
                     renderSidebar();
                     if (activeTab === 'dashboard') renderActiveTopic();
-                    if (activeTab === 'klassisch') renderKlassischRef();
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
                     
                 } catch (err) {
@@ -3521,7 +3503,7 @@
         }
 
         function printCurrentTopic() {
-            const topic = TEMPLATE_DATA[activeIdx];
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!topic) return;
 
             const einleitung = getHighlight(topic.id, "einleitung_de") || topic.einleitung_de;
@@ -3537,8 +3519,21 @@
                     <title>Thema ${topic.id}: ${stripHtml(topic.title_de)}</title>
                     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
                     <style>
-                        body { font-family: 'Plus Jakarta Sans', sans-serif; color: #1C1E1D; padding: 40px; line-height: 1.6; max-width: 800px; margin: 0 auto; }
-                        .arabic { font-family: 'Noto Sans Arabic', sans-serif; direction: rtl; text-align: right; color: #6D28D9; font-size: 15px; }
+                        body {
+                            font-family: 'Plus Jakarta Sans', sans-serif;
+                            color: #1C1E1D;
+                            padding: 40px;
+                            line-height: 1.6;
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .arabic {
+                            font-family: 'Noto Sans Arabic', sans-serif;
+                            direction: rtl;
+                            text-align: right;
+                            color: #6D28D9;
+                            font-size: 15px;
+                        }
                         h1 { font-size: 22px; color: #3D6B48; border-bottom: 2px solid #3D6B48; padding-bottom: 8px; margin-bottom: 4px; }
                         h2 { font-size: 14px; margin-top: 24px; color: #5E6661; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
                         .section { margin-bottom: 20px; page-break-inside: avoid; }
@@ -3556,7 +3551,10 @@
                         .word-circle { border: 2px solid #E11D48; border-radius: 50%; padding: 0 4px; display: inline-block; }
                         ul { padding-left: 20px; margin: 8px 0; }
                         li { margin-bottom: 6px; font-size: 13px; }
-                        @media print { body { padding: 0; } .no-print { display: none; } }
+                        @media print {
+                            body { padding: 0; }
+                            .no-print { display: none; }
+                        }
                     </style>
                 </head>
                 <body>
@@ -3601,7 +3599,7 @@
                         ${topic.dialog.map((chat, i) => `
                             <div class="dialog-bubble ${chat.role.includes('A') ? 'dialog-A' : ''}">
                                 <strong style="font-size: 11px; text-transform: uppercase; color: #5E6661;">${chat.role}</strong>
-                                <div style="font-size: 13.5px; margin-top: 4px;">${getHighlight(topic.id, `template_dialog_de_${i}`) || chat.de}</div>
+                                <div style="font-size: 13.5px; margin-top: 4px;">${getHighlight(topic.id, `dialog_de_${i}`) || chat.de}</div>
                                 <div class="arabic" style="margin-top: 6px;">${chat.ar || ''}</div>
                             </div>
                         `).join('')}
@@ -3676,7 +3674,7 @@
                         sidebar.classList.remove('sidebar-open');
                     }
                 }
-            } else if ((activeTab === 'dashboard' || activeTab === 'klassisch') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     navigateTopicStep(-1);
                 } else {
@@ -3696,35 +3694,28 @@
 
         function navigateTopicStep(direction) {
             const targetIdx = activeIdx + direction;
-            const dataset = TEMPLATE_DATA;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
             
             if (targetIdx >= 0 && targetIdx < dataset.length) {
                 const container = document.getElementById('active-topic-container');
-                const klassischContainer = document.getElementById('klassisch-tab-section');
-                
-                const activeContainer = activeTab === 'dashboard' ? container : klassischContainer;
-                if (!activeContainer) return;
+                if (!container) return;
 
                 const outClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
                 const inClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
 
-                activeContainer.classList.add(outClass);
+                container.classList.add(outClass);
                 
                 setTimeout(() => {
                     activeIdx = targetIdx;
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
-                    if (activeTab === 'dashboard') {
-                        renderActiveTopic();
-                    } else if (activeTab === 'klassisch') {
-                        renderKlassischRef();
-                    }
+                    renderActiveTopic();
                     
-                    activeContainer.classList.remove(outClass);
-                    activeContainer.classList.add(inClass);
+                    container.classList.remove(outClass);
+                    container.classList.add(inClass);
                     
                     setTimeout(() => {
-                        activeContainer.classList.remove(inClass);
+                        container.classList.remove(inClass);
                     }, 220);
                 }, 220);
             }
@@ -3740,7 +3731,7 @@
                     mainContainer.style.transition = 'none';
                     mainContainer.style.background = 'rgba(16, 185, 129, 0.15)';
                     void mainContainer.offsetWidth; 
-                    mainContainer.style.transition = 'background 0.8s ease';
+                    mainContainer.style.transition = 'background 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
                     mainContainer.style.background = '';
                 }
 
@@ -3754,7 +3745,7 @@
         const isLearnedStateToggle = document.getElementById('learned-toggle');
         if (isLearnedStateToggle) {
             isLearnedStateToggle.onclick = async () => {
-                const activeTopic = TEMPLATE_DATA[activeIdx];
+                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
                 if (learnedList.includes(activeTopic.id)) {
                     learnedList = learnedList.filter(id => id !== activeTopic.id);
                 } else {
@@ -3774,7 +3765,6 @@
                 renderSidebar();
                 updateProgress();
                 renderActiveTopic();
-                if (activeTab === 'klassisch') renderKlassischRef();
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
