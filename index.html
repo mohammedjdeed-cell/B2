@@ -21,6 +21,11 @@
         }
     </script>
     
+    <!-- Firebase Web SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
     <style>
     /* Binds Tailwind REM units to scale seamlessly with the selection tool */
     html {
@@ -383,6 +388,7 @@
             #sidebar.sidebar-collapsed .sidebar-only-emoji {
                 margin: 0 !important;
                 font-size: 1.35rem !important;
+                line-height: 1;
             }
         }
 </style>
@@ -1754,8 +1760,9 @@
         }
 
         // Auto-migration routine that parses legacy (non-mode suffixed) keys in local highlights store 
-        // to separate them properly into classic and template formats based on text contents comparison.
-        // It guarantees no user formatting or segments are deleted or lost.
+        // to separate them properly into classic and template formats.
+        // Copied generic sections safely to both sides to preserve edits.
+        // Intelligently maps highly mode-specific dialogues to their respective namespaces based on text contents comparison.
         function runHighlightsMigration() {
             let migrated = false;
             for (let key in highlightsStore) {
@@ -1796,7 +1803,6 @@
                                 highlightsStore[templateKey][blockKey] = htmlVal;
                             }
                         } else {
-                            // Copy generic sections (Einleitung, Pros, Cons, Schluss, Erfahrung) to both sides to preserve edits
                             highlightsStore[classicKey][blockKey] = htmlVal;
                             highlightsStore[templateKey][blockKey] = htmlVal;
                         }
@@ -3029,7 +3035,7 @@
 
             const einleitungHtml = `
                 <div class="p-1">
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? (savedEinl || topic[einlDe]).replace(/\n/g, '<br>') : applyConnectorsHighlight(savedEinl || topic[einlDe])}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${isEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${isEditMode ? deVal.replace(/\n/g, '<br>') : applyConnectorsHighlight(deVal)}</div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl || topic[einlDe]))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
@@ -3228,7 +3234,7 @@
                     if (translationCache[cacheKey]) {
                         renderTranslationHTML(containerNode, translationCache[cacheKey].en, translationCache[cacheKey].ar);
                     } else {
-                        containerNode.innerHTML = `<div class="text-[10px] text-purple-500 animate-pulse font-semibold">⏳ Reloading...</div>`;
+                        containerNode.innerHTML = `<div class="text-[10px] text-purple-500 animate-pulse font-semibold">⏳ Rendering...</div>`;
                         fetchAndRenderTranslation(blockId, originalText, containerNode);
                     }
                 }
@@ -3240,23 +3246,23 @@
         const structuralRedemittel = {
             "Meinung äußern": [
                 { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way." },
-                { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role." }
+                { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt." }
             ],
             "Zustimmung": [
-                { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
-                { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
+                { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument." },
+                { de: "Das ist ein sehr treffender punkt, den du da erwähnst.", en: "Das ist ein sehr treffender punkt, den du da erwähnst." }
             ],
             "Widerspruch": [
-                { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
-                { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there." }
+                { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "Das sehe ich etwas anders. Man muss auch bedenken, dass..." },
+                { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus." }
             ],
             "Einschränkung": [
-                { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that..." },
-                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice." }
+                { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass..." },
+                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert." }
             ],
             "Abschluss": [
-                { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
-                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+                { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben." },
+                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können." }
             ]
         };
 
@@ -3509,73 +3515,16 @@
             downloadFile(rawData, 'topics.json', 'application/json');
         }
 
+        // Exports clean, raw array for your GitHub 'template.json'
         function exportRawTemplate() {
             const rawData = JSON.stringify(TEMPLATE_DATA, null, 2);
             downloadFile(rawData, 'template.json', 'application/json');
         }
 
+        // Exports clean, raw array for your GitHub 'Grammatik.json'
         function exportRawGrammar() {
             const rawData = JSON.stringify(GRAMMATIK_DATA, null, 2);
             downloadFile(rawData, 'Grammatik.json', 'application/json');
-        }
-
-        // Auto-migration routine that parses legacy (non-mode suffixed) keys in local highlights store 
-        // to separate them properly into classic and template formats.
-        // Copied generic sections safely to both sides to preserve edits.
-        // Intelligently maps highly mode-specific dialogues to their respective namespaces based on text contents comparison.
-        function runHighlightsMigration() {
-            let migrated = false;
-            for (let key in highlightsStore) {
-                if (/^\d+$/.test(key) && highlightsStore[key] && typeof highlightsStore[key] === 'object' && !Array.isArray(highlightsStore[key])) {
-                    const topicId = parseInt(key);
-                    const legacyData = highlightsStore[key];
-                    
-                    const classicKey = `${topicId}_classic`;
-                    const templateKey = `${topicId}_template`;
-                    
-                    if (!highlightsStore[classicKey]) highlightsStore[classicKey] = {};
-                    if (!highlightsStore[templateKey]) highlightsStore[templateKey] = {};
-                    
-                    for (const blockKey in legacyData) {
-                        const htmlVal = legacyData[blockKey];
-                        const cleanText = stripHtml(htmlVal).trim();
-                        
-                        if (blockKey.startsWith('dialog_')) {
-                            const classicTopic = TOPICS_DATA.find(t => t.id === topicId);
-                            const templateTopic = TEMPLATE_DATA.find(t => t.id === topicId);
-                            
-                            let assigned = false;
-                            if (classicTopic) {
-                                const classicVal = stripHtml(getTopicValue(classicTopic, blockKey)).trim();
-                                if (classicVal && (classicVal === cleanText || cleanText.includes(classicVal) || classicVal.includes(cleanText))) {
-                                    highlightsStore[classicKey][blockKey] = htmlVal;
-                                    assigned = true;
-                                }
-                            }
-                            if (templateTopic) {
-                                const templateVal = stripHtml(getTopicValue(templateTopic, blockKey)).trim();
-                                if (templateVal && (templateVal === cleanText || cleanText.includes(templateVal) || templateVal.includes(cleanText))) {
-                                    highlightsStore[templateKey][blockKey] = htmlVal;
-                                    assigned = true;
-                                }
-                            }
-                            if (!assigned) {
-                                highlightsStore[templateKey][blockKey] = htmlVal;
-                            }
-                        } else {
-                            highlightsStore[classicKey][blockKey] = htmlVal;
-                            highlightsStore[templateKey][blockKey] = htmlVal;
-                        }
-                    }
-                    
-                    delete highlightsStore[key];
-                    migrated = true;
-                }
-            }
-            if (migrated) {
-                const suffix = getSelectedUserSuffix();
-                localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-            }
         }
 
         async function importTotalBackup(event) {
