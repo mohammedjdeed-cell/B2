@@ -101,7 +101,7 @@
     }
 
     /* Ensures highlighted text can be cleanly selected and behaves like standard text */
-    .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
+    .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle {
         user-select: text !important;
         -webkit-user-select: text !important;
     }
@@ -819,13 +819,6 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
     </div>
 
-    <!-- Bullet List Auto-Format Toolbar Helper -->
-    <div id="list-helper-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
-        <span class="text-xs font-bold text-[var(--accent)] select-none">📝 Liste?</span>
-        <button onmousedown="event.preventDefault()" onclick="convertActiveBlockToBulletList()" class="px-2.5 py-1 text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 rounded border border-transparent cursor-pointer" title="In Bullet-Liste umwandeln">• Liste</button>
-        <button onmousedown="event.preventDefault()" onclick="hideListHelper()" class="px-2 py-1 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer">Ignorieren</button>
-    </div>
-
     <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
         // Firebase Configuration
@@ -1169,11 +1162,10 @@
 
         function getTopicValue(topic, compoundKey) {
             if (!topic) return "";
-            if (compoundKey.startsWith('dialog_') || compoundKey.startsWith('template_dialog_')) {
-                const isTemplate = compoundKey.startsWith('template_dialog_');
+            if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_'); 
-                const lang = isTemplate ? parts[2] : parts[1];
-                const idx = parseInt(isTemplate ? parts[3] : parts[2]);
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
                 return topic.dialog && topic.dialog[idx] ? topic.dialog[idx][lang] : "";
             } else if (compoundKey.startsWith('pro_') || compoundKey.startsWith('contra_')) {
                 const parts = compoundKey.split('_');
@@ -1187,11 +1179,10 @@
 
         function setTopicValue(topic, compoundKey, value) {
             if (!topic) return;
-            if (compoundKey.startsWith('dialog_') || compoundKey.startsWith('template_dialog_')) {
-                const isTemplate = compoundKey.startsWith('template_dialog_');
+            if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_');
-                const lang = isTemplate ? parts[2] : parts[1];
-                const idx = parseInt(isTemplate ? parts[3] : parts[2]);
+                const lang = parts[1];
+                const idx = parseInt(parts[2]);
                 if(!topic.dialog) topic.dialog = [];
                 if(!topic.dialog[idx]) topic.dialog[idx] = {};
                 topic.dialog[idx][lang] = value;
@@ -1337,25 +1328,18 @@
             }
             if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
 
-            if (e.target.closest('#formatting-toolbar') || e.target.closest('#list-helper-toolbar')) return;
+            if (e.target.closest('#formatting-toolbar')) return;
 
             const selection = window.getSelection();
             if (!selection || !selection.isCollapsed) return;
 
             const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
-            if (!range) return;
-
-            let node = range.startContainer;
-            if (node.nodeType !== Node.TEXT_NODE) {
-                if (node.hasChildNodes()) {
-                    node = node.childNodes[range.startOffset] || node.firstChild;
-                }
-            }
-            if (!node || node.nodeType !== Node.TEXT_NODE) {
+            if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
                 hideToolbar();
                 return;
             }
 
+            const node = range.startContainer;
             const text = node.data;
             const offset = range.startOffset;
 
@@ -1381,7 +1365,7 @@
             setTimeout(() => {
                 const selection = window.getSelection();
                 if (!selection || selection.isCollapsed) {
-                    if (!e.target.closest('#formatting-toolbar') && !e.target.closest('#list-helper-toolbar')) {
+                    if (!e.target.closest('#formatting-toolbar')) {
                         hideToolbar();
                     }
                 } else {
@@ -1773,7 +1757,7 @@
                         contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
                         pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
                         pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية von التدخين.",
+                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية من التدخين.",
                         dialog: [
                             { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
                             { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
@@ -1882,54 +1866,6 @@
                     learnedList = JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
-
-                // Auto-Migration for Old Dialogue Edits and aligning memory arrays
-                for (const topicId in highlightsStore) {
-                    const topicHighlights = highlightsStore[topicId];
-                    if (topicHighlights && typeof topicHighlights === 'object') {
-                        for (const key in topicHighlights) {
-                            if (key.startsWith('dialog_de_')) {
-                                const index = key.split('_')[2];
-                                const templateKey = `template_dialog_de_${index}`;
-                                if (topicHighlights[templateKey] === undefined) {
-                                    // Duplicate the old dialog edit to the template key so they are gracefully split
-                                    topicHighlights[templateKey] = topicHighlights[key];
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Align all non-dialog global fields across classic and template datasets on load
-                baseTopics.forEach((t, i) => {
-                    const temp = baseTemplate[i];
-                    if (temp) {
-                        const globalFields = [
-                            'einleitung_de', 'einleitung_en', 'einleitung_ar',
-                            'pers_erfahrung_de', 'pers_erfahrung_en', 'pers_erfahrung_ar',
-                            'schluss_de', 'schluss_en', 'schluss_ar',
-                            'pro_de', 'pro_en', 'pro_ar',
-                            'contra_de', 'contra_en', 'contra_ar'
-                        ];
-                        globalFields.forEach(f => {
-                            if (temp[f] !== undefined && t[f] === undefined) {
-                                t[f] = JSON.parse(JSON.stringify(temp[f]));
-                            } else if (t[f] !== undefined && temp[f] === undefined) {
-                                temp[f] = JSON.parse(JSON.stringify(t[f]));
-                            } else if (temp[f] !== undefined && t[f] !== undefined) {
-                                if (Array.isArray(temp[f])) {
-                                    if (temp[f].length > t[f].length) {
-                                        t[f] = JSON.parse(JSON.stringify(temp[f]));
-                                    } else {
-                                        temp[f] = JSON.parse(JSON.stringify(t[f]));
-                                    }
-                                } else {
-                                    t[f] = temp[f]; // Prefer template string
-                                }
-                            }
-                        });
-                    }
-                });
 
                 baseTopics.forEach(t => {
                     t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
@@ -2176,94 +2112,6 @@
             if (toolbar) toolbar.classList.add('hidden');
         }
 
-        /* Modern Bullet Point Logic & floating Word-style detector */
-        let activeListElement = null;
-
-        function getCaretCoordinates() {
-            const sel = window.getSelection();
-            if (!sel || sel.rangeCount === 0) return null;
-            const range = sel.getRangeAt(0).cloneRange();
-            if (range.collapsed) {
-                const span = document.createElement('span');
-                span.appendChild(document.createTextNode('\u200b')); 
-                range.insertNode(span);
-                const rect = span.getBoundingClientRect();
-                span.parentNode.removeChild(span);
-                return rect;
-            } else {
-                return range.getBoundingClientRect();
-            }
-        }
-
-        function showBulletListOption(target, triggerLine) {
-            hideToolbar();
-            activeListElement = target;
-            const rect = getCaretCoordinates();
-            if (!rect) return;
-
-            const toolbar = document.getElementById('list-helper-toolbar');
-            if (!toolbar) return;
-
-            toolbar.classList.remove('hidden');
-            const toolbarWidth = toolbar.offsetWidth || 200;
-            const toolbarHeight = toolbar.offsetHeight || 38;
-
-            const top = rect.top + window.scrollY - toolbarHeight - 8;
-            const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, rect.left + window.scrollX));
-
-            toolbar.style.top = `${top}px`;
-            toolbar.style.left = `${left}px`;
-        }
-
-        function hideListHelper() {
-            const toolbar = document.getElementById('list-helper-toolbar');
-            if (toolbar) toolbar.classList.add('hidden');
-        }
-
-        function convertActiveBlockToBulletList() {
-            if (!activeListElement) return;
-            pushToHistory();
-
-            let text = activeListElement.innerText || activeListElement.textContent;
-            let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            
-            lines = lines.map(line => {
-                return line.replace(/^[-_*•\s]+/, '').trim();
-            });
-
-            if (lines.length === 0) lines = ["Neuer Punkt..."];
-
-            const listHtml = `<ul class="list-disc pl-5 space-y-1.5 mt-2 mb-2 text-xs text-[var(--text-primary)]">` + 
-                lines.map(line => `<li class="leading-relaxed select-text">${line}</li>`).join('') + 
-                `</ul>`;
-
-            activeListElement.innerHTML = listHtml;
-            hideListHelper();
-
-            const blockKey = activeListElement.getAttribute('data-block-key');
-            const activeTopicId = (activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx]).id;
-            saveHighlight(activeTopicId, blockKey, activeListElement.innerHTML);
-            activeListElement.dispatchEvent(new Event('blur'));
-        }
-
-        document.addEventListener('keyup', function(e) {
-            if (!isEditMode) return;
-            const target = e.target;
-            if (!target || !target.hasAttribute('contenteditable')) return;
-
-            const text = target.innerText || target.textContent;
-            const lines = text.split('\n');
-            const currentLine = lines[lines.length - 1] || '';
-
-            if (currentLine.startsWith('- ') || currentLine.startsWith('* ') || currentLine.startsWith('_ ') || currentLine.startsWith('• ')) {
-                showBulletListOption(target, currentLine);
-            } else if (e.key === 'Enter') {
-                if (lines.length > 1) {
-                    showBulletListOption(target);
-                }
-            }
-        });
-
         function renderSidebar() {
             const listContainer = document.getElementById('topic-list');
             if (!listContainer) return;
@@ -2490,11 +2338,7 @@
                 valAr = topic[`${baseField}_ar`] || "";
             }
 
-            const blockKey = isArray 
-                ? (dbField === 'dialog' 
-                    ? (activeMode === 'template' ? `template_dialog_de_${index}` : `dialog_de_${index}`)
-                    : `${dbField}_${index}`) 
-                : dbField;
+            const blockKey = isArray ? `${dbField}_${index}` : dbField;
             const savedHighlight = getHighlight(topic.id, blockKey);
             if (savedHighlight) {
                 valDe = savedHighlight;
@@ -2526,47 +2370,31 @@
             const newEn = document.getElementById('modal-edit-en').value.trim();
             const newAr = document.getElementById('modal-edit-ar').value.trim();
 
-            const blockKey = isArray 
-                ? (dbField === 'dialog' 
-                    ? (activeMode === 'template' ? `template_dialog_de_${index}` : `dialog_de_${index}`)
-                    : `${dbField}_${index}`) 
-                : dbField;
+            const blockKey = isArray ? `${dbField}_${index}` : dbField;
             
-            const applyValues = (targetTopic) => {
-                if (dbField === 'dialog') {
-                    if (!targetTopic.dialog) targetTopic.dialog = [];
-                    if (!targetTopic.dialog[index]) targetTopic.dialog[index] = { role: `Speaker ${index % 2 === 0 ? 'A' : 'B'}` };
-                    targetTopic.dialog[index].de = newDe;
-                    targetTopic.dialog[index].en = newEn;
-                    targetTopic.dialog[index].ar = newAr;
-                } else if (isArray) {
-                    const deKey = dbField;
-                    const enKey = dbField.replace('_de', '_en');
-                    const arKey = dbField.replace('_de', '_ar');
+            if (dbField === 'dialog') {
+                if (!topic.dialog) topic.dialog = [];
+                if (!topic.dialog[index]) topic.dialog[index] = { role: `Speaker ${index % 2 === 0 ? 'A' : 'B'}` };
+                topic.dialog[index].de = newDe;
+                topic.dialog[index].en = newEn;
+                topic.dialog[index].ar = newAr;
+            } else if (isArray) {
+                const deKey = dbField;
+                const enKey = dbField.replace('_de', '_en');
+                const arKey = dbField.replace('_de', '_ar');
 
-                    if (!targetTopic[deKey]) targetTopic[deKey] = [];
-                    if (!targetTopic[enKey]) targetTopic[enKey] = [];
-                    if (!targetTopic[arKey]) targetTopic[arKey] = [];
+                if (!topic[deKey]) topic[deKey] = [];
+                if (!topic[enKey]) topic[enKey] = [];
+                if (!topic[arKey]) topic[arKey] = [];
 
-                    targetTopic[deKey][index] = newDe;
-                    targetTopic[enKey][index] = newEn;
-                    targetTopic[arKey][index] = newAr;
-                } else {
-                    const baseField = dbField.replace('_de', '');
-                    targetTopic[`${baseField}_de`] = newDe;
-                    targetTopic[`${baseField}_en`] = newEn;
-                    targetTopic[`${baseField}_ar`] = newAr;
-                }
-            };
-
-            applyValues(topic);
-
-            // Globally sync everything in memory except the dialogue arrays
-            if (dbField !== 'dialog') {
-                const otherTopic = activeMode === 'classic' ? TEMPLATE_DATA[activeIdx] : TOPICS_DATA[activeIdx];
-                if (otherTopic) {
-                    applyValues(otherTopic);
-                }
+                topic[deKey][index] = newDe;
+                topic[enKey][index] = newEn;
+                topic[arKey][index] = newAr;
+            } else {
+                const baseField = dbField.replace('_de', '');
+                topic[`${baseField}_de`] = newDe;
+                topic[`${baseField}_en`] = newEn;
+                topic[`${baseField}_ar`] = newAr;
             }
 
             saveHighlight(topic.id, blockKey, newDe);
@@ -2673,7 +2501,7 @@
                     </div>
                     <div class="space-y-1 mb-3 flex-1 flex flex-col justify-center">
                         <div class="flex items-center gap-1.5">
-                            <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
+                            <span class="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
                             ${isStarred ? `<span class="text-amber-500 text-xs" title="Sehr wichtiges Prüfungsthema">★</span>` : ''}
                         </div>
                         <h4 class="text-xs sm:text-[13px] font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors line-clamp-3 leading-normal mt-1">
@@ -2877,16 +2705,6 @@
 
             saveHighlight(topic.id, blockKey, htmlVal);
             setTopicValue(topic, blockKey, textVal);
-
-            // Synchronize all memory representations except dialogue items
-            const isDialogBlock = blockKey.startsWith('dialog_de_') || blockKey.startsWith('template_dialog_de_');
-            if (!isDialogBlock) {
-                const otherTopic = activeMode === 'classic' ? TEMPLATE_DATA[activeIdx] : TOPICS_DATA[activeIdx];
-                if (otherTopic && otherTopic.id === topicId) {
-                    setTopicValue(otherTopic, blockKey, textVal);
-                }
-            }
-            
             saveEditsSilent();
         }
 
@@ -2895,79 +2713,68 @@
         }
 
         function addProArgument() {
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+            
             pushToHistory();
-            const classicTopic = TOPICS_DATA[activeIdx];
-            const templateTopic = TEMPLATE_DATA[activeIdx];
-
-            [classicTopic, templateTopic].forEach(topic => {
-                if (topic) {
-                    if (!topic.pro_de) topic.pro_de = [];
-                    if (!topic.pro_en) topic.pro_en = [];
-                    if (!topic.pro_ar) topic.pro_ar = [];
-                    topic.pro_de.push("Neues Pro-Argument...");
-                    topic.pro_en.push("New pro argument...");
-                    topic.pro_ar.push("حجة مؤيدة جديدة...");
-                }
-            });
+            
+            if (!topic.pro_de) topic.pro_de = [];
+            if (!topic.pro_en) topic.pro_en = [];
+            if (!topic.pro_ar) topic.pro_ar = [];
+            
+            topic.pro_de.push("Neues Pro-Argument...");
+            topic.pro_en.push("New pro argument...");
+            topic.pro_ar.push("حجة مؤيدة جديدة...");
             
             saveEditsSilent();
             renderActiveTopic();
         }
 
         function addContraArgument() {
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+            
             pushToHistory();
-            const classicTopic = TOPICS_DATA[activeIdx];
-            const templateTopic = TEMPLATE_DATA[activeIdx];
-
-            [classicTopic, templateTopic].forEach(topic => {
-                if (topic) {
-                    if (!topic.contra_de) topic.contra_de = [];
-                    if (!topic.contra_en) topic.contra_en = [];
-                    if (!topic.contra_ar) topic.contra_ar = [];
-                    topic.contra_de.push("Neues Kontra-Argument...");
-                    topic.contra_en.push("New contra argument...");
-                    topic.contra_ar.push("حجة معارضة جديدة...");
-                }
-            });
+            
+            if (!topic.contra_de) topic.contra_de = [];
+            if (!topic.contra_en) topic.contra_en = [];
+            if (!topic.contra_ar) topic.contra_ar = [];
+            
+            topic.contra_de.push("Neues Kontra-Argument...");
+            topic.contra_en.push("New contra argument...");
+            topic.contra_ar.push("حجة معارضة جديدة...");
             
             saveEditsSilent();
             renderActiveTopic();
         }
 
         function deleteArgument(field, index) {
+            const topic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            if (!topic) return;
+
             if (!confirm("Möchten Sie dieses Argument wirklich löschen?")) return;
 
             pushToHistory();
 
-            const classicTopic = TOPICS_DATA[activeIdx];
-            const templateTopic = TEMPLATE_DATA[activeIdx];
+            const deKey = field;
+            const enKey = field.replace('_de', '_en');
+            const arKey = field.replace('_de', '_ar');
 
-            [classicTopic, templateTopic].forEach(topic => {
-                if (topic) {
-                    const deKey = field;
-                    const enKey = field.replace('_de', '_en');
-                    const arKey = field.replace('_de', '_ar');
+            if (topic[deKey]) topic[deKey].splice(index, 1);
+            if (topic[enKey]) topic[enKey].splice(index, 1);
+            if (topic[arKey]) topic[arKey].splice(index, 1);
 
-                    if (topic[deKey]) topic[deKey].splice(index, 1);
-                    if (topic[enKey]) topic[enKey].splice(index, 1);
-                    if (topic[arKey]) topic[arKey].splice(index, 1);
-                }
-            });
-
-            const activeTopicId = classicTopic ? classicTopic.id : (templateTopic ? templateTopic.id : 0);
-            if (activeTopicId) {
-                const blockKey = `${field}_${index}`;
-                if (highlightsStore[activeTopicId] && highlightsStore[activeTopicId][blockKey]) {
-                    delete highlightsStore[activeTopicId][blockKey];
-                }
-                const len = (classicTopic[field] || []).length;
-                for (let i = index; i <= len; i++) {
-                    const nextKey = `${field}_${i + 1}`;
-                    const currentKey = `${field}_${i}`;
-                    if (highlightsStore[activeTopicId] && highlightsStore[activeTopicId][nextKey] !== undefined) {
-                        highlightsStore[activeTopicId][currentKey] = highlightsStore[activeTopicId][nextKey];
-                        delete highlightsStore[activeTopicId][nextKey];
-                    }
+            const blockKey = `${field}_${index}`;
+            if (highlightsStore[topic.id] && highlightsStore[topic.id][blockKey]) {
+                delete highlightsStore[topic.id][blockKey];
+            }
+            const len = (topic[deKey] || []).length;
+            for (let i = index; i <= len; i++) {
+                const nextKey = `${field}_${i + 1}`;
+                const currentKey = `${field}_${i}`;
+                if (highlightsStore[topic.id] && highlightsStore[topic.id][nextKey] !== undefined) {
+                    highlightsStore[topic.id][currentKey] = highlightsStore[topic.id][nextKey];
+                    delete highlightsStore[topic.id][nextKey];
                 }
             }
 
@@ -3026,7 +2833,7 @@
                 }
                 if (desktopEditBtn) {
                     desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    document.getElementById('desktop-edit-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
                 }
                 if (desktopEditText) desktopEditText.textContent = "Editieren: AN";
             } else {
@@ -3043,7 +2850,7 @@
                 }
                 if (desktopEditBtn) {
                     desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
+                    document.getElementById('desktop-edit-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
                 if (desktopEditText) desktopEditText.textContent = "Editieren";
             }
@@ -3253,7 +3060,7 @@
             const proCard = document.createElement('div');
             proCard.innerHTML = buildCardWrapper("Dafür (Pro)", proContent, "pro_section", "", 'pro_de', false);
             const contraCard = document.createElement('div');
-            contraCard.innerHTML = buildCardWrapper("Dagesgen (Contra)", contraContent, "contra_section", "", 'contra_de', false);
+            contraCard.innerHTML = buildCardWrapper("Dagegen (Contra)", contraContent, "contra_section", "", 'contra_de', false);
 
             proContraParent.appendChild(proCard);
             proContraParent.appendChild(contraCard);
@@ -3267,16 +3074,8 @@
 
             let dialogHtml = '<div class="space-y-4">';
             topic.dialog.forEach((chat, index) => {
-                const skeyDe = activeMode === 'template' ? `template_dialog_de_${index}` : `dialog_de_${index}`;
-                // Fallback: load previous template dialog highlights if template_dialog_de doesn't exist yet but dialog_de does
-                let deValChat = getHighlight(topic.id, skeyDe);
-                if (!deValChat && activeMode === 'template') {
-                    deValChat = getHighlight(topic.id, `dialog_de_${index}`);
-                }
-                if (!deValChat) {
-                    deValChat = chat.de;
-                }
-                
+                const skeyDe = `dialog_de_${index}`;
+                const deValChat = getHighlight(topic.id, skeyDe) || chat.de;
                 const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
                 const isA = chat.role.includes('A');
                 
@@ -3326,10 +3125,9 @@
                         const arr = parts[0] + '_de';
                         const i = parseInt(parts[2]);
                         originalText = topic[arr] ? topic[arr][i] : "";
-                    } else if (blockId.startsWith('dialog_de_') || blockId.startsWith('template_dialog_de_')) {
+                    } else if (blockId.startsWith('dialog_de_')) {
                         const parts = blockId.split('_');
-                        const isTemplate = blockId.startsWith('template_dialog_de_');
-                        const i = parseInt(isTemplate ? parts[3] : parts[2]);
+                        const i = parseInt(parts[2]);
                         originalText = topic.dialog && topic.dialog[i] ? topic.dialog[i].de : "";
                     } else {
                         originalText = topic[blockId] || "";
@@ -3556,7 +3354,7 @@
                 }
                 if (desktopEditBtn) {
                     desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    document.getElementById('desktop-edit-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
                 }
                 if (desktopEditText) desktopEditText.textContent = "Editieren: AN";
                 if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
@@ -3571,7 +3369,7 @@
                 }
                 if (desktopEditBtn) {
                     desktopEditBtn.className = "hidden md:flex text-xs font-bold bg-[var(--bg-card)] text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] rounded-lg px-4 py-2.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer select-none shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
+                    document.getElementById('desktop-edit-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
                 if (desktopEditText) desktopEditText.textContent = "Editieren";
                 if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
@@ -3769,3 +3567,221 @@
                     </style>
                 </head>
                 <body>
+                    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
+                        <span style="font-size: 11px; font-weight: bold; color: #949E99; text-transform: uppercase;">TELC B2 Diskussionstrainer</span>
+                        <button onclick="window.print()" style="padding: 8px 16px; background-color: #3D6B48; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">PDF speichern / drucken</button>
+                    </div>
+
+                    <h1>Thema ${topic.id}: ${topic.title_de}</h1>
+                    <p style="font-style: italic; color: #5E6661; margin-top: -4px; font-size: 13px;">${topic.title_en || ''}</p>
+                    <p class="arabic" style="font-weight: bold; margin-top: -10px; margin-bottom: 25px;">${topic.title_ar || ''}</p>
+
+                    <div class="section">
+                        <h2>1. Einleitung / Kontext</h2>
+                        <div style="font-size: 14px; margin-bottom: 10px;">${einleitung}</div>
+                        <div class="arabic">${topic.einleitung_ar || ''}</div>
+                    </div>
+
+                    <div class="section grid">
+                        <div class="card pro">
+                            <strong style="color: #3D6B48; font-size: 13px; text-transform: uppercase;">Dafür (Pro):</strong>
+                            <ul style="font-size: 13px;">
+                                ${topic.pro_de.map((p, i) => `<li>${getHighlight(topic.id, `pro_de_${i}`) || p}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="card contra">
+                            <strong style="color: #B02A1E; font-size: 13px; text-transform: uppercase;">Dagegen (Contra):</strong>
+                            <ul style="font-size: 13px;">
+                                ${topic.contra_de.map((c, i) => `<li>${getHighlight(topic.id, `contra_de_${i}`) || c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>2. Persönliche Erfahrung</h2>
+                        <div style="font-size: 14px; margin-bottom: 10px;">${persErfahrung}</div>
+                        <div class="arabic">${topic.pers_erfahrung_ar || ''}</div>
+                    </div>
+
+                    <div class="section">
+                        <h2>3. Dialog-Struktur (Schritt für Schritt)</h2>
+                        ${topic.dialog.map((chat, i) => `
+                            <div class="dialog-bubble ${chat.role.includes('A') ? 'dialog-A' : ''}">
+                                <strong style="font-size: 11px; text-transform: uppercase; color: #5E6661;">${chat.role}</strong>
+                                <div style="font-size: 13.5px; margin-top: 4px;">${getHighlight(topic.id, `dialog_de_${i}`) || chat.de}</div>
+                                <div class="arabic" style="margin-top: 6px;">${chat.ar || ''}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="section">
+                        <h2>4. Fazit / Abschluss</h2>
+                        <div style="font-size: 14px; margin-bottom: 10px;">${schluss}</div>
+                        <div class="arabic">${topic.schluss_ar || ''}</div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Global Horizontal Gestures Handler
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const duration = Date.now() - touchStartTime;
+            const screenWidth = window.innerWidth;
+
+            // Ignore gestures originating or ending inside floating elements or menu actions
+            const target = e.target;
+            if (target.closest('#mobile-bottom-nav') || 
+                target.closest('#sidebar') || 
+                target.closest('#drawer-menu') || 
+                target.closest('#quick-preview-modal') || 
+                target.closest('#block-editor-modal') ||
+                target.closest('select') || 
+                target.closest('textarea') || 
+                target.closest('input')) {
+                return;
+            }
+
+            if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
+                const sidebar = document.getElementById('sidebar');
+                const drawer = document.getElementById('drawer-menu');
+                const overlay = document.getElementById('drawer-overlay');
+
+                // Swiping Left to Right -> Open Sidebar or Close Drawer
+                if (deltaX > 0) {
+                    if (touchStartX < screenWidth * 0.25) {
+                        if (sidebar) sidebar.classList.add('sidebar-open');
+                    } else if (drawer && !drawer.classList.contains('translate-x-full')) {
+                        drawer.classList.add('translate-x-full');
+                        if (overlay) {
+                            overlay.classList.add('hidden');
+                            overlay.classList.remove('opacity-100');
+                        }
+                    }
+                } 
+                // Swiping Right to Left -> Open Drawer or Close Sidebar
+                else {
+                    if (touchStartX > screenWidth * 0.75) {
+                        if (drawer) {
+                            drawer.classList.remove('translate-x-full');
+                            if (overlay) {
+                                overlay.classList.remove('hidden');
+                                void overlay.offsetWidth;
+                                overlay.classList.add('opacity-100');
+                            }
+                            populateVoicesList();
+                        }
+                    } else if (sidebar && sidebar.classList.contains('sidebar-open')) {
+                        sidebar.classList.remove('sidebar-open');
+                    }
+                }
+            } else if (activeTab === 'dashboard' && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    navigateTopicStep(-1);
+                } else {
+                    navigateTopicStep(1);
+                }
+            }
+        }, { passive: true });
+
+        // Tap-outside topics-sidebar to dismiss on mobile (protecting navigation clicks)
+        document.addEventListener('click', e => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
+                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center') && !e.target.closest('#tablet-sidebar-toggle')) {
+                    sidebar.classList.remove('sidebar-open');
+                }
+            }
+        });
+
+        function navigateTopicStep(direction) {
+            const targetIdx = activeIdx + direction;
+            const dataset = activeMode === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            
+            if (targetIdx >= 0 && targetIdx < dataset.length) {
+                const container = document.getElementById('active-topic-container');
+                if (!container) return;
+
+                const outClass = direction > 0 ? 'slide-out-left' : 'slide-out-right';
+                const inClass = direction > 0 ? 'slide-in-right' : 'slide-in-left';
+
+                container.classList.add(outClass);
+                
+                setTimeout(() => {
+                    activeIdx = targetIdx;
+                    localStorage.setItem('b2_active_idx', activeIdx);
+                    renderSidebar();
+                    renderActiveTopic();
+                    
+                    container.classList.remove(outClass);
+                    container.classList.add(inClass);
+                    
+                    setTimeout(() => {
+                        container.classList.remove(inClass);
+                    }, 220);
+                }, 220);
+            }
+        }
+
+        function handleLearningToggleAnimation(buttonEl, isNowLearned) {
+            if (isNowLearned) {
+                buttonEl.style.transform = "scale(1.08) rotate(1deg)";
+                buttonEl.classList.add("ring-4", "ring-emerald-400/40");
+                
+                const mainContainer = document.querySelector('main');
+                if (mainContainer) {
+                    mainContainer.style.transition = 'none';
+                    mainContainer.style.background = 'rgba(16, 185, 129, 0.15)';
+                    void mainContainer.offsetWidth; 
+                    mainContainer.style.transition = 'background 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                    mainContainer.style.background = '';
+                }
+
+                setTimeout(() => {
+                    buttonEl.style.transform = "scale(1)";
+                    buttonEl.classList.remove("ring-4", "ring-emerald-400/40");
+                }, 300);
+            }
+        }
+
+        const isLearnedStateToggle = document.getElementById('learned-toggle');
+        if (isLearnedStateToggle) {
+            isLearnedStateToggle.onclick = async () => {
+                const activeTopic = activeMode === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                if (learnedList.includes(activeTopic.id)) {
+                    learnedList = learnedList.filter(id => id !== activeTopic.id);
+                } else {
+                    learnedList.push(activeTopic.id);
+                    handleLearningToggleAnimation(isLearnedStateToggle, true);
+                }
+                
+                const suffix = getSelectedUserSuffix();
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').set({ learned: learnedList });
+                    } catch(e) { console.error("Fortschritt-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
+                }
+                
+                renderSidebar();
+                updateProgress();
+                renderActiveTopic();
+                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+            };
+        }
+    </script>
+</body>
+</html>
