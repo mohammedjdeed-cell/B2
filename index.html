@@ -101,7 +101,8 @@
     }
 
     /* Ensures highlighted text can be cleanly selected and behaves like standard text */
-    .selectable-text, .selectable-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
+    /* FIXED: Added support for [data-block-key] to allow normal text selection inside template blocks */
+    .selectable-text, .selectable-text *, .select-text, .select-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, [data-block-key], [data-block-key] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
         user-select: text !important;
         -webkit-user-select: text !important;
     }
@@ -151,45 +152,49 @@
         scrollbar-width: none;
     }
 
-    /* Premium Text-Marker */
+    /* Premium Text-Marker (Modern 2026 Look) */
     .hl-yellow {
-        background: rgba(254, 240, 138, 0.25) !important;
+        background: rgba(250, 204, 21, 0.3) !important;
         color: inherit !important;
-        border-bottom: 2.5px solid rgba(234, 179, 8, 0.85);
-        border-radius: 2px;
-        padding: 1px 3px;
+        border-radius: 4px;
+        padding: 2px 4px;
     }
     .hl-blue {
-        background: rgba(191, 219, 254, 0.22) !important;
+        background: rgba(96, 165, 250, 0.3) !important;
         color: inherit !important;
-        border-bottom: 2.5px solid rgba(37, 99, 235, 0.85);
-        border-radius: 2px;
-        padding: 1px 3px;
+        border-radius: 4px;
+        padding: 2px 4px;
     }
     .hl-red {
-        background: rgba(254, 202, 202, 0.22) !important;
-        border-bottom: 2.5px solid rgba(220, 38, 38, 0.85);
-        border-radius: 2px;
-        padding: 1px 3px;
+        background: rgba(248, 113, 113, 0.3) !important;
+        color: inherit !important;
+        border-radius: 4px;
+        padding: 2px 4px;
     }
     .hl-green {
-        background: rgba(187, 247, 208, 0.22) !important;
-        border-bottom: 2.5px solid rgba(5, 150, 105, 0.85);
-        border-radius: 2px;
-        padding: 1px 3px;
+        background: rgba(74, 222, 128, 0.3) !important;
+        color: inherit !important;
+        border-radius: 4px;
+        padding: 2px 4px;
     }
 
-    [data-theme="dark"] .hl-yellow { background: rgba(113, 63, 18, 0.3) !important; border-bottom-color: #FEF08A; }
-    [data-theme="dark"] .hl-blue { background: rgba(30, 58, 138, 0.3) !important; border-bottom-color: #BFDBFE; }
-    [data-theme="dark"] .hl-red { background: rgba(127, 29, 29, 0.3) !important; border-bottom-color: #FECACA; }
-    [data-theme="dark"] .hl-green { background: rgba(20, 83, 45, 0.3) !important; border-bottom-color: #BBF7D0; }
+    [data-theme="dark"] .hl-yellow { background: rgba(234, 179, 8, 0.35) !important; }
+    [data-theme="dark"] .hl-blue { background: rgba(59, 130, 246, 0.35) !important; }
+    [data-theme="dark"] .hl-red { background: rgba(239, 68, 68, 0.35) !important; }
+    [data-theme="dark"] .hl-green { background: rgba(34, 197, 94, 0.35) !important; }
 
     .highlight {
-        background-color: rgba(61, 107, 72, 0.12);
-        border-bottom: 2.5px solid var(--accent);
-        padding: 0 2px;
-        border-radius: 2px;
+        background-color: var(--accent-light);
+        color: var(--accent);
+        font-weight: 600;
+        padding: 2px 4px;
+        border-radius: 4px;
     }
+    [data-theme="dark"] .highlight {
+        background-color: rgba(91, 158, 107, 0.2);
+        color: #86efac;
+    }
+
     .word-circle {
         border: 2px solid #E11D48;
         border-radius: 50%;
@@ -807,10 +812,10 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Kreis">⭕</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-200 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-900/50 cursor-pointer" title="Gelb"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-200 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-900/50 cursor-pointer" title="Blau"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-200 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-900/50 cursor-pointer" title="Rot"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-200 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-900/50 cursor-pointer" title="Grün"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400/40 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-500/50 cursor-pointer" title="Rot"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <!-- Eraser Tool Button -->
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
@@ -1092,7 +1097,10 @@
                 tabletToggle.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (sidebar) sidebar.classList.toggle('sidebar-open');
+                    if (sidebar) {
+                        sidebar.classList.remove('sidebar-collapsed'); // Always clear this on mobile
+                        sidebar.classList.toggle('sidebar-open');
+                    }
                 });
             }
 
@@ -2407,7 +2415,7 @@
                             <span class="soundwave-bar"></span>
                         </button>
                     </div>
-                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
+                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
                         ${currentEditMode ? deVal : applyConnectorsHighlight(deVal)}
                     </div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
@@ -2954,7 +2962,7 @@
 
             const einleitungHtml = `
                 <div class="p-1">
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
+                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
@@ -2990,7 +2998,7 @@
                             <div class="flex items-start gap-2.5">
                                 <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
                                 <div class="flex-1 text-[14px]">
-                                    <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                    <div data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</div>
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${currentEditMode ? `
@@ -3036,7 +3044,7 @@
                             <div class="flex items-start gap-2.5">
                                 <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
                                 <div class="flex-1 text-[14px]">
-                                    <strong data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</strong>
+                                    <div data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</div>
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${currentEditMode ? `
@@ -3105,7 +3113,7 @@
                                 <span class="soundwave-bar"></span>
                             </button>
                         </div>
-                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
                             ${currentEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                         </div>
                         <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
@@ -3657,19 +3665,25 @@
                 target.closest('#block-editor-modal') ||
                 target.closest('select') || 
                 target.closest('textarea') || 
-                target.closest('input')) {
+                target.closest('input') ||
+                target.closest('[contenteditable="true"]')) { // Do not swipe if interacting with editable text
                 return;
             }
 
-            if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
-                const sidebar = document.getElementById('sidebar');
-                const drawer = document.getElementById('drawer-menu');
-                const overlay = document.getElementById('drawer-overlay');
+            const sidebar = document.getElementById('sidebar');
+            const drawer = document.getElementById('drawer-menu');
+            const overlay = document.getElementById('drawer-overlay');
+            const isSidebarOpen = sidebar && sidebar.classList.contains('sidebar-open');
+            const isDrawerOpen = drawer && !drawer.classList.contains('translate-x-full');
 
-                if (deltaX > 0) {
-                    if (touchStartX < screenWidth * 0.25) {
-                        if (sidebar) sidebar.classList.add('sidebar-open');
-                    } else if (drawer && !drawer.classList.contains('translate-x-full')) {
+            if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
+                if (deltaX > 0) { // Swipe Right
+                    if (touchStartX < screenWidth * 0.4) {
+                        if (sidebar) {
+                            sidebar.classList.remove('sidebar-collapsed');
+                            sidebar.classList.add('sidebar-open');
+                        }
+                    } else if (isDrawerOpen) {
                         drawer.classList.add('translate-x-full');
                         if (overlay) {
                             overlay.classList.add('hidden');
@@ -3677,8 +3691,8 @@
                         }
                     }
                 } 
-                else {
-                    if (touchStartX > screenWidth * 0.75) {
+                else { // Swipe Left
+                    if (touchStartX > screenWidth * 0.6) {
                         if (drawer) {
                             drawer.classList.remove('translate-x-full');
                             if (overlay) {
@@ -3688,11 +3702,11 @@
                             }
                             populateVoicesList();
                         }
-                    } else if (sidebar && sidebar.classList.contains('sidebar-open')) {
+                    } else if (isSidebarOpen) {
                         sidebar.classList.remove('sidebar-open');
                     }
                 }
-            } else if ((activeTab === 'template' || activeTab === 'classic') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+            } else if (!isSidebarOpen && !isDrawerOpen && (activeTab === 'template' || activeTab === 'classic') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     navigateTopicStep(-1);
                 } else {
@@ -3789,3 +3803,4 @@
     </script>
 </body>
 </html>
+
