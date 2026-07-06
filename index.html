@@ -319,75 +319,14 @@
     }
 
    /* Desktop/Tablet Layout ab 1024px: Sidebar schiebt den Inhalt zur Seite (Kein Überlappen) */
-        @media (min-width: 1024px) {
-            #sidebar {
-                position: relative !important;
-                transform: translateX(0) !important;
-                z-index: 10 !important;
-                width: 20rem !important;
-            }
-            /* Elegante, perfekt ausgerichtete kreisförmige Dock-Buttons bei eingeklappter Sidebar */
-            #sidebar.sidebar-collapsed {
-                width: 4.5rem !important; 
-            }
-            #sidebar.sidebar-collapsed .sidebar-header-flex {
-                justify-content: center !important;
-                padding-left: 0.5rem !important;
-                padding-right: 0.5rem !important;
-            }
-            #sidebar.sidebar-collapsed .topic-list-item {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                padding: 0.75rem 0 !important;
-                border-radius: 9999px !important;
-                width: 3rem !important;
-                height: 3rem !important;
-                margin: 0.25rem auto !important;
-                border-left: none !important;
-                position: relative !important; /* Added to act as the coordinate system for the badge */
-            }
-            
-            /* Centers the emoji perfectly in the dead center of the circular button */
-            #sidebar.sidebar-collapsed .topic-list-item > div:first-child {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                height: 100% !important;
-                gap: 0 !important;
-            }
-            
-            /* Positions the progress dot absolutely as an elegant corner status badge */
-            #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom {
-                display: flex !important;
-                position: absolute !important;
-                bottom: 3px !important;
-                right: 3px !important;
-                width: auto !important;
-                height: auto !important;
-                pointer-events: none !important;
-            }
-            
-            /* Gives the status dot a clean ring border matching the background context */
-            #sidebar.sidebar-collapsed .topic-list-item > div.hide-on-collapse-custom span {
-                border: 2px solid var(--bg-sidebar) !important;
-                width: 10px !important;
-                height: 10px !important;
-                box-sizing: border-box !important;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
-            }
-            
-            /* Dynamically blends the ring border with the green accent when selected */
-            #sidebar.sidebar-collapsed .topic-list-item.bg-\[var\(--accent\)\] > div.hide-on-collapse-custom span {
-                border-color: var(--accent) !important;
-            }
-
-            #sidebar.sidebar-collapsed .sidebar-only-emoji {
-                margin: 0 !important;
-                font-size: 1.35rem !important;
-            }
+    @media (min-width: 1024px) {
+        #sidebar {
+            position: relative !important;
+            transform: translateX(0) !important;
+            z-index: 10 !important;
+            width: 20rem !important;
         }
+    }
 </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -458,8 +397,8 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EDITIER-WERKZEUGE</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="undo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↩️ Zurück</button>
-                    <button onclick="redo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↪️ Vor</button>
+                    <button onclick="smartUndo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↩️ Zurück</button>
+                    <button onclick="smartRedo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↪️ Vor</button>
                 </div>
                 <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2">
                     <span id="edit-mode-status-text">Edit-Modus umschalten</span>
@@ -535,7 +474,6 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DATEN-STEUERUNG</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 
-                <!-- Smart Unified File Importer -->
                 <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[44px] text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
                     <span>📥 Datei einspielen (Backup / GitHub-JSON)</span>
                 </button>
@@ -569,11 +507,9 @@
         
         <!-- Sidebar -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
+            <!-- Corrected sidebar header (Internal hamburger button removed to fix bug) -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
-                <button id="sidebar-toggle-btn" class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
             </div>
 
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 hide-on-collapse">
@@ -614,7 +550,7 @@
                     </div>
                 </div>
 
-                <!-- Unified Control Bar (Consistent h-9, px-3.5, rounded-lg, text-xs) -->
+                <!-- Unified Control Bar -->
                 <div class="flex items-center w-full overflow-x-auto no-scrollbar gap-2 pb-1">
                     
                     <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="h-9 text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0 cursor-pointer">
@@ -636,22 +572,6 @@
                     <!-- Print to PDF Button integrated into Control Bar -->
                     <button onclick="printCurrentTopic()" class="h-9 text-xs bg-teal-600 hover:bg-teal-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>📄 PDF Export</span>
-                    </button>
-
-                    <!-- Desktop Edit Button (Visual design matches theme accent) -->
-                    <button id="desktop-edit-btn" onclick="toggleEditMode()" class="edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] hover:bg-[var(--bg-app)] rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0">
-                        <svg id="desktop-edit-icon" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                        </svg>
-                        <span id="desktop-edit-text">Editieren</span>
-                    </button>
-
-                    <!-- Desktop Undo Button (Visual design matches neutral theme context) -->
-                    <button id="desktop-undo-btn" onclick="undo()" class="edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0">
-                        <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
-                        </svg>
-                        <span>Zurück</span>
                     </button>
 
                     <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-9 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5">
@@ -696,14 +616,13 @@
                         </select>
                     </div>
                 </div>
-                <!-- Robust adaptive grid to prevent tiny squeezed columns on horizontal orientation tablet screens -->
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 pt-2"></div>
             </section>
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation: Rebuilt as a standard 5-tab floating dock -->
+            <!-- Mobile Bottom Navigation -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-3 flex justify-between items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                 <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -727,12 +646,15 @@
                 </button>
             </div>
             
-            <!-- Mobile Controls Floating Action Group -->
-            <div class="md:hidden fixed bottom-[95px] right-4 flex flex-col gap-3 z-40">
-                <button id="mobile-undo-fab" onclick="undo()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90" title="Rückgängig machen">
-                    <span class="text-lg">↩️</span>
+            <!-- Universal Global Floating Action Group (Now visible on Desktop & Mobile) -->
+            <div id="floating-action-buttons" class="fixed right-4 flex flex-col gap-3 z-40 bottom-[95px] lg:bottom-8">
+                <button id="fab-undo" onmousedown="event.preventDefault(); smartUndo();" class="hidden edit-only-control w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 hover:bg-neutral-50 dark:hover:bg-zinc-700 cursor-pointer" title="Rückgängig machen (Text/Tippen)">
+                    <span class="text-lg pointer-events-none">↩️</span>
                 </button>
-                <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90">
+                <button id="fab-redo" onmousedown="event.preventDefault(); smartRedo();" class="hidden edit-only-control w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 hover:bg-neutral-50 dark:hover:bg-zinc-700 cursor-pointer" title="Wiederholen (Text/Tippen)">
+                    <span class="text-lg pointer-events-none">↪️</span>
+                </button>
+                <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 cursor-pointer hover:shadow-lg">
                     <svg id="edit-fab-icon" class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
             </div>
@@ -1207,6 +1129,38 @@
             });
         }
 
+        // --- Custom Native Text-Editing Undo/Redo Engine ---
+        function smartUndo() {
+            if (document.queryCommandSupported('undo')) {
+                document.execCommand('undo');
+                saveCurrentFocus();
+            } else {
+                undo(); // Custom stack fallback
+            }
+        }
+
+        function smartRedo() {
+            if (document.queryCommandSupported('redo')) {
+                document.execCommand('redo');
+                saveCurrentFocus();
+            } else {
+                redo(); // Custom stack fallback
+            }
+        }
+
+        function saveCurrentFocus() {
+            setTimeout(() => {
+                const activeEl = document.activeElement;
+                if (activeEl && activeEl.hasAttribute('contenteditable')) {
+                    // Simulate blur briefly to trigger the sync logic, then re-focus so typing is un-interrupted
+                    const blockKey = activeEl.getAttribute('data-block-key');
+                    const topicId = TEMPLATE_DATA[activeIdx].id;
+                    handleInlineBlur(activeEl, topicId, 'de', blockKey);
+                    activeEl.focus();
+                }
+            }, 50);
+        }
+
         function undo() {
             if (undoStack.length === 0) {
                 alert("Keine weiteren Änderungen vorhanden!");
@@ -1264,17 +1218,9 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); smartUndo(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); smartRedo(); }
         });
-
-        const toggleBtn = document.getElementById('sidebar-toggle-btn');
-        if (toggleBtn) {
-            toggleBtn.onclick = () => {
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar) sidebar.classList.toggle('sidebar-collapsed');
-            };
-        }
 
         async function saveHighlight(topicId, blockKey, htmlContent) {
             if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
@@ -1301,79 +1247,34 @@
             return getHighlight(topicId, blockKey) || fallback;
         }
 
-        document.addEventListener('click', function(e) {
-            if (!isEditMode || activeTab === 'classic') return;
-            
-            let editableContainer = e.target;
-            while (editableContainer && editableContainer !== document.body && !editableContainer.hasAttribute('data-block-key')) {
-                editableContainer = editableContainer.parentNode;
-            }
-            if (!editableContainer || !editableContainer.hasAttribute('data-block-key')) return;
-
-            if (e.target.closest('#formatting-toolbar') || e.target.closest('#list-helper-toolbar')) return;
-
-            const selection = window.getSelection();
-            if (!selection || !selection.isCollapsed) return;
-
-            const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
-            if (!range) return;
-
-            let node = range.startContainer;
-            if (node.nodeType !== Node.TEXT_NODE) {
-                if (node.hasChildNodes()) {
-                    node = node.childNodes[range.startOffset] || node.firstChild;
-                }
-            }
-            if (!node || node.nodeType !== Node.TEXT_NODE) {
-                hideToolbar();
-                return;
-            }
-
-            const text = node.data;
-            const offset = range.startOffset;
-
-            const wordRegex = /[a-zA-ZäöüÄÖÜß]+/g;
-            let match;
-            while ((match = wordRegex.exec(text)) !== null) {
-                if (offset >= match.index && offset <= wordRegex.lastIndex) {
-                    const targetRange = document.createRange();
-                    targetRange.setStart(node, match.index);
-                    targetRange.setEnd(node, wordRegex.lastIndex);
-                    
-                    selection.removeAllRanges();
-                    selection.addRange(targetRange);
-                    
-                    handleSelectionChange();
-                    break;
-                }
-            }
-        });
-
-        document.addEventListener('mouseup', function(e) {
-            if (!isEditMode || activeTab === 'classic') return;
-            setTimeout(() => {
-                const selection = window.getSelection();
-                if (!selection || selection.isCollapsed) {
-                    if (!e.target.closest('#formatting-toolbar') && !e.target.closest('#list-helper-toolbar')) {
-                        hideToolbar();
-                    }
-                } else {
-                    let parent = selection.anchorNode;
-                    let isValidTarget = false;
-                    while (parent) {
-                        if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
-                            isValidTarget = true;
-                            break;
+        // Modern highlight toolbar detector
+        ['mouseup', 'touchend'].forEach(evt => {
+            document.addEventListener(evt, function(e) {
+                if (!isEditMode || activeTab === 'classic') return;
+                setTimeout(() => {
+                    const selection = window.getSelection();
+                    if (!selection || selection.isCollapsed) {
+                        if (!e.target.closest('#formatting-toolbar') && !e.target.closest('#list-helper-toolbar')) {
+                            hideToolbar();
                         }
-                        parent = parent.parentNode;
-                    }
-                    if (isValidTarget) {
-                        handleSelectionChange();
                     } else {
-                        hideToolbar();
+                        let parent = selection.anchorNode;
+                        let isValidTarget = false;
+                        while (parent) {
+                            if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
+                                isValidTarget = true;
+                                break;
+                            }
+                            parent = parent.parentNode;
+                        }
+                        if (isValidTarget) {
+                            handleSelectionChange();
+                        } else {
+                            hideToolbar();
+                        }
                     }
-                }
-            }, 10);
+                }, 50);
+            });
         });
 
         function clearAllHighlightsForTopic() {
@@ -1561,9 +1462,6 @@
 
         applyTextScale();
 
-        const drawerMenu = document.getElementById('drawer-menu');
-        const drawerOverlay = document.getElementById('drawer-overlay');
-
         function toggleDrawer() {
             const drawerMenu = document.getElementById('drawer-menu');
             const drawerOverlay = document.getElementById('drawer-overlay');
@@ -1607,7 +1505,6 @@
                     }
                 }
                 
-                // Update mobile bottom nav icons if present
                 const mobBtn = document.getElementById(`mob-tab-${t}`);
                 if (mobBtn) {
                     if (t === tabId) {
@@ -1622,49 +1519,37 @@
 
             const dashboardSection = document.getElementById('dashboard-tab-section');
             const controls = document.getElementById('dashboard-controls');
+            const fabs = document.getElementById('floating-action-buttons');
             
             if (tabId === 'template' || tabId === 'classic') {
                 dashboardSection.classList.remove('hidden');
                 controls.classList.remove('hidden');
                 controls.classList.add('flex');
                 
-                // Hide or show edit buttons based on tab
                 const editControls = document.querySelectorAll('.edit-only-control');
                 editControls.forEach(el => {
                     if (tabId === 'classic') {
                         el.classList.add('hidden');
-                        if (el.tagName !== 'BUTTON' || (el.id !== 'save-progress-btn' && el.id !== 'reset-edits-btn' && el.id !== 'desktop-edit-btn' && el.id !== 'desktop-undo-btn')) {
+                        if (el.tagName !== 'BUTTON' || (el.id !== 'save-progress-btn' && el.id !== 'reset-edits-btn')) {
                             el.classList.remove('md:flex', 'flex');
                         }
                     } else {
-                        el.classList.remove('hidden');
-                        if (el.id === 'desktop-edit-btn' || el.id === 'desktop-undo-btn') {
-                            el.classList.add('md:flex');
+                        if (el.id !== 'fab-undo' && el.id !== 'fab-redo') {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.toggle('hidden', !isEditMode);
                         }
                     }
                 });
                 
-                // Floating Action Buttons for mobile
-                const fab = document.getElementById('mobile-edit-fab');
-                const undoFab = document.getElementById('mobile-undo-fab');
-                if (tabId === 'classic') {
-                    if (fab) fab.style.display = 'none';
-                    if (undoFab) undoFab.style.display = 'none';
-                } else {
-                    if (fab) fab.style.display = 'flex';
-                    if (undoFab) undoFab.style.display = 'flex';
-                }
+                if (fabs) fabs.style.display = tabId === 'classic' ? 'none' : 'flex';
 
                 renderActiveTopic();
             } else {
                 dashboardSection.classList.add('hidden');
                 controls.classList.add('hidden');
                 controls.classList.remove('flex');
-                
-                const fab = document.getElementById('mobile-edit-fab');
-                const undoFab = document.getElementById('mobile-undo-fab');
-                if (fab) fab.style.display = 'none';
-                if (undoFab) undoFab.style.display = 'none';
+                if (fabs) fabs.style.display = 'none';
             }
 
             if (tabId === 'mindmap') renderSimplisticBoxGrid();
@@ -1946,7 +1831,6 @@
                 TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
 
                 if (currentUser && db) {
-                    // Smart Matching: Map older user edits from classic 'edited_topics' to TEMPLATE_DATA
                     const topicsSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
                     topicsSnapshot.forEach(doc => {
                         const cloudTopic = doc.data();
@@ -1957,7 +1841,6 @@
                         }
                     });
 
-                    // Map specific 'edited_templates' overrides on top
                     const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
                     templatesSnapshot.forEach(doc => {
                         const cloudTemplate = doc.data();
@@ -1981,7 +1864,6 @@
                         highlightsStore[doc.id] = doc.data();
                     });
                 } else {
-                    // Smart Matching for local storage
                     const localEdits = localStorage.getItem(`edited_topics_data_1_52_${suffix}`);
                     if (localEdits) {
                         const parsed = JSON.parse(localEdits);
@@ -2010,7 +1892,6 @@
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
 
-                // Auto-Migration for Old Dialogue Edits
                 for (const topicId in highlightsStore) {
                     const topicHighlights = highlightsStore[topicId];
                     if (topicHighlights && typeof topicHighlights === 'object') {
@@ -2026,12 +1907,8 @@
                     }
                 }
 
-                TOPICS_DATA.forEach(t => {
-                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
-                });
-                TEMPLATE_DATA.forEach(t => {
-                    t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik';
-                });
+                TOPICS_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
+                TEMPLATE_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
 
                 GRAMMATIK_DATA = baseGrammatik;
 
@@ -2683,7 +2560,8 @@
         }
 
         function handleInlineInput(element, topicId, lang, blockKey) {
-            // Placeholder logic to keep layout reactive
+            // Native typing automatically saves locally inside DOM.
+            // When user exits the text box, handleInlineBlur commits to Firebase.
         }
 
         function addProArgument() {
@@ -3369,10 +3247,11 @@
             const statusLabel = document.querySelector('#drawer-edit-toggle span');
             const menuStatusLabel = document.getElementById('edit-mode-status-text');
             const tipBanner = document.getElementById('edit-tip-banner');
+            
             const fab = document.getElementById('mobile-edit-fab');
+            const undoFab = document.getElementById('fab-undo');
+            const redoFab = document.getElementById('fab-redo');
             const drawerToggle = document.getElementById('drawer-edit-toggle');
-            const desktopEditBtn = document.getElementById('desktop-edit-btn');
-            const desktopEditText = document.getElementById('desktop-edit-text');
             
             if (isEditMode) {
                 if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
@@ -3381,11 +3260,11 @@
                     fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
                 }
-                if (desktopEditBtn) {
-                    desktopEditBtn.className = "edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 border border-transparent rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
-                }
-                if (desktopEditText) desktopEditText.textContent = "Editieren: AN";
+                
+                // Show Undo/Redo FABs
+                if (undoFab) undoFab.classList.remove('hidden');
+                if (redoFab) redoFab.classList.remove('hidden');
+
                 if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
                 if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
                 if (tipBanner) tipBanner.classList.remove('hidden');
@@ -3396,11 +3275,11 @@
                     fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
-                if (desktopEditBtn) {
-                    desktopEditBtn.className = "edit-only-control hidden md:flex h-9 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3.5 transition-all shadow-sm items-center gap-1.5 cursor-pointer shrink-0";
-                    desktopEditBtn.querySelector('svg').outerHTML = '<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
-                }
-                if (desktopEditText) desktopEditText.textContent = "Editieren";
+                
+                // Hide Undo/Redo FABs
+                if (undoFab) undoFab.classList.add('hidden');
+                if (redoFab) redoFab.classList.add('hidden');
+
                 if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
                 if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
                 if (tipBanner) tipBanner.classList.add('hidden');
@@ -3479,7 +3358,6 @@
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
-                        // No longer persisting edited_topics locally since they are strictly classic/read-only.
                         
                         alert("Vollbackup erfolgreich importiert!");
                     } 
@@ -3666,7 +3544,7 @@
                 target.closest('select') || 
                 target.closest('textarea') || 
                 target.closest('input') ||
-                target.closest('[contenteditable="true"]')) { // Do not swipe if interacting with editable text
+                target.closest('[contenteditable="true"]')) { 
                 return;
             }
 
@@ -3803,4 +3681,3 @@
     </script>
 </body>
 </html>
-
