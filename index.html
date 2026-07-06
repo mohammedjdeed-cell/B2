@@ -96,12 +96,7 @@
         user-select: none;
     }
     
-    .selectable-text, textarea, input {
-        user-select: text !important;
-    }
-
-    /* Ensures highlighted text can be cleanly selected and behaves like standard text */
-    /* FIXED: Added support for [data-block-key] to allow normal text selection inside template blocks */
+    /* SUPPORT FOR NORMAL TEXT SELECTION */
     .selectable-text, .selectable-text *, .select-text, .select-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, [data-block-key], [data-block-key] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
         user-select: text !important;
         -webkit-user-select: text !important;
@@ -252,12 +247,6 @@
         scrollbar-width: none !important;
     }
 
-    /* Behebt das Überlappen der Elemente bei eingeklappter Sidebar */
-    #sidebar.sidebar-collapsed .hide-on-collapse,
-    #sidebar.sidebar-collapsed .hide-on-collapse-custom {
-        display: none !important;
-    }
-
     /* CSS-Keyframes für Wischübergangseffekte */
     @keyframes slideOutLeft {
         from { transform: translateX(0); opacity: 1; }
@@ -281,7 +270,7 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* Mobile-first Sidebar-Basislayout (Fest positioniert auf Handys) */
+    /* Mobile-first Sidebar-Basislayout */
     #sidebar {
         position: fixed !important;
         top: 0;
@@ -292,13 +281,11 @@
         transform: translateX(-100%);
         transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    /* Specificity fix: Force sidebar visible on mobile when 'sidebar-open' class is toggled */
     #sidebar.sidebar-open {
         transform: translateX(0) !important;
     }
 
-    /* Settings Drawer & Overlay Custom Styles */
+    /* Overlay Settings */
     #drawer-overlay {
         opacity: 0;
         transition: opacity 0.3s ease-in-out;
@@ -318,13 +305,89 @@
         background: radial-gradient(circle at 80% 15%, rgba(16, 185, 129, 0.12), var(--bg-app) 75%) !important;
     }
 
-   /* Desktop/Tablet Layout ab 1024px: Sidebar schiebt den Inhalt zur Seite (Kein Überlappen) */
+    /* Desktop/Tablet Collapsed Sidebar Logic (Fixed Bug) */
+    #sidebar.sidebar-collapsed .hide-on-collapse,
+    #sidebar.sidebar-collapsed .collapse-text-container {
+        display: none !important;
+    }
+
     @media (min-width: 1024px) {
         #sidebar {
             position: relative !important;
             transform: translateX(0) !important;
             z-index: 10 !important;
             width: 20rem !important;
+        }
+        #sidebar.sidebar-collapsed {
+            width: 4.5rem !important; 
+        }
+        #sidebar.sidebar-collapsed .sidebar-header-flex {
+            justify-content: center !important;
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        #sidebar.sidebar-collapsed .topic-list-item {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0.75rem 0 !important;
+            border-radius: 9999px !important;
+            width: 3rem !important;
+            height: 3rem !important;
+            margin: 0.25rem auto !important;
+            border-left: none !important;
+            position: relative !important;
+        }
+        
+        #sidebar.sidebar-collapsed .topic-list-item > div:first-child {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            gap: 0 !important;
+        }
+        
+        #sidebar.sidebar-collapsed .collapse-status-dot {
+            display: flex !important;
+            position: absolute !important;
+            bottom: 3px !important;
+            right: 3px !important;
+            width: auto !important;
+            height: auto !important;
+            pointer-events: none !important;
+        }
+        
+        #sidebar.sidebar-collapsed .collapse-status-dot span {
+            border: 2px solid var(--bg-sidebar) !important;
+            width: 10px !important;
+            height: 10px !important;
+            box-sizing: border-box !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+        }
+        
+        #sidebar.sidebar-collapsed .topic-list-item.bg-\[var\(--accent\)\] .collapse-status-dot span {
+            border-color: var(--accent) !important;
+        }
+
+        #sidebar.sidebar-collapsed .sidebar-only-emoji {
+            margin: 0 !important;
+            font-size: 1.35rem !important;
+        }
+
+        /* Star styling for collapsed sidebar mode */
+        #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji {
+            position: relative;
+        }
+        #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji::after {
+            content: '★';
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            font-size: 12px;
+            color: #F59E0B;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            z-index: 10;
         }
     }
 </style>
@@ -397,10 +460,10 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EDITIER-WERKZEUGE</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="smartUndo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↩️ Zurück</button>
-                    <button onclick="smartRedo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg">↪️ Vor</button>
+                    <button onclick="smartUndo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg cursor-pointer">↩️ Zurück</button>
+                    <button onclick="smartRedo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg cursor-pointer">↪️ Vor</button>
                 </div>
-                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2">
+                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2 cursor-pointer">
                     <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
             </div>
@@ -408,7 +471,7 @@
             <div class="space-y-2.5">
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EINSTELLUNGEN</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <button onclick="window.location.reload();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2">
+                <button onclick="window.location.reload();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2 cursor-pointer">
                     <span>🔄 Seite neu laden</span>
                 </button>
             </div>
@@ -416,12 +479,12 @@
             <div class="space-y-2.5">
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📢 SPRACHAUSGABE</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)] mb-2">
+                <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)] mb-2 cursor-pointer">
                     <option value="">Standard-Stimme</option>
                 </select>
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
-                    <select id="drawer-voice-speed" onchange="localStorage.setItem('b2_voice_speed', this.value)" class="text-[11px] bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none">
+                    <select id="drawer-voice-speed" onchange="localStorage.setItem('b2_voice_speed', this.value)" class="text-[11px] bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none cursor-pointer">
                         <option value="0.8">Langsam (0.8x)</option>
                         <option value="1.0" selected>Normal (1.0x)</option>
                         <option value="1.2">Schnell (1.2x)</option>
@@ -433,19 +496,19 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">CLOUD-ARBEITSPLATZ</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div id="drawer-auth-logged-out" class="space-y-2">
-                    <select id="drawer-user-select" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]">
+                    <select id="drawer-user-select" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)] cursor-pointer">
                         <option value="mohammed">Mohammed</option>
                         <option value="mai">Mai</option>
                     </select>
                     <input type="password" id="drawer-workspace-password" placeholder="Passwort" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
                     <div class="grid grid-cols-2 gap-2">
-                        <button id="drawer-btn-login" class="w-full min-h-[44px] text-xs bg-[var(--accent)] text-white font-bold rounded">Login</button>
-                        <button id="drawer-btn-signup" class="w-full min-h-[44px] text-xs bg-zinc-600 text-white font-bold rounded">Registrieren</button>
+                        <button id="drawer-btn-login" class="w-full min-h-[44px] text-xs bg-[var(--accent)] text-white font-bold rounded cursor-pointer">Login</button>
+                        <button id="drawer-btn-signup" class="w-full min-h-[44px] text-xs bg-zinc-600 text-white font-bold rounded cursor-pointer">Registrieren</button>
                     </div>
                 </div>
                 <div id="drawer-auth-logged-in" class="space-y-2 hidden">
                     <p class="text-xs text-[var(--text-primary)]">Angemeldet als: <span id="drawer-user-display" class="font-bold"></span></p>
-                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded">Logout</button>
+                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded cursor-pointer">Logout</button>
                 </div>
             </div>
 
@@ -453,9 +516,9 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">ELEMENT & TEXTGRÖSSE</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
-                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-2 text-xs font-bold rounded">80%</button>
-                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-2 text-xs font-bold rounded">100%</button>
-                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-2 text-xs font-bold rounded">125%</button>
+                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-2 text-xs font-bold rounded cursor-pointer">80%</button>
+                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-2 text-xs font-bold rounded cursor-pointer">100%</button>
+                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-2 text-xs font-bold rounded cursor-pointer">125%</button>
                 </div>
             </div>
 
@@ -463,9 +526,9 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DESIGN & FARBSCHEMA</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
-                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-2 text-xs font-bold rounded">Hell</button>
-                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-2 text-xs font-bold rounded">Dunkel</button>
-                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-2 text-xs font-bold rounded">System</button>
+                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-2 text-xs font-bold rounded cursor-pointer">Hell</button>
+                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-2 text-xs font-bold rounded cursor-pointer">Dunkel</button>
+                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-2 text-xs font-bold rounded cursor-pointer">System</button>
                 </div>
             </div>
 
@@ -507,9 +570,13 @@
         
         <!-- Sidebar -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
-            <!-- Corrected sidebar header (Internal hamburger button removed to fix bug) -->
+            <!-- Sidebar Header with properly isolated toggle button for desktop only -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
+                <!-- Nur auf großen Bildschirmen anzeigen, um Konflikte zu vermeiden -->
+                <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
             </div>
 
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 hide-on-collapse">
@@ -522,7 +589,7 @@
                 </div>
                 
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
-                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)]">Alle</button>
+                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)] cursor-pointer">Alle</button>
                     <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">Gelernt</button>
                     <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">Offen</button>
                 </div>
@@ -773,7 +840,7 @@
         const STARRED_TOPICS = [4, 8, 14, 15, 17, 18, 19, 21, 22, 26, 27, 30, 31, 34, 38, 39, 41, 43, 48];
 
         const TOPIC_KEYWORDS = {
-            1: "Rauchen", 2: "Gewaltspiele", 3: "Hochzeit", 4: "Solarium", 5: "Nahrungsergänzung",
+           1: "Rauchen", 2: "Gewaltspiele", 3: "Hochzeit", 4: "Solarium", 5: "Nahrungsergänzung",
             6: "Elektroautos", 7: "Arbeit bis 75", 8: "HausTausch", 9: "Schulqualität", 10: "Trinkgeld geben",
             11: "Stadtwohnung", 12: "Gleiche Chancen", 13: "Tattoo", 14: "Die Schuluniform", 15: "Smartphones und kinder",
             16: "Fernsehen und kinder", 17: "Eine Woche ohne Internet", 18: "Music und Zahnarzt", 19: "Praktische Lerntipps", 20: "Alkoholmissbrauch",
@@ -969,7 +1036,6 @@
         
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
-        // Evaluates active user suffix dynamically based on dropdown selection
         function getSelectedUserSuffix() {
             const userSelect = document.getElementById('drawer-user-select');
             return userSelect ? userSelect.value : 'mohammed';
@@ -1013,20 +1079,28 @@
             const drawer = document.getElementById('drawer-menu');
             const overlay = document.getElementById('drawer-overlay');
 
-            // Tablet/Header Menu Sidebar toggle (Critical for portrait 12 inch tablets AND Mobile!)
             const tabletToggle = document.getElementById('tablet-sidebar-toggle');
             if (tabletToggle) {
                 tabletToggle.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (sidebar) {
-                        sidebar.classList.remove('sidebar-collapsed'); // Always clear this on mobile
+                        sidebar.classList.remove('sidebar-collapsed'); 
                         sidebar.classList.toggle('sidebar-open');
                     }
                 });
             }
+            
+            // Dedicated listener for the internal desktop collapse button
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (sidebar) sidebar.classList.toggle('sidebar-collapsed');
+                });
+            }
 
-            // Top Menu Drawer toggle
             const toggleMenu = document.getElementById('menu-drawer-toggle');
             if (toggleMenu) {
                 toggleMenu.addEventListener('click', (e) => {
@@ -1036,7 +1110,6 @@
                 });
             }
 
-            // Drawer Close Button
             const closeBtn = document.getElementById('drawer-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', (e) => {
@@ -1046,7 +1119,6 @@
                 });
             }
 
-            // Overlay Close
             if (overlay) {
                 overlay.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1055,7 +1127,6 @@
                 });
             }
 
-            // Dropdown user selection triggers offline data-reload cleanly
             const userSelectEl = document.getElementById('drawer-user-select');
             if (userSelectEl) {
                 userSelectEl.addEventListener('change', () => {
@@ -1120,7 +1191,6 @@
             redoStack = []; 
         }
 
-        // Standardized service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -1135,7 +1205,7 @@
                 document.execCommand('undo');
                 saveCurrentFocus();
             } else {
-                undo(); // Custom stack fallback
+                undo(); 
             }
         }
 
@@ -1144,7 +1214,7 @@
                 document.execCommand('redo');
                 saveCurrentFocus();
             } else {
-                redo(); // Custom stack fallback
+                redo(); 
             }
         }
 
@@ -1152,7 +1222,6 @@
             setTimeout(() => {
                 const activeEl = document.activeElement;
                 if (activeEl && activeEl.hasAttribute('contenteditable')) {
-                    // Simulate blur briefly to trigger the sync logic, then re-focus so typing is un-interrupted
                     const blockKey = activeEl.getAttribute('data-block-key');
                     const topicId = TEMPLATE_DATA[activeIdx].id;
                     handleInlineBlur(activeEl, topicId, 'de', blockKey);
@@ -1646,7 +1715,6 @@
             };
         }
 
-        /* Modern Bullet Point Logic & floating Word-style detector */
         let activeListElement = null;
 
         function getCaretCoordinates() {
@@ -1696,7 +1764,6 @@
 
             let html = activeListElement.innerHTML;
             
-            // Normalize block elements to newlines to split easily while preserving inline HTML
             let processed = html
                 .replace(/<br\s*[\/]?>/gi, '\n')
                 .replace(/<div[^>]*>/gi, '\n')
@@ -1708,7 +1775,6 @@
                 .map(l => l.trim())
                 .filter(l => l.length > 0 && l !== '&nbsp;');
             
-            // Strip leading bullet characters (like - or *) safely regardless of wrapping inline HTML tags
             lines = lines.map(line => {
                 return line.replace(/^((?:<[^>]+>|\s)*)[-_*•]\s+/, '$1');
             });
@@ -1824,10 +1890,7 @@
 
                 const suffix = getSelectedUserSuffix();
 
-                // Static strictly read-only Classic data
                 TOPICS_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TOPICS));
-                
-                // Editable Template data
                 TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
 
                 if (currentUser && db) {
@@ -2143,7 +2206,7 @@
                         : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
                       );
 
-                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item cursor-pointer ${activeClass}`;
+                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item cursor-pointer ${activeClass} ${isStarred ? 'is-starred' : ''}`;
 
                 const emoji = TOPIC_ICONS[topic.id] || "📌";
                 const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
@@ -2152,15 +2215,15 @@
                     : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
                 item.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <span class="sidebar-only-emoji text-base select-none leading-none">${emoji}</span>
-                        <div class="flex items-center gap-2 truncate hide-on-collapse-custom">
+                    <div class="flex items-center gap-2.5 w-full overflow-hidden">
+                        <span class="sidebar-only-emoji text-base select-none leading-none flex-shrink-0">${emoji}</span>
+                        <div class="flex items-center gap-2 truncate collapse-text-container w-full">
                             <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
                             ${starMarker}
                             <span class="truncate text-xs topic-title font-semibold">${TOPIC_KEYWORDS[topic.id] || topic.title_de}</span>
                         </div>
                     </div>
-                    <div class="hide-on-collapse-custom flex-shrink-0">${learnMarker}</div>
+                    <div class="collapse-status-dot flex-shrink-0">${learnMarker}</div>
                 `;
 
                 item.onclick = () => {
@@ -2308,7 +2371,6 @@
             `;
         }
 
-        // Overlap-resistant card-rendering for simplistic overview matrix
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -2330,14 +2392,12 @@
 
                 const card = document.createElement('div');
                 
-                // Stable flexible layout structure to prevent squeezed content overlaps on landscape/portrait rotation
                 card.className = `group p-4 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[210px] h-full relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
                 } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
 
-                // Categories Badge configured with strict boundaries to prevent breaking lines
                 card.innerHTML = `
                     <div class="flex items-center justify-between gap-1.5 mb-2 w-full overflow-hidden">
                         <span class="text-[9px] font-extrabold uppercase tracking-wider ${style.badgeBg} px-2 py-0.5 rounded-full border border-black/5 dark:border-white/5 truncate max-w-[125px] whitespace-nowrap">
@@ -2392,7 +2452,6 @@
                     localStorage.setItem('b2_active_idx', activeIdx);
                     renderSidebar();
                     renderActiveTopic();
-                    // Keep the current main tab context if they clicked on the raster, just switch to it.
                     switchTab(activeTab === 'classic' ? 'classic' : 'template');
                 };
 
@@ -2400,7 +2459,6 @@
             });
         }
 
-        // Schnellvorschau berücksichtigt gewählte Daten (Classic vs. Template) + User-Edits
         function showThemaPreview(topic) {
             const modal = document.getElementById('quick-preview-modal');
             if (!modal) return;
@@ -2439,7 +2497,6 @@
             if (modal) modal.classList.add('hidden');
         }
 
-        // Dynamic highlights application for Connectors
         function applyConnectorsHighlight(text) {
             if (!text) return "";
             let highlighted = text;
@@ -2451,7 +2508,6 @@
             return highlighted;
         }
 
-        // Toggle Translation visibility and trigger automatic generation
         function toggleTranslation(event, blockId, encodedText) {
             if (event) {
                 event.preventDefault();
@@ -2560,8 +2616,7 @@
         }
 
         function handleInlineInput(element, topicId, lang, blockKey) {
-            // Native typing automatically saves locally inside DOM.
-            // When user exits the text box, handleInlineBlur commits to Firebase.
+            // Handled naturally by contenteditable and blur event
         }
 
         function addProArgument() {
@@ -3555,7 +3610,7 @@
             const isDrawerOpen = drawer && !drawer.classList.contains('translate-x-full');
 
             if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
-                if (deltaX > 0) { // Swipe Right
+                if (deltaX > 0) { 
                     if (touchStartX < screenWidth * 0.4) {
                         if (sidebar) {
                             sidebar.classList.remove('sidebar-collapsed');
@@ -3569,7 +3624,7 @@
                         }
                     }
                 } 
-                else { // Swipe Left
+                else { 
                     if (touchStartX > screenWidth * 0.6) {
                         if (drawer) {
                             drawer.classList.remove('translate-x-full');
