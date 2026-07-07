@@ -330,7 +330,7 @@
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            padding: 0.75rem 0 !important;
+            padding: 0 !important; /* FIX: Padding entfernt */
             border-radius: 9999px !important;
             width: 3rem !important;
             height: 3rem !important;
@@ -346,6 +346,7 @@
             width: 100% !important;
             height: 100% !important;
             gap: 0 !important;
+            overflow: visible !important; /* FIX: Verhindert das Abschneiden */
         }
         
         #sidebar.sidebar-collapsed .collapse-status-dot {
@@ -379,8 +380,11 @@
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji {
             position: relative;
             border-radius: 50%;
-            box-shadow: 0 0 0 2px var(--amber), 0 0 10px 2px rgba(245, 158, 11, 0.4);
+            border: 2px solid var(--amber); /* FIX: Echter Border statt Box-Shadow-Hack */
+            box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.5); /* FIX: Weicher Glow */
             background: rgba(245, 158, 11, 0.15);
+            width: 2.25rem !important; /* FIX: Feste Größe für perfekten Kreis */
+            height: 2.25rem !important;
         }
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji::after {
             content: none !important;
