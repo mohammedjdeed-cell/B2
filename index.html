@@ -173,10 +173,18 @@
         padding: 2px 4px;
     }
 
-    [data-theme="dark"] .hl-yellow { background: rgba(234, 179, 8, 0.35) !important; }
-    [data-theme="dark"] .hl-blue { background: rgba(59, 130, 246, 0.35) !important; }
-    [data-theme="dark"] .hl-red { background: rgba(239, 68, 68, 0.35) !important; }
-    [data-theme="dark"] .hl-green { background: rgba(34, 197, 94, 0.35) !important; }
+    [data-theme="dark"] .hl-yellow { 
+        background: rgba(234, 179, 8, 0.35) !important; 
+    }
+    [data-theme="dark"] .hl-blue { 
+        background: rgba(59, 130, 246, 0.35) !important; 
+    }
+    [data-theme="dark"] .hl-red { 
+        background: rgba(239, 68, 68, 0.35) !important; 
+    }
+    [data-theme="dark"] .hl-green { 
+        background: rgba(34, 197, 94, 0.35) !important; 
+    }
 
     .highlight {
         background-color: var(--accent-light);
@@ -444,7 +452,7 @@
         </div>
     </header>
 
-    <!-- Slide-out Universal Hamburger Drawer Menu (Overhauled) -->
+    <!-- Slide-out Universal Hamburger Drawer Menu -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
     <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
@@ -642,7 +650,7 @@
         <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-            <!-- Dashboard Controls (Overhauled Layout) -->
+            <!-- Dashboard Controls -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0 relative">
@@ -816,7 +824,7 @@
         </div>
     </div>
 
-    <!-- Redemittel Editor Modal (Neu) -->
+    <!-- Redemittel Editor Modal -->
     <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
             <button onclick="closeRedemittelEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
@@ -861,6 +869,11 @@
     </div>
 
     <script>
+Hier ist TEIL 2! Kopiere diesen Code nahtlos direkt im Anschluss an Teil 1.
+Danach schließt du die Datei ab und sie ist komplett funktionsfähig.
+
+TEIL 2: JavaScript Logic (Ab <script>)
+
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
@@ -1166,43 +1179,58 @@
             redoStack = []; 
         }
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registriert!', reg))
-                    .catch(err => console.error('Service Worker fehlerhaft:', err));
-            });
-        }
+        let globalSaveTimeout;
+
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.hasAttribute('contenteditable')) {
+                const el = e.target;
+                const blockKey = el.getAttribute('data-block-key');
+                if (!blockKey) return;
+                
+                let topicId, topic;
+                if (activeTab === 'diskussion') {
+                    topic = DISKUSSIONEN_DATA[activeIdx];
+                } else if (activeTab === 'template') {
+                    topic = TEMPLATE_DATA[activeIdx];
+                } else {
+                    return;
+                }
+                if (!topic) return;
+                topicId = topic.id;
+                
+                const htmlVal = el.innerHTML;
+                const textVal = el.innerText.trim();
+                
+                if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+                highlightsStore[topicId][blockKey] = htmlVal;
+                
+                if (blockKey === 'content') {
+                    topic.content = htmlVal;
+                } else {
+                    setTopicValue(topic, blockKey, textVal);
+                }
+
+                clearTimeout(globalSaveTimeout);
+                globalSaveTimeout = setTimeout(() => {
+                    const suffix = getSelectedUserSuffix();
+                    localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+                    saveEditsSilent();
+                }, 1500);
+            }
+        });
 
         function smartUndo() {
-            if (document.queryCommandSupported('undo')) {
-                document.execCommand('undo');
-                saveCurrentFocus();
-            } else {
-                undo(); 
+            const success = document.execCommand('undo');
+            if (!success) {
+                undo();
             }
         }
 
         function smartRedo() {
-            if (document.queryCommandSupported('redo')) {
-                document.execCommand('redo');
-                saveCurrentFocus();
-            } else {
-                redo(); 
+            const success = document.execCommand('redo');
+            if (!success) {
+                redo();
             }
-        }
-
-        function saveCurrentFocus() {
-            setTimeout(() => {
-                const activeEl = document.activeElement;
-                if (activeEl && activeEl.hasAttribute('contenteditable')) {
-                    const blockKey = activeEl.getAttribute('data-block-key');
-                    const isDiskussion = activeTab === 'diskussion';
-                    const topicId = isDiskussion ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
-                    handleInlineBlur(activeEl, topicId, 'de', blockKey);
-                    activeEl.focus();
-                }
-            }, 50);
         }
 
         function undo() {
@@ -1283,8 +1311,17 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); smartUndo(); }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); smartRedo(); }
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.hasAttribute('contenteditable'))) {
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { 
+                e.preventDefault(); 
+                if (e.shiftKey) { smartRedo(); } else { smartUndo(); } 
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { 
+                e.preventDefault(); 
+                smartRedo(); 
+            }
         });
 
         async function saveHighlight(topicId, blockKey, htmlContent) {
@@ -1630,7 +1667,7 @@
             if (overlay) {
                 overlay.classList.remove('hidden');
                 overlay.classList.add('opacity-100');
-                overlay.style.zIndex = "105"; // Above drawer
+                overlay.style.zIndex = "105"; 
             }
             updateProfileUI();
         }
@@ -1641,7 +1678,6 @@
             if (modal) modal.classList.add('hidden');
             if (overlay) {
                 overlay.style.zIndex = "90";
-                // If drawer is closed, hide overlay
                 const drawerMenu = document.getElementById('drawer-menu');
                 if (drawerMenu && drawerMenu.classList.contains('translate-x-full')) {
                     overlay.classList.add('hidden');
@@ -1809,7 +1845,6 @@
 
         function convertActiveBlockToBulletList() {
             if (!activeListElement) return;
-            pushToHistory();
 
             let html = activeListElement.innerHTML;
             
@@ -1834,35 +1869,18 @@
                 lines.map(line => `<li class="leading-relaxed select-text">${line}</li>`).join('') + 
                 `</ul>`;
 
-            activeListElement.innerHTML = listHtml;
+            const range = document.createRange();
+            range.selectNodeContents(activeListElement);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            document.execCommand('insertHTML', false, listHtml);
+            
             hideListHelper();
-
-            const blockKey = activeListElement.getAttribute('data-block-key');
-            let activeTopicId;
-            if (activeTab === 'diskussion') activeTopicId = DISKUSSIONEN_DATA[activeIdx].id;
-            else activeTopicId = TEMPLATE_DATA[activeIdx].id;
-
-            saveHighlight(activeTopicId, blockKey, activeListElement.innerHTML);
-            activeListElement.dispatchEvent(new Event('blur'));
+            activeListElement.dispatchEvent(new Event('input', { bubbles: true }));
+            activeListElement.blur();
         }
-
-        document.addEventListener('keyup', function(e) {
-            if (!isEditMode || activeTab === 'classic') return;
-            const target = e.target;
-            if (!target || !target.hasAttribute('contenteditable')) return;
-
-            const text = target.innerText || target.textContent;
-            const lines = text.split('\n');
-            const currentLine = lines[lines.length - 1] || '';
-
-            if (currentLine.startsWith('- ') || currentLine.startsWith('* ') || currentLine.startsWith('_ ') || currentLine.startsWith('• ')) {
-                showBulletListOption(target, currentLine);
-            } else if (e.key === 'Enter') {
-                if (lines.length > 1) {
-                    showBulletListOption(target);
-                }
-            }
-        });
 
         async function loadTopics() {
             try {
@@ -1911,48 +1929,9 @@
                 TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
                 DISKUSSIONEN_DATA = JSON.parse(JSON.stringify(window.PRISTINE_DISKUSSIONEN));
 
-                // Load Redemittel
                 REDEMITTEL_DATA = null;
 
-                if (currentUser && db) {
-                    const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
-                    templatesSnapshot.forEach(doc => {
-                        const cloudTemplate = doc.data();
-                        const idx = TEMPLATE_DATA.findIndex(t => t.id === parseInt(doc.id));
-                        if (idx !== -1) {
-                            TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTemplate };
-                            if (!editedTemplateIds.includes(parseInt(doc.id))) editedTemplateIds.push(parseInt(doc.id));
-                        }
-                    });
-
-                    const diskSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').get();
-                    diskSnapshot.forEach(doc => {
-                        const cloudDisk = doc.data();
-                        const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === parseInt(doc.id));
-                        if (idx !== -1) {
-                            DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...cloudDisk };
-                            if (!editedDiskussionenIds.includes(parseInt(doc.id))) editedDiskussionenIds.push(parseInt(doc.id));
-                        }
-                    });
-
-                    const progressDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').get();
-                    if (progressDoc.exists && progressDoc.data().learned) {
-                        learnedList = progressDoc.data().learned;
-                    } else {
-                        learnedList = [];
-                    }
-                    
-                    const redemittelDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').get();
-                    if (redemittelDoc.exists && redemittelDoc.data().phrases) {
-                        REDEMITTEL_DATA = redemittelDoc.data().phrases;
-                    }
-
-                    highlightsStore = {};
-                    const highlightsSnapshot = await db.collection('users').doc(currentUser.uid).collection('highlights').get();
-                    highlightsSnapshot.forEach(doc => {
-                        highlightsStore[doc.id] = doc.data();
-                    });
-                } else {
+                function applyLocalFallback() {
                     const localTemplateEdits = localStorage.getItem(`edited_template_data_1_52_${suffix}`);
                     if (localTemplateEdits) {
                         const parsed = JSON.parse(localTemplateEdits);
@@ -1984,6 +1963,53 @@
                     if (localRede) REDEMITTEL_DATA = JSON.parse(localRede);
                 }
 
+                if (currentUser && db) {
+                    try {
+                        const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
+                        templatesSnapshot.forEach(doc => {
+                            const cloudTemplate = doc.data();
+                            const idx = TEMPLATE_DATA.findIndex(t => t.id === parseInt(doc.id));
+                            if (idx !== -1) {
+                                TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTemplate };
+                                if (!editedTemplateIds.includes(parseInt(doc.id))) editedTemplateIds.push(parseInt(doc.id));
+                            }
+                        });
+
+                        const diskSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').get();
+                        diskSnapshot.forEach(doc => {
+                            const cloudDisk = doc.data();
+                            const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === parseInt(doc.id));
+                            if (idx !== -1) {
+                                DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...cloudDisk };
+                                if (!editedDiskussionenIds.includes(parseInt(doc.id))) editedDiskussionenIds.push(parseInt(doc.id));
+                            }
+                        });
+
+                        const progressDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').get();
+                        if (progressDoc.exists && progressDoc.data().learned) {
+                            learnedList = progressDoc.data().learned;
+                        } else {
+                            learnedList = [];
+                        }
+                        
+                        const redemittelDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').get();
+                        if (redemittelDoc.exists && redemittelDoc.data().phrases) {
+                            REDEMITTEL_DATA = redemittelDoc.data().phrases;
+                        }
+
+                        highlightsStore = {};
+                        const highlightsSnapshot = await db.collection('users').doc(currentUser.uid).collection('highlights').get();
+                        highlightsSnapshot.forEach(doc => {
+                            highlightsStore[doc.id] = doc.data();
+                        });
+                    } catch (cloudErr) {
+                        console.warn("Cloud Load Error - Firebase blockiert oder offline. Lade Offline-Daten:", cloudErr);
+                        applyLocalFallback(); 
+                    }
+                } else {
+                    applyLocalFallback();
+                }
+
                 if (!REDEMITTEL_DATA) REDEMITTEL_DATA = JSON.parse(JSON.stringify(structuralRedemittel));
 
                 TOPICS_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
@@ -2007,7 +2033,9 @@
                     renderRedemittel();
                 }
             } catch (e) {
-                console.error("Fehler beim Initialisieren der Datenschnittstelle:", e);
+                console.error("Kritischer Fehler beim Laden der Themen:", e);
+                renderSidebar();
+                renderActiveTopic();
             }
         }
 
@@ -2128,67 +2156,31 @@
         function applySelectionFormat(type, value) {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
-            const range = selection.getRangeAt(0);
 
             let activeContainer = selection.anchorNode;
             while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
                 activeContainer = activeContainer.parentNode;
             }
-
             if (!activeContainer) return;
-            const blockKey = activeContainer.getAttribute('data-block-key');
-            if (!blockKey) return; 
 
-            pushToHistory();
+            const range = selection.getRangeAt(0);
+            const container = document.createElement('div');
+            container.appendChild(range.cloneContents());
+            const html = container.innerHTML;
 
             if (type === 'bold') {
                 document.execCommand('bold', false, null);
             } else if (type === 'highlight') {
-                const span = document.createElement('span');
-                span.className = `hl-${value}`;
-                try {
-                    const contents = range.extractContents();
-                    span.appendChild(contents);
-                    range.insertNode(span);
-                } catch (e) { document.execCommand('backColor', false, '#FEF08A'); }
+                document.execCommand('insertHTML', false, `<span class="hl-${value}">${html}</span>`);
             } else if (type === 'circle') {
-                const span = document.createElement('span');
-                span.className = 'word-circle';
-                try {
-                    const contents = range.extractContents();
-                    span.appendChild(contents);
-                    range.insertNode(span);
-                } catch (e) {}
+                document.execCommand('insertHTML', false, `<span class="word-circle">${html}</span>`);
             } else if (type === 'clear') {
-                unwrapSelection(range, activeContainer);
+                const text = selection.toString();
+                document.execCommand('insertHTML', false, text);
             }
 
-            const activeTopicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
-            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
-            activeContainer.dispatchEvent(new Event('blur'));
+            activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
             handleSelectionChange();
-        }
-
-        function unwrapSelection(range, activeContainer) {
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0) return;
-
-            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight');
-            spans.forEach(span => {
-                if (selection.containsNode(span, true)) {
-                    const parent = span.parentNode;
-                    if (parent) {
-                        while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
-                        parent.removeChild(span);
-                    }
-                }
-            });
-
-            activeContainer.normalize();
-            const blockKey = activeContainer.getAttribute('data-block-key');
-            const activeTopicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
-            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
-            activeContainer.dispatchEvent(new Event('blur'));
         }
 
         function handleSelectionChange() {
@@ -2301,7 +2293,7 @@
             const learnedCount = dataset.filter(t => learnedList.includes(t.id)).length;
             
             const progressText = document.getElementById('progress-text');
-            if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
+            if (progressText) progressText.textContent = `${learnedCount} / total`;
 
             const progressBar = document.getElementById('progress-bar');
             if (progressBar) {
@@ -2412,7 +2404,7 @@
                             <span class="soundwave-bar"></span>
                         </button>
                     </div>
-                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}', '${activeTab}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
+                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}', '${activeTab}')">
                         ${currentEditMode ? deVal : applyConnectorsHighlight(deVal)}
                     </div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
@@ -2654,32 +2646,6 @@
                     renderTranslationHTML(containerNode, "Failed to load translation.", "فشل تحميل الترجمة.");
                 }
             }
-        }
-
-        function handleInlineBlur(element, topicId, lang, blockKey, targetDataset = 'template') {
-            if (activeTab === 'classic') return;
-            const htmlVal = element.innerHTML.trim();
-            const textVal = element.innerText.trim();
-            
-            let topic;
-            if (targetDataset === 'diskussion' || activeTab === 'diskussion') topic = DISKUSSIONEN_DATA[activeIdx];
-            else topic = TEMPLATE_DATA[activeIdx];
-            
-            if (!topic || topic.id !== topicId) return;
-
-            saveHighlight(topic.id, blockKey, htmlVal);
-            
-            if (blockKey === 'content') {
-                topic.content = htmlVal; 
-            } else {
-                setTopicValue(topic, blockKey, textVal);
-            }
-            
-            saveEditsSilent();
-        }
-
-        function handleInlineInput(element, topicId, lang, blockKey) {
-            // Handled naturally by contenteditable and blur event
         }
 
         function addProArgument() {
@@ -2948,7 +2914,7 @@
 
                 const contentHtml = `
                     <div class="p-1">
-                        <div data-block-key="${contentBlockKey}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${contentBlockKey}', 'diskussion')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${contentBlockKey}')">${currentEditMode ? savedContent : applyConnectorsHighlight(savedContent)}</div>
+                        <div data-block-key="${contentBlockKey}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${contentBlockKey}', 'diskussion')">${currentEditMode ? savedContent : applyConnectorsHighlight(savedContent)}</div>
                         <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
                             <button onclick="toggleTranslation(event, '${contentBlockKey}', '${encodeURIComponent(stripHtml(savedContent))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                                 <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
@@ -2994,7 +2960,7 @@
 
             const einleitungHtml = `
                 <div class="p-1">
-                    <div data-block-key="${einlDe}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
+                    <div data-block-key="${einlDe}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
@@ -3146,7 +3112,7 @@
                                     <span class="soundwave-bar"></span>
                                 </button>
                             </div>
-                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">
                                 ${currentEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
                             </div>
                             <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
@@ -3552,30 +3518,25 @@
                         if (parsed.learned) learnedList = parsed.learned;
                         if (parsed.redemittel) REDEMITTEL_DATA = parsed.redemittel;
                         
-                        // 1. Lokales Speichern als Fallback
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
                         localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
                         if(parsed.redemittel) localStorage.setItem(`b2_redemittel_${suffix}`, JSON.stringify(REDEMITTEL_DATA));
                         
-                        // 2. NEU: Direkt in die Firebase-Cloud des aktiven Nutzers pushen!
                         if (currentUser && db) {
                             alert(`Backup wird nun in die Cloud von ${currentUser.email} geladen. Bitte warte einen Moment...`);
                             
                             try {
-                                // A. Fortschritt & Redemittel hochladen
                                 await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').set({ learned: learnedList });
                                 if (REDEMITTEL_DATA) {
                                     await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').set({ phrases: REDEMITTEL_DATA });
                                 }
                                 
-                                // B. Highlights hochladen
                                 for (const topicId of Object.keys(highlightsStore)) {
                                     await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set(highlightsStore[topicId], { merge: true });
                                 }
                                 
-                                // C. Alle 52 Templates & Diskussionen in die Cloud schreiben
                                 const uploadPromises = [];
                                 TEMPLATE_DATA.forEach(t => {
                                     uploadPromises.push(db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(t.id.toString()).set(t));
@@ -3632,7 +3593,6 @@
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
                     if (activeTab === 'redemittel') renderRedemittel();
                     
-                    // Input-Feld zurücksetzen, damit man dieselbe Datei bei Bedarf erneut auswählen kann
                     document.getElementById('import-backup-input').value = "";
                     
                 } catch (err) {
@@ -3711,8 +3671,7 @@
                             .contra { border-left: 4px solid #B02A1E; }
                             .dialog-bubble { background: #F4F4F0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; page-break-inside: avoid; }
                             .dialog-A { background: #EDF4EF; border-left: 3px solid #3D6B48; }
-                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48
-; padding: 0 2px; }
+                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
                             .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
                             .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
                             .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
@@ -3743,7 +3702,6 @@
             printWindow.document.close();
         }
 
-        // Swipe & Interaktion Events (Touch)
         document.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
