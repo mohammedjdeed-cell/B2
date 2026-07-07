@@ -3548,13 +3548,48 @@
                         if (parsed.learned) learnedList = parsed.learned;
                         if (parsed.redemittel) REDEMITTEL_DATA = parsed.redemittel;
                         
+                        // 1. Lokales Speichern als Fallback
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
                         localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
                         if(parsed.redemittel) localStorage.setItem(`b2_redemittel_${suffix}`, JSON.stringify(REDEMITTEL_DATA));
                         
-                        alert("Vollbackup erfolgreich importiert!");
+                        // 2. NEU: Direkt in die Firebase-Cloud des aktiven Nutzers pushen!
+                        if (currentUser && db) {
+                            alert(`Backup wird nun in die Cloud von ${currentUser.email} geladen. Bitte warte einen Moment...`);
+                            
+                            try {
+                                // A. Fortschritt & Redemittel hochladen
+                                await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').set({ learned: learnedList });
+                                if (REDEMITTEL_DATA) {
+                                    await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').set({ phrases: REDEMITTEL_DATA });
+                                }
+                                
+                                // B. Highlights hochladen
+                                for (const topicId of Object.keys(highlightsStore)) {
+                                    await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).set(highlightsStore[topicId], { merge: true });
+                                }
+                                
+                                // C. Alle 52 Templates & Diskussionen in die Cloud schreiben
+                                const uploadPromises = [];
+                                TEMPLATE_DATA.forEach(t => {
+                                    uploadPromises.push(db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(t.id.toString()).set(t));
+                                });
+                                DISKUSSIONEN_DATA.forEach(d => {
+                                    uploadPromises.push(db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').doc(d.id.toString()).set(d));
+                                });
+                                
+                                await Promise.all(uploadPromises);
+                                
+                                alert("Erfolg! Das Vollbackup wurde importiert und dauerhaft mit deinem Cloud-Account verknüpft!");
+                            } catch (cloudErr) {
+                                console.error("Cloud Sync Fehler beim Import:", cloudErr);
+                                alert("Das Backup ist lokal da, aber beim Upload in die Cloud gab es einen Fehler: " + cloudErr.message);
+                            }
+                        } else {
+                            alert("Vollbackup erfolgreich lokal (Offline-Modus) importiert!");
+                        }
                     } 
                     else if (Array.isArray(parsed)) {
                         if (parsed.length === 0) {
@@ -3592,6 +3627,9 @@
                     if (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
                     if (activeTab === 'redemittel') renderRedemittel();
+                    
+                    // Input-Feld zurücksetzen, damit man dieselbe Datei bei Bedarf erneut auswählen kann
+                    document.getElementById('import-backup-input').value = "";
                     
                 } catch (err) {
                     console.error("Import Error:", err);
