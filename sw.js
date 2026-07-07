@@ -1,4 +1,4 @@
-const CACHE_NAME = 'b2-trainer-v1';
+const CACHE_NAME = 'b2-trainer-v2'; // Version auf v2 erhöht, um den Cache zu aktualisieren
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,7 +8,8 @@ const ASSETS_TO_CACHE = [
   './Template.json',
   './template.json',
   './Grammatik.json',
-  './grammatik.json'
+  './grammatik.json',
+  './diskussionen.json' // <-- NEUE DATEI HINZUGEFÜGT
 ];
 
 self.addEventListener('install', (event) => {
@@ -28,7 +29,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+            return caches.delete(cache); // Löscht den alten v1 Cache
           }
         })
       );
