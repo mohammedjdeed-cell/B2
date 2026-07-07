@@ -375,7 +375,6 @@
             font-size: 1.35rem !important;
         }
 
-        /* Star styling for collapsed sidebar mode */
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji {
             position: relative;
         }
@@ -394,7 +393,7 @@
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
 
-    <!-- Header mit elegantem, modernem Layout -->
+    <!-- Header -->
     <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
         <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-25 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
             <span class="text-xs font-serif italic text-emerald-600 dark:text-emerald-400">Aa</span>
@@ -403,7 +402,6 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Sidebar toggle for mobile/tablet in the natural top left corner -->
             <button id="tablet-sidebar-toggle" class="lg:hidden p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Themenliste öffnen">
                 <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -427,12 +425,12 @@
             <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
                 <button onclick="switchTab('template')" id="tab-template-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📝 Template</button>
                 <button onclick="switchTab('classic')" id="tab-classic-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🏛️ Klassisch</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Kasten-Raster</button>
+                <button onclick="switchTab('diskussion')" id="tab-diskussion-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">💬 Diskussion</button>
+                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Raster</button>
                 <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
                 <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📚 Grammatik</button>
             </div>
 
-            <!-- Page Reload Button -->
             <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
                 <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
@@ -469,14 +467,6 @@
             </div>
 
             <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EINSTELLUNGEN</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <button onclick="window.location.reload();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2 cursor-pointer">
-                    <span>🔄 Seite neu laden</span>
-                </button>
-            </div>
-
-            <div class="space-y-2.5">
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📢 SPRACHAUSGABE</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)] mb-2 cursor-pointer">
@@ -496,19 +486,26 @@
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">CLOUD-ARBEITSPLATZ</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div id="drawer-auth-logged-out" class="space-y-2">
-                    <select id="drawer-user-select" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)] cursor-pointer">
-                        <option value="mohammed">Mohammed</option>
-                        <option value="mai">Mai</option>
-                    </select>
+                    <!-- Standard Email Login -->
+                    <input type="email" id="drawer-auth-email" placeholder="E-Mail Adresse" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
                     <input type="password" id="drawer-workspace-password" placeholder="Passwort" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
                     <div class="grid grid-cols-2 gap-2">
                         <button id="drawer-btn-login" class="w-full min-h-[44px] text-xs bg-[var(--accent)] text-white font-bold rounded cursor-pointer">Login</button>
                         <button id="drawer-btn-signup" class="w-full min-h-[44px] text-xs bg-zinc-600 text-white font-bold rounded cursor-pointer">Registrieren</button>
                     </div>
                 </div>
+                
                 <div id="drawer-auth-logged-in" class="space-y-2 hidden">
-                    <p class="text-xs text-[var(--text-primary)]">Angemeldet als: <span id="drawer-user-display" class="font-bold"></span></p>
-                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded cursor-pointer">Logout</button>
+                    <p class="text-xs text-[var(--text-primary)] mb-4">Angemeldet als: <br><span id="drawer-user-display" class="font-bold text-[var(--accent)] break-all"></span></p>
+                    
+                    <!-- Neues Modul: E-Mail ändern -->
+                    <div class="p-3 bg-[var(--bg-app)] rounded-lg border border-[var(--border)] mb-4 space-y-2">
+                        <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">E-Mail Adresse ändern</p>
+                        <input type="email" id="drawer-new-email" placeholder="Neue E-Mail Adresse" class="w-full min-h-[36px] text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 text-[var(--text-primary)]" />
+                        <button id="drawer-btn-change-email" class="w-full min-h-[36px] text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold rounded cursor-pointer transition-colors">Speichern & Verknüpfen</button>
+                    </div>
+
+                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded cursor-pointer mt-2">Logout</button>
                 </div>
             </div>
 
@@ -532,13 +529,12 @@
                 </div>
             </div>
 
-            <!-- Dynamic Backup & Data Controller -->
             <div class="space-y-2.5">
                 <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DATEN-STEUERUNG</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 
                 <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[44px] text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
-                    <span>📥 Datei einspielen (Backup / GitHub-JSON)</span>
+                    <span>📥 Datei einspielen (Backup)</span>
                 </button>
                 <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
                 
@@ -557,9 +553,6 @@
                     <button onclick="exportRawTemplate()" class="w-full min-h-[34px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-md cursor-pointer transition-colors">
                         📤 template.json exportieren
                     </button>
-                    <button onclick="exportRawGrammar()" class="w-full min-h-[34px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-md cursor-pointer transition-colors">
-                        📤 Grammatik.json exportieren
-                    </button>
                 </div>
             </div>
         </div>
@@ -570,10 +563,8 @@
         
         <!-- Sidebar -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
-            <!-- Sidebar Header with properly isolated toggle button for desktop only -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
-                <!-- Nur auf großen Bildschirmen anzeigen, um Konflikte zu vermeiden -->
                 <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
                     <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
@@ -606,41 +597,24 @@
         <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-            <!-- Streamlined Focus View Controls -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
                 <div class="flex items-center gap-3">
                     <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
                     <div>
                         <div id="active-topic-num"></div>
-                        <h2 id="active-topic-title-de" class="text-lg font-black text-[var(--text-primary)] mt-1 leading-tight">Lade Diskussionsthema...</h2>
-                        <h3 id="active-topic-title-en" class="text-xs italic text-[var(--text-muted)] mt-0.5">Loading...</h3>
+                        <h2 id="active-topic-title-de" class="text-lg font-black text-[var(--text-primary)] mt-1 leading-tight">Lade Thema...</h2>
                     </div>
                 </div>
 
-                <!-- Unified Control Bar -->
                 <div class="flex items-center w-full overflow-x-auto no-scrollbar gap-2 pb-1">
-                    
-                    <select id="lang-view" onchange="activeView = this.value; renderActiveTopic();" class="h-9 text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 font-bold text-[var(--text-primary)] focus:outline-none shadow-sm shrink-0 cursor-pointer">
-                        <option value="both">DE &amp; EN</option>
-                        <option value="de_ar">DE &amp; AR</option>
-                        <option value="all">DE, EN, AR</option>
-                        <option value="de">Nur DE</option>
-                    </select>
-                    
                     <button id="learned-toggle" class="h-9 text-xs font-bold rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]">
-                        <!-- Dynamic content via JS -->
                     </button>
-
-                    <!-- Manual Sichern Button next to Learned Toggler -->
                     <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-9 text-xs bg-indigo-600 hover:bg-indigo-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>💾 Sichern</span>
                     </button>
-
-                    <!-- Print to PDF Button integrated into Control Bar -->
                     <button onclick="printCurrentTopic()" class="h-9 text-xs bg-teal-600 hover:bg-teal-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
                         <span>📄 PDF Export</span>
                     </button>
-
                     <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-9 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5">
                         🔄 Zurücksetzen
                     </button>
@@ -668,7 +642,7 @@
                             <span>📦 Mind-Map Kasten-Raster</span>
                         </h3>
                         <p class="text-xs text-[var(--text-muted)] mt-1">
-                            Alle 52 TELC-Prüfungsthemen im Gesamtüberblick. Prüfungsrelevante Themen sind mit einem goldenen Stern (<span class="text-amber-500">★</span>) markiert.
+                            Alle 52 TELC-Prüfungsthemen im Gesamtüberblick. Prüfungsrelevante Themen sind markiert.
                         </p>
                     </div>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -689,31 +663,34 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation -->
-            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-3 flex justify-between items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--accent)] cursor-pointer transition-colors">
+            <!-- Mobile Bottom Navigation - HORIZONTALLY SCROLLABLE -->
+            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-1 flex overflow-x-auto no-scrollbar gap-1 items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--accent)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Template</span>
                 </button>
-                <button onclick="switchTab('classic')" id="mob-tab-classic" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('classic')" id="mob-tab-classic" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Klassisch</span>
                 </button>
-                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('diskussion')" id="mob-tab-diskussion" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    <span class="text-[9px] font-bold tracking-wide">Diskussion</span>
+                </button>
+                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
-                <button onclick="switchTab('redemittel')" id="mob-tab-redemittel" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('redemittel')" id="mob-tab-redemittel" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Reden</span>
                 </button>
-                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
                 </button>
             </div>
             
-            <!-- Universal Global Floating Action Group (Now visible on Desktop & Mobile) -->
             <div id="floating-action-buttons" class="fixed right-4 flex flex-col gap-3 z-40 bottom-[95px] lg:bottom-8">
                 <button id="fab-undo" onmousedown="event.preventDefault(); smartUndo();" class="hidden edit-only-control w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 hover:bg-neutral-50 dark:hover:bg-zinc-700 cursor-pointer" title="Rückgängig machen (Text/Tippen)">
                     <span class="text-lg pointer-events-none">↩️</span>
@@ -747,12 +724,6 @@
                         🇩🇪 Zusammenfassung (Deutsch)
                     </h4>
                     <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg break-words whitespace-pre-wrap selectable-text"></p>
-                </div>
-                <div>
-                    <h4 class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1.5 flex items-center justify-end gap-1.5">
-                        الملخص (العربية) 🇸🇾
-                    </h4>
-                    <p id="preview-einleitung-ar" dir="rtl" class="text-xs leading-relaxed font-arabic bg-[var(--bg-app)] p-3 rounded-lg text-right break-words whitespace-pre-wrap selectable-text"></p>
                 </div>
             </div>
 
@@ -796,7 +767,7 @@
         </div>
     </div>
 
-    <!-- Selection formatting toolbar with Eraser tool -->
+    <!-- Selection formatting toolbar -->
     <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Kreis">⭕</button>
@@ -806,7 +777,6 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400/40 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-500/50 cursor-pointer" title="Rot"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
-        <!-- Eraser Tool Button -->
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
     </div>
 
@@ -817,7 +787,6 @@
         <button onmousedown="event.preventDefault()" onclick="hideListHelper()" class="px-2 py-1 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer">Ignorieren</button>
     </div>
 
-    <!-- Script Block: Declared globally at top to avoid ReferenceErrors -->
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -1012,13 +981,13 @@
 
         let TOPICS_DATA = [];
         let TEMPLATE_DATA = [];
+        let DISKUSSIONEN_DATA = [];
         let GRAMMATIK_DATA = [];
         
         let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
         let showHighlights = true;
-        let activeView = "both";
         let isEditMode = false;
-        let activeTab = "template"; // Start at dashboard/template
+        let activeTab = "template"; 
         let currentFilter = "all";
         let activeGrammarFilter = "all";
         
@@ -1026,6 +995,7 @@
         let highlightsStore = {};
         let currentUser = null;
         let editedTemplateIds = [];
+        let editedDiskussionenIds = [];
         let currentEditModalParams = null;
 
         let undoStack = [];
@@ -1037,8 +1007,8 @@
         let textScale = localStorage.getItem('b2_text_scale') || '100%';
 
         function getSelectedUserSuffix() {
-            const userSelect = document.getElementById('drawer-user-select');
-            return userSelect ? userSelect.value : 'mohammed';
+            if (currentUser && currentUser.email) return currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+            return 'local';
         }
 
         function cleanCitationLinks(text) {
@@ -1073,7 +1043,6 @@
             }
         }, { once: true });
 
-        // Instant touch and click setup to circumvent mobile/tablet delay issues
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.getElementById('sidebar');
             const drawer = document.getElementById('drawer-menu');
@@ -1091,7 +1060,6 @@
                 });
             }
             
-            // Dedicated listener for the internal desktop collapse button
             const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
             if (sidebarToggleBtn) {
                 sidebarToggleBtn.addEventListener('click', (e) => {
@@ -1126,15 +1094,6 @@
                     toggleDrawer();
                 });
             }
-
-            const userSelectEl = document.getElementById('drawer-user-select');
-            if (userSelectEl) {
-                userSelectEl.addEventListener('change', () => {
-                    if (!currentUser) {
-                        loadTopics();
-                    }
-                });
-            }
         });
 
         function stripHtml(html) {
@@ -1163,6 +1122,10 @@
 
         function setTopicValue(topic, compoundKey, value) {
             if (!topic) return;
+            if (compoundKey === 'content') {
+                topic.content = value;
+                return;
+            }
             if (compoundKey.startsWith('dialog_')) {
                 const parts = compoundKey.split('_');
                 const lang = parts[1];
@@ -1185,6 +1148,7 @@
             if (undoStack.length > 50) undoStack.shift();
             const stateSnapshot = {
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             undoStack.push(JSON.stringify(stateSnapshot));
@@ -1199,7 +1163,6 @@
             });
         }
 
-        // --- Custom Native Text-Editing Undo/Redo Engine ---
         function smartUndo() {
             if (document.queryCommandSupported('undo')) {
                 document.execCommand('undo');
@@ -1223,7 +1186,8 @@
                 const activeEl = document.activeElement;
                 if (activeEl && activeEl.hasAttribute('contenteditable')) {
                     const blockKey = activeEl.getAttribute('data-block-key');
-                    const topicId = TEMPLATE_DATA[activeIdx].id;
+                    const isDiskussion = activeTab === 'diskussion';
+                    const topicId = isDiskussion ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
                     handleInlineBlur(activeEl, topicId, 'de', blockKey);
                     activeEl.focus();
                 }
@@ -1237,18 +1201,20 @@
             }
             const currentStateSnapshot = {
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             redoStack.push(JSON.stringify(currentStateSnapshot));
             
             const prevStateSnapshot = JSON.parse(undoStack.pop());
             TEMPLATE_DATA = prevStateSnapshot.template;
+            DISKUSSIONEN_DATA = prevStateSnapshot.diskussion;
             highlightsStore = prevStateSnapshot.highlights;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
             saveEditsSilent();
             renderSidebar();
-            if(activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
+            if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
@@ -1259,30 +1225,43 @@
             }
             const currentStateSnapshot = {
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
                 highlights: JSON.parse(JSON.stringify(highlightsStore))
             };
             undoStack.push(JSON.stringify(currentStateSnapshot));
             
             const nextStateSnapshot = JSON.parse(redoStack.pop());
             TEMPLATE_DATA = nextStateSnapshot.template;
+            DISKUSSIONEN_DATA = nextStateSnapshot.diskussion;
             highlightsStore = nextStateSnapshot.highlights;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
             saveEditsSilent();
             renderSidebar();
-            if(activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
+            if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
         async function saveEditsSilent() {
-            const activeTopic = TEMPLATE_DATA[activeIdx];
             const suffix = getSelectedUserSuffix();
-            if (currentUser && db) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
-                } catch(e) { console.error("Fehler:", e); }
+            if (activeTab === 'diskussion') {
+                const activeTopic = DISKUSSIONEN_DATA[activeIdx];
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch(e) { console.error("Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
+                }
             } else {
-                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                const activeTopic = TEMPLATE_DATA[activeIdx];
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch(e) { console.error("Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                }
             }
         }
 
@@ -1316,7 +1295,6 @@
             return getHighlight(topicId, blockKey) || fallback;
         }
 
-        // Modern highlight toolbar detector
         ['mouseup', 'touchend'].forEach(evt => {
             document.addEventListener(evt, function(e) {
                 if (!isEditMode || activeTab === 'classic') return;
@@ -1347,8 +1325,13 @@
         });
 
         function clearAllHighlightsForTopic() {
-            if (TEMPLATE_DATA.length === 0) return;
-            const topicId = TEMPLATE_DATA[activeIdx].id;
+            let activeTopic;
+            if (activeTab === 'diskussion') activeTopic = DISKUSSIONEN_DATA[activeIdx];
+            else activeTopic = TEMPLATE_DATA[activeIdx];
+            
+            if (!activeTopic) return;
+            const topicId = activeTopic.id;
+            
             if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
                 if (highlightsStore[topicId]) {
                     delete highlightsStore[topicId];
@@ -1496,7 +1479,7 @@
             localStorage.setItem('b2_theme_setting', pref);
             applyThemeSetting();
             renderSidebar();
-            if (activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
+            if (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if (activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
@@ -1547,7 +1530,7 @@
                 drawerMenu.classList.remove('translate-x-full');
                 if (drawerOverlay) {
                     drawerOverlay.classList.remove('hidden');
-                    void drawerOverlay.offsetWidth; // Force Reflow
+                    void drawerOverlay.offsetWidth; 
                     drawerOverlay.classList.add('opacity-100');
                 }
                 populateVoicesList();
@@ -1559,16 +1542,16 @@
             const btnClassActive = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
             const btnClassInactive = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
 
-            ['template', 'classic', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
+            ['template', 'classic', 'diskussion', 'mindmap', 'redemittel', 'grammar'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}-btn`);
                 if (btn) btn.className = (t === tabId) ? btnClassActive : btnClassInactive;
                 
                 const section = document.getElementById(`${t}-tab-section`);
                 if (section) {
-                    if (t === tabId && t !== 'template' && t !== 'classic') {
+                    if (t === tabId && t !== 'template' && t !== 'classic' && t !== 'diskussion') {
                         section.classList.remove('hidden');
                         section.classList.add(t === 'mindmap' ? 'flex' : 'block');
-                    } else if (t !== 'template' && t !== 'classic') {
+                    } else if (t !== 'template' && t !== 'classic' && t !== 'diskussion') {
                         section.classList.add('hidden');
                         section.classList.remove('flex', 'block');
                     }
@@ -1590,7 +1573,7 @@
             const controls = document.getElementById('dashboard-controls');
             const fabs = document.getElementById('floating-action-buttons');
             
-            if (tabId === 'template' || tabId === 'classic') {
+            if (tabId === 'template' || tabId === 'classic' || tabId === 'diskussion') {
                 dashboardSection.classList.remove('hidden');
                 controls.classList.remove('hidden');
                 controls.classList.add('flex');
@@ -1621,6 +1604,8 @@
                 if (fabs) fabs.style.display = 'none';
             }
 
+            renderSidebar();
+
             if (tabId === 'mindmap') renderSimplisticBoxGrid();
             if (tabId === 'redemittel') renderRedemittel();
             if (tabId === 'grammar') renderGrammar();
@@ -1646,13 +1631,8 @@
                     if(outArea) outArea.classList.add('hidden');
                     if(inArea) {
                         inArea.classList.remove('hidden');
-                        const name = user.email.includes('mohammed') ? "Mohammed Jdeed" : "Mai Hasan";
                         const displayEl = document.getElementById('drawer-user-display');
-                        if (displayEl) displayEl.textContent = name;
-
-                        const userKey = user.email.split('@')[0];
-                        const userSelect = document.getElementById('drawer-user-select');
-                        if (userSelect) userSelect.value = userKey;
+                        if (displayEl) displayEl.textContent = user.email;
                     }
                 } else {
                     currentUser = null;
@@ -1672,11 +1652,10 @@
                     alert("Firebase ist offline oder blockiert."); 
                     return; 
                 }
-                const userKey = document.getElementById('drawer-user-select').value;
+                const email = document.getElementById('drawer-auth-email').value;
                 const password = document.getElementById('drawer-workspace-password').value;
-                const email = `${userKey}@b2telc.com`;
 
-                if (!password) { alert("Passwort erforderlich."); return; }
+                if (!email || !password) { alert("E-Mail und Passwort erforderlich."); return; }
                 try {
                     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                     await auth.signInWithEmailAndPassword(email, password);
@@ -1693,17 +1672,60 @@
                     alert("Firebase ist offline oder blockiert."); 
                     return; 
                 }
-                const userKey = document.getElementById('drawer-user-select').value;
+                const email = document.getElementById('drawer-auth-email').value;
                 const password = document.getElementById('drawer-workspace-password').value;
-                const email = `${userKey}@b2telc.com`;
 
-                if (!password || password.length < 6) { alert("Mindestens 6 Zeichen erforderlich."); return; }
+                if (!email || !password || password.length < 6) { alert("E-Mail und ein Passwort mit mind. 6 Zeichen erforderlich."); return; }
                 try {
                     await auth.createUserWithEmailAndPassword(email, password);
                     alert("Konto angelegt.");
                     document.getElementById('drawer-workspace-password').value = "";
                     toggleDrawer();
                 } catch (err) { alert("Registrierungsfehler: " + err.message); }
+            };
+        }
+
+        // --- NEU: Funktion zum Ändern der E-Mail Adresse ---
+        const btnChangeEmail = document.getElementById('drawer-btn-change-email');
+        if (btnChangeEmail) {
+            btnChangeEmail.onclick = async () => {
+                if (!currentUser) return;
+                const newEmail = document.getElementById('drawer-new-email').value.trim();
+                
+                if (!newEmail || !newEmail.includes('@')) {
+                    alert("Bitte eine gültige E-Mail-Adresse eingeben.");
+                    return;
+                }
+
+                try {
+                    // Firebase-Befehl zum Ändern der E-Mail
+                    await currentUser.updateEmail(newEmail);
+                    alert("Erfolg! Ihre E-Mail wurde zu " + newEmail + " geändert. Bitte loggen Sie sich in Zukunft mit dieser neuen E-Mail ein.");
+                    
+                    // UI aktualisieren
+                    document.getElementById('drawer-new-email').value = "";
+                    document.getElementById('drawer-user-display').textContent = newEmail;
+                } catch (error) {
+                    // WICHTIG: Aus Sicherheitsgründen verlangt Firebase manchmal, dass der Login "frisch" ist, bevor man eine E-Mail ändert.
+                    if (error.code === 'auth/requires-recent-login') {
+                        const pwd = prompt("Aus Sicherheitsgründen müssen Sie Ihr aktuelles Passwort eingeben, um die E-Mail zu ändern:");
+                        if (pwd) {
+                            try {
+                                const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, pwd);
+                                await currentUser.reauthenticateWithCredential(credential); // Login erneuern
+                                await currentUser.updateEmail(newEmail); // Zweiter Versuch
+                                
+                                alert("Erfolg! Ihre E-Mail wurde zu " + newEmail + " geändert.");
+                                document.getElementById('drawer-new-email').value = "";
+                                document.getElementById('drawer-user-display').textContent = newEmail;
+                            } catch (reauthError) {
+                                alert("Fehler: Das eingegebene Passwort war falsch oder die Aktion wurde abgebrochen.");
+                            }
+                        }
+                    } else {
+                        alert("Fehler beim Ändern der E-Mail: " + error.message);
+                    }
+                }
             };
         }
 
@@ -1789,7 +1811,10 @@
             hideListHelper();
 
             const blockKey = activeListElement.getAttribute('data-block-key');
-            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
+            let activeTopicId;
+            if (activeTab === 'diskussion') activeTopicId = DISKUSSIONEN_DATA[activeIdx].id;
+            else activeTopicId = TEMPLATE_DATA[activeIdx].id;
+
             saveHighlight(activeTopicId, blockKey, activeListElement.innerHTML);
             activeListElement.dispatchEvent(new Event('blur'));
         }
@@ -1814,66 +1839,29 @@
 
         async function loadTopics() {
             try {
-                let resTopics = await safeFetchJson('./Topics.json');
-                if (!resTopics || resTopics.length === 0) {
-                    resTopics = await safeFetchJson('./topics.json');
-                }
-
-                let resTemplate = await safeFetchJson('./Template.json');
-                if (!resTemplate || resTemplate.length === 0) {
-                    resTemplate = await safeFetchJson('./template.json');
-                }
-                
-                let resGrammatik = await safeFetchJson('./Grammatik.json');
-                if (!resGrammatik || resGrammatik.length === 0) {
-                    resGrammatik = await safeFetchJson('./grammatik.json');
-                }
+                let [resTopics, resTemplate, resGrammatik, resDisk] = await Promise.all([
+                    safeFetchJson('./Topics.json').then(r => r && r.length ? r : safeFetchJson('./topics.json')),
+                    safeFetchJson('./Template.json').then(r => r && r.length ? r : safeFetchJson('./template.json')),
+                    safeFetchJson('./Grammatik.json').then(r => r && r.length ? r : safeFetchJson('./grammatik.json')),
+                    safeFetchJson('./diskussionen.json')
+                ]);
 
                 let baseTopics = Array.isArray(resTopics) ? resTopics : (resTopics && typeof resTopics === 'object' ? Object.values(resTopics) : []);
                 let baseTemplate = Array.isArray(resTemplate) ? resTemplate : (resTemplate && typeof resTemplate === 'object' ? Object.values(resTemplate) : []);
                 let baseGrammatik = Array.isArray(resGrammatik) ? resGrammatik : (resGrammatik && typeof resGrammatik === 'object' ? Object.values(resGrammatik) : []);
+                let baseDisk = Array.isArray(resDisk) ? resDisk : [];
 
                 if (baseTopics.length === 0) {
                     baseTopics = [{
-                        id: 1,
-                        title_de: "Rauchen in der Öffentlichkeit verbieten?",
-                        title_en: "Ban smoking in public places?",
-                        category: "Freizeit & Gesundheit",
+                        id: 1, title_de: "Rauchen in der Öffentlichkeit verbieten?", title_en: "Ban smoking in public places?", category: "Freizeit & Gesundheit",
                         einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
-                        einleitung_en: "The topic of public smoking has been discussed controversially for years.",
-                        einleitung_ar: "موضوع التدخين في الأماكن العامة يثير الجدل منذ سنوات.",
-                        pro_de: ["Gesundheitsschutz für Nichtraucher.", "Weniger Müll durch Zigarettenstummel."],
-                        pro_en: ["Health protection for non-smokers.", "Less litter from cigarette butts."],
-                        pro_ar: ["حماية صحة غير المدخنين.", "نفايات أقل من أعقاب السجائر."],
-                        contra_de: ["Einschränkung der persönlichen Freiheit.", "Wirtschaftliche Verluste für die Gastronomie."],
-                        contra_en: ["Restriction of personal freedom.", "Economic losses for gastronomy."],
-                        contra_ar: ["تقييد الحرية الشخصية.", "خسائر اقتصادية لقطاع المطاعم."],
-                        pers_erfahrung_de: "Ich persönlich rauche nicht und fühle mich in rauchfreien Zonen wohler.",
-                        pers_erfahrung_en: "Personally, I do not smoke and feel more comfortable in smoke-free zones.",
-                        pers_erfahrung_ar: "أنا شخصياً لا أدخن وأشعر براحة أكبر في المناطق الخالية von التدخين.",
-                        dialog: [
-                            { role: "Sprecher A", de: "Ich denke, wir sollten Rauchen komplett verbieten.", en: "I think we should ban smoking completely.", ar: "أعتقد أنه يجب علينا حظر التدخين تمامًا." },
-                            { role: "Sprecher B", de: "Das sehe ich anders, jeder sollte selbst entscheiden.", en: "I see it differently, everyone should decide for themselves.", ar: "أرى ذلك بشكل مختلف، يجب auf الجميع اتخاذ القرار بأنفسهم." }
-                        ],
-                        schluss_de: "Zusammenfassend lässt sich sagen, dass ein Kompromiss sinnvoll wäre.",
-                        schluss_en: "In conclusion, a compromise would make sense.",
-                        schluss_ar: "خلاصة القول هي أن التسوية ستكون منطقية."
+                        pro_de: ["Gesundheitsschutz für Nichtraucher."], contra_de: ["Einschränkung der persönlichen Freiheit."],
+                        pers_erfahrung_de: "Ich persönlich rauche nicht.", dialog: [{ role: "Sprecher A", de: "Verbieten.", en: "Ban." }], schluss_de: "Ein Kompromiss wäre gut."
                     }];
                 }
 
-                if (baseTemplate.length === 0) {
-                    baseTemplate = JSON.parse(JSON.stringify(baseTopics));
-                }
-
-                if (baseGrammatik.length === 0) {
-                    baseGrammatik = [{
-                        level: "B2",
-                        category: "Konjunktionen",
-                        title: "Zweiteilige Konjunktionen",
-                        description: "Sowohl ... als auch drückt eine Ergänzung aus.",
-                        examples: ["Er spricht sowohl Deutsch als auch Englisch.", "Sie ist sowohl intelligent als auch freundlich."]
-                    }];
-                }
+                if (baseTemplate.length === 0) baseTemplate = JSON.parse(JSON.stringify(baseTopics));
+                if (baseDisk.length === 0) baseDisk = baseTopics.map(t => ({ id: t.id, title: t.title_de, content: "Kein Text verfügbar." }));
 
                 baseGrammatik.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
@@ -1884,26 +1872,19 @@
                 });
 
                 editedTemplateIds = [];
+                editedDiskussionenIds = [];
 
                 if (!window.PRISTINE_TOPICS) window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
                 if (!window.PRISTINE_TEMPLATE) window.PRISTINE_TEMPLATE = JSON.parse(JSON.stringify(baseTemplate));
+                if (!window.PRISTINE_DISKUSSIONEN) window.PRISTINE_DISKUSSIONEN = JSON.parse(JSON.stringify(baseDisk));
 
                 const suffix = getSelectedUserSuffix();
 
                 TOPICS_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TOPICS));
                 TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
+                DISKUSSIONEN_DATA = JSON.parse(JSON.stringify(window.PRISTINE_DISKUSSIONEN));
 
                 if (currentUser && db) {
-                    const topicsSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_topics').get();
-                    topicsSnapshot.forEach(doc => {
-                        const cloudTopic = doc.data();
-                        const idx = TEMPLATE_DATA.findIndex(t => t.id === parseInt(doc.id));
-                        if (idx !== -1) {
-                            TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTopic };
-                            editedTemplateIds.push(parseInt(doc.id));
-                        }
-                    });
-
                     const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
                     templatesSnapshot.forEach(doc => {
                         const cloudTemplate = doc.data();
@@ -1911,6 +1892,16 @@
                         if (idx !== -1) {
                             TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTemplate };
                             if (!editedTemplateIds.includes(parseInt(doc.id))) editedTemplateIds.push(parseInt(doc.id));
+                        }
+                    });
+
+                    const diskSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').get();
+                    diskSnapshot.forEach(doc => {
+                        const cloudDisk = doc.data();
+                        const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === parseInt(doc.id));
+                        if (idx !== -1) {
+                            DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...cloudDisk };
+                            if (!editedDiskussionenIds.includes(parseInt(doc.id))) editedDiskussionenIds.push(parseInt(doc.id));
                         }
                     });
 
@@ -1927,18 +1918,6 @@
                         highlightsStore[doc.id] = doc.data();
                     });
                 } else {
-                    const localEdits = localStorage.getItem(`edited_topics_data_1_52_${suffix}`);
-                    if (localEdits) {
-                        const parsed = JSON.parse(localEdits);
-                        parsed.forEach(localTopic => {
-                            const idx = TEMPLATE_DATA.findIndex(t => t.id === localTopic.id);
-                            if (idx !== -1) {
-                                TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localTopic };
-                                editedTemplateIds.push(localTopic.id);
-                            }
-                        });
-                    }
-
                     const localTemplateEdits = localStorage.getItem(`edited_template_data_1_52_${suffix}`);
                     if (localTemplateEdits) {
                         const parsed = JSON.parse(localTemplateEdits);
@@ -1951,27 +1930,25 @@
                         });
                     }
 
+                    const localDiskEdits = localStorage.getItem(`edited_diskussionen_data_1_52_${suffix}`);
+                    if (localDiskEdits) {
+                        const parsed = JSON.parse(localDiskEdits);
+                        parsed.forEach(localDisk => {
+                            const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === localDisk.id);
+                            if (idx !== -1) {
+                                DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...localDisk };
+                                if (!editedDiskussionenIds.includes(localDisk.id)) editedDiskussionenIds.push(localDisk.id);
+                            }
+                        });
+                    }
+
                     learnedList = JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                 }
 
-                for (const topicId in highlightsStore) {
-                    const topicHighlights = highlightsStore[topicId];
-                    if (topicHighlights && typeof topicHighlights === 'object') {
-                        for (const key in topicHighlights) {
-                            if (key.startsWith('template_dialog_de_')) {
-                                const index = key.split('_')[3];
-                                const classicKey = `dialog_de_${index}`;
-                                if (topicHighlights[classicKey] === undefined) {
-                                    topicHighlights[classicKey] = topicHighlights[key];
-                                }
-                            }
-                        }
-                    }
-                }
-
                 TOPICS_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
                 TEMPLATE_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
+                DISKUSSIONEN_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
 
                 GRAMMATIK_DATA = baseGrammatik;
 
@@ -1980,7 +1957,7 @@
                 showResetButton();
                 renderSidebar();
                 
-                if (activeTab === 'template' || activeTab === 'classic') {
+                if (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') {
                     renderActiveTopic();
                 } else if (activeTab === 'grammar') {
                     renderGrammar();
@@ -1994,27 +1971,42 @@
 
         async function saveEdits() {
             pushToHistory(); 
-            const activeTopic = TEMPLATE_DATA[activeIdx];
             const suffix = getSelectedUserSuffix();
 
-            if (!editedTemplateIds.includes(activeTopic.id)) {
-                editedTemplateIds.push(activeTopic.id);
-            }
-            if (currentUser && db) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
-                } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+            if (activeTab === 'diskussion') {
+                const activeTopic = DISKUSSIONEN_DATA[activeIdx];
+                if (!editedDiskussionenIds.includes(activeTopic.id)) {
+                    editedDiskussionenIds.push(activeTopic.id);
+                }
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
+                }
             } else {
-                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                const activeTopic = TEMPLATE_DATA[activeIdx];
+                if (!editedTemplateIds.includes(activeTopic.id)) {
+                    editedTemplateIds.push(activeTopic.id);
+                }
+                if (currentUser && db) {
+                    try {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(activeTopic.id.toString()).set(activeTopic);
+                    } catch (e) { console.error("Cloud-Sync-Fehler:", e); }
+                } else {
+                    localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                }
             }
+
             showResetButton();
             renderSidebar();
         }
 
         async function saveEditsManual() {
-            const activeTopic = TEMPLATE_DATA[activeIdx];
             await saveEdits();
-            alert(`Erfolgreich gespeichert! Template ${activeTopic.id} wurde gesichert.`);
+            const topicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
+            alert(`Erfolgreich gespeichert! Änderungen für Thema ${topicId} wurden gesichert.`);
         }
 
         async function verifyUserPassword(password) {
@@ -2041,17 +2033,23 @@
         }
 
         async function resetCurrentTopic() {
-            const activeTopic = TEMPLATE_DATA[activeIdx];
+            const isDiskussion = activeTab === 'diskussion';
+            const activeTopic = isDiskussion ? DISKUSSIONEN_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (!activeTopic) return;
 
-            const isConfirmed = await confirmSecureDeletion("Möchten Sie dieses Template wirklich komplett in den Originalzustand zurücksetzen?");
+            const isConfirmed = await confirmSecureDeletion("Möchten Sie dieses Thema wirklich komplett in den Originalzustand zurücksetzen?");
             if (!isConfirmed) return;
 
             pushToHistory();
             const topicId = activeTopic.id;
 
-            const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
-            if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            if (isDiskussion) {
+                const original = window.PRISTINE_DISKUSSIONEN.find(t => t.id === topicId);
+                if (original) DISKUSSIONEN_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            } else {
+                const original = window.PRISTINE_TEMPLATE.find(t => t.id === topicId);
+                if (original) TEMPLATE_DATA[activeIdx] = JSON.parse(JSON.stringify(original));
+            }
 
             if (highlightsStore[topicId]) {
                 delete highlightsStore[topicId];
@@ -2062,11 +2060,16 @@
 
             if (currentUser && db) {
                 try {
-                    await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(topicId.toString()).delete();
+                    if (isDiskussion) {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').doc(topicId.toString()).delete();
+                    } else {
+                        await db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(topicId.toString()).delete();
+                    }
                     await db.collection('users').doc(currentUser.uid).collection('highlights').doc(topicId.toString()).delete();
                 } catch(e) { console.error("Cloud-Löschfehler:", e); }
             } else {
-                localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                if (isDiskussion) localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
+                else localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
             }
 
             await loadTopics();
@@ -2118,7 +2121,7 @@
                 unwrapSelection(range, activeContainer);
             }
 
-            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
+            const activeTopicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
             saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
             handleSelectionChange();
@@ -2141,7 +2144,7 @@
 
             activeContainer.normalize();
             const blockKey = activeContainer.getAttribute('data-block-key');
-            const activeTopicId = TEMPLATE_DATA[activeIdx].id;
+            const activeTopicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
             saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
             activeContainer.dispatchEvent(new Event('blur'));
         }
@@ -2186,7 +2189,11 @@
             listContainer.innerHTML = "";
 
             const searchVal = document.getElementById('search-bar').value.toLowerCase();
-            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            
+            let dataset;
+            if (activeTab === 'classic') dataset = TOPICS_DATA;
+            else if (activeTab === 'diskussion') dataset = DISKUSSIONEN_DATA;
+            else dataset = TEMPLATE_DATA;
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
@@ -2195,7 +2202,9 @@
 
                 if (currentFilter === 'learned' && !isLearned) return;
                 if (currentFilter === 'offen' && isLearned) return;
-                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
+                
+                const titleToSearch = topic.title_de || topic.title || '';
+                if (searchVal && !titleToSearch.toLowerCase().includes(searchVal)) return;
 
                 const item = document.createElement('button');
                 
@@ -2214,13 +2223,15 @@
                     ? `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] flex-shrink-0"></span>` 
                     : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
+                const displayTitle = TOPIC_KEYWORDS[topic.id] || topic.title_de || topic.title;
+
                 item.innerHTML = `
                     <div class="flex items-center gap-2.5 w-full overflow-hidden">
                         <span class="sidebar-only-emoji text-base select-none leading-none flex-shrink-0">${emoji}</span>
                         <div class="flex items-center gap-2 truncate collapse-text-container w-full">
                             <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
                             ${starMarker}
-                            <span class="truncate text-xs topic-title font-semibold">${TOPIC_KEYWORDS[topic.id] || topic.title_de}</span>
+                            <span class="truncate text-xs topic-title font-semibold">${displayTitle}</span>
                         </div>
                     </div>
                     <div class="collapse-status-dot flex-shrink-0">${learnMarker}</div>
@@ -2241,7 +2252,7 @@
         }
 
         function updateProgress() {
-            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const dataset = TOPICS_DATA; // Progress counts universally across all views
             if (dataset.length === 0) return;
 
             const total = dataset.length;
@@ -2281,7 +2292,7 @@
 
         function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
             const encodedText = encodeURIComponent(stripHtml(textForAudio));
-            const isAlwaysOpen = blockKey === 'einleitung_de';
+            const isAlwaysOpen = blockKey === 'einleitung_de' || blockKey === 'content';
             
             return `
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] shadow-[var(--shadow-sm)] overflow-hidden card-transition">
@@ -2329,7 +2340,11 @@
             const cleanDeText = stripHtml(deVal);
             const statementSpeechText = encodeURIComponent(cleanDeText);
             
-            const topic = isClassic ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            let topic;
+            if (activeTab === 'classic') topic = TOPICS_DATA[activeIdx];
+            else if (activeTab === 'diskussion') topic = DISKUSSIONEN_DATA[activeIdx];
+            else topic = TEMPLATE_DATA[activeIdx];
+
             const isLearned = topic && learnedList.includes(topic.id);
             const finalTopicId = topicId || (topic ? topic.id : 0);
             
@@ -2355,7 +2370,7 @@
                             <span class="soundwave-bar"></span>
                         </button>
                     </div>
-                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
+                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}', '${activeTab}')" oninput="handleInlineInput(this, ${finalTopicId}, 'de', '${blockKey}')">
                         ${currentEditMode ? deVal : applyConnectorsHighlight(deVal)}
                     </div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
@@ -2471,10 +2486,8 @@
             document.getElementById('preview-title').textContent = currentTopic.title_de;
             
             const savedEinlDe = getSavedText(currentTopic.id, "einleitung_de", currentTopic.einleitung_de, activeTab === 'classic');
-            const savedEinlAr = getSavedText(currentTopic.id, "einleitung_ar", currentTopic.einleitung_ar, activeTab === 'classic');
 
             document.getElementById('preview-einleitung-de').textContent = stripHtml(savedEinlDe);
-            document.getElementById('preview-einleitung-ar').textContent = stripHtml(savedEinlAr);
 
             const navBtn = document.getElementById('preview-nav-btn');
             navBtn.onclick = () => {
@@ -2601,16 +2614,24 @@
             }
         }
 
-        function handleInlineBlur(element, topicId, lang, blockKey) {
+        function handleInlineBlur(element, topicId, lang, blockKey, targetDataset = 'template') {
             if (activeTab === 'classic') return;
-            const textVal = element.textContent.trim();
             const htmlVal = element.innerHTML.trim();
+            const textVal = element.innerText.trim();
             
-            const topic = TEMPLATE_DATA[activeIdx];
+            let topic;
+            if (targetDataset === 'diskussion' || activeTab === 'diskussion') topic = DISKUSSIONEN_DATA[activeIdx];
+            else topic = TEMPLATE_DATA[activeIdx];
+            
             if (!topic || topic.id !== topicId) return;
 
             saveHighlight(topic.id, blockKey, htmlVal);
-            setTopicValue(topic, blockKey, textVal);
+            
+            if (blockKey === 'content') {
+                topic.content = htmlVal; // keep HTML formatting for large content block
+            } else {
+                setTopicValue(topic, blockKey, textVal);
+            }
             
             saveEditsSilent();
         }
@@ -2623,11 +2644,7 @@
             pushToHistory();
             const topic = TEMPLATE_DATA[activeIdx];
             if (!topic.pro_de) topic.pro_de = [];
-            if (!topic.pro_en) topic.pro_en = [];
-            if (!topic.pro_ar) topic.pro_ar = [];
             topic.pro_de.push("Neues Pro-Argument...");
-            topic.pro_en.push("New pro argument...");
-            topic.pro_ar.push("حجة مؤيدة جديدة...");
             
             saveEditsSilent();
             renderActiveTopic();
@@ -2637,11 +2654,7 @@
             pushToHistory();
             const topic = TEMPLATE_DATA[activeIdx];
             if (!topic.contra_de) topic.contra_de = [];
-            if (!topic.contra_en) topic.contra_en = [];
-            if (!topic.contra_ar) topic.contra_ar = [];
             topic.contra_de.push("Neues Kontra-Argument...");
-            topic.contra_en.push("New contra argument...");
-            topic.contra_ar.push("حجة معارضة جديدة...");
             
             saveEditsSilent();
             renderActiveTopic();
@@ -2654,13 +2667,7 @@
 
             const topic = TEMPLATE_DATA[activeIdx];
             if (topic) {
-                const deKey = field;
-                const enKey = field.replace('_de', '_en');
-                const arKey = field.replace('_de', '_ar');
-
-                if (topic[deKey]) topic[deKey].splice(index, 1);
-                if (topic[enKey]) topic[enKey].splice(index, 1);
-                if (topic[arKey]) topic[arKey].splice(index, 1);
+                if (topic[field]) topic[field].splice(index, 1);
             }
 
             const activeTopicId = topic ? topic.id : 0;
@@ -2787,25 +2794,25 @@
         }
 
         function renderActiveTopic() {
-            if (TOPICS_DATA.length === 0) return;
             const isClassic = activeTab === 'classic';
-            const topic = isClassic ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isDiskussion = activeTab === 'diskussion';
+            
+            let topic;
+            if (isClassic) topic = TOPICS_DATA[activeIdx];
+            else if (isDiskussion) topic = DISKUSSIONEN_DATA[activeIdx];
+            else topic = TEMPLATE_DATA[activeIdx];
+            
+            if (!topic) return;
+
             const currentEditMode = isClassic ? false : isEditMode;
 
             document.getElementById('active-topic-num').innerHTML = `
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52 ${isClassic ? '(Klassisch)' : ''}</span>
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52 ${isClassic ? '(Klassisch)' : (isDiskussion ? '(Diskussion)' : '')}</span>
             `;
             
             const deStar = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 text-lg select-none animate-pulse">★</span>` : '';
-            document.getElementById('active-topic-title-de').innerHTML = `${topic.title_de} ${deStar}`;
-            
-            const titleEnEl = document.getElementById('active-topic-title-en');
-            if (isClassic) {
-                titleEnEl.textContent = topic.title_en;
-                titleEnEl.classList.remove('hidden');
-            } else {
-                titleEnEl.classList.add('hidden');
-            }
+            const titleToRender = topic.title_de || topic.title || '';
+            document.getElementById('active-topic-title-de').innerHTML = `${titleToRender} ${deStar}`;
             
             document.getElementById('active-topic-emoji').textContent = TOPIC_ICONS[topic.id] || "📌";
 
@@ -2888,14 +2895,64 @@
             bannerDiv.innerHTML = bannerHtml;
             container.appendChild(bannerDiv);
 
-            const deClass = activeView === 'en' ? 'hidden' : '';
+            // ==========================================
+            // DISKUSSION RENDERING LOGIC
+            // ==========================================
+            if (isDiskussion) {
+                const contentBlockKey = "content";
+                // fallback is raw text formatting (replace newlines with br)
+                const fallbackContent = topic.content ? topic.content.replace(/\n\n/g, '<br><br>') : "";
+                const savedContent = getSavedText(topic.id, contentBlockKey, fallbackContent, isClassic);
 
+                const contentHtml = `
+                    <div class="p-1">
+                        <div data-block-key="${contentBlockKey}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${contentBlockKey}', 'diskussion')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${contentBlockKey}')">${currentEditMode ? savedContent : applyConnectorsHighlight(savedContent)}</div>
+                        <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+                            <button onclick="toggleTranslation(event, '${contentBlockKey}', '${encodeURIComponent(stripHtml(savedContent))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
+                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                            </button>
+                            <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(stripHtml(savedContent))}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                                <span class="soundwave-bar"></span>
+                            </button>
+                        </div>
+                        <div id="trans-container-${contentBlockKey}" class="hidden mt-2 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
+                    </div>
+                `;
+                const contentCard = document.createElement('div');
+                contentCard.innerHTML = buildCardWrapper("Diskussionsinhalt", contentHtml, contentBlockKey, savedContent, 'content');
+                container.appendChild(contentCard);
+
+                // Auto-expand any active translations
+                expandedContainers.forEach(blockId => {
+                    const containerNode = document.getElementById(getTranslationContainerId(blockId));
+                    if (containerNode) {
+                        const originalText = savedContent;
+                        const cacheKey = originalText.trim();
+                        if (translationCache[cacheKey]) {
+                            renderTranslationHTML(containerNode, translationCache[cacheKey].en, translationCache[cacheKey].ar);
+                        } else {
+                            containerNode.innerHTML = `<div class="text-[10px] text-purple-500 animate-pulse font-semibold">⏳ Reloading...</div>`;
+                            fetchAndRenderTranslation(blockId, originalText, containerNode);
+                        }
+                    }
+                });
+
+                showResetButton();
+                return;
+            }
+
+            // ==========================================
+            // TEMPLATE / CLASSIC RENDERING LOGIC
+            // ==========================================
             const einlDe = "einleitung_de"; 
             const savedEinl = getSavedText(topic.id, einlDe, topic[einlDe], isClassic);
 
             const einleitungHtml = `
                 <div class="p-1">
-                    <div data-block-key="${einlDe}" class="${deClass} text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
+                    <div data-block-key="${einlDe}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
                     <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
@@ -3028,39 +3085,41 @@
             container.appendChild(erfahrungCard);
 
             let dialogHtml = '<div class="space-y-4">';
-            topic.dialog.forEach((chat, index) => {
-                const skeyDe = `dialog_de_${index}`;
-                let deValChat = getSavedText(topic.id, skeyDe, chat.de, isClassic);
-                
-                const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
-                const isA = chat.role.includes('A');
-                
-                dialogHtml += `
-                    <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
-                        <div class="flex items-center justify-between gap-4 mb-2">
-                            <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role} (Phase ${chat.phase || (index + 1)})</span>
-                            <button onclick="playBlockAudio(decodeURIComponent('${statementSpeechText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                            </button>
+            if (topic.dialog) {
+                topic.dialog.forEach((chat, index) => {
+                    const skeyDe = `dialog_de_${index}`;
+                    let deValChat = getSavedText(topic.id, skeyDe, chat.de, isClassic);
+                    
+                    const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
+                    const isA = chat.role && chat.role.includes('A');
+                    
+                    dialogHtml += `
+                        <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
+                            <div class="flex items-center justify-between gap-4 mb-2">
+                                <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role || 'Sprecher'} (Phase ${chat.phase || (index + 1)})</span>
+                                <button onclick="playBlockAudio(decodeURIComponent('${statementSpeechText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                </button>
+                            </div>
+                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
+                                ${currentEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
+                            </div>
+                            <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
+                                <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
+                                </button>
+                                <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${currentEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                                </button>
+                            </div>
+                            <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
                         </div>
-                        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')" oninput="handleInlineInput(this, ${topic.id}, 'de', '${skeyDe}')">
-                            ${currentEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
-                        </div>
-                        <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
-                            <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
-                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
-                            </button>
-                            <button onclick="openBlockEditor('dialog', true, ${index}, 'de')" class="text-[9px] text-[var(--text-muted)] hover:text-[var(--text-primary)] ${currentEditMode ? 'flex' : 'hidden'} items-center gap-1 cursor-pointer">
-                                <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
-                            </button>
-                        </div>
-                        <div id="trans-container-${skeyDe}" class="${expandedContainers.has(skeyDe) ? '' : 'hidden'} mt-2.5 pt-2 border-t border-[var(--border)]/40 space-y-1"></div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
             dialogHtml += '</div>';
             const dialogCard = document.createElement('div');
             dialogCard.innerHTML = buildCardWrapper("5. Dialog Struktur (Schritt für Schritt)", dialogHtml, "dialog_section", "", 'dialog', true, 0, 'de');
@@ -3293,7 +3352,7 @@
 
         function toggleEditMode() {
             if (activeTab === 'classic') {
-                alert("Der Klassisch-Modus ist schreibgeschützt. Bitte wechseln Sie zum Template-Tab, um zu bearbeiten.");
+                alert("Der Klassisch-Modus ist schreibgeschützt. Bitte wechseln Sie zum Template- oder Diskussion-Tab, um zu bearbeiten.");
                 return;
             }
             
@@ -3316,7 +3375,6 @@
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
                 }
                 
-                // Show Undo/Redo FABs
                 if (undoFab) undoFab.classList.remove('hidden');
                 if (redoFab) redoFab.classList.remove('hidden');
 
@@ -3331,7 +3389,6 @@
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
                 
-                // Hide Undo/Redo FABs
                 if (undoFab) undoFab.classList.add('hidden');
                 if (redoFab) redoFab.classList.add('hidden');
 
@@ -3349,10 +3406,11 @@
 
         function exportTotalBackup() {
             const backupObj = {
-                version: "B2Trainer_Unified_Backup_v5",
+                version: "B2Trainer_Unified_Backup_v6",
                 timestamp: new Date().toISOString(),
-                topics: TOPICS_DATA,     // Included for backward compatibility/safeguard
-                template: TEMPLATE_DATA, // Main editable dataset
+                topics: TOPICS_DATA,
+                template: TEMPLATE_DATA,
+                diskussion: DISKUSSIONEN_DATA,
                 highlights: highlightsStore,
                 learned: learnedList,
                 preferences: {
@@ -3407,12 +3465,14 @@
                         pushToHistory();
                         if (parsed.topics) TOPICS_DATA = parsed.topics;
                         if (parsed.template) TEMPLATE_DATA = parsed.template;
+                        if (parsed.diskussion) DISKUSSIONEN_DATA = parsed.diskussion;
                         if (parsed.highlights) highlightsStore = parsed.highlights;
                         if (parsed.learned) learnedList = parsed.learned;
                         
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+                        localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
                         
                         alert("Vollbackup erfolgreich importiert!");
                     } 
@@ -3432,7 +3492,7 @@
                             return;
                         }
                         
-                        const modeChoice = confirm("Handelt es sich bei dieser Datei um klassische Themen (topics.json)? \n\n[OK] = Ja, klassische Themen (topics.json)\n[Abbrechen] = Nein, Vorlagen (template.json)");
+                        const modeChoice = confirm("Handelt es sich bei dieser Datei um klassische Themen (topics.json)? \n\n[OK] = Ja, klassische Themen\n[Abbrechen] = Nein, Vorlagen (template.json)");
                         
                         if (modeChoice) {
                             TOPICS_DATA = parsed;
@@ -3449,7 +3509,7 @@
                     
                     await saveEditsSilent();
                     renderSidebar();
-                    if (activeTab === 'template' || activeTab === 'classic') renderActiveTopic();
+                    if (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
                     
                 } catch (err) {
@@ -3462,116 +3522,100 @@
 
         function printCurrentTopic() {
             const isClassic = activeTab === 'classic';
-            const topic = isClassic ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+            const isDiskussion = activeTab === 'diskussion';
+            
+            let topic;
+            if (isClassic) topic = TOPICS_DATA[activeIdx];
+            else if (isDiskussion) topic = DISKUSSIONEN_DATA[activeIdx];
+            else topic = TEMPLATE_DATA[activeIdx];
+            
             if (!topic) return;
 
-            const einleitung = getSavedText(topic.id, "einleitung_de", topic.einleitung_de, isClassic);
-            const persErfahrung = getSavedText(topic.id, "pers_erfahrung_de", topic.pers_erfahrung_de, isClassic);
-            const schluss = getSavedText(topic.id, "schluss_de", topic.schluss_de, isClassic);
-
             const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="de">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Thema ${topic.id}: ${stripHtml(topic.title_de)}</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-                    <style>
-                        body {
-                            font-family: 'Plus Jakarta Sans', sans-serif;
-                            color: #1C1E1D;
-                            padding: 40px;
-                            line-height: 1.6;
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .arabic {
-                            font-family: 'Noto Sans Arabic', sans-serif;
-                            direction: rtl;
-                            text-align: right;
-                            color: #6D28D9;
-                            font-size: 15px;
-                        }
-                        h1 { font-size: 22px; color: #3D6B48; border-bottom: 2px solid #3D6B48; padding-bottom: 8px; margin-bottom: 4px; }
-                        h2 { font-size: 14px; margin-top: 24px; color: #5E6661; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-                        .section { margin-bottom: 20px; page-break-inside: avoid; }
-                        .grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; }
-                        .card { background: #F9F9F6; border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px; }
-                        .pro { border-left: 4px solid #3D6B48; }
-                        .contra { border-left: 4px solid #B02A1E; }
-                        .dialog-bubble { background: #F4F4F0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; page-break-inside: avoid; }
-                        .dialog-A { background: #EDF4EF; border-left: 3px solid #3D6B48; }
-                        .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
-                        .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
-                        .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
-                        .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
-                        .hl-green { background: rgba(187, 247, 208, 0.3); border-bottom: 2px solid rgba(5, 150, 105, 0.85); padding: 1px 3px; }
-                        .word-circle { border: 2px solid #E11D48; border-radius: 50%; padding: 0 4px; display: inline-block; }
-                        ul { padding-left: 20px; margin: 8px 0; }
-                        li { margin-bottom: 6px; font-size: 13px; }
-                        @media print {
-                            body { padding: 0; }
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
-                        <span style="font-size: 11px; font-weight: bold; color: #949E99; text-transform: uppercase;">TELC B2 Diskussionstrainer</span>
-                        <button onclick="window.print()" style="padding: 8px 16px; background-color: #3D6B48; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">PDF speichern</button>
-                    </div>
+            const titleToRender = topic.title_de || topic.title || '';
 
-                    <h1>Thema ${topic.id}: ${topic.title_de}</h1>
-                    <p style="font-style: italic; color: #5E6661; margin-top: -4px; font-size: 13px;">${topic.title_en || ''}</p>
-                    <p class="arabic" style="font-weight: bold; margin-top: -10px; margin-bottom: 25px;">${topic.title_ar || ''}</p>
+            if (isDiskussion) {
+                const contentBlockKey = "content";
+                const fallbackContent = topic.content ? topic.content.replace(/\n\n/g, '<br><br>') : "";
+                const content = getSavedText(topic.id, contentBlockKey, fallbackContent, isClassic);
 
-                    <div class="section">
-                        <h2>1. Einleitung / Kontext</h2>
-                        <div style="font-size: 14px; margin-bottom: 10px;">${einleitung}</div>
-                        <div class="arabic">${topic.einleitung_ar || ''}</div>
-                    </div>
-
-                    <div class="section grid">
-                        <div class="card pro">
-                            <strong style="color: #3D6B48; font-size: 13px; text-transform: uppercase;">Dafür (Pro):</strong>
-                            <ul style="font-size: 13px;">
-                                ${topic.pro_de.map((p, i) => `<li>${getSavedText(topic.id, `pro_de_${i}`, p, isClassic)}</li>`).join('')}
-                            </ul>
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="de">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Diskussion ${topic.id}: ${stripHtml(titleToRender)}</title>
+                        <style>
+                            body { font-family: sans-serif; color: #1C1E1D; padding: 40px; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+                            h1 { font-size: 22px; color: #3D6B48; border-bottom: 2px solid #3D6B48; padding-bottom: 8px; margin-bottom: 24px; }
+                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
+                            .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
+                            .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
+                            .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
+                            .hl-green { background: rgba(187, 247, 208, 0.3); border-bottom: 2px solid rgba(5, 150, 105, 0.85); padding: 1px 3px; }
+                            @media print { body { padding: 0; } .no-print { display: none; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
+                            <span style="font-weight: bold; color: #949E99; text-transform: uppercase;">TELC B2 Diskussion</span>
+                            <button onclick="window.print()" style="padding: 8px 16px; background-color: #3D6B48; color: white; border: none; cursor: pointer;">PDF speichern</button>
                         </div>
-                        <div class="card contra">
-                            <strong style="color: #B02A1E; font-size: 13px; text-transform: uppercase;">Dagegen (Contra):</strong>
-                            <ul style="font-size: 13px;">
-                                ${topic.contra_de.map((c, i) => `<li>${getSavedText(topic.id, `contra_de_${i}`, c, isClassic)}</li>`).join('')}
-                            </ul>
+                        <h1>Diskussion ${topic.id}: ${titleToRender}</h1>
+                        <div style="font-size: 14px;">${content}</div>
+                    </body>
+                    </html>
+                `);
+            } else {
+                const einleitung = getSavedText(topic.id, "einleitung_de", topic.einleitung_de, isClassic);
+                const persErfahrung = getSavedText(topic.id, "pers_erfahrung_de", topic.pers_erfahrung_de, isClassic);
+                const schluss = getSavedText(topic.id, "schluss_de", topic.schluss_de, isClassic);
+
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="de">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Thema ${topic.id}: ${stripHtml(titleToRender)}</title>
+                        <style>
+                            body { font-family: sans-serif; color: #1C1E1D; padding: 40px; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+                            h1 { font-size: 22px; color: #3D6B48; border-bottom: 2px solid #3D6B48; padding-bottom: 8px; margin-bottom: 4px; }
+                            h2 { font-size: 14px; margin-top: 24px; color: #5E6661; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; text-transform: uppercase; }
+                            .section { margin-bottom: 20px; page-break-inside: avoid; }
+                            .grid { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; }
+                            .card { background: #F9F9F6; border: 1px solid #E5E7EB; padding: 15px; border-radius: 8px; }
+                            .pro { border-left: 4px solid #3D6B48; }
+                            .contra { border-left: 4px solid #B02A1E; }
+                            .dialog-bubble { background: #F4F4F0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; page-break-inside: avoid; }
+                            .dialog-A { background: #EDF4EF; border-left: 3px solid #3D6B48; }
+                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
+                            .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
+                            .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
+                            .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
+                            .hl-green { background: rgba(187, 247, 208, 0.3); border-bottom: 2px solid rgba(5, 150, 105, 0.85); padding: 1px 3px; }
+                            ul { padding-left: 20px; margin: 8px 0; }
+                            li { margin-bottom: 6px; font-size: 13px; }
+                            @media print { body { padding: 0; } .no-print { display: none; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #949E99; text-transform: uppercase;">TELC B2 Trainer</span>
+                            <button onclick="window.print()" style="padding: 8px 16px; background-color: #3D6B48; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">PDF speichern</button>
                         </div>
-                    </div>
-
-                    <div class="section">
-                        <h2>2. Persönliche Erfahrung</h2>
-                        <div style="font-size: 14px; margin-bottom: 10px;">${persErfahrung}</div>
-                        <div class="arabic">${topic.pers_erfahrung_ar || ''}</div>
-                    </div>
-
-                    <div class="section">
-                        <h2>3. Dialog-Struktur (Schritt für Schritt)</h2>
-                        ${topic.dialog.map((chat, i) => `
-                            <div class="dialog-bubble ${chat.role.includes('A') ? 'dialog-A' : ''}">
-                                <strong style="font-size: 11px; text-transform: uppercase; color: #5E6661;">${chat.role}</strong>
-                                <div style="font-size: 13.5px; margin-top: 4px;">${getSavedText(topic.id, `dialog_de_${i}`, chat.de, isClassic)}</div>
-                                <div class="arabic" style="margin-top: 6px;">${chat.ar || ''}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="section">
-                        <h2>4. Fazit / Abschluss</h2>
-                        <div style="font-size: 14px; margin-bottom: 10px;">${schluss}</div>
-                        <div class="arabic">${topic.schluss_ar || ''}</div>
-                    </div>
-                </body>
-                </html>
-            `);
+                        <h1>Thema ${topic.id}: ${titleToRender}</h1>
+                        <div class="section"><h2>1. Einleitung / Kontext</h2><div style="font-size: 14px;">${einleitung}</div></div>
+                        <div class="section grid">
+                            <div class="card pro"><strong>Dafür (Pro):</strong><ul>${topic.pro_de.map((p, i) => `<li>${getSavedText(topic.id, `pro_de_${i}`, p, isClassic)}</li>`).join('')}</ul></div>
+                            <div class="card contra"><strong>Dagegen (Contra):</strong><ul>${topic.contra_de.map((c, i) => `<li>${getSavedText(topic.id, `contra_de_${i}`, c, isClassic)}</li>`).join('')}</ul></div>
+                        </div>
+                        <div class="section"><h2>2. Persönliche Erfahrung</h2><div style="font-size: 14px;">${persErfahrung}</div></div>
+                        <div class="section"><h2>3. Dialog-Struktur</h2>${(topic.dialog || []).map((chat, i) => `<div class="dialog-bubble ${chat.role.includes('A') ? 'dialog-A' : ''}"><strong>${chat.role}</strong><div style="font-size: 13.5px; margin-top: 4px;">${getSavedText(topic.id, `dialog_de_${i}`, chat.de, isClassic)}</div></div>`).join('')}</div>
+                        <div class="section"><h2>4. Fazit / Abschluss</h2><div style="font-size: 14px;">${schluss}</div></div>
+                    </body>
+                    </html>
+                `);
+            }
             printWindow.document.close();
         }
 
@@ -3639,7 +3683,7 @@
                         sidebar.classList.remove('sidebar-open');
                     }
                 }
-            } else if (!isSidebarOpen && !isDrawerOpen && (activeTab === 'template' || activeTab === 'classic') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
+            } else if (!isSidebarOpen && !isDrawerOpen && (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     navigateTopicStep(-1);
                 } else {
@@ -3659,7 +3703,10 @@
 
         function navigateTopicStep(direction) {
             const targetIdx = activeIdx + direction;
-            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            let dataset;
+            if (activeTab === 'classic') dataset = TOPICS_DATA;
+            else if (activeTab === 'diskussion') dataset = DISKUSSIONEN_DATA;
+            else dataset = TEMPLATE_DATA;
             
             if (targetIdx >= 0 && targetIdx < dataset.length) {
                 const container = document.getElementById('active-topic-container');
@@ -3710,7 +3757,11 @@
         const isLearnedStateToggle = document.getElementById('learned-toggle');
         if (isLearnedStateToggle) {
             isLearnedStateToggle.onclick = async () => {
-                const activeTopic = activeTab === 'classic' ? TOPICS_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
+                let activeTopic;
+                if (activeTab === 'classic') activeTopic = TOPICS_DATA[activeIdx];
+                else if (activeTab === 'diskussion') activeTopic = DISKUSSIONEN_DATA[activeIdx];
+                else activeTopic = TEMPLATE_DATA[activeIdx];
+
                 if (learnedList.includes(activeTopic.id)) {
                     learnedList = learnedList.filter(id => id !== activeTopic.id);
                 } else {
