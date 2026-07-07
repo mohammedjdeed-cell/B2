@@ -399,6 +399,31 @@
             display: none !important;
         }
     }
+        /* --- FIX: Verhindert unsichtbaren Text durch Browser-Formatierungsfehler --- */
+    .selectable-text, .selectable-text * {
+        color: var(--text-primary) !important;
+    }
+    
+    /* Sichert ab, dass unsere speziellen Marker ihre Farben behalten! */
+    .selectable-text .highlight {
+        color: var(--accent) !important;
+        background-color: var(--accent-light) !important;
+    }
+    [data-theme="dark"] .selectable-text .highlight {
+        color: #86efac !important;
+        background-color: rgba(91, 158, 107, 0.2) !important;
+    }
+    
+    .selectable-text .hl-yellow { background-color: rgba(250, 204, 21, 0.3) !important; }
+    .selectable-text .hl-blue { background-color: rgba(96, 165, 250, 0.3) !important; }
+    .selectable-text .hl-red { background-color: rgba(248, 113, 113, 0.3) !important; }
+    .selectable-text .hl-green { background-color: rgba(74, 222, 128, 0.3) !important; }
+    
+    [data-theme="dark"] .selectable-text .hl-yellow { background-color: rgba(234, 179, 8, 0.35) !important; }
+    [data-theme="dark"] .selectable-text .hl-blue { background-color: rgba(59, 130, 246, 0.35) !important; }
+    [data-theme="dark"] .selectable-text .hl-red { background-color: rgba(239, 68, 68, 0.35) !important; }
+    [data-theme="dark"] .selectable-text .hl-green { background-color: rgba(34, 197, 94, 0.35) !important; }
+    /* ------------------------------------------------------------------------- */
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
