@@ -147,7 +147,7 @@
         scrollbar-width: none;
     }
 
-    /* Premium Text-Marker (Modern 2026 Look) */
+    /* Premium Text-Marker */
     .hl-yellow {
         background: rgba(250, 204, 21, 0.3) !important;
         color: inherit !important;
@@ -375,21 +375,19 @@
             font-size: 1.35rem !important;
         }
 
+        /* Fixed Glow for important elements on collapsed sidebar */
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji {
             position: relative;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px var(--amber), 0 0 10px 2px rgba(245, 158, 11, 0.4);
+            background: rgba(245, 158, 11, 0.15);
         }
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji::after {
-            content: '★';
-            position: absolute;
-            top: -6px;
-            right: -8px;
-            font-size: 12px;
-            color: #F59E0B;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-            z-index: 10;
+            content: none !important;
+            display: none !important;
         }
     }
-</style>
+    </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
 
@@ -421,10 +419,9 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Navigation Tabs -->
+            <!-- Navigation Tabs (Removed Classic) -->
             <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
                 <button onclick="switchTab('template')" id="tab-template-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📝 Template</button>
-                <button onclick="switchTab('classic')" id="tab-classic-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🏛️ Klassisch</button>
                 <button onclick="switchTab('diskussion')" id="tab-diskussion-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">💬 Diskussion</button>
                 <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Raster</button>
                 <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
@@ -438,12 +435,12 @@
             </button>
 
             <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Einstellungen und Werkzeuge">
-                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </div>
     </header>
 
-    <!-- Slide-out Universal Hamburger Drawer Menu -->
+    <!-- Slide-out Universal Hamburger Drawer Menu (Overhauled) -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
     <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
         <div class="p-5 space-y-6">
@@ -454,115 +451,159 @@
                 </button>
             </div>
 
+            <!-- Profile & Account Section -->
+            <div class="space-y-2">
+                <button onclick="openProfileSettings()" class="w-full min-h-[48px] px-4 py-2 bg-[var(--accent)] text-white hover:bg-emerald-800 rounded-xl font-bold flex items-center justify-between transition-colors shadow-md cursor-pointer">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span id="drawer-user-label">Benutzerprofil</span>
+                    </div>
+                    <span>➔</span>
+                </button>
+            </div>
+
+            <!-- Edit Mode -->
             <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">EDITIER-WERKZEUGE</h4>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Werkzeuge</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="smartUndo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg cursor-pointer">↩️ Zurück</button>
-                    <button onclick="smartRedo()" class="min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg cursor-pointer">↪️ Vor</button>
+                    <button onclick="smartUndo()" class="min-h-[40px] py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-primary)] rounded-lg cursor-pointer transition-colors">↩️ Zurück</button>
+                    <button onclick="smartRedo()" class="min-h-[40px] py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-primary)] rounded-lg cursor-pointer transition-colors">↪️ Vor</button>
                 </div>
-                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-2 cursor-pointer">
+                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800">
                     <span id="edit-mode-status-text">Edit-Modus umschalten</span>
                 </button>
             </div>
 
+            <!-- Classic Tab -->
             <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">📢 SPRACHAUSGABE</h4>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Archiv / Altes Menü</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)] mb-2 cursor-pointer">
+                <button onclick="switchTab('classic'); toggleDrawer();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded-lg border border-amber-200 dark:border-amber-800 flex items-center justify-center gap-2 cursor-pointer transition-colors">
+                    🏛️ Klassisches Menü öffnen
+                </button>
+                <p class="text-[10px] text-[var(--text-muted)] text-center leading-tight">Das alte Format (topics.json) – schreibgeschützt.</p>
+            </div>
+
+            <!-- Voice Settings -->
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Sprachausgabe</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full min-h-[40px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 text-[var(--text-primary)] mb-2 cursor-pointer focus:outline-none focus:border-[var(--accent)]">
                     <option value="">Standard-Stimme</option>
                 </select>
-                <div class="flex items-center justify-between gap-2">
-                    <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Geschwindigkeit</span>
-                    <select id="drawer-voice-speed" onchange="localStorage.setItem('b2_voice_speed', this.value)" class="text-[11px] bg-[var(--bg-app)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text-primary)] focus:outline-none cursor-pointer">
-                        <option value="0.8">Langsam (0.8x)</option>
-                        <option value="1.0" selected>Normal (1.0x)</option>
-                        <option value="1.2">Schnell (1.2x)</option>
+                <div class="flex items-center justify-between gap-2 bg-[var(--bg-app)] p-2.5 rounded-lg border border-[var(--border)]">
+                    <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Tempo</span>
+                    <select id="drawer-voice-speed" onchange="localStorage.setItem('b2_voice_speed', this.value)" class="text-xs bg-transparent text-[var(--text-primary)] focus:outline-none cursor-pointer font-bold">
+                        <option value="0.8">0.8x</option>
+                        <option value="1.0" selected>1.0x</option>
+                        <option value="1.2">1.2x</option>
                     </select>
                 </div>
             </div>
 
+            <!-- Visual Settings -->
             <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">CLOUD-ARBEITSPLATZ</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <div id="drawer-auth-logged-out" class="space-y-2">
-                    <!-- Standard Email Login -->
-                    <input type="email" id="drawer-auth-email" placeholder="E-Mail Adresse" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
-                    <input type="password" id="drawer-workspace-password" placeholder="Passwort" class="w-full min-h-[44px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded px-2.5 text-[var(--text-primary)]" />
-                    <div class="grid grid-cols-2 gap-2">
-                        <button id="drawer-btn-login" class="w-full min-h-[44px] text-xs bg-[var(--accent)] text-white font-bold rounded cursor-pointer">Login</button>
-                        <button id="drawer-btn-signup" class="w-full min-h-[44px] text-xs bg-zinc-600 text-white font-bold rounded cursor-pointer">Registrieren</button>
-                    </div>
-                </div>
-                
-                <div id="drawer-auth-logged-in" class="space-y-2 hidden">
-                    <p class="text-xs text-[var(--text-primary)] mb-4">Angemeldet als: <br><span id="drawer-user-display" class="font-bold text-[var(--accent)] break-all"></span></p>
-                    
-                    <!-- Neues Modul: E-Mail ändern -->
-                    <div class="p-3 bg-[var(--bg-app)] rounded-lg border border-[var(--border)] mb-4 space-y-2">
-                        <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">E-Mail Adresse ändern</p>
-                        <input type="email" id="drawer-new-email" placeholder="Neue E-Mail Adresse" class="w-full min-h-[36px] text-xs bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 text-[var(--text-primary)]" />
-                        <button id="drawer-btn-change-email" class="w-full min-h-[36px] text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold rounded cursor-pointer transition-colors">Speichern & Verknüpfen</button>
-                    </div>
-
-                    <button id="drawer-btn-logout" class="w-full min-h-[44px] text-xs bg-rose-600 text-white font-bold rounded cursor-pointer mt-2">Logout</button>
-                </div>
-            </div>
-
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">ELEMENT & TEXTGRÖSSE</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
-                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-2 text-xs font-bold rounded cursor-pointer">80%</button>
-                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-2 text-xs font-bold rounded cursor-pointer">100%</button>
-                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-2 text-xs font-bold rounded cursor-pointer">125%</button>
-                </div>
-            </div>
-
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DESIGN & FARBSCHEMA</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg">
-                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-2 text-xs font-bold rounded cursor-pointer">Hell</button>
-                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-2 text-xs font-bold rounded cursor-pointer">Dunkel</button>
-                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-2 text-xs font-bold rounded cursor-pointer">System</button>
-                </div>
-            </div>
-
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">DATEN-STEUERUNG</h4>
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Ansicht & Design</h4>
                 <div class="h-px bg-[var(--border)] w-full mb-2"></div>
                 
-                <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[44px] text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
-                    <span>📥 Datei einspielen (Backup)</span>
+                <span class="text-[10px] font-bold text-[var(--text-muted)] mb-1 block">Textgröße</span>
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg mb-3 border border-[var(--border)]">
+                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-1.5 text-xs font-bold rounded cursor-pointer">80%</button>
+                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-1.5 text-xs font-bold rounded cursor-pointer">100%</button>
+                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-1.5 text-xs font-bold rounded cursor-pointer">125%</button>
+                </div>
+
+                <span class="text-[10px] font-bold text-[var(--text-muted)] mb-1 block">Farbschema</span>
+                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-1.5 text-xs font-bold rounded cursor-pointer">Hell</button>
+                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-1.5 text-xs font-bold rounded cursor-pointer">Dunkel</button>
+                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-1.5 text-xs font-bold rounded cursor-pointer">System</button>
+                </div>
+            </div>
+
+            <!-- Data & Export -->
+            <div class="space-y-2.5">
+                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Daten-Steuerung</h4>
+                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
+                
+                <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[40px] text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-3 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors">
+                    <span>📥 Backup einspielen (.json)</span>
                 </button>
                 <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
                 
-                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-1">Vollständiges Backup</span>
-                <button onclick="exportTotalBackup()" class="w-full min-h-[38px] text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg mb-2 cursor-pointer shadow-sm">
-                    💾 Vollbackup erstellen (.json)
+                <button onclick="exportTotalBackup()" class="w-full min-h-[40px] text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-colors flex items-center justify-center gap-1.5">
+                    <span>💾 Vollbackup speichern</span>
                 </button>
                 
-                <div class="h-px bg-[var(--border)]/60 w-full my-2"></div>
-                
-                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-1">GitHub-Rohdateien exportieren</span>
-                <div class="grid grid-cols-1 gap-2">
-                    <button onclick="exportRawTopics()" class="w-full min-h-[34px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-md cursor-pointer transition-colors">
-                        📤 topics.json exportieren
-                    </button>
-                    <button onclick="exportRawTemplate()" class="w-full min-h-[34px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-md cursor-pointer transition-colors">
-                        📤 template.json exportieren
-                    </button>
-                </div>
+                <button onclick="exportRawTemplate()" class="w-full min-h-[36px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg cursor-pointer transition-colors flex items-center justify-center gap-1.5">
+                    📤 template.json exportieren
+                </button>
             </div>
         </div>
     </aside>
+
+    <!-- Modal: Profile & Settings -->
+    <div id="profile-settings-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-6 shadow-2xl relative">
+            <button onclick="closeProfileSettings()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 cursor-pointer">✕</button>
+            
+            <h3 class="text-lg font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">👤 Profil & Konto</h3>
+            
+            <!-- Logged Out View -->
+            <div id="modal-auth-logged-out" class="space-y-4">
+                <div class="flex gap-2 p-1 bg-[var(--bg-app)] rounded-lg border border-[var(--border)]">
+                    <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-1.5 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] rounded shadow-sm">Login</button>
+                    <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-1.5 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded">Registrieren</button>
+                </div>
+
+                <!-- Login Form -->
+                <div id="form-login" class="space-y-3">
+                    <input type="email" id="auth-login-email" placeholder="E-Mail Adresse" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                    <input type="password" id="auth-login-pwd" placeholder="Passwort" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                    <button id="btn-login-submit" class="w-full min-h-[44px] text-sm bg-[var(--accent)] text-white font-bold rounded-lg shadow-md hover:bg-emerald-800 transition-colors cursor-pointer mt-2">Einloggen</button>
+                </div>
+
+                <!-- Register Form -->
+                <div id="form-register" class="space-y-3 hidden">
+                    <input type="text" id="auth-reg-name" placeholder="Benutzername" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                    <input type="email" id="auth-reg-email" placeholder="E-Mail Adresse" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                    <input type="password" id="auth-reg-pwd" placeholder="Passwort (min. 6 Zeichen)" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                    <input type="password" id="auth-reg-pwd-confirm" placeholder="Passwort bestätigen" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                    <button id="btn-reg-submit" class="w-full min-h-[44px] text-sm bg-zinc-700 text-white font-bold rounded-lg shadow-md hover:bg-zinc-800 transition-colors cursor-pointer mt-2">Konto erstellen</button>
+                </div>
+            </div>
+
+            <!-- Logged In View -->
+            <div id="modal-auth-logged-in" class="space-y-5 hidden">
+                <div class="flex items-center gap-4 bg-[var(--bg-app)] p-4 rounded-xl border border-[var(--border)]">
+                    <div class="w-12 h-12 bg-[var(--accent)] text-white rounded-full flex items-center justify-center text-xl font-bold uppercase" id="profile-avatar-letter">?</div>
+                    <div>
+                        <h4 class="font-bold text-[var(--text-primary)] text-sm" id="profile-display-name">Nutzername</h4>
+                        <p class="text-xs text-[var(--text-muted)]" id="profile-display-email">email@example.com</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Benutzername ändern</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="profile-edit-name" placeholder="Neuer Name" class="flex-1 min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                        <button id="btn-save-profile-name" class="min-h-[44px] px-4 text-xs font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">Speichern</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-[var(--border)] pt-4 mt-2">
+                    <button id="btn-modal-logout" class="w-full min-h-[44px] text-sm bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-950/30 dark:border-rose-900 font-bold rounded-lg hover:bg-rose-100 transition-colors cursor-pointer">Ausloggen</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Workspace Container -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300 border-r border-[var(--border)]">
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
@@ -580,7 +621,7 @@
                 </div>
                 
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
-                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)] cursor-pointer">Alle</button>
+                    <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)] cursor-pointer shadow-sm">Alle</button>
                     <button id="filter-learned-btn" onclick="setFilter('learned')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">Gelernt</button>
                     <button id="filter-offen-btn" onclick="setFilter('offen')" class="py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">Offen</button>
                 </div>
@@ -597,26 +638,34 @@
         <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
-                <div class="flex items-center gap-3">
-                    <span id="active-topic-emoji" class="text-3xl select-none drop-shadow-sm">📌</span>
-                    <div>
-                        <div id="active-topic-num"></div>
-                        <h2 id="active-topic-title-de" class="text-lg font-black text-[var(--text-primary)] mt-1 leading-tight">Lade Thema...</h2>
+            <!-- Dashboard Controls (Overhauled Layout) -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0 relative">
+                        <span id="active-topic-emoji" class="drop-shadow-sm select-none">📌</span>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2">
+                            <div id="active-topic-num"></div>
+                            <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]">
+                            </button>
+                        </div>
+                        <h2 id="active-topic-title-de" class="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight tracking-tight">Lade Thema...</h2>
                     </div>
                 </div>
 
-                <div class="flex items-center w-full overflow-x-auto no-scrollbar gap-2 pb-1">
-                    <button id="learned-toggle" class="h-9 text-xs font-bold rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]">
+                <div class="flex items-center gap-2 bg-[var(--bg-app)] p-1.5 rounded-xl border border-[var(--border)] w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
+                    <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-10 px-4 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Sichern
                     </button>
-                    <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-9 text-xs bg-indigo-600 hover:bg-indigo-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
-                        <span>💾 Sichern</span>
+                    <div class="w-px h-6 bg-[var(--border)] mx-1 edit-only-control hidden md:block"></div>
+                    <button onclick="printCurrentTopic()" class="h-10 px-4 text-xs bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        PDF Export
                     </button>
-                    <button onclick="printCurrentTopic()" class="h-9 text-xs bg-teal-600 hover:bg-teal-700 text-white border border-transparent rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5 justify-center">
-                        <span>📄 PDF Export</span>
-                    </button>
-                    <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-9 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3.5 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5">
-                        🔄 Zurücksetzen
+                    <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-10 w-10 flex items-center justify-center text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-all shadow-sm shrink-0 cursor-pointer" title="Zurücksetzen">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </button>
                 </div>
             </div>
@@ -663,15 +712,11 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation - HORIZONTALLY SCROLLABLE -->
+            <!-- Mobile Bottom Navigation (Removed Classic) -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-1 flex overflow-x-auto no-scrollbar gap-1 items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                 <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--accent)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Template</span>
-                </button>
-                <button onclick="switchTab('classic')" id="mob-tab-classic" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Klassisch</span>
                 </button>
                 <button onclick="switchTab('diskussion')" id="mob-tab-diskussion" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
@@ -763,6 +808,30 @@
             <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
                 <button onclick="closeBlockEditor()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all cursor-pointer">Abbrechen</button>
                 <button onclick="saveBlockEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:opacity-90 transition-all cursor-pointer">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redemittel Editor Modal (Neu) -->
+    <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
+            <button onclick="closeRedemittelEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
+            <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Redemittel bearbeiten</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">🇩🇪 Deutsch (Phrase)</label>
+                    <textarea id="modal-redemittel-de" rows="2" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none selectable-text"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">🇬🇧 Englisch (Bedeutung)</label>
+                    <textarea id="modal-redemittel-en" rows="2" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none selectable-text"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeRedemittelEditor()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all cursor-pointer">Abbrechen</button>
+                <button onclick="saveRedemittelModal()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:opacity-90 transition-all cursor-pointer">Speichern</button>
             </div>
         </div>
     </div>
@@ -861,108 +930,42 @@
         };
 
         const CATEGORY_SVGS = {
-            'Freizeit & Gesundheit': `
-                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad-freizeit" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#10B981" />
-                            <stop offset="100%" stop-color="#059669" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#grad-freizeit)" fill-opacity="0.15" stroke="url(#grad-freizeit)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 7v10M7 12h10" stroke="#059669" stroke-linecap="round" stroke-width="2"/>
-                </svg>
-            `,
-            'Arbeit & Karriere': `
-                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad-arbeit" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#3B82F6" />
-                            <stop offset="100%" stop-color="#2563EB" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="2" y="7" width="20" height="14" rx="2" fill="url(#grad-arbeit)" fill-opacity="0.15" stroke="url(#grad-arbeit)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke="url(#grad-arbeit)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 12v3" stroke="#2563EB" stroke-linecap="round" stroke-width="2"/>
-                </svg>
-            `,
-            'Umwelt & Mobilität': `
-                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad-umwelt" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#14B8A6" />
-                            <stop offset="100%" stop-color="#0D9488" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.92V15h-2v2.92c-2.45-.44-4.48-2.47-4.92-4.92H9v-2H6.08c.44-2.45 2.47-4.48 4.92-4.92V7h2v2.92c2.45.44 4.48 2.47 4.92 4.92H15v2h2.92c-.44 2.45-2.47 4.48-4.92 4.92z" fill="url(#grad-umwelt)" fill-opacity="0.15" stroke="url(#grad-umwelt)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 10a2 2 0 100 4 2 2 0 000-4z" fill="#0D9488"/>
-                </svg>
-            `,
-            'Gesellschaft & Politik': `
-                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad-gesellschaft" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#8B5CF6" />
-                            <stop offset="100%" stop-color="#7C3AED" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="url(#grad-gesellschaft)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="9" cy="7" r="4" fill="url(#grad-gesellschaft)" fill-opacity="0.15" stroke="url(#grad-gesellschaft)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M23 21v-2a4 4 0 00-3-3.87" stroke="#7C3AED" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M16 3.13a4 4 0 010 7.75" stroke="#7C3AED" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            `,
-            'Bildung & Technologie': `
-                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad-bildung" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#F59E0B" />
-                            <stop offset="100%" stop-color="#D97706" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" fill="url(#grad-bildung)" fill-opacity="0.15" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 17l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            `
+            'Freizeit & Gesundheit': `<svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-freizeit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B981" /><stop offset="100%" stop-color="#059669" /></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#grad-freizeit)" fill-opacity="0.15" stroke="url(#grad-freizeit)" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v10M7 12h10" stroke="#059669" stroke-linecap="round" stroke-width="2"/></svg>`,
+            'Arbeit & Karriere': `<svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-arbeit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3B82F6" /><stop offset="100%" stop-color="#2563EB" /></linearGradient></defs><rect x="2" y="7" width="20" height="14" rx="2" fill="url(#grad-arbeit)" fill-opacity="0.15" stroke="url(#grad-arbeit)" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke="url(#grad-arbeit)" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v3" stroke="#2563EB" stroke-linecap="round" stroke-width="2"/></svg>`,
+            'Umwelt & Mobilität': `<svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-umwelt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14B8A6" /><stop offset="100%" stop-color="#0D9488" /></linearGradient></defs><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.92V15h-2v2.92c-2.45-.44-4.48-2.47-4.92-4.92H9v-2H6.08c.44-2.45 2.47-4.48 4.92-4.92V7h2v2.92c2.45.44 4.48 2.47 4.92 4.92H15v2h2.92c-.44 2.45-2.47 4.48-4.92 4.92z" fill="url(#grad-umwelt)" fill-opacity="0.15" stroke="url(#grad-umwelt)" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 10a2 2 0 100 4 2 2 0 000-4z" fill="#0D9488"/></svg>`,
+            'Gesellschaft & Politik': `<svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-gesellschaft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6" /><stop offset="100%" stop-color="#7C3AED" /></linearGradient></defs><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="url(#grad-gesellschaft)" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4" fill="url(#grad-gesellschaft)" fill-opacity="0.15" stroke="url(#grad-gesellschaft)" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 21v-2a4 4 0 00-3-3.87" stroke="#7C3AED" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 3.13a4 4 0 010 7.75" stroke="#7C3AED" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+            'Bildung & Technologie': `<svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-[1.5]" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-bildung" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B" /><stop offset="100%" stop-color="#D97706" /></linearGradient></defs><path d="M12 2L2 7l10 5 10-5-10-5z" fill="url(#grad-bildung)" fill-opacity="0.15" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12l10 5 10-5" stroke="url(#grad-bildung)" stroke-linecap="round" stroke-linejoin="round"/></svg>`
         };
 
         const CATEGORY_STYLES = {
-            'Freizeit & Gesundheit': {
-                lightBg: 'bg-emerald-50/30', lightBorder: 'border-emerald-200',
-                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
-                glow: 'hover:shadow-md',
-                badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-[#2A2A2C] dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/30',
-                activeRing: 'ring-emerald-500/50 dark:ring-emerald-500/30'
-            },
-            'Arbeit & Karriere': {
-                lightBg: 'bg-blue-50/30', lightBorder: 'border-blue-200',
-                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
-                glow: 'hover:shadow-md',
-                badgeBg: 'bg-blue-100 text-blue-800 dark:bg-[#2A2A2C] dark:text-blue-400 border-blue-200/50 dark:border-blue-900/30',
-                activeRing: 'ring-blue-500/50 dark:ring-blue-500/30'
-            },
-            'Umwelt & Mobilität': {
-                lightBg: 'bg-teal-50/30', lightBorder: 'border-teal-200',
-                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
-                glow: 'hover:shadow-md',
-                badgeBg: 'bg-teal-100 text-teal-800 dark:bg-[#2A2A2C] dark:text-teal-400 border-teal-200/50 dark:border-teal-900/30',
-                activeRing: 'ring-teal-500/50 dark:ring-teal-500/30'
-            },
-            'Gesellschaft & Politik': {
-                lightBg: 'bg-purple-50/30', lightBorder: 'border-purple-200',
-                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
-                glow: 'hover:shadow-md',
-                badgeBg: 'bg-purple-100 text-purple-800 dark:bg-[#2A2A2C] dark:text-purple-400 border-purple-200/50 dark:border-purple-900/30',
-                activeRing: 'ring-purple-500/50 dark:ring-purple-500/30'
-            },
-            'Bildung & Technologie': {
-                lightBg: 'bg-amber-50/30', lightBorder: 'border-amber-200',
-                darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]',
-                glow: 'hover:shadow-md',
-                badgeBg: 'bg-amber-100 text-amber-800 dark:bg-[#2A2A2C] dark:text-amber-400 border-amber-200/50 dark:border-amber-900/30',
-                activeRing: 'ring-amber-500/50 dark:ring-amber-500/30'
-            }
+            'Freizeit & Gesundheit': { lightBg: 'bg-emerald-50/30', lightBorder: 'border-emerald-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-[#2A2A2C] dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/30', activeRing: 'ring-emerald-500/50 dark:ring-emerald-500/30' },
+            'Arbeit & Karriere': { lightBg: 'bg-blue-50/30', lightBorder: 'border-blue-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-blue-100 text-blue-800 dark:bg-[#2A2A2C] dark:text-blue-400 border-blue-200/50 dark:border-blue-900/30', activeRing: 'ring-blue-500/50 dark:ring-blue-500/30' },
+            'Umwelt & Mobilität': { lightBg: 'bg-teal-50/30', lightBorder: 'border-teal-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-teal-100 text-teal-800 dark:bg-[#2A2A2C] dark:text-teal-400 border-teal-200/50 dark:border-teal-900/30', activeRing: 'ring-teal-500/50 dark:ring-teal-500/30' },
+            'Gesellschaft & Politik': { lightBg: 'bg-purple-50/30', lightBorder: 'border-purple-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-purple-100 text-purple-800 dark:bg-[#2A2A2C] dark:text-purple-400 border-purple-200/50 dark:border-purple-900/30', activeRing: 'ring-purple-500/50 dark:ring-purple-500/30' },
+            'Bildung & Technologie': { lightBg: 'bg-amber-50/30', lightBorder: 'border-amber-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-amber-100 text-amber-800 dark:bg-[#2A2A2C] dark:text-amber-400 border-amber-200/50 dark:border-amber-900/30', activeRing: 'ring-amber-500/50 dark:ring-amber-500/30' }
+        };
+
+        const structuralRedemittel = {
+            "Meinung äußern": [
+                { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way." },
+                { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role." }
+            ],
+            "Zustimmung": [
+                { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
+                { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
+            ],
+            "Widerspruch": [
+                { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
+                { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there." }
+            ],
+            "Einschränkung": [
+                { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that..." },
+                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice." }
+            ],
+            "Abschluss": [
+                { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
+                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
+            ]
         };
 
         let auth = null;
@@ -983,6 +986,7 @@
         let TEMPLATE_DATA = [];
         let DISKUSSIONEN_DATA = [];
         let GRAMMATIK_DATA = [];
+        let REDEMITTEL_DATA = null;
         
         let activeIdx = parseInt(localStorage.getItem('b2_active_idx')) || 0;
         let showHighlights = true;
@@ -997,6 +1001,7 @@
         let editedTemplateIds = [];
         let editedDiskussionenIds = [];
         let currentEditModalParams = null;
+        let currentRedemittelModalParams = null;
 
         let undoStack = [];
         let redoStack = [];
@@ -1092,6 +1097,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     toggleDrawer();
+                    closeProfileSettings();
                 });
             }
         });
@@ -1149,7 +1155,8 @@
             const stateSnapshot = {
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
-                highlights: JSON.parse(JSON.stringify(highlightsStore))
+                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
             undoStack.push(JSON.stringify(stateSnapshot));
             redoStack = []; 
@@ -1202,7 +1209,8 @@
             const currentStateSnapshot = {
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
-                highlights: JSON.parse(JSON.stringify(highlightsStore))
+                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
             redoStack.push(JSON.stringify(currentStateSnapshot));
             
@@ -1210,9 +1218,11 @@
             TEMPLATE_DATA = prevStateSnapshot.template;
             DISKUSSIONEN_DATA = prevStateSnapshot.diskussion;
             highlightsStore = prevStateSnapshot.highlights;
+            if(prevStateSnapshot.redemittel) REDEMITTEL_DATA = prevStateSnapshot.redemittel;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
             saveEditsSilent();
+            if(activeTab === 'redemittel') { saveRedemittelData(); renderRedemittel(); }
             renderSidebar();
             if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
@@ -1226,7 +1236,8 @@
             const currentStateSnapshot = {
                 template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
                 diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
-                highlights: JSON.parse(JSON.stringify(highlightsStore))
+                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
             undoStack.push(JSON.stringify(currentStateSnapshot));
             
@@ -1234,9 +1245,11 @@
             TEMPLATE_DATA = nextStateSnapshot.template;
             DISKUSSIONEN_DATA = nextStateSnapshot.diskussion;
             highlightsStore = nextStateSnapshot.highlights;
+            if(nextStateSnapshot.redemittel) REDEMITTEL_DATA = nextStateSnapshot.redemittel;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
             saveEditsSilent();
+            if(activeTab === 'redemittel') { saveRedemittelData(); renderRedemittel(); }
             renderSidebar();
             if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
@@ -1323,23 +1336,6 @@
                 }, 50);
             });
         });
-
-        function clearAllHighlightsForTopic() {
-            let activeTopic;
-            if (activeTab === 'diskussion') activeTopic = DISKUSSIONEN_DATA[activeIdx];
-            else activeTopic = TEMPLATE_DATA[activeIdx];
-            
-            if (!activeTopic) return;
-            const topicId = activeTopic.id;
-            
-            if (confirm("Möchten Sie alle benutzerdefinierten Formatierungen für dieses Thema unwiderruflich löschen?")) {
-                if (highlightsStore[topicId]) {
-                    delete highlightsStore[topicId];
-                    localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
-                    renderActiveTopic();
-                }
-            }
-        }
 
         let availableGermanVoices = [];
         let activeSpeakingButton = null;
@@ -1466,9 +1462,9 @@
                 const btn = document.getElementById(`theme-${pref}-btn`);
                 if (btn) {
                     if (pref === currentThemeSetting) {
-                        btn.className = "py-1 text-center rounded bg-[var(--accent)] text-white shadow-inner";
+                        btn.className = "py-1.5 text-center rounded bg-[var(--accent)] text-white shadow-inner";
                     } else {
-                        btn.className = "py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]";
+                        btn.className = "py-1.5 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]";
                     }
                 }
             });
@@ -1498,9 +1494,9 @@
                 const btn = document.getElementById(`scale-${scale}`);
                 if (btn) {
                     if (scale + '%' === textScale) {
-                        btn.className = "py-2 text-xs font-bold text-center rounded bg-[var(--accent)] text-white shadow-inner";
+                        btn.className = "py-1.5 text-xs font-bold text-center rounded bg-[var(--accent)] text-white shadow-inner";
                     } else {
-                        btn.className = "py-2 text-xs font-bold text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]";
+                        btn.className = "py-1.5 text-xs font-bold text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]";
                     }
                 }
             });
@@ -1622,118 +1618,145 @@
             }
         }
 
+        /* Profile & Auth Management */
+        function openProfileSettings() {
+            const modal = document.getElementById('profile-settings-modal');
+            const overlay = document.getElementById('drawer-overlay');
+            if (modal) modal.classList.remove('hidden');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('opacity-100');
+                overlay.style.zIndex = "105"; // Above drawer
+            }
+            updateProfileUI();
+        }
+
+        function closeProfileSettings() {
+            const modal = document.getElementById('profile-settings-modal');
+            const overlay = document.getElementById('drawer-overlay');
+            if (modal) modal.classList.add('hidden');
+            if (overlay) {
+                overlay.style.zIndex = "90";
+                // If drawer is closed, hide overlay
+                const drawerMenu = document.getElementById('drawer-menu');
+                if (drawerMenu && drawerMenu.classList.contains('translate-x-full')) {
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('opacity-100');
+                }
+            }
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const regForm = document.getElementById('form-register');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                loginBtn.className = "flex-1 py-1.5 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] rounded shadow-sm";
+                regBtn.className = "flex-1 py-1.5 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                regBtn.className = "flex-1 py-1.5 text-xs font-bold bg-[var(--bg-card)] text-[var(--text-primary)] rounded shadow-sm";
+                loginBtn.className = "flex-1 py-1.5 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded";
+            }
+        }
+
+        function updateProfileUI() {
+            const outArea = document.getElementById('modal-auth-logged-out');
+            const inArea = document.getElementById('modal-auth-logged-in');
+            const labelEl = document.getElementById('drawer-user-label');
+            
+            if (currentUser) {
+                if(outArea) outArea.classList.add('hidden');
+                if(inArea) inArea.classList.remove('hidden');
+                
+                const dName = currentUser.displayName || "Nutzer";
+                document.getElementById('profile-display-name').textContent = dName;
+                document.getElementById('profile-display-email').textContent = currentUser.email;
+                document.getElementById('profile-edit-name').value = dName;
+                document.getElementById('profile-avatar-letter').textContent = dName.charAt(0).toUpperCase();
+                
+                if (labelEl) labelEl.textContent = dName;
+            } else {
+                if(outArea) outArea.classList.remove('hidden');
+                if(inArea) inArea.classList.add('hidden');
+                if (labelEl) labelEl.textContent = "Benutzerprofil";
+                switchAuthTab('login');
+            }
+        }
+
         if (auth) {
             auth.onAuthStateChanged(async (user) => {
-                const outArea = document.getElementById('drawer-auth-logged-out');
-                const inArea = document.getElementById('drawer-auth-logged-in');
-                if (user) {
-                    currentUser = user;
-                    if(outArea) outArea.classList.add('hidden');
-                    if(inArea) {
-                        inArea.classList.remove('hidden');
-                        const displayEl = document.getElementById('drawer-user-display');
-                        if (displayEl) displayEl.textContent = user.email;
-                    }
-                } else {
-                    currentUser = null;
-                    if(outArea) outArea.classList.remove('hidden');
-                    if(inArea) inArea.classList.add('hidden');
-                }
+                currentUser = user;
+                updateProfileUI();
                 await loadTopics();
             });
         } else {
             loadTopics();
         }
 
-        const btnLogin = document.getElementById('drawer-btn-login');
-        if (btnLogin) {
-            btnLogin.onclick = async () => {
-                if (!auth) { 
-                    alert("Firebase ist offline oder blockiert."); 
-                    return; 
-                }
-                const email = document.getElementById('drawer-auth-email').value;
-                const password = document.getElementById('drawer-workspace-password').value;
-
-                if (!email || !password) { alert("E-Mail und Passwort erforderlich."); return; }
+        const btnLoginSubmit = document.getElementById('btn-login-submit');
+        if (btnLoginSubmit) {
+            btnLoginSubmit.onclick = async () => {
+                if (!auth) { alert("Firebase ist offline."); return; }
+                const email = document.getElementById('auth-login-email').value;
+                const password = document.getElementById('auth-login-pwd').value;
+                if (!email || !password) { alert("Bitte ausfüllen."); return; }
                 try {
                     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                     await auth.signInWithEmailAndPassword(email, password);
-                    document.getElementById('drawer-workspace-password').value = "";
-                    toggleDrawer();
-                } catch (err) { alert("Fehler: " + err.message); }
+                    document.getElementById('auth-login-pwd').value = "";
+                } catch (err) { alert("Login Fehler: " + err.message); }
             };
         }
 
-        const btnSignup = document.getElementById('drawer-btn-signup');
-        if (btnSignup) {
-            btnSignup.onclick = async () => {
-                if (!auth) { 
-                    alert("Firebase ist offline oder blockiert."); 
-                    return; 
-                }
-                const email = document.getElementById('drawer-auth-email').value;
-                const password = document.getElementById('drawer-workspace-password').value;
+        const btnRegSubmit = document.getElementById('btn-reg-submit');
+        if (btnRegSubmit) {
+            btnRegSubmit.onclick = async () => {
+                if (!auth) { alert("Firebase ist offline."); return; }
+                const name = document.getElementById('auth-reg-name').value.trim();
+                const email = document.getElementById('auth-reg-email').value.trim();
+                const pwd = document.getElementById('auth-reg-pwd').value;
+                const pwdConfirm = document.getElementById('auth-reg-pwd-confirm').value;
 
-                if (!email || !password || password.length < 6) { alert("E-Mail und ein Passwort mit mind. 6 Zeichen erforderlich."); return; }
+                if (!name || !email || !pwd || !pwdConfirm) { alert("Alle Felder sind erforderlich."); return; }
+                if (pwd !== pwdConfirm) { alert("Die Passwörter stimmen nicht überein."); return; }
+                if (pwd.length < 6) { alert("Passwort muss mind. 6 Zeichen lang sein."); return; }
+
                 try {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                    alert("Konto angelegt.");
-                    document.getElementById('drawer-workspace-password').value = "";
-                    toggleDrawer();
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, pwd);
+                    await userCredential.user.updateProfile({ displayName: name });
+                    currentUser = userCredential.user;
+                    updateProfileUI();
+                    alert("Konto erfolgreich erstellt!");
                 } catch (err) { alert("Registrierungsfehler: " + err.message); }
             };
         }
 
-        // --- NEU: Funktion zum Ändern der E-Mail Adresse ---
-        const btnChangeEmail = document.getElementById('drawer-btn-change-email');
-        if (btnChangeEmail) {
-            btnChangeEmail.onclick = async () => {
+        const btnSaveProfileName = document.getElementById('btn-save-profile-name');
+        if (btnSaveProfileName) {
+            btnSaveProfileName.onclick = async () => {
                 if (!currentUser) return;
-                const newEmail = document.getElementById('drawer-new-email').value.trim();
-                
-                if (!newEmail || !newEmail.includes('@')) {
-                    alert("Bitte eine gültige E-Mail-Adresse eingeben.");
-                    return;
-                }
-
+                const newName = document.getElementById('profile-edit-name').value.trim();
+                if (!newName) return;
                 try {
-                    // Firebase-Befehl zum Ändern der E-Mail
-                    await currentUser.updateEmail(newEmail);
-                    alert("Erfolg! Ihre E-Mail wurde zu " + newEmail + " geändert. Bitte loggen Sie sich in Zukunft mit dieser neuen E-Mail ein.");
-                    
-                    // UI aktualisieren
-                    document.getElementById('drawer-new-email').value = "";
-                    document.getElementById('drawer-user-display').textContent = newEmail;
-                } catch (error) {
-                    // WICHTIG: Aus Sicherheitsgründen verlangt Firebase manchmal, dass der Login "frisch" ist, bevor man eine E-Mail ändert.
-                    if (error.code === 'auth/requires-recent-login') {
-                        const pwd = prompt("Aus Sicherheitsgründen müssen Sie Ihr aktuelles Passwort eingeben, um die E-Mail zu ändern:");
-                        if (pwd) {
-                            try {
-                                const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, pwd);
-                                await currentUser.reauthenticateWithCredential(credential); // Login erneuern
-                                await currentUser.updateEmail(newEmail); // Zweiter Versuch
-                                
-                                alert("Erfolg! Ihre E-Mail wurde zu " + newEmail + " geändert.");
-                                document.getElementById('drawer-new-email').value = "";
-                                document.getElementById('drawer-user-display').textContent = newEmail;
-                            } catch (reauthError) {
-                                alert("Fehler: Das eingegebene Passwort war falsch oder die Aktion wurde abgebrochen.");
-                            }
-                        }
-                    } else {
-                        alert("Fehler beim Ändern der E-Mail: " + error.message);
-                    }
+                    await currentUser.updateProfile({ displayName: newName });
+                    updateProfileUI();
+                    alert("Name erfolgreich aktualisiert.");
+                } catch(e) {
+                    alert("Fehler beim Aktualisieren: " + e.message);
                 }
             };
         }
 
-        const btnLogout = document.getElementById('drawer-btn-logout');
-        if (btnLogout) {
-            btnLogout.onclick = () => { 
+        const btnModalLogout = document.getElementById('btn-modal-logout');
+        if (btnModalLogout) {
+            btnModalLogout.onclick = () => { 
                 if (auth) auth.signOut(); 
-                toggleDrawer(); 
             };
         }
 
@@ -1884,6 +1907,9 @@
                 TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
                 DISKUSSIONEN_DATA = JSON.parse(JSON.stringify(window.PRISTINE_DISKUSSIONEN));
 
+                // Load Redemittel
+                REDEMITTEL_DATA = null;
+
                 if (currentUser && db) {
                     const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
                     templatesSnapshot.forEach(doc => {
@@ -1910,6 +1936,11 @@
                         learnedList = progressDoc.data().learned;
                     } else {
                         learnedList = [];
+                    }
+                    
+                    const redemittelDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').get();
+                    if (redemittelDoc.exists && redemittelDoc.data().phrases) {
+                        REDEMITTEL_DATA = redemittelDoc.data().phrases;
                     }
 
                     highlightsStore = {};
@@ -1944,7 +1975,12 @@
 
                     learnedList = JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
+                    
+                    const localRede = localStorage.getItem(`b2_redemittel_${suffix}`);
+                    if (localRede) REDEMITTEL_DATA = JSON.parse(localRede);
                 }
+
+                if (!REDEMITTEL_DATA) REDEMITTEL_DATA = JSON.parse(JSON.stringify(structuralRedemittel));
 
                 TOPICS_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
                 TEMPLATE_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
@@ -1963,6 +1999,8 @@
                     renderGrammar();
                 } else if (activeTab === 'mindmap') {
                     renderSimplisticBoxGrid();
+                } else if (activeTab === 'redemittel') {
+                    renderRedemittel();
                 }
             } catch (e) {
                 console.error("Fehler beim Initialisieren der Datenschnittstelle:", e);
@@ -2252,7 +2290,7 @@
         }
 
         function updateProgress() {
-            const dataset = TOPICS_DATA; // Progress counts universally across all views
+            const dataset = TOPICS_DATA; 
             if (dataset.length === 0) return;
 
             const total = dataset.length;
@@ -2274,7 +2312,7 @@
                 const btn = document.getElementById(`filter-${f}-btn`);
                 if (btn) {
                     if (f === filterType) {
-                        btn.className = "py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)] cursor-pointer";
+                        btn.className = "py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)] cursor-pointer shadow-sm";
                     } else {
                         btn.className = "py-1 text-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer";
                     }
@@ -2628,7 +2666,7 @@
             saveHighlight(topic.id, blockKey, htmlVal);
             
             if (blockKey === 'content') {
-                topic.content = htmlVal; // keep HTML formatting for large content block
+                topic.content = htmlVal; 
             } else {
                 setTopicValue(topic, blockKey, textVal);
             }
@@ -2831,13 +2869,13 @@
                         <span class="text-emerald-500 animate-bounce text-sm">✓</span>
                         <span>Gelernt</span>
                     `;
-                    learnedBtn.className = "h-9 text-xs bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 border border-emerald-500/30 rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5";
+                    learnedBtn.className = "h-8 text-[11px] bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300 border border-emerald-500/30 rounded-lg px-2.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 mt-1 md:mt-0";
                 } else {
                     learnedBtn.innerHTML = `
                         <span class="text-zinc-400 text-sm">⚡</span>
                         <span>Als gelernt markieren</span>
                     `;
-                    learnedBtn.className = "h-9 text-xs bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg px-3.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 hover:bg-[var(--bg-app)] hover:border-emerald-500/30";
+                    learnedBtn.className = "h-8 text-[11px] bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg px-2.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 hover:bg-emerald-50/50 hover:border-emerald-500/30 mt-1 md:mt-0";
                 }
             }
 
@@ -2853,9 +2891,9 @@
             const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30";
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30";
                 } else {
-                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30";
+                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30";
                 }
             }
 
@@ -3165,36 +3203,73 @@
             showResetButton();
         }
 
-        const structuralRedemittel = {
-            "Meinung äußern": [
-                { de: "Meiner Meinung nach sollte man das differenzierter betrachten.", en: "In my opinion, one should look at this in a more differentiated way." },
-                { de: "Ich bin der festen Ansicht, dass dieses Thema eine wichtige Rolle spielt.", en: "I am of the firm view that this topic plays an important role." }
-            ],
-            "Zustimmung": [
-                { de: "Da stimme ich dir völlig zu. Das ist ein schlagendes Argument.", en: "I completely agree with you. That is a compelling argument." },
-                { de: "Das ist ein sehr treffender Punkt, den du da erwähnst.", en: "That is a very accurate point that you mention." }
-            ],
-            "Widerspruch": [
-                { de: "Das sehe ich etwas anders. Man muss auch bedenken, dass...", en: "I see that a bit differently. One must also consider that..." },
-                { de: "Da muss ich dir leider widersprechen. Die Realität sieht oft anders aus.", en: "Unfortunately, I have to disagree with you there." }
-            ],
-            "Einschränkung": [
-                { de: "Das ist zwar ein gutes Argument, aber man darf nicht vergessen, dass...", en: "That is a good argument, but one must not forget that..." },
-                { de: "Ich bezweifle, dass dieser Lösungsansatz in der Praxis funktioniert.", en: "I doubt that this approach works in practice." }
-            ],
-            "Abschluss": [
-                { de: "Vielleicht können wir uns darauf einigen, dass beide Seiten wichtige Aspekte haben.", en: "Perhaps we can agree that both sides have important aspects." },
-                { de: "Zusammenfassend lässt sich sagen, dass wir eine Einigung erzielen können.", en: "In summary, we can reach an agreement." }
-            ]
-        };
+        async function saveRedemittelData() {
+            if (!REDEMITTEL_DATA) return;
+            const suffix = getSelectedUserSuffix();
+            if (currentUser && db) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').set({ phrases: REDEMITTEL_DATA });
+                } catch(e) { console.error("Redemittel Save Error", e); }
+            } else {
+                localStorage.setItem(`b2_redemittel_${suffix}`, JSON.stringify(REDEMITTEL_DATA));
+            }
+        }
+
+        function addRedemittel(category) {
+            pushToHistory();
+            if (!REDEMITTEL_DATA[category]) REDEMITTEL_DATA[category] = [];
+            REDEMITTEL_DATA[category].push({ de: "Neue Phrase...", en: "New phrase..." });
+            saveRedemittelData();
+            renderRedemittel();
+        }
+
+        function deleteRedemittel(category, index) {
+            if (!confirm("Möchten Sie diese Phrase wirklich löschen?")) return;
+            pushToHistory();
+            if (REDEMITTEL_DATA[category]) {
+                REDEMITTEL_DATA[category].splice(index, 1);
+            }
+            saveRedemittelData();
+            renderRedemittel();
+        }
+
+        function openRedemittelEditor(category, index) {
+            currentRedemittelModalParams = { category, index };
+            const phrase = REDEMITTEL_DATA[category][index];
+            document.getElementById('modal-redemittel-de').value = phrase.de || "";
+            document.getElementById('modal-redemittel-en').value = phrase.en || "";
+            document.getElementById('redemittel-editor-modal').classList.remove('hidden');
+        }
+
+        function closeRedemittelEditor() {
+            document.getElementById('redemittel-editor-modal').classList.add('hidden');
+            currentRedemittelModalParams = null;
+        }
+
+        function saveRedemittelModal() {
+            if (!currentRedemittelModalParams) return;
+            pushToHistory();
+            const { category, index } = currentRedemittelModalParams;
+            const textDe = document.getElementById('modal-redemittel-de').value;
+            const textEn = document.getElementById('modal-redemittel-en').value;
+            
+            REDEMITTEL_DATA[category][index].de = textDe;
+            REDEMITTEL_DATA[category][index].en = textEn;
+            
+            saveRedemittelData();
+            renderRedemittel();
+            closeRedemittelEditor();
+        }
 
         function renderRedemittel() {
             const container = document.getElementById('redemittel-tab-section');
             if (!container) return;
             container.innerHTML = "";
+            
+            if (!REDEMITTEL_DATA) REDEMITTEL_DATA = JSON.parse(JSON.stringify(structuralRedemittel));
 
             let navigationBar = `<div class="sticky top-0 bg-[var(--bg-app)] z-30 py-2 flex gap-1.5 overflow-x-auto no-scrollbar border-b border-[var(--border)] mb-4">`;
-            Object.keys(structuralRedemittel).forEach((cat, idx) => {
+            Object.keys(REDEMITTEL_DATA).forEach((cat, idx) => {
                 navigationBar += `
                     <button onclick="document.getElementById('cat-anchor-${idx}').scrollIntoView({behavior: 'smooth'})" class="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] font-bold text-xs rounded-full whitespace-nowrap min-h-[44px] cursor-pointer">
                         ${cat}
@@ -3203,31 +3278,43 @@
             navigationBar += `</div>`;
             
             let contentsHtml = `<div class="space-y-6">`;
-            Object.keys(structuralRedemittel).forEach((category, catIdx) => {
+            Object.keys(REDEMITTEL_DATA).forEach((category, catIdx) => {
                 contentsHtml += `
                     <div id="cat-anchor-${catIdx}" class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 shadow-sm">
                         <span class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest block mb-2">${category}</span>
                         <div class="h-px bg-[var(--border)] w-full mb-3"></div>
                         <div class="space-y-3">`;
                 
-                structuralRedemittel[category].forEach(phrase => {
-                    const encodedText = encodeURIComponent(phrase.de);
-                    contentsHtml += `
-                        <div class="flex items-center justify-between p-3 bg-[var(--bg-sidebar)] rounded-lg min-h-[44px] gap-4">
-                            <div class="flex-1">
-                                <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
-                                <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
-                            </div>
-                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5 cursor-pointer">
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                                <span class="soundwave-bar"></span>
-                            </button>
-                        </div>`;
-                });
+                if (REDEMITTEL_DATA[category].length > 0) {
+                    REDEMITTEL_DATA[category].forEach((phrase, phraseIdx) => {
+                        const encodedText = encodeURIComponent(phrase.de);
+                        contentsHtml += `
+                            <div class="flex items-center justify-between p-3 bg-[var(--bg-sidebar)] rounded-lg min-h-[44px] gap-4 relative group">
+                                <div class="flex-1">
+                                    <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
+                                    <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
+                                </div>
+                                <div class="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity absolute right-14 top-3 bg-[var(--bg-card)] rounded-md border border-[var(--border)] p-1 shadow-sm">
+                                    <button onclick="openRedemittelEditor('${category}', ${phraseIdx})" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
+                                    <button onclick="deleteRedemittel('${category}', ${phraseIdx})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
+                                </div>
+                                <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5 cursor-pointer z-10 bg-[var(--bg-sidebar)] rounded-r-lg">
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                    <span class="soundwave-bar"></span>
+                                </button>
+                            </div>`;
+                    });
+                } else {
+                    contentsHtml += `<p class="text-xs text-[var(--text-muted)] italic py-2">Keine Phrasen in dieser Kategorie.</p>`;
+                }
                 
-                contentsHtml += `</div></div>`;
+                contentsHtml += `
+                    <button onclick="addRedemittel('${category}')" class="w-full min-h-[38px] py-2 mt-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                        <span>➕ Phrase hinzufügen</span>
+                    </button>
+                </div></div>`;
             });
             contentsHtml += `</div>`;
 
@@ -3290,7 +3377,7 @@
                     const encodedText = encodeURIComponent(cleanText);
                     examplesHtml += `
                         <li class="flex items-start gap-2 border-b border-[var(--border)]/40 pb-2 last:border-0 last:pb-0 relative">
-                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn text-var(--text-muted) hover:text-[var(--accent)] transition-all mt-0.5 flex gap-0.5 cursor-pointer">
+                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all mt-0.5 flex gap-0.5 cursor-pointer">
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
@@ -3411,6 +3498,7 @@
                 topics: TOPICS_DATA,
                 template: TEMPLATE_DATA,
                 diskussion: DISKUSSIONEN_DATA,
+                redemittel: REDEMITTEL_DATA,
                 highlights: highlightsStore,
                 learned: learnedList,
                 preferences: {
@@ -3436,19 +3524,9 @@
             URL.revokeObjectURL(a.href);
         }
 
-        function exportRawTopics() {
-            const rawData = JSON.stringify(TOPICS_DATA, null, 2);
-            downloadFile(rawData, 'topics.json', 'application/json');
-        }
-
         function exportRawTemplate() {
             const rawData = JSON.stringify(TEMPLATE_DATA, null, 2);
             downloadFile(rawData, 'template.json', 'application/json');
-        }
-
-        function exportRawGrammar() {
-            const rawData = JSON.stringify(GRAMMATIK_DATA, null, 2);
-            downloadFile(rawData, 'Grammatik.json', 'application/json');
         }
 
         async function importTotalBackup(event) {
@@ -3468,11 +3546,13 @@
                         if (parsed.diskussion) DISKUSSIONEN_DATA = parsed.diskussion;
                         if (parsed.highlights) highlightsStore = parsed.highlights;
                         if (parsed.learned) learnedList = parsed.learned;
+                        if (parsed.redemittel) REDEMITTEL_DATA = parsed.redemittel;
                         
                         localStorage.setItem(`learned_topics_1_52_${suffix}`, JSON.stringify(learnedList));
                         localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
                         localStorage.setItem(`edited_template_data_1_52_${suffix}`, JSON.stringify(TEMPLATE_DATA));
                         localStorage.setItem(`edited_diskussionen_data_1_52_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
+                        if(parsed.redemittel) localStorage.setItem(`b2_redemittel_${suffix}`, JSON.stringify(REDEMITTEL_DATA));
                         
                         alert("Vollbackup erfolgreich importiert!");
                     } 
@@ -3511,6 +3591,7 @@
                     renderSidebar();
                     if (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+                    if (activeTab === 'redemittel') renderRedemittel();
                     
                 } catch (err) {
                     console.error("Import Error:", err);
@@ -3588,7 +3669,8 @@
                             .contra { border-left: 4px solid #B02A1E; }
                             .dialog-bubble { background: #F4F4F0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; page-break-inside: avoid; }
                             .dialog-A { background: #EDF4EF; border-left: 3px solid #3D6B48; }
-                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
+                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48
+; padding: 0 2px; }
                             .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
                             .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
                             .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
@@ -3619,6 +3701,7 @@
             printWindow.document.close();
         }
 
+        // Swipe & Interaktion Events (Touch)
         document.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
@@ -3640,6 +3723,8 @@
                 target.closest('#drawer-menu') || 
                 target.closest('#quick-preview-modal') || 
                 target.closest('#block-editor-modal') ||
+                target.closest('#redemittel-editor-modal') ||
+                target.closest('#profile-settings-modal') ||
                 target.closest('select') || 
                 target.closest('textarea') || 
                 target.closest('input') ||
