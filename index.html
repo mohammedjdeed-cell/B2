@@ -1166,67 +1166,43 @@
             redoStack = []; 
         }
 
-        let globalSaveTimeout;
-
-        // ECHTES WORD-FEELING: Dieser Listener überwacht jede noch so kleine Änderung
-        // und synchronisiert sie sofort mit dem Zwischenspeicher, ohne die Seite neu zu rendern!
-        document.addEventListener('input', (e) => {
-            if (e.target && e.target.hasAttribute('contenteditable')) {
-                const el = e.target;
-                const blockKey = el.getAttribute('data-block-key');
-                if (!blockKey) return;
-                
-                let topicId, topic;
-                if (activeTab === 'diskussion') {
-                    topic = DISKUSSIONEN_DATA[activeIdx];
-                } else if (activeTab === 'template') {
-                    topic = TEMPLATE_DATA[activeIdx];
-                } else {
-                    return;
-                }
-                if (!topic) return;
-                topicId = topic.id;
-                
-                const htmlVal = el.innerHTML;
-                const textVal = el.innerText.trim();
-                
-                // Sofort-Sync der Textmarker
-                if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
-                highlightsStore[topicId][blockKey] = htmlVal;
-                
-                // Sofort-Sync der Texte
-                if (blockKey === 'content') {
-                    topic.content = htmlVal;
-                } else {
-                    setTopicValue(topic, blockKey, textVal);
-                }
-
-                // Daten nach 1.5 Sekunden Stille im Hintergrund sichern (Debouncing)
-                clearTimeout(globalSaveTimeout);
-                globalSaveTimeout = setTimeout(() => {
-                    const suffix = getSelectedUserSuffix();
-                    localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-                    saveEditsSilent();
-                }, 1500);
-            }
-        });
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registriert!', reg))
+                    .catch(err => console.error('Service Worker fehlerhaft:', err));
+            });
+        }
 
         function smartUndo() {
-            // 1. Zuerst versuchen wir den nativen Browser-Undo (für Text, Cursor, Markierungen)
-            const success = document.execCommand('undo');
-            
-            // 2. Wenn der native Stack leer ist (z.B. weil ein Argument gelöscht/hinzugefügt wurde)
-            // greifen wir auf das strukturelle JSON-Backup zurück.
-            if (!success) {
-                undo();
+            if (document.queryCommandSupported('undo')) {
+                document.execCommand('undo');
+                saveCurrentFocus();
+            } else {
+                undo(); 
             }
         }
 
         function smartRedo() {
-            const success = document.execCommand('redo');
-            if (!success) {
-                redo();
+            if (document.queryCommandSupported('redo')) {
+                document.execCommand('redo');
+                saveCurrentFocus();
+            } else {
+                redo(); 
             }
+        }
+
+        function saveCurrentFocus() {
+            setTimeout(() => {
+                const activeEl = document.activeElement;
+                if (activeEl && activeEl.hasAttribute('contenteditable')) {
+                    const blockKey = activeEl.getAttribute('data-block-key');
+                    const isDiskussion = activeTab === 'diskussion';
+                    const topicId = isDiskussion ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
+                    handleInlineBlur(activeEl, topicId, 'de', blockKey);
+                    activeEl.focus();
+                }
+            }, 50);
         }
 
         function undo() {
@@ -1307,18 +1283,8 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            // Wenn der User im Text tippt, lassen wir den Browser das nativ machen!
-            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.hasAttribute('contenteditable'))) {
-                return;
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { 
-                e.preventDefault(); 
-                if (e.shiftKey) { smartRedo(); } else { smartUndo(); } 
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { 
-                e.preventDefault(); 
-                smartRedo(); 
-            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); smartUndo(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); smartRedo(); }
         });
 
         async function saveHighlight(topicId, blockKey, htmlContent) {
@@ -1843,6 +1809,7 @@
 
         function convertActiveBlockToBulletList() {
             if (!activeListElement) return;
+            pushToHistory();
 
             let html = activeListElement.innerHTML;
             
@@ -1867,19 +1834,35 @@
                 lines.map(line => `<li class="leading-relaxed select-text">${line}</li>`).join('') + 
                 `</ul>`;
 
-            // Text markieren und über execCommand ersetzen (macht es Nativ rückgängig machbar)
-            const range = document.createRange();
-            range.selectNodeContents(activeListElement);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-
-            document.execCommand('insertHTML', false, listHtml);
-            
+            activeListElement.innerHTML = listHtml;
             hideListHelper();
-            activeListElement.dispatchEvent(new Event('input', { bubbles: true }));
-            activeListElement.blur();
+
+            const blockKey = activeListElement.getAttribute('data-block-key');
+            let activeTopicId;
+            if (activeTab === 'diskussion') activeTopicId = DISKUSSIONEN_DATA[activeIdx].id;
+            else activeTopicId = TEMPLATE_DATA[activeIdx].id;
+
+            saveHighlight(activeTopicId, blockKey, activeListElement.innerHTML);
+            activeListElement.dispatchEvent(new Event('blur'));
         }
+
+        document.addEventListener('keyup', function(e) {
+            if (!isEditMode || activeTab === 'classic') return;
+            const target = e.target;
+            if (!target || !target.hasAttribute('contenteditable')) return;
+
+            const text = target.innerText || target.textContent;
+            const lines = text.split('\n');
+            const currentLine = lines[lines.length - 1] || '';
+
+            if (currentLine.startsWith('- ') || currentLine.startsWith('* ') || currentLine.startsWith('_ ') || currentLine.startsWith('• ')) {
+                showBulletListOption(target, currentLine);
+            } else if (e.key === 'Enter') {
+                if (lines.length > 1) {
+                    showBulletListOption(target);
+                }
+            }
+        });
 
         async function loadTopics() {
             try {
@@ -2145,33 +2128,67 @@
         function applySelectionFormat(type, value) {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+            const range = selection.getRangeAt(0);
 
             let activeContainer = selection.anchorNode;
             while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
                 activeContainer = activeContainer.parentNode;
             }
+
             if (!activeContainer) return;
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            if (!blockKey) return; 
 
-            const range = selection.getRangeAt(0);
-            const container = document.createElement('div');
-            container.appendChild(range.cloneContents());
-            const html = container.innerHTML;
+            pushToHistory();
 
-            // WICHTIG: execCommand nutzen, damit der Browser sich die Aktion für 'Rückgängig' (Ctrl+Z) merkt!
             if (type === 'bold') {
                 document.execCommand('bold', false, null);
             } else if (type === 'highlight') {
-                document.execCommand('insertHTML', false, `<span class="hl-${value}">${html}</span>`);
+                const span = document.createElement('span');
+                span.className = `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) { document.execCommand('backColor', false, '#FEF08A'); }
             } else if (type === 'circle') {
-                document.execCommand('insertHTML', false, `<span class="word-circle">${html}</span>`);
+                const span = document.createElement('span');
+                span.className = 'word-circle';
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {}
             } else if (type === 'clear') {
-                const text = selection.toString();
-                document.execCommand('insertHTML', false, text);
+                unwrapSelection(range, activeContainer);
             }
 
-            // Löst das automatische Speichern aus (siehe 'input' Listener)
-            activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
+            const activeTopicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
+            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
+            activeContainer.dispatchEvent(new Event('blur'));
             handleSelectionChange();
+        }
+
+        function unwrapSelection(range, activeContainer) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight');
+            spans.forEach(span => {
+                if (selection.containsNode(span, true)) {
+                    const parent = span.parentNode;
+                    if (parent) {
+                        while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
+                        parent.removeChild(span);
+                    }
+                }
+            });
+
+            activeContainer.normalize();
+            const blockKey = activeContainer.getAttribute('data-block-key');
+            const activeTopicId = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx].id : TEMPLATE_DATA[activeIdx].id;
+            saveHighlight(activeTopicId, blockKey, activeContainer.innerHTML);
+            activeContainer.dispatchEvent(new Event('blur'));
         }
 
         function handleSelectionChange() {
@@ -2641,7 +2658,23 @@
 
         function handleInlineBlur(element, topicId, lang, blockKey, targetDataset = 'template') {
             if (activeTab === 'classic') return;
-            // Da 'input' den Text bereits sichert, erzwingen wir beim Verlassen nur den Cloud-Sync
+            const htmlVal = element.innerHTML.trim();
+            const textVal = element.innerText.trim();
+            
+            let topic;
+            if (targetDataset === 'diskussion' || activeTab === 'diskussion') topic = DISKUSSIONEN_DATA[activeIdx];
+            else topic = TEMPLATE_DATA[activeIdx];
+            
+            if (!topic || topic.id !== topicId) return;
+
+            saveHighlight(topic.id, blockKey, htmlVal);
+            
+            if (blockKey === 'content') {
+                topic.content = htmlVal; 
+            } else {
+                setTopicValue(topic, blockKey, textVal);
+            }
+            
             saveEditsSilent();
         }
 
@@ -3559,13 +3592,6 @@
                                 alert("Das Backup ist lokal da, aber beim Upload in die Cloud gab es einen Fehler: " + cloudErr.message);
                             }
                         } else {
-Hier ist der restliche Code, der genau dort weitergeht, wo die letzte Antwort
-abgeschnitten wurde!
-
-Kopiere diesen Block einfach und füge ihn nahtlos an die Stelle an, an der der
-Code aufgehört hat (ab alert("Vollbackup erfolgreich lokal (Offline-Modus)
-importiert!");):
-
                             alert("Vollbackup erfolgreich lokal (Offline-Modus) importiert!");
                         }
                     } 
@@ -3606,6 +3632,7 @@ importiert!");):
                     if (activeTab === 'mindmap') renderSimplisticBoxGrid();
                     if (activeTab === 'redemittel') renderRedemittel();
                     
+                    // Input-Feld zurücksetzen, damit man dieselbe Datei bei Bedarf erneut auswählen kann
                     document.getElementById('import-backup-input').value = "";
                     
                 } catch (err) {
@@ -3684,7 +3711,8 @@ importiert!");):
                             .contra { border-left: 4px solid #B02A1E; }
                             .dialog-bubble { background: #F4F4F0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; page-break-inside: avoid; }
                             .dialog-A { background: #EDF4EF; border-left: 3px solid #3D6B48; }
-                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48; padding: 0 2px; }
+                            .highlight { background-color: rgba(61, 107, 72, 0.12); border-bottom: 2px solid #3D6B48
+; padding: 0 2px; }
                             .hl-yellow { background: rgba(254, 240, 138, 0.35); border-bottom: 2px solid rgba(234, 179, 8, 0.85); padding: 1px 3px; }
                             .hl-blue { background: rgba(191, 219, 254, 0.3); border-bottom: 2px solid rgba(37, 99, 235, 0.85); padding: 1px 3px; }
                             .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
