@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Hochauflösendes Web-Icon (Flaticon) & PWA Manifest -->
-    <link class="rounded-full" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197571.png">
+    <link class="rounded-full" rel="apple-touch-icon" href="./icon-512.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3D6B48">
 
@@ -21,10 +21,10 @@
         }
     </script>
     
- <!-- Firebase Web SDK Compat (Modern v10.12.2) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Firebase Web SDK Compat (Modern v10.12.2) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     
     <style>
     /* Binds Tailwind REM units to scale seamlessly with the selection tool */
@@ -91,13 +91,14 @@
     }
 
     /* Native-App-Interaktionsverhalten */
-    * {
+    body, header, aside, .card-transition, #dashboard-controls, .topic-list-item, button, select {
         -webkit-tap-highlight-color: transparent;
         user-select: none;
+        -webkit-user-select: none;
     }
     
     /* SUPPORT FOR NORMAL TEXT SELECTION */
-    .selectable-text, .selectable-text *, .select-text, .select-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, [data-block-key], [data-block-key] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
+    main, .selectable-text, .selectable-text *, .select-text, .select-text *, textarea, input, [contenteditable="true"], [contenteditable="true"] *, [data-block-key], [data-block-key] *, .hl-yellow, .hl-blue, .hl-red, .hl-green, .highlight, .word-circle, b, strong, i, em {
         user-select: text !important;
         -webkit-user-select: text !important;
     }
@@ -313,7 +314,7 @@
         background: radial-gradient(circle at 80% 15%, rgba(16, 185, 129, 0.12), var(--bg-app) 75%) !important;
     }
 
-    /* Desktop/Tablet Collapsed Sidebar Logic (Fixed Bug) */
+    /* Desktop/Tablet Collapsed Sidebar Logic */
     #sidebar.sidebar-collapsed .hide-on-collapse,
     #sidebar.sidebar-collapsed .collapse-text-container {
         display: none !important;
@@ -338,7 +339,7 @@
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            padding: 0 !important; /* FIX: Padding entfernt */
+            padding: 0 !important; 
             border-radius: 9999px !important;
             width: 3rem !important;
             height: 3rem !important;
@@ -354,7 +355,7 @@
             width: 100% !important;
             height: 100% !important;
             gap: 0 !important;
-            overflow: visible !important; /* FIX: Verhindert das Abschneiden */
+            overflow: visible !important; 
         }
         
         #sidebar.sidebar-collapsed .collapse-status-dot {
@@ -388,10 +389,10 @@
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji {
             position: relative;
             border-radius: 50%;
-            border: 2px solid var(--amber); /* FIX: Echter Border statt Box-Shadow-Hack */
-            box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.5); /* FIX: Weicher Glow */
+            border: 2px solid var(--amber); 
+            box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.5); 
             background: rgba(245, 158, 11, 0.15);
-            width: 2.25rem !important; /* FIX: Feste Größe für perfekten Kreis */
+            width: 2.25rem !important; 
             height: 2.25rem !important;
         }
         #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji::after {
@@ -399,7 +400,8 @@
             display: none !important;
         }
     }
-        /* --- FIX: Verhindert unsichtbaren Text durch Browser-Formatierungsfehler --- */
+    
+    /* --- FIX: Verhindert unsichtbaren Text durch Browser-Formatierungsfehler --- */
     .selectable-text, .selectable-text * {
         color: var(--text-primary) !important;
     }
@@ -423,7 +425,8 @@
     [data-theme="dark"] .selectable-text .hl-blue { background-color: rgba(59, 130, 246, 0.35) !important; }
     [data-theme="dark"] .selectable-text .hl-red { background-color: rgba(239, 68, 68, 0.35) !important; }
     [data-theme="dark"] .selectable-text .hl-green { background-color: rgba(34, 197, 94, 0.35) !important; }
-        /* --- FIX: Native Bullet List Styling für den Editor --- */
+    
+    /* --- FIX: Native Bullet List Styling für den Editor --- */
     .selectable-text ul {
         list-style-type: disc !important;
         padding-left: 1.5rem !important;
@@ -434,7 +437,6 @@
         margin-bottom: 0.25rem !important;
         line-height: 1.5;
     }
-    /* ------------------------------------------------------ */
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -460,15 +462,14 @@
                     <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
                 </svg>
             </div>
-            <div>
+            <div class="whitespace-nowrap min-w-max">
                 <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
-                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider">Interaktive Vorbereitung &amp; Strukturierte Analyse</p>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block">Interaktive Vorbereitung &amp; Strukturierte Analyse</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <!-- Navigation Tabs (Removed Classic) -->
-            <div class="hidden md:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
+            <div class="hidden lg:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
                 <button onclick="switchTab('template')" id="tab-template-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📝 Template</button>
                 <button onclick="switchTab('diskussion')" id="tab-diskussion-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">💬 Diskussion</button>
                 <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Raster</button>
@@ -682,12 +683,11 @@
 
             <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
         </aside>
-
-        <!-- Main Workspace Container -->
+<!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-            <!-- Dashboard Controls -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30">
+            <!-- Dashboard Controls (Fixed flex layout for Tablets) -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative transition-colors duration-200 z-30">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0 relative">
                         <span id="active-topic-emoji" class="drop-shadow-sm select-none">📌</span>
@@ -760,25 +760,25 @@
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
-            <!-- Mobile Bottom Navigation (Removed Classic) -->
+            <!-- Mobile Bottom Navigation -->
             <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-1 flex overflow-x-auto no-scrollbar gap-1 items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--accent)] cursor-pointer transition-colors">
+                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--accent)] cursor-pointer transition-colors" aria-label="Template Tab">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Template</span>
                 </button>
-                <button onclick="switchTab('diskussion')" id="mob-tab-diskussion" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('diskussion')" id="mob-tab-diskussion" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Diskussion Tab">
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Diskussion</span>
                 </button>
-                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Mindmap Tab">
                     <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Raster</span>
                 </button>
-                <button onclick="switchTab('redemittel')" id="mob-tab-redemittel" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('redemittel')" id="mob-tab-redemittel" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Redemittel Tab">
                     <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Reden</span>
                 </button>
-                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Grammatik Tab">
                     <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                     <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
                 </button>
@@ -791,7 +791,7 @@
                 <button id="fab-redo" onmousedown="event.preventDefault(); smartRedo();" class="hidden edit-only-control w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 hover:bg-neutral-50 dark:hover:bg-zinc-700 cursor-pointer" title="Wiederholen (Text/Tippen)">
                     <span class="text-lg pointer-events-none">↪️</span>
                 </button>
-                <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 cursor-pointer hover:shadow-lg">
+                <button id="mobile-edit-fab" onclick="toggleEditMode()" class="w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--accent)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 cursor-pointer hover:shadow-lg" aria-label="Bearbeitungsmodus umschalten">
                     <svg id="edit-fab-icon" class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
             </div>
@@ -801,7 +801,7 @@
     <!-- Quick Preview Modal -->
     <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 pt-8 space-y-4 shadow-2xl transition-all relative">
-            <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
+            <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             
             <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3 pr-8">
                 <span id="preview-emoji" class="text-3xl">📌</span>
@@ -830,7 +830,7 @@
     <!-- Block Editor Modal -->
     <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
-            <button onclick="closeBlockEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
+            <button onclick="closeBlockEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Block-Editor</h3>
             
             <div class="space-y-4">
@@ -863,7 +863,7 @@
     <!-- Redemittel Editor Modal -->
     <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
-            <button onclick="closeRedemittelEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
+            <button onclick="closeRedemittelEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Redemittel bearbeiten</h3>
             
             <div class="space-y-4">
@@ -927,14 +927,15 @@
 
         const STARRED_TOPICS = [4, 8, 14, 15, 17, 18, 19, 21, 22, 26, 27, 30, 31, 34, 38, 39, 41, 43, 48];
 
+        // FIXED GERMAN TYPOS
         const TOPIC_KEYWORDS = {
             1: "Rauchen", 2: "Gewaltspiele", 3: "Hochzeit", 4: "Solarium", 5: "Nahrungsergänzung",
             6: "Elektroautos", 7: "Arbeit bis 75", 8: "HausTausch", 9: "Schulqualität", 10: "Trinkgeld geben",
             11: "Stadtwohnung", 12: "Gleiche Chancen", 13: "Tattoo", 14: "Die Schuluniform", 15: "Smartphones und kinder",
-            16: "Fernsehen und kinder", 17: "Eine Woche ohne Internet", 18: "Music und Zahnarzt", 19: "Praktische Lerntipps", 20: "Alkoholmissbrauch",
-            21: "Blutspende", 22: "Computer und schule", 23: "mehr direkter Demokratie", 24: "Handschrift", 25: "Hausaufgaben",
-            26: "Schönheitsoperationen", 27: "Gesund durch Lachen ", 28: "Antibiotika", 29: "bequemes Essen", 30: "Jugendliche abends ausgehen",
-            31: "behalten,findet", 32: " Die Europäische Union", 33: "Wählen schon mit 16", 34: "Leistungssport und Doping", 35: "Teilzeitarbeit",
+            16: "Fernsehen und kinder", 17: "Eine Woche ohne Internet", 18: "Musik und Zahnarzt", 19: "Praktische Lerntipps", 20: "Alkoholmissbrauch",
+            21: "Blutspende", 22: "Computer und schule", 23: "Mehr direkte Demokratie", 24: "Handschrift", 25: "Hausaufgaben",
+            26: "Schönheitsoperationen", 27: "Gesund durch Lachen", 28: "Antibiotika", 29: "bequemes Essen", 30: "Abendliches Ausgehen von Jugendlichen",
+            31: "behalten, findet", 32: " Die Europäische Union", 33: "Wählen schon mit 16", 34: "Leistungssport und Doping", 35: "Teilzeitarbeit",
             36: "Englisch", 37: "Spielen für die Karriere", 38: "hochbegabte Schüler", 39: "Klassenfahrten", 40: "Die Kleinen wollen's wissen",
             41: "Zweisprachigkeit", 42: "Glücklich ohne Geld", 43: "Sparkonto für Kinder", 44: "Haushaltsgeräte", 45: "Bargeldloses Einkaufen",
             46: "Wo sollen wir einkaufen", 47: "Gleiches Geld für alle", 48: " Fernsehen bildet", 49: "Selbst gekocht", 50: "Ganztagsschule",
@@ -1152,11 +1153,9 @@
             }
         });
 
-        function stripHtml(html) {
+           function stripHtml(html) {
             if (!html) return "";
-            let tmp = document.createElement("DIV");
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || "";
+            return new DOMParser().parseFromString(html, 'text/html').body.textContent || "";
         }
 
         function getTopicValue(topic, compoundKey) {
@@ -1200,12 +1199,22 @@
             }
         }
 
+        // FIXED MEMORY LEAK: Now only caches the active topic, drastically saving memory
         function pushToHistory() {
             if (undoStack.length > 50) undoStack.shift();
+            
+            let activeSnapshot = null;
+            if (activeTab === 'diskussion') {
+                activeSnapshot = JSON.parse(JSON.stringify(DISKUSSIONEN_DATA[activeIdx] || {}));
+            } else {
+                activeSnapshot = JSON.parse(JSON.stringify(TEMPLATE_DATA[activeIdx] || {}));
+            }
+
             const stateSnapshot = {
-                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
-                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
-                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                activeIdx: activeIdx,
+                activeTab: activeTab,
+                topicData: activeSnapshot,
+                highlights: JSON.parse(JSON.stringify(highlightsStore[activeSnapshot.id] || {})),
                 redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
             undoStack.push(JSON.stringify(stateSnapshot));
@@ -1251,7 +1260,35 @@
                 }, 1500);
             }
         });
+ function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
+            if (!isEditMode) return;
+            
+            // Hide the formatting toolbar immediately when leaving a text box
+            hideToolbar();
+            
+            // Clear the 1.5s delay timer and save immediately to prevent data loss
+            clearTimeout(globalSaveTimeout);
+            
+            const htmlVal = element.innerHTML;
+            
+            // Save to highlights store
+            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
+            highlightsStore[topicId][blockKey] = htmlVal;
+            
+            // Save to local storage instantly
+            const suffix = getSelectedUserSuffix();
+            localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+            
+            // Trigger Firebase sync
+            saveEditsSilent();
+        }
 
+        function smartUndo() {
+            const success = document.execCommand('undo');
+            if (!success) {
+                undo();
+            }
+        }
         function smartUndo() {
             const success = document.execCommand('undo');
             if (!success) {
@@ -1266,23 +1303,39 @@
             }
         }
 
+        // FIXED MEMORY LEAK: Undo logic optimized
         function undo() {
             if (undoStack.length === 0) {
                 alert("Keine weiteren Änderungen vorhanden!");
                 return;
             }
+            
+            let currentSnapshot = null;
+            if (activeTab === 'diskussion') {
+                currentSnapshot = JSON.parse(JSON.stringify(DISKUSSIONEN_DATA[activeIdx] || {}));
+            } else {
+                currentSnapshot = JSON.parse(JSON.stringify(TEMPLATE_DATA[activeIdx] || {}));
+            }
+            
             const currentStateSnapshot = {
-                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
-                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
-                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                activeIdx: activeIdx,
+                activeTab: activeTab,
+                topicData: currentSnapshot,
+                highlights: JSON.parse(JSON.stringify(highlightsStore[currentSnapshot.id] || {})),
                 redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
             redoStack.push(JSON.stringify(currentStateSnapshot));
             
             const prevStateSnapshot = JSON.parse(undoStack.pop());
-            TEMPLATE_DATA = prevStateSnapshot.template;
-            DISKUSSIONEN_DATA = prevStateSnapshot.diskussion;
-            highlightsStore = prevStateSnapshot.highlights;
+            
+            if (prevStateSnapshot.activeTab === 'diskussion') {
+                DISKUSSIONEN_DATA[prevStateSnapshot.activeIdx] = prevStateSnapshot.topicData;
+            } else {
+                TEMPLATE_DATA[prevStateSnapshot.activeIdx] = prevStateSnapshot.topicData;
+            }
+            
+            highlightsStore[prevStateSnapshot.topicData.id] = prevStateSnapshot.highlights;
+            
             if(prevStateSnapshot.redemittel) REDEMITTEL_DATA = prevStateSnapshot.redemittel;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
@@ -1293,23 +1346,38 @@
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
         }
 
+        // FIXED MEMORY LEAK: Redo logic optimized
         function redo() {
             if (redoStack.length === 0) {
                 alert("Nichts zum Wiederholen!");
                 return;
             }
+            
+            let currentSnapshot = null;
+            if (activeTab === 'diskussion') {
+                currentSnapshot = JSON.parse(JSON.stringify(DISKUSSIONEN_DATA[activeIdx] || {}));
+            } else {
+                currentSnapshot = JSON.parse(JSON.stringify(TEMPLATE_DATA[activeIdx] || {}));
+            }
             const currentStateSnapshot = {
-                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
-                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
-                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                activeIdx: activeIdx,
+                activeTab: activeTab,
+                topicData: currentSnapshot,
+                highlights: JSON.parse(JSON.stringify(highlightsStore[currentSnapshot.id] || {})),
                 redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
             undoStack.push(JSON.stringify(currentStateSnapshot));
             
             const nextStateSnapshot = JSON.parse(redoStack.pop());
-            TEMPLATE_DATA = nextStateSnapshot.template;
-            DISKUSSIONEN_DATA = nextStateSnapshot.diskussion;
-            highlightsStore = nextStateSnapshot.highlights;
+            
+            if (nextStateSnapshot.activeTab === 'diskussion') {
+                DISKUSSIONEN_DATA[nextStateSnapshot.activeIdx] = nextStateSnapshot.topicData;
+            } else {
+                TEMPLATE_DATA[nextStateSnapshot.activeIdx] = nextStateSnapshot.topicData;
+            }
+            
+            highlightsStore[nextStateSnapshot.topicData.id] = nextStateSnapshot.highlights;
+            
             if(nextStateSnapshot.redemittel) REDEMITTEL_DATA = nextStateSnapshot.redemittel;
             localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
@@ -1321,6 +1389,17 @@
         }
 
         async function saveEditsSilent() {
+Here is Part 3 of 3, the final piece of the code.
+
+This section continues exactly where Part 2 left off. It includes the Swipe Bug
+Fix (which prevents accidental page-swipes when a user is highlighting text) and
+the Service Worker Registration (which is mandatory to make the PWA installable
+on strict devices).
+
+Copy this and paste it immediately after Part 2.
+
+Part 3 of 3
+
             const suffix = getSelectedUserSuffix();
             if (activeTab === 'diskussion') {
                 const activeTopic = DISKUSSIONEN_DATA[activeIdx];
@@ -2922,9 +3001,9 @@
             const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30";
+                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative transition-colors duration-200 z-30";
                 } else {
-                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 relative transition-colors duration-200 z-30";
+                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative transition-colors duration-200 z-30";
                 }
             }
 
@@ -3769,7 +3848,12 @@
             touchStartTime = Date.now();
         }, { passive: true });
 
+        // FIXED iOS SWIPE BUG: Will no longer trigger page swipe if user has highlighted text
         document.addEventListener('touchend', e => {
+            if (window.getSelection() && window.getSelection().toString().length > 0) {
+                return;
+            }
+
             touchEndX = e.changedTouches[0].clientX;
             touchEndY = e.changedTouches[0].clientY;
             
@@ -3931,5 +4015,22 @@
             };
         }
     </script>
+    
+    <!-- FIXED PWA: Mandatory Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then((registration) => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch((err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
+
+
