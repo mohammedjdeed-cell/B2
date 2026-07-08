@@ -423,7 +423,18 @@
     [data-theme="dark"] .selectable-text .hl-blue { background-color: rgba(59, 130, 246, 0.35) !important; }
     [data-theme="dark"] .selectable-text .hl-red { background-color: rgba(239, 68, 68, 0.35) !important; }
     [data-theme="dark"] .selectable-text .hl-green { background-color: rgba(34, 197, 94, 0.35) !important; }
-    /* ------------------------------------------------------------------------- */
+        /* --- FIX: Native Bullet List Styling für den Editor --- */
+    .selectable-text ul {
+        list-style-type: disc !important;
+        padding-left: 1.5rem !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .selectable-text li {
+        margin-bottom: 0.25rem !important;
+        line-height: 1.5;
+    }
+    /* ------------------------------------------------------ */
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -873,10 +884,12 @@
         </div>
     </div>
 
-    <!-- Selection formatting toolbar -->
-    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
+    <!-- Selection formatting toolbar --><div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Kreis">⭕</button>
+        
+        <!-- NEUER LIST BUTTON -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
@@ -2175,7 +2188,9 @@
 
         function applySelectionFormat(type, value) {
             const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+            
+            // Allow bullet points even if no text is highlighted (just blinking cursor)
+            if (type !== 'bullet' && (!selection || selection.rangeCount === 0 || selection.isCollapsed)) return;
 
             let activeContainer = selection.anchorNode;
             while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
@@ -2183,24 +2198,50 @@
             }
             if (!activeContainer) return;
 
-            const range = selection.getRangeAt(0);
-            const container = document.createElement('div');
-            container.appendChild(range.cloneContents());
-            const html = container.innerHTML;
+            // Save state before modifying so the Undo button knows what to revert to
+            pushToHistory();
 
             if (type === 'bold') {
                 document.execCommand('bold', false, null);
-            } else if (type === 'highlight') {
-                document.execCommand('insertHTML', false, `<span class="hl-${value}">${html}</span>`);
-            } else if (type === 'circle') {
-                document.execCommand('insertHTML', false, `<span class="word-circle">${html}</span>`);
+            } else if (type === 'bullet') {
+                document.execCommand('insertUnorderedList', false, null);
             } else if (type === 'clear') {
-                const text = selection.toString();
-                document.execCommand('insertHTML', false, text);
+                unwrapSelection(activeContainer);
+            } else {
+                // Rock-solid classic logic for highlights and circles
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.className = type === 'circle' ? 'word-circle' : `hl-${value}`;
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e) {
+                    console.error("Marker failed:", e);
+                }
             }
 
+            // Trigger auto-save in the background
             activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
             handleSelectionChange();
+        }
+
+        function unwrapSelection(activeContainer) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+
+            // Finds markers and removes only the color, keeping the text intact
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight');
+            spans.forEach(span => {
+                if (selection.containsNode(span, true)) {
+                    const parent = span.parentNode;
+                    if (parent) {
+                        while (span.firstChild) { parent.insertBefore(span.firstChild, span); }
+                        parent.removeChild(span);
+                    }
+                }
+            });
+            activeContainer.normalize();
         }
 
         function handleSelectionChange() {
