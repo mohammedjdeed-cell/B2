@@ -1200,50 +1200,37 @@
             }
         }
 
-        let undoStack = [];
-        let redoStack = [];
-        let isUndoRedoAction = false;
-        let globalSaveTimeout;
-        let typingHistoryTimeout;
-
-        function getCurrentStateString() {
-            return JSON.stringify({
-                template: TEMPLATE_DATA,
-                diskussion: DISKUSSIONEN_DATA,
-                highlights: highlightsStore,
-                redemittel: REDEMITTEL_DATA
-            });
-        }
-
         function pushToHistory() {
-            const stateStr = getCurrentStateString();
-            if (undoStack.length > 0 && undoStack[undoStack.length - 1] === stateStr) return;
-            if (undoStack.length > 50) undoStack.shift(); 
-            undoStack.push(stateStr);
+            if (undoStack.length > 50) undoStack.shift();
+            const stateSnapshot = {
+                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
+            };
+            undoStack.push(JSON.stringify(stateSnapshot));
             redoStack = []; 
         }
 
-        document.addEventListener('focusin', (e) => {
-            if (e.target && e.target.hasAttribute('contenteditable')) {
-                pushToHistory();
-            }
-        });
+        let globalSaveTimeout;
 
         document.addEventListener('input', (e) => {
-            if (isUndoRedoAction) return; 
-
             if (e.target && e.target.hasAttribute('contenteditable')) {
                 const el = e.target;
                 const blockKey = el.getAttribute('data-block-key');
                 if (!blockKey) return;
                 
                 let topicId, topic;
-                if (activeTab === 'diskussion') topic = DISKUSSIONEN_DATA[activeIdx];
-                else if (activeTab === 'template') topic = TEMPLATE_DATA[activeIdx];
-                else return;
+                if (activeTab === 'diskussion') {
+                    topic = DISKUSSIONEN_DATA[activeIdx];
+                } else if (activeTab === 'template') {
+                    topic = TEMPLATE_DATA[activeIdx];
+                } else {
+                    return;
+                }
                 if (!topic) return;
-                
                 topicId = topic.id;
+                
                 const htmlVal = el.innerHTML;
                 const textVal = el.innerText.trim();
                 
@@ -1256,84 +1243,82 @@
                     setTopicValue(topic, blockKey, textVal);
                 }
 
-                clearTimeout(typingHistoryTimeout);
-                typingHistoryTimeout = setTimeout(() => {
-                    pushToHistory();
-                }, 1500);
-
                 clearTimeout(globalSaveTimeout);
                 globalSaveTimeout = setTimeout(() => {
                     const suffix = getSelectedUserSuffix();
                     localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
                     saveEditsSilent();
-                }, 2000);
+                }, 1500);
             }
         });
 
-        function performUndo() {
-            if (undoStack.length === 0) return;
-            isUndoRedoAction = true;
-            
-            const currentStr = getCurrentStateString();
-            if (undoStack[undoStack.length - 1] !== currentStr) {
-                 redoStack.push(currentStr);
-            } else {
-                 redoStack.push(undoStack.pop());
-                 if (undoStack.length === 0) {
-                     isUndoRedoAction = false;
-                     return;
-                 }
+        function smartUndo() {
+            const success = document.execCommand('undo');
+            if (!success) {
+                undo();
             }
+        }
+
+        function smartRedo() {
+            const success = document.execCommand('redo');
+            if (!success) {
+                redo();
+            }
+        }
+
+        function undo() {
+            if (undoStack.length === 0) {
+                alert("Keine weiteren Änderungen vorhanden!");
+                return;
+            }
+            const currentStateSnapshot = {
+                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
+            };
+            redoStack.push(JSON.stringify(currentStateSnapshot));
             
-            const prevStateStr = undoStack.pop();
-            const prevState = JSON.parse(prevStateStr);
+            const prevStateSnapshot = JSON.parse(undoStack.pop());
+            TEMPLATE_DATA = prevStateSnapshot.template;
+            DISKUSSIONEN_DATA = prevStateSnapshot.diskussion;
+            highlightsStore = prevStateSnapshot.highlights;
+            if(prevStateSnapshot.redemittel) REDEMITTEL_DATA = prevStateSnapshot.redemittel;
+            localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
-            TEMPLATE_DATA = prevState.template;
-            DISKUSSIONEN_DATA = prevState.diskussion;
-            highlightsStore = prevState.highlights;
-            if(prevState.redemittel) REDEMITTEL_DATA = prevState.redemittel;
-            
-            const suffix = getSelectedUserSuffix();
-            localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
             saveEditsSilent();
-            
             if(activeTab === 'redemittel') { saveRedemittelData(); renderRedemittel(); }
             renderSidebar();
             if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
-            
-            setTimeout(() => isUndoRedoAction = false, 100);
         }
 
-        function performRedo() {
-            if (redoStack.length === 0) return;
-            isUndoRedoAction = true;
+        function redo() {
+            if (redoStack.length === 0) {
+                alert("Nichts zum Wiederholen!");
+                return;
+            }
+            const currentStateSnapshot = {
+                template: JSON.parse(JSON.stringify(TEMPLATE_DATA)),
+                diskussion: JSON.parse(JSON.stringify(DISKUSSIONEN_DATA)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore)),
+                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
+            };
+            undoStack.push(JSON.stringify(currentStateSnapshot));
             
-            const currentStr = getCurrentStateString();
-            undoStack.push(currentStr);
+            const nextStateSnapshot = JSON.parse(redoStack.pop());
+            TEMPLATE_DATA = nextStateSnapshot.template;
+            DISKUSSIONEN_DATA = nextStateSnapshot.diskussion;
+            highlightsStore = nextStateSnapshot.highlights;
+            if(nextStateSnapshot.redemittel) REDEMITTEL_DATA = nextStateSnapshot.redemittel;
+            localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
             
-            const nextStateStr = redoStack.pop();
-            const nextState = JSON.parse(nextStateStr);
-            
-            TEMPLATE_DATA = nextState.template;
-            DISKUSSIONEN_DATA = nextState.diskussion;
-            highlightsStore = nextState.highlights;
-            if(nextState.redemittel) REDEMITTEL_DATA = nextState.redemittel;
-            
-            const suffix = getSelectedUserSuffix();
-            localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
             saveEditsSilent();
-            
             if(activeTab === 'redemittel') { saveRedemittelData(); renderRedemittel(); }
             renderSidebar();
             if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
             if(activeTab === 'mindmap') renderSimplisticBoxGrid();
-            
-            setTimeout(() => isUndoRedoAction = false, 100);
         }
-
-        function smartUndo() { performUndo(); }
-        function smartRedo() { performRedo(); }
 
         async function saveEditsSilent() {
             const suffix = getSelectedUserSuffix();
@@ -1359,16 +1344,16 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-            const isUndo = (isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey;
-            const isRedo = (isMac ? e.metaKey : e.ctrlKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey));
-
-            if (isUndo) {
-                e.preventDefault(); // Zwingt den Browser, UNSER System zu nutzen!
-                performUndo();
-            } else if (isRedo) {
-                e.preventDefault(); // Zwingt den Browser, UNSER System zu nutzen!
-                performRedo();
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.hasAttribute('contenteditable'))) {
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { 
+                e.preventDefault(); 
+                if (e.shiftKey) { smartRedo(); } else { smartUndo(); } 
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { 
+                e.preventDefault(); 
+                smartRedo(); 
             }
         });
 
