@@ -423,6 +423,20 @@
     [data-theme="dark"] .selectable-text .hl-blue { background-color: rgba(59, 130, 246, 0.35) !important; }
     [data-theme="dark"] .selectable-text .hl-red { background-color: rgba(239, 68, 68, 0.35) !important; }
     [data-theme="dark"] .selectable-text .hl-green { background-color: rgba(34, 197, 94, 0.35) !important; }
+        /* --- FIX: Native Bullet List Styling für den Editor --- */
+    .selectable-text ul {
+        list-style-type: disc !important;
+        padding-left: 1.5rem !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .selectable-text li {
+        margin-bottom: 0.25rem !important;
+        line-height: 1.5;
+    }
+    /* ------------------------------------------------------ */
+    </style>
+</head>
     /* ------------------------------------------------------------------------- */
     </style>
 </head>
@@ -873,10 +887,12 @@
         </div>
     </div>
 
-    <!-- Selection formatting toolbar -->
-    <div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
+    <!-- Selection formatting toolbar --><div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Kreis">⭕</button>
+        
+        <!-- NEUER LIST BUTTON -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
@@ -2188,8 +2204,11 @@
             container.appendChild(range.cloneContents());
             const html = container.innerHTML;
 
+            i// WICHTIG: execCommand nutzen, damit der Browser sich die Aktion für 'Rückgängig' (Ctrl+Z) merkt!
             if (type === 'bold') {
                 document.execCommand('bold', false, null);
+            } else if (type === 'bullet') {
+                document.execCommand('insertUnorderedList', false, null); // <-- NEUE ZEILE HIER
             } else if (type === 'highlight') {
                 document.execCommand('insertHTML', false, `<span class="hl-${value}">${html}</span>`);
             } else if (type === 'circle') {
