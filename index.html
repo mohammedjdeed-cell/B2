@@ -1221,7 +1221,7 @@
             redoStack = []; 
         }
 
-        let globalSaveTimeout;
+ let globalSaveTimeout;
 
         document.addEventListener('input', (e) => {
             if (e.target && e.target.hasAttribute('contenteditable')) {
@@ -1254,32 +1254,44 @@
 
                 clearTimeout(globalSaveTimeout);
                 globalSaveTimeout = setTimeout(() => {
-                    const suffix = getSelectedUserSuffix();
-                    localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
+                    // Force save the highlights to Firebase AND LocalStorage
+                    saveHighlight(topicId, blockKey, htmlVal);
+                    // Force save the topic text to Firebase AND LocalStorage
                     saveEditsSilent();
                 }, 1500);
             }
         });
- function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
+
+        function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
             if (!isEditMode) return;
             
             // Hide the formatting toolbar immediately when leaving a text box
             hideToolbar();
             
-            // Clear the 1.5s delay timer and save immediately to prevent data loss
+            // Clear the 1.5s delay timer because we are saving IMMEDIATELY now
             clearTimeout(globalSaveTimeout);
             
             const htmlVal = element.innerHTML;
+            const textVal = element.innerText.trim();
             
-            // Save to highlights store
-            if (!highlightsStore[topicId]) highlightsStore[topicId] = {};
-            highlightsStore[topicId][blockKey] = htmlVal;
+            let topic;
+            if (activeTab === 'diskussion') {
+                topic = DISKUSSIONEN_DATA[activeIdx];
+            } else if (activeTab === 'template') {
+                topic = TEMPLATE_DATA[activeIdx];
+            }
             
-            // Save to local storage instantly
-            const suffix = getSelectedUserSuffix();
-            localStorage.setItem(`b2_highlights_${suffix}`, JSON.stringify(highlightsStore));
-            
-            // Trigger Firebase sync
+            // Update the topic object memory so we don't lose the text!
+            if (topic) {
+                if (blockKey === 'content') {
+                    topic.content = htmlVal;
+                } else {
+                    setTopicValue(topic, blockKey, textVal);
+                }
+            }
+
+            // Immediately push the highlights & text to the cloud without waiting
+            saveHighlight(topicId, blockKey, htmlVal);
             saveEditsSilent();
         }
 
