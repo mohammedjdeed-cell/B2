@@ -1389,17 +1389,6 @@
         }
 
         async function saveEditsSilent() {
-Here is Part 3 of 3, the final piece of the code.
-
-This section continues exactly where Part 2 left off. It includes the Swipe Bug
-Fix (which prevents accidental page-swipes when a user is highlighting text) and
-the Service Worker Registration (which is mandatory to make the PWA installable
-on strict devices).
-
-Copy this and paste it immediately after Part 2.
-
-Part 3 of 3
-
             const suffix = getSelectedUserSuffix();
             if (activeTab === 'diskussion') {
                 const activeTopic = DISKUSSIONEN_DATA[activeIdx];
