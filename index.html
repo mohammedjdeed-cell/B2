@@ -2316,10 +2316,18 @@
             pushToHistory();
 
             if (type === 'bold') {
-                document.execCommand('bold', false, null);
-            } else if (type === 'bullet') {
-                document.execCommand('insertUnorderedList', false, null);
-            } else if (type === 'clear') {
+            // NEW VANILLA JS BOLD: Replaces execCommand
+            const range = selection.getRangeAt(0);
+            const strong = document.createElement('strong');
+            try {
+                strong.appendChild(range.extractContents());
+                range.insertNode(strong);
+            } catch (e) {
+                console.error("Bold formatting failed:", e);
+            }
+        } else if (type === 'bullet') {
+            document.execCommand('insertUnorderedList', false, null);
+        } else if (type === 'clear') {
                 unwrapSelection(activeContainer);
             } else {
                 // Rock-solid classic logic for highlights and circles
