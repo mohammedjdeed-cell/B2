@@ -122,22 +122,15 @@
         transition: max-height 0.25s ease-out, opacity 0.25s ease-out;
         opacity: 0;
     }
+    
+    /* FIX: Removed max-height limits and hidden overflows to prevent clipping */
     .accordion-content.expanded {
-        max-height: 2000px; 
+        max-height: none !important; 
         opacity: 1;
+        overflow: visible !important;
     }
 
-    @media (max-width: 1023px) {
-        .accordion-content.expanded {
-            max-height: 60vh !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch;
-        }
-    }
-    @media (min-width: 1024px) {
-        .accordion-content.expanded {
-            max-height: none !important;
-        }
+    /* We no longer need the 60vh media query restriction */
     }
 
     .no-scrollbar::-webkit-scrollbar {
@@ -1222,6 +1215,20 @@
         }
 
  let globalSaveTimeout;
+        // FIX: Force raw plain text on paste inside the editor
+        document.addEventListener('paste', function(e) {
+            // Check if the user is pasting inside an editable text box
+            const target = e.target;
+            if (target && target.hasAttribute('contenteditable') && target.getAttribute('contenteditable') === 'true') {
+                e.preventDefault(); // Stop the normal paste
+                
+                // Get the raw plain text from the clipboard
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                
+                // Insert the raw text safely at the cursor position
+                document.execCommand('insertText', false, text);
+            }
+        });
 
         document.addEventListener('input', (e) => {
             if (e.target && e.target.hasAttribute('contenteditable')) {
