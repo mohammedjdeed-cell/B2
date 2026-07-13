@@ -403,6 +403,10 @@
         color: var(--text-primary) !important;
         line-height: 1.85 !important; /* <--- FIX: Gives extra space between lines */
     }
+        /* FIX: Make bold text softer and more modern (Semi-Bold instead of Extra-Bold) */
+    .selectable-text strong, .selectable-text b {
+        font-weight: 600 !important;
+    }
     
     /* Sichert ab, dass unsere speziellen Marker ihre Farben behalten! */
     .selectable-text .highlight {
