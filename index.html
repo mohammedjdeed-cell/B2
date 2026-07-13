@@ -445,7 +445,8 @@
     .backface-hidden { backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
     .flashcard-container { cursor: pointer; }
-    .flashcard-container:hover .flashcard-inner:not(.rotate-y-180) { transform: rotateY(5deg) scale(1.02); }
+    /* Removed hover flip to make buttons easier to click */
+    .flashcard-container:hover .flashcard-inner:not(.rotate-y-180) { transform: scale(1.01); }
     .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
     </style>
 </head>
@@ -943,6 +944,8 @@
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
         <div class="h-5 w-px bg-[var(--border)]"></div>
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
+   <div class="h-5 w-px bg-[var(--border)] mx-1"></div>
+        <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="px-2 py-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded border border-transparent transition-all cursor-pointer" title="Als Vokabel speichern">🧠+ Vokabel</button>
     </div>
 
     <!-- Bullet List Auto-Format Toolbar Helper -->
@@ -3171,87 +3174,143 @@
             // ==========================================
             // WORTSCHATZ (FLASHCARDS) RENDERING LOGIC
             // ==========================================
+            // ==========================================
+            // WORTSCHATZ (FLASHCARDS / LIST) RENDERING LOGIC
+            // ==========================================
             if (isWortschatz) {
                 const tId = topic.id;
                 if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
-                const words = VOCAB_DATA[tId];
 
-                const learnedCount = words.filter(w => w.learned).length;
-                const progressPercent = words.length > 0 ? (learnedCount / words.length) * 100 : 0;
+                // 1. Filter: Combine all themes or just current theme
+                let wordsToRender = [];
+                if (vocabShowAll) {
+                    Object.keys(VOCAB_DATA).forEach(keyId => {
+                        VOCAB_DATA[keyId].forEach((w, idx) => {
+                            wordsToRender.push({ ...w, originalTid: keyId, originalIdx: idx });
+                        });
+                    });
+                } else {
+                    wordsToRender = (VOCAB_DATA[tId] || []).map((w, idx) => ({ ...w, originalTid: tId, originalIdx: idx }));
+                }
+
+                const learnedCount = wordsToRender.filter(w => w.learned).length;
+                const progressPercent = wordsToRender.length > 0 ? (learnedCount / wordsToRender.length) * 100 : 0;
 
                 let vocabHtml = `
                     <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                             <div>
-                                <h3 class="text-lg font-black text-[var(--text-primary)]">🧠 Interaktive Vokabelkarten</h3>
-                                <p class="text-xs text-[var(--text-muted)] mt-1">Lernen Sie neue Wörter für <b>Thema ${tId}</b>. Tippen Sie auf eine Karte zum Umdrehen.</p>
+                                <h3 class="text-lg font-black text-[var(--text-primary)]">🧠 Vokabel-Management</h3>
+                                <p class="text-xs text-[var(--text-muted)] mt-1">Lernen Sie neue Wörter. Aktivieren Sie den <b>Edit-Modus</b> unten rechts, um direkt in die Liste zu tippen.</p>
                             </div>
-                            <button onclick="openVocabEditor()" class="px-4 py-2 bg-[var(--accent)] text-white text-xs font-bold rounded-xl shadow-md hover:scale-105 transition-transform flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center">
-                                ➕ Neues Wort
-                            </button>
+                            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                                <button onclick="toggleVocabPracticeMode()" class="px-3 py-2 text-[11px] font-bold rounded-xl border transition-colors ${vocabPracticeMode ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-[var(--bg-app)] text-[var(--text-primary)] border-[var(--border)] hover:bg-indigo-50'}">
+                                    ${vocabPracticeMode ? '🃏 Übungsmodus: AN' : '📋 Listen-Ansicht'}
+                                </button>
+                                <button onclick="toggleVocabShowAll()" class="px-3 py-2 text-[11px] font-bold rounded-xl border transition-colors ${vocabShowAll ? 'bg-teal-600 text-white border-teal-600 shadow-md' : 'bg-[var(--bg-app)] text-[var(--text-primary)] border-[var(--border)] hover:bg-teal-50'}">
+                                    ${vocabShowAll ? '🌍 Alle 52 Themen' : '📌 Nur Thema ' + tId}
+                                </button>
+                                ${!vocabShowAll ? `
+                                <button onclick="openVocabEditor()" class="px-3 py-2 bg-[var(--accent)] text-white text-[11px] font-bold rounded-xl shadow-md hover:scale-105 transition-transform flex items-center justify-center gap-1.5">
+                                    ➕ Neu
+                                </button>` : ''}
+                            </div>
                         </div>
                         
                         <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden mb-2">
                             <div class="bg-indigo-500 h-full transition-all duration-500" style="width: ${progressPercent}%"></div>
                         </div>
-                        <div class="text-[10px] font-bold text-[var(--text-muted)] text-right">${learnedCount} von ${words.length} gelernt</div>
+                        <div class="text-[10px] font-bold text-[var(--text-muted)] text-right">${learnedCount} von ${wordsToRender.length} Wörtern gelernt</div>
                     </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
                 `;
 
-                if (words.length === 0) {
-                    vocabHtml += `<div class="col-span-full text-center p-8 border-2 border-dashed border-[var(--border)] rounded-2xl text-[var(--text-muted)] text-sm font-semibold">Keine Vokabeln für dieses Thema. Fügen Sie Ihr erstes Wort hinzu!</div>`;
-                } else {
-                    words.forEach((w, idx) => {
-                        const encodedDe = encodeURIComponent(w.de);
+                if (wordsToRender.length === 0) {
+                    vocabHtml += `<div class="text-center p-8 border-2 border-dashed border-[var(--border)] rounded-2xl text-[var(--text-muted)] text-sm font-semibold">Keine Vokabeln gefunden. Markieren Sie Text und klicken Sie "🧠+ Vokabel", um Wörter hinzuzufügen!</div>`;
+                } else if (!vocabPracticeMode) {
+                    // ==========================================
+                    // VIEW MODE (LIST / COLLECTIVE EDIT)
+                    // ==========================================
+                    vocabHtml += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20">`;
+                    wordsToRender.forEach(w => {
+                        const isLearnedClass = w.learned ? 'border-emerald-500 bg-emerald-50/30' : 'border-[var(--border)]';
+                        const editClass = currentEditMode ? 'bg-white dark:bg-black border border-[var(--border)] shadow-inner cursor-text' : 'bg-transparent border border-transparent';
                         
+                        vocabHtml += `
+                        <div class="bg-[var(--bg-card)] border ${isLearnedClass} rounded-2xl p-4 shadow-sm relative transition-all">
+                            ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded-full">Thema ${w.originalTid}</span>` : ''}
+                            
+                            <div class="flex flex-col gap-3">
+                                <div>
+                                    <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1 block">🇩🇪 Deutsch</span>
+                                    <div class="text-sm font-bold text-[var(--text-primary)] p-1.5 rounded-lg ${editClass} min-h-[30px]" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <span class="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1 block">🇬🇧 English</span>
+                                        <div class="text-xs text-[var(--text-primary)] p-1.5 rounded-lg ${editClass} min-h-[28px]" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'en', this.innerText)">${w.en || ''}</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1 block text-right">🇸🇾 العربية</span>
+                                        <div dir="rtl" class="text-[13px] font-arabic text-[var(--text-primary)] p-1.5 rounded-lg text-right ${editClass} min-h-[28px]" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'ar', this.innerText)">${w.ar || ''}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center mt-3 pt-3 border-t border-[var(--border)]">
+                                <div class="flex gap-1.5">
+                                    <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(w.de)}'), this)" class="audio-btn p-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--accent)] bg-[var(--bg-app)] rounded-lg flex items-center justify-center min-w-[32px]"><span class="soundwave-bar"></span><span class="soundwave-bar"></span></button>
+                                    ${currentEditMode ? `<button onclick="deleteVocabByTid(${w.originalTid}, ${w.originalIdx})" class="p-1.5 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 rounded-lg">🗑️</button>` : ''}
+                                </div>
+                                <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg transition-colors border ${w.learned ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border)]'}">
+                                    ${w.learned ? '✓ Gelernt' : '⏳ Merken'}
+                                </button>
+                            </div>
+                        </div>`;
+                    });
+                    vocabHtml += `</div>`;
+                } else {
+                    // ==========================================
+                    // PRACTICE MODE (FLASHCARDS)
+                    // ==========================================
+                    vocabHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">`;
+                    wordsToRender.forEach(w => {
+                        const encodedDe = encodeURIComponent(w.de);
                         vocabHtml += `
                         <div class="perspective-1000 flashcard-container h-44" onclick="this.classList.toggle('flipped')">
                             <div class="flashcard-inner w-full h-full relative transform-style-3d shadow-sm hover:shadow-md rounded-2xl">
                                 
-                                <!-- FRONT (German) -->
+                                <!-- FRONT -->
                                 <div class="absolute w-full h-full backface-hidden bg-[var(--bg-card)] border ${w.learned ? 'border-emerald-500 ring-1 ring-emerald-500/30' : 'border-[var(--border)]'} rounded-2xl flex flex-col items-center justify-center p-4">
-                                    ${w.learned ? '<div class="absolute top-2 right-2 text-emerald-500 text-lg shadow-[0_0_8px_rgba(16,185,129,0.4)] rounded-full">✓</div>' : ''}
+                                    ${vocabShowAll ? `<span class="absolute top-2 right-2 text-[9px] font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-1.5 py-0.5 rounded-md">Thema ${w.originalTid}</span>` : ''}
+                                    ${w.learned ? '<div class="absolute top-2 left-2 text-emerald-500 text-lg shadow-[0_0_8px_rgba(16,185,129,0.4)] rounded-full">✓</div>' : ''}
                                     
-                                    <button onclick="event.stopPropagation(); playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="absolute top-2 left-2 audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] p-2 rounded-lg bg-[var(--bg-app)]">
-                                        <span class="soundwave-bar"></span><span class="soundwave-bar"></span><span class="soundwave-bar"></span><span class="soundwave-bar"></span>
-                                    </button>
-
                                     <div class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2 mt-4">Deutsch</div>
                                     <h4 class="text-lg font-black text-[var(--text-primary)] text-center line-clamp-2">${w.de}</h4>
                                     <div class="text-[10px] text-[var(--text-muted)] mt-auto pt-2 animate-pulse">Tippen zum Umdrehen ↻</div>
                                 </div>
 
-                                <!-- BACK (Translations & Actions) -->
-                                <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex flex-col p-4 shadow-inner">
-                                    <div class="flex-1 flex flex-col justify-center items-center gap-1 text-center">
+                                <!-- BACK -->
+                                <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex flex-col p-4 shadow-inner cursor-default" onclick="event.stopPropagation()">
+                                    <div class="flex-1 flex flex-col justify-center items-center gap-1 text-center" onclick="this.parentElement.parentElement.parentElement.classList.remove('flipped')">
                                         <div class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">English</div>
                                         <h5 class="text-sm font-bold text-[var(--text-primary)]">${w.en || '-'}</h5>
-                                        
                                         <div class="w-12 h-px bg-[var(--border)] my-1"></div>
-                                        
                                         <div class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">العربية</div>
                                         <h5 class="text-[15px] font-arabic font-bold text-[var(--text-primary)]" dir="rtl">${w.ar || '-'}</h5>
                                     </div>
 
-                                    <!-- Action Bar -->
-                                    <div class="flex justify-between items-center border-t border-[var(--border)] pt-2 mt-2 gap-2" onclick="event.stopPropagation()">
-                                        <div class="flex gap-1">
-                                            <button onclick="openVocabEditor(${idx})" class="p-1.5 text-xs text-[var(--text-muted)] hover:text-indigo-500 bg-[var(--bg-card)] rounded-md border border-[var(--border)] shadow-sm">✏️</button>
-                                            <button onclick="deleteVocab(${idx})" class="p-1.5 text-xs text-[var(--text-muted)] hover:text-rose-500 bg-[var(--bg-card)] rounded-md border border-[var(--border)] shadow-sm">🗑️</button>
-                                        </div>
-                                        <button onclick="toggleVocabLearned(${idx}, event)" class="px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors ${w.learned ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'} border">
+                                    <div class="flex justify-between items-center border-t border-[var(--border)] pt-2 mt-2 gap-2">
+                                        <button onclick="playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-1.5 bg-[var(--bg-card)] rounded-md border border-[var(--border)]"><span class="soundwave-bar"></span><span class="soundwave-bar"></span></button>
+                                        <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors border ${w.learned ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)]'}">
                                             ${w.learned ? '✓ Gelernt' : '⏳ Merken'}
                                         </button>
                                     </div>
                                 </div>
-
                             </div>
                         </div>`;
                     });
+                    vocabHtml += `</div>`;
                 }
-                vocabHtml += `</div>`;
                 
                 const vocabDiv = document.createElement('div');
                 vocabDiv.innerHTML = vocabHtml;
@@ -3965,6 +4024,50 @@
             reader.readAsText(file);
         }
 // --- WORTSCHATZ (VOCABULARY) LOGIC ---
+        let vocabPracticeMode = false;
+        let vocabShowAll = false;
+
+        function toggleVocabPracticeMode() { vocabPracticeMode = !vocabPracticeMode; renderActiveTopic(); }
+        function toggleVocabShowAll() { vocabShowAll = !vocabShowAll; renderActiveTopic(); }
+
+        function addSelectedToVocab() {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            if (!text) return;
+            
+            const tId = TEMPLATE_DATA[activeIdx].id;
+            if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
+            
+            // Avoid duplicates
+            if (!VOCAB_DATA[tId].find(w => w.de === text)) {
+                VOCAB_DATA[tId].push({ de: text, en: "", ar: "", learned: false });
+                saveVocabData();
+                alert(`"${text}" wurde zum Wortschatz für Thema ${tId} hinzugefügt!`);
+            } else {
+                alert(`Das Wort "${text}" existiert bereits in diesem Thema.`);
+            }
+            hideToolbar();
+        }
+
+        function updateVocabInline(tid, idx, lang, newText) {
+            if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
+            VOCAB_DATA[tid][idx][lang] = newText.trim();
+            saveVocabData(); // Automatically saves when you click outside the text box
+        }
+
+        function deleteVocabByTid(tid, idx) {
+            if (!confirm("Vokabel wirklich löschen?")) return;
+            VOCAB_DATA[tid].splice(idx, 1);
+            saveVocabData();
+            renderActiveTopic();
+        }
+
+        function toggleVocabLearnedByTid(tid, idx, event) {
+            if(event) event.stopPropagation(); // Stops the card from flipping
+            VOCAB_DATA[tid][idx].learned = !VOCAB_DATA[tid][idx].learned;
+            saveVocabData();
+            renderActiveTopic();
+        }
         async function saveVocabData() {
             const suffix = getSelectedUserSuffix();
             if (currentUser && db) {
