@@ -3293,18 +3293,20 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                             </div>
 
                             <!-- Translations Grid (Color Zoned) -->
-                            <div class="grid grid-cols-2 gap-3 mt-1">
+                            <div class="grid ${(w.ar || currentEditMode) ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mt-1">
                                 <!-- English -->
                                 <div class="bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[16px] p-3 relative overflow-hidden group">
                                     <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 block relative z-10">English</span>
                                     <div class="text-sm font-bold text-blue-950 dark:text-blue-100 p-1 -ml-1 rounded-md ${editClass} outline-none focus:ring-2 focus:ring-blue-500 relative z-10 transition-all leading-snug" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'en', this.innerText)">${w.en || ''}</div>
                                 </div>
 
-                                <!-- Arabic -->
+                                <!-- Arabic (Hides automatically if empty, unless Edit Mode is ON) -->
+                                ${(w.ar || currentEditMode) ? `
                                 <div class="bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[16px] p-3 relative overflow-hidden group">
                                     <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-1 block text-right relative z-10">العربية</span>
                                     <div dir="rtl" class="text-base font-arabic font-bold text-purple-950 dark:text-purple-100 p-1 -mr-1 rounded-md text-right ${editClass} outline-none focus:ring-2 focus:ring-purple-500 relative z-10 transition-all leading-snug" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'ar', this.innerText)">${w.ar || ''}</div>
                                 </div>
+                                ` : ''}
                             </div>
 
                             <!-- Action Bar -->
@@ -3333,10 +3335,10 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                             <div class="flashcard-inner w-full h-full relative transform-style-3d shadow-sm hover:shadow-md rounded-[24px]">
                                 
                                 <!-- FRONT (German Word - High Focus) -->
-                                <div class="flashcard-front absolute w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)]'} rounded-[24px] flex flex-col items-center justify-center p-5 overflow-hidden">
+                                <div class="flashcard-front absolute w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5 overflow-hidden">
                                     
-                                    <!-- Modern German Flag Background -->
-                                    <div class="absolute -right-4 -top-4 text-7xl opacity-[0.04] dark:opacity-10 filter grayscale pointer-events-none select-none">🇩🇪</div>
+                                    <!-- Modern SVG Flag Watermark (Fix for Windows) -->
+                                    <img src="https://flagcdn.com/de.svg" class="absolute -right-6 -top-4 w-32 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="DE" />
                                     
                                     <!-- Top Floating Bar -->
                                     <div class="absolute top-4 w-full px-5 flex justify-between items-start z-10">
@@ -3344,13 +3346,14 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                         </button>
                                         <div class="flex gap-1.5 flex-col items-end">
-${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded-lg border border-black/5 backdrop-blur-sm flex items-center gap-1.5 shadow-sm"><span class="text-xs filter drop-shadow-sm">${TOPIC_ICONS[w.originalTid] || '📌'}</span> Thema ${w.originalTid}</span>` : ''}                                            ${w.learned ? '<span class="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">✓ Gelernt</span>' : ''}
+                                            ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded-lg border border-black/5 backdrop-blur-sm flex items-center gap-1.5 shadow-sm"><span class="text-xs filter drop-shadow-sm">${TOPIC_ICONS[w.originalTid] || '📌'}</span> Thema ${w.originalTid}</span>` : ''}
+                                            ${w.learned ? '<span class="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">✓ Gelernt</span>' : ''}
                                         </div>
                                     </div>
 
-                                    <!-- Core Word Area -->
-                                    <div class="mt-4 flex flex-col items-center w-full px-2 relative z-10">
-                                        <h4 class="text-3xl sm:text-4xl font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-md w-full line-clamp-3 px-2">${w.de}</h4>
+                                    <!-- Core Word Area (Fixed cut-off issue) -->
+                                    <div class="mt-4 flex flex-col items-center w-full px-2 relative z-10 max-h-[110px]">
+                                        <h4 class="text-2xl sm:text-3xl font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-md w-full break-words overflow-y-auto no-scrollbar pb-2 px-1">${w.de}</h4>
                                     </div>
 
                                     <!-- Bottom Hint -->
@@ -3366,17 +3369,19 @@ ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc
                                         
                                         <!-- English Zone -->
                                         <div class="flex-1 bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-blue-100/60 transition-colors">
-                                            <div class="absolute -right-3 -top-3 text-5xl opacity-[0.07] dark:opacity-10 filter grayscale pointer-events-none select-none">🇬🇧</div>
+                                            <img src="https://flagcdn.com/gb.svg" class="absolute -right-2 -top-2 w-20 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="GB" />
                                             <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 z-10 bg-blue-100/50 dark:bg-blue-900/30 px-2 py-0.5 rounded text-center">English</span>
-                                            <h5 class="text-base font-extrabold text-blue-950 dark:text-blue-100 text-center z-10 leading-snug px-2 line-clamp-2">${w.en || '-'}</h5>
+                                            <h5 class="text-base sm:text-lg font-extrabold text-blue-950 dark:text-blue-100 text-center z-10 leading-snug px-2 break-words overflow-y-auto no-scrollbar max-h-[60px] w-full">${w.en || '-'}</h5>
                                         </div>
 
-                                        <!-- Arabic Zone -->
+                                        <!-- Arabic Zone (Hides automatically if empty) -->
+                                        ${w.ar ? `
                                         <div class="flex-1 bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-purple-100/60 transition-colors">
-                                            <div class="absolute -left-3 -top-3 text-5xl opacity-[0.07] dark:opacity-10 filter grayscale pointer-events-none select-none">🇸🇾</div>
+                                            <img src="https://flagcdn.com/sa.svg" class="absolute -left-2 -top-2 w-20 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="SA" />
                                             <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-1 z-10 bg-purple-100/50 dark:bg-purple-900/30 px-2 py-0.5 rounded text-center">العربية</span>
-                                            <h5 class="text-lg font-arabic font-extrabold text-purple-950 dark:text-purple-100 text-center z-10 leading-snug px-2 line-clamp-2" dir="rtl">${w.ar || '-'}</h5>
+                                            <h5 class="text-lg sm:text-xl font-arabic font-extrabold text-purple-950 dark:text-purple-100 text-center z-10 leading-snug px-2 break-words overflow-y-auto no-scrollbar max-h-[60px] w-full" dir="rtl">${w.ar}</h5>
                                         </div>
+                                        ` : ''}
                                     </div>
 
                                     <!-- Bottom Action Bar -->
