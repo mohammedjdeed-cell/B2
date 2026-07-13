@@ -662,7 +662,7 @@
                     </div>
 
                     <!-- Action Buttons (Desktop) -->
-                    <div class="hidden lg:flex items-center gap-2 shrink-0">
+                    <div class="hidden xl:flex items-center gap-2 shrink-0">
                         <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-10 px-4 text-xs bg-[var(--accent)] hover:opacity-90 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">Sichern</button>
                         <button onclick="printCurrentTopic()" class="h-10 px-4 text-xs bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">PDF Export</button>
                         <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-10 px-3 flex items-center justify-center text-xs font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-lg transition-all shadow-sm cursor-pointer">Reset</button>
@@ -677,7 +677,7 @@
                 </div>
 
                 <!-- 3. Bottom Row: Action Buttons (Mobile Only) -->
-                <div class="flex lg:hidden items-center justify-between gap-2 w-full mt-1">
+                <div class="flex xl:hidden flex-wrap sm:flex-nowrap items-center justify-between gap-2 w-full mt-1">
                     <button id="save-progress-btn-mobile" onclick="saveEditsManual()" class="edit-only-control flex-1 min-h-[44px] text-[13px] bg-[var(--accent)] text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">Sichern</button>
                     <button onclick="printCurrentTopic()" class="flex-1 min-h-[44px] text-[13px] bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">PDF Export</button>
                     <button id="reset-edits-btn-mobile" onclick="resetCurrentTopic()" class="edit-only-control min-h-[44px] px-4 flex items-center justify-center text-[13px] font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-xl transition-all shadow-sm cursor-pointer">Reset</button>
@@ -698,8 +698,8 @@
 
             <!-- Overhauled Mind Map Section -->
             <section id="mindmap-tab-section" class="hidden flex-col space-y-6 w-full min-h-screen bg-[var(--bg-app)] animate-fade-in pb-28">
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
+<div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] flex flex-wrap xl:flex-nowrap items-start xl:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-[250px]">
                         <h3 class="text-base font-black text-[var(--text-primary)] flex items-center gap-2">
                             <span>📦 Mind-Map Kasten-Raster</span>
                         </h3>
@@ -707,10 +707,9 @@
                             Alle 52 TELC-Prüfungsthemen im Gesamtüberblick. Prüfungsrelevante Themen sind markiert.
                         </p>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-full sm:w-48 select-text" />
-                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold">
-                            <option value="all">Alle Kategorien</option>
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto shrink-0">
+                        <input type="text" id="grid-search" placeholder="Raster durchsuchen..." oninput="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] w-full sm:w-auto flex-1 select-text" />
+                        <select id="grid-category-filter" onchange="renderSimplisticBoxGrid()" class="text-xs px-3 py-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none font-bold w-full sm:w-auto shrink-0"><option value="all">Alle Kategorien</option>
                             <option value="Freizeit &amp; Gesundheit">Freizeit &amp; Gesundheit</option>
                             <option value="Arbeit &amp; Karriere">Arbeit &amp; Karriere</option>
                             <option value="Umwelt &amp; Mobilität">Umwelt &amp; Mobilität</option>
@@ -3587,8 +3586,8 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
             container.appendChild(einleitungCard);
 
             const proContraParent = document.createElement('div');
-            proContraParent.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full";
-
+            proContraParent.className = "grid grid-cols-1 xl:grid-cols-2 gap-6 w-full";
+            
             if (!topic.pro_de) topic.pro_de = [];
             if (!topic.contra_de) topic.contra_de = [];
 
@@ -3602,8 +3601,8 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                         <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
                             <div class="flex items-start gap-2.5">
                                 <span class="text-[#4a7c59] font-bold text-sm mt-0.5 select-none">✓</span>
-                                <div class="flex-1 text-[14px]">
-                                    <div data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</div>
+                                <div class="flex-1 min-w-0 text-[14px] break-words">
+                                    <div data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold selectable-text select-text break-words" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</div>
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${currentEditMode ? `
@@ -3648,8 +3647,8 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                         <div class="p-3 bg-[var(--bg-card)] rounded-lg shadow-sm flex flex-col min-h-[44px] gap-2">
                             <div class="flex items-start gap-2.5">
                                 <span class="text-[#c0392b] font-bold text-sm mt-0.5 select-none">✗</span>
-                                <div class="flex-1 text-[14px]">
-                                    <div data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</div>
+                                <div class="flex-1 min-w-0 text-[14px] break-words">
+                                    <div data-block-key="${skeyDe}" class="text-[var(--text-primary)] block font-semibold selectable-text select-text break-words" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${saved}</div>
                                 </div>
                                 <div class="flex items-center gap-1.5 ml-auto shrink-0 select-none">
                                     ${currentEditMode ? `
