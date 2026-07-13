@@ -1395,12 +1395,6 @@
                 undo();
             }
         }
-        function smartUndo() {
-            const success = document.execCommand('undo');
-            if (!success) {
-                undo();
-            }
-        }
 
         function smartRedo() {
             const success = document.execCommand('redo');
@@ -2904,7 +2898,7 @@
                         isLongPress = true;
                         showThemaPreview(topic);
                     }, 600);
-                }, { passive: true });
+                
 
                 card.addEventListener('touchend', (e) => {
                     clearTimeout(touchTimer);
@@ -4557,38 +4551,7 @@ let navigationBar = `
                 }
             }
         }, { passive: true });
-                    } else if (isDrawerOpen) {
-                        drawer.classList.add('translate-x-full');
-                        if (overlay) {
-                            overlay.classList.add('hidden');
-                            overlay.classList.remove('opacity-100');
-                        }
-                    }
-                } 
-                else { 
-                    if (touchStartX > screenWidth * 0.6) {
-                        if (drawer) {
-                            drawer.classList.remove('translate-x-full');
-                            if (overlay) {
-                                overlay.classList.remove('hidden');
-                                void overlay.offsetWidth;
-                                overlay.classList.add('opacity-100');
-                            }
-                            populateVoicesList();
-                        }
-                    } else if (isSidebarOpen) {
-                        sidebar.classList.remove('sidebar-open');
-                    }
-                }
-            } else if (!isSidebarOpen && !isDrawerOpen && (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
-                if (deltaX > 0) {
-                    navigateTopicStep(-1);
-                } else {
-                    navigateTopicStep(1);
-                }
-            }
-        }, { passive: true });
-
+            
         document.addEventListener('click', e => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
