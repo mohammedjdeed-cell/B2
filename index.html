@@ -439,15 +439,22 @@
         margin-bottom: 0.5rem !important;
         line-height: 1.85;
     }
-        /* --- 2026 Flashcard 3D Effects --- */
+   /* --- 2026 Flashcard 3D Effects --- */
     .perspective-1000 { perspective: 1000px; }
     .transform-style-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); }
     .backface-hidden { backface-visibility: hidden; }
     .rotate-y-180 { transform: rotateY(180deg); }
-    .flashcard-container { cursor: pointer; }
-    /* Removed hover flip to make buttons easier to click */
-    .flashcard-container:hover .flashcard-inner:not(.rotate-y-180) { transform: scale(1.01); }
+    .flashcard-container { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
+    
+    /* Mobile Touch Fix: Hover only applies to real mice, preventing sticky taps on phones */
+    @media (hover: hover) and (pointer: fine) {
+        .flashcard-container:hover .flashcard-inner:not(.rotate-y-180) { transform: scale(1.015); }
+    }
+
+ /* FIX FOR OVERLAPPING BUTTONS */
+    .flashcard-container:not(.flipped) .flashcard-back { pointer-events: none; }
+    .flashcard-container.flipped .flashcard-front { pointer-events: none; }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -3231,38 +3238,47 @@
                     // VIEW MODE (LIST / COLLECTIVE EDIT)
                     // ==========================================
                     vocabHtml += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20">`;
-                    wordsToRender.forEach(w => {
-                        const isLearnedClass = w.learned ? 'border-emerald-500 bg-emerald-50/30' : 'border-[var(--border)]';
+              wordsToRender.forEach(w => {
+                        const isLearnedClass = w.learned ? 'border-emerald-400 shadow-[0_4px_15px_rgba(16,185,129,0.1)]' : 'border-[var(--border)] shadow-sm hover:shadow-md';
                         const editClass = currentEditMode ? 'bg-white dark:bg-black border border-[var(--border)] shadow-inner cursor-text' : 'bg-transparent border border-transparent';
                         
                         vocabHtml += `
-                        <div class="bg-[var(--bg-card)] border ${isLearnedClass} rounded-2xl p-4 shadow-sm relative transition-all">
-                            ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded-full">Thema ${w.originalTid}</span>` : ''}
+                        <div class="bg-[var(--bg-card)] border ${isLearnedClass} rounded-[24px] p-4 relative transition-all flex flex-col gap-3">
+                            ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded-lg border border-black/5 backdrop-blur-sm">Thema ${w.originalTid}</span>` : ''}
                             
-                            <div class="flex flex-col gap-3">
-                                <div>
-                                    <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1 block">🇩🇪 Deutsch</span>
-                                    <div class="text-sm font-bold text-[var(--text-primary)] p-1.5 rounded-lg ${editClass} min-h-[30px]" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <span class="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1 block">🇬🇧 English</span>
-                                        <div class="text-xs text-[var(--text-primary)] p-1.5 rounded-lg ${editClass} min-h-[28px]" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'en', this.innerText)">${w.en || ''}</div>
-                                    </div>
-                                    <div>
-                                        <span class="text-[9px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1 block text-right">🇸🇾 العربية</span>
-                                        <div dir="rtl" class="text-[13px] font-arabic text-[var(--text-primary)] p-1.5 rounded-lg text-right ${editClass} min-h-[28px]" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'ar', this.innerText)">${w.ar || ''}</div>
-                                    </div>
+                            <!-- German Header Row -->
+                            <div class="flex items-start gap-3 mt-1">
+                                <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(w.de)}'), this)" class="audio-btn p-2.5 bg-[var(--accent-light)] text-[var(--accent)] rounded-xl border border-[var(--accent)]/20 shadow-sm hover:scale-105 transition-all mt-1 shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
+                                </button>
+                                <div class="flex-1 min-w-0 pr-16">
+                                    <span class="text-[9px] font-bold text-[var(--accent)] uppercase tracking-wider mb-1 block">🇩🇪 Deutsch</span>
+                                    <div class="text-lg sm:text-xl font-black text-[var(--text-primary)] p-1.5 -ml-1.5 rounded-lg ${editClass} outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
                                 </div>
                             </div>
 
-                            <div class="flex justify-between items-center mt-3 pt-3 border-t border-[var(--border)]">
-                                <div class="flex gap-1.5">
-                                    <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(w.de)}'), this)" class="audio-btn p-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--accent)] bg-[var(--bg-app)] rounded-lg flex items-center justify-center min-w-[32px]"><span class="soundwave-bar"></span><span class="soundwave-bar"></span></button>
-                                    ${currentEditMode ? `<button onclick="deleteVocabByTid(${w.originalTid}, ${w.originalIdx})" class="p-1.5 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 rounded-lg">🗑️</button>` : ''}
+                            <!-- Translations Grid (Color Zoned) -->
+                            <div class="grid grid-cols-2 gap-3 mt-1">
+                                <!-- English -->
+                                <div class="bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[16px] p-3 relative overflow-hidden group">
+                                    <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 block relative z-10">English</span>
+                                    <div class="text-sm font-bold text-blue-950 dark:text-blue-100 p-1 -ml-1 rounded-md ${editClass} outline-none focus:ring-2 focus:ring-blue-500 relative z-10 transition-all leading-snug" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'en', this.innerText)">${w.en || ''}</div>
                                 </div>
-                                <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg transition-colors border ${w.learned ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border)]'}">
-                                    ${w.learned ? '✓ Gelernt' : '⏳ Merken'}
+
+                                <!-- Arabic -->
+                                <div class="bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[16px] p-3 relative overflow-hidden group">
+                                    <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-1 block text-right relative z-10">العربية</span>
+                                    <div dir="rtl" class="text-base font-arabic font-bold text-purple-950 dark:text-purple-100 p-1 -mr-1 rounded-md text-right ${editClass} outline-none focus:ring-2 focus:ring-purple-500 relative z-10 transition-all leading-snug" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'ar', this.innerText)">${w.ar || ''}</div>
+                                </div>
+                            </div>
+
+                            <!-- Action Bar -->
+                            <div class="flex justify-between items-center mt-2 pt-3 border-t border-[var(--border)]/50">
+                                <div class="flex gap-2">
+                                    ${currentEditMode ? `<button onclick="deleteVocabByTid(${w.originalTid}, ${w.originalIdx})" class="px-3 py-1.5 text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 rounded-xl border border-rose-200/50 flex items-center gap-1 transition-colors">🗑️ Löschen</button>` : '<div></div>'}
+                                </div>
+                                <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-4 py-2 text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1.5 ${w.learned ? 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)] hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-300'}">
+                                    ${w.learned ? '✓ Gelernt' : '⏳ Als gelernt markieren'}
                                 </button>
                             </div>
                         </div>`;
@@ -3281,8 +3297,7 @@
                             <div class="flashcard-inner w-full h-full relative transform-style-3d transition-transform duration-700">
                                 
                                 <!-- FRONT (German Word - High Focus) -->
-                                <div class="absolute w-full h-full backface-hidden bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5">
-                                    
+                                <div class="flashcard-front absolute w-full h-full backface-hidden bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5">
                                     <!-- Top Floating Bar -->
                                     <div class="absolute top-4 w-full px-5 flex justify-between items-start">
                                         <button onclick="event.stopPropagation(); playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm hover:scale-110 text-[var(--accent)] transition-transform border border-[var(--border)]" title="Vorlesen">
@@ -3307,25 +3322,22 @@
                                 </div>
 
                                 <!-- BACK (Translations - Color Zoned) -->
-                                <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px] flex flex-col p-2.5 shadow-xl cursor-default" onclick="event.stopPropagation()">
+                                <div class="flashcard-back absolute w-full h-full backface-hidden rotate-y-180 bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px] flex flex-col p-2.5 shadow-xl cursor-default" onclick="event.stopPropagation()">
                                     
                                     <div class="flex-1 flex flex-col gap-2.5 p-1" onclick="this.parentElement.parentElement.parentElement.classList.remove('flipped')">
                                         
                                         <!-- English Zone -->
                                         <div class="flex-1 bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-blue-100/60 transition-colors">
-                                            <div class="absolute -right-3 -top-3 text-5xl opacity-[0.07] dark:opacity-10 filter grayscale pointer-events-none select-none">🇬🇧</div>
                                             <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 z-10 bg-blue-100/50 dark:bg-blue-900/30 px-2 py-0.5 rounded text-center">English</span>
                                             <h5 class="text-base font-extrabold text-blue-950 dark:text-blue-100 text-center z-10 leading-snug px-2 line-clamp-2">${w.en || '-'}</h5>
                                         </div>
 
                                         <!-- Arabic Zone -->
                                         <div class="flex-1 bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-purple-100/60 transition-colors">
-                                            <div class="absolute -left-3 -top-3 text-5xl opacity-[0.07] dark:opacity-10 filter grayscale pointer-events-none select-none">🇸🇾</div>
                                             <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-1 z-10 bg-purple-100/50 dark:bg-purple-900/30 px-2 py-0.5 rounded text-center">العربية</span>
                                             <h5 class="text-lg font-arabic font-extrabold text-purple-950 dark:text-purple-100 text-center z-10 leading-snug px-2 line-clamp-2" dir="rtl">${w.ar || '-'}</h5>
                                         </div>
                                     </div>
-
                                     <!-- Bottom Action Bar -->
                                     <div class="flex justify-between items-center px-2 pb-1 pt-1.5 border-t border-[var(--border)]/50 mt-1">
                                         <button onclick="playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2 bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-xl border border-[var(--border)] shadow-sm hover:scale-105 transition-all">
