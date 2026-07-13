@@ -2501,16 +2501,16 @@
             const toolbar = document.getElementById('formatting-toolbar');
             toolbar.classList.remove('hidden');
 
-            const toolbarWidth = toolbar.offsetWidth || 180;
-            const toolbarHeight = toolbar.offsetHeight || 42;
-            
-            if (window.innerWidth < 768) {
-                // MOBILE FIX: Dock custom toolbar to the bottom to avoid Android/iOS native popups
-                toolbar.style.top = 'auto';
-                toolbar.style.bottom = '110px'; // Safely above the bottom navigation bar
-                toolbar.style.left = '50%';
-                toolbar.style.transform = 'translateX(-50%)';
-            } else {
+      const toolbarWidth = toolbar.offsetWidth || 180;
+        const toolbarHeight = toolbar.offsetHeight || 42;
+        
+        if (window.innerWidth < 768) {
+            // MOBILE FIX: Dock custom toolbar to the TOP (below header) to avoid Keyboard overlap!
+            toolbar.style.bottom = 'auto';
+            toolbar.style.top = '80px'; // Safely below the top header, always visible
+            toolbar.style.left = '50%';
+            toolbar.style.transform = 'translateX(-50%)';
+        } else {
                 // DESKTOP: Float directly above the selected text
                 const top = r.top - toolbarHeight - 10; 
                 const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, r.left + (r.width / 2) - (toolbarWidth / 2)));
