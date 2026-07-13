@@ -2316,16 +2316,9 @@
             pushToHistory();
 
             if (type === 'bold') {
-            // NEW VANILLA JS BOLD: Replaces execCommand
-            const range = selection.getRangeAt(0);
-            const strong = document.createElement('strong');
-            try {
-                strong.appendChild(range.extractContents());
-                range.insertNode(strong);
-            } catch (e) {
-                console.error("Bold formatting failed:", e);
-            }
-        } else if (type === 'bullet') {
+                // Revert to native command: It handles toggling (unbolding) perfectly!
+                document.execCommand('bold', false, null);
+            } else if (type === 'bullet') {
             document.execCommand('insertUnorderedList', false, null);
         } else if (type === 'clear') {
                 unwrapSelection(activeContainer);
@@ -2352,8 +2345,8 @@
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
 
-            // Finds markers and removes only the color, keeping the text intact
-            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight');
+            // Finds markers and removes only the color/bold, keeping the text intact
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight, strong, b');
             spans.forEach(span => {
                 if (selection.containsNode(span, true)) {
                     const parent = span.parentNode;
