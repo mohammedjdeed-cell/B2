@@ -32,24 +32,25 @@
         font-size: var(--text-scale, 100%) !important;
     }
 
+    /* 2026 Modern Educational Theme */
     :root {
-        --bg-app:        #F4F4F0;
+        --bg-app:        #F8FAFC; 
         --bg-card:       #FFFFFF;
-        --bg-sidebar:    #F9F9F6;
-        --border:        rgba(0,0,0,0.06);
-        --text-primary:  #1C1E1D;
-        --text-muted:    #5E6661;
-        --text-faint:    #949E99;
-        --accent:        #3D6B48;          
-        --accent-light:  #EDF4EF;          
-        --success:       #3D6B48;
-        --success-light: #EDF4EF;
-        --danger:        #B02A1E;
-        --danger-light:  #FDF2F2;
-        --amber:         #C27803;
-        --amber-light:   #FFFDF0;
-        --purple:        #6D28D9;
-        --purple-light:  #F5F3FF;
+        --bg-sidebar:    #F1F5F9; 
+        --border:        #E2E8F0; 
+        --text-primary:  #0F172A; 
+        --text-muted:    #64748B; 
+        --text-faint:    #94A3B8; 
+        --accent:        #10B981; 
+        --accent-light:  #D1FAE5; 
+        --success:       #10B981;
+        --success-light: #D1FAE5;
+        --danger:        #EF4444;
+        --danger-light:  #FEE2E2;
+        --amber:         #F59E0B;
+        --amber-light:   #FEF3C7;
+        --purple:        #8B5CF6;
+        --purple-light:  #EDE9FE;
         --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.04);
         --shadow-md:     0 8px 24px rgba(0, 0, 0, 0.06);
         --radius-card:   16px;
@@ -58,21 +59,21 @@
     }
 
     [data-theme="dark"] {
-        --bg-app:        #121214; /* Softer dark gray (eye-friendly) */
-        --bg-card:       #1C1C1E; /* Elevated card color to stand out */
-        --bg-sidebar:    #151517;
-        --border:        rgba(255,255,255,0.08); /* Slightly more visible for contrast */
-        --text-primary:  #E4E4E7; /* Softer white to reduce eye strain */
-        --text-muted:    #A1A1AA;
+        --bg-app:        #09090B; /* Deep Zinc (No Eye Strain) */
+        --bg-card:       #18181B; /* Elevated Card */
+        --bg-sidebar:    #09090B;
+        --border:        #27272A; 
+        --text-primary:  #FAFAFA; 
+        --text-muted:    #A1A1AA; 
         --text-faint:    #52525B;
-        --accent:        #5B9E6B; 
-        --accent-light:  rgba(91, 158, 107, 0.15);
-        --success:       #5B9E6B;
-        --success-light: #132418; 
+        --accent:        #10B981; /* Vibrant Emerald */
+        --accent-light:  rgba(16, 185, 129, 0.15);
+        --success:       #10B981;
+        --success-light: rgba(16, 185, 129, 0.15);
         --danger:        #F87171;
-        --danger-light:  rgba(248, 113, 113, 0.1); 
+        --danger-light:  rgba(248, 113, 113, 0.15);
         --amber:         #FBBF24;
-        --amber-light:   rgba(251, 191, 36, 0.12);
+        --amber-light:   rgba(251, 191, 36, 0.15);
         --shadow-sm:     0 4px 6px -1px rgba(0,0,0,0.3);
         --shadow-md:     0 10px 15px -3px rgba(0,0,0,0.4);
     }
@@ -284,19 +285,21 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* Mobile-first Sidebar-Basislayout */
+    /* Mobile Bottom-Sheet Sidebar */
     #sidebar {
         position: fixed !important;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 50 !important;
-        width: 20rem;
-        transform: translateX(-100%);
-        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        bottom: 0; left: 0; right: 0; top: auto;
+        z-index: 100 !important;
+        width: 100% !important;
+        height: 85vh;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
     }
     #sidebar.sidebar-open {
-        transform: translateX(0) !important;
+        transform: translateY(0) !important;
     }
 
     /* Overlay Settings */
@@ -601,8 +604,13 @@
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 max-w-[85vw] lg:relative lg:w-80 lg:translate-x-0 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col overflow-hidden transition-transform lg:transition-none duration-300 border-r border-[var(--border)]">
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex">
+        <!-- Sidebar (Bottom Sheet on Mobile) -->
+        <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)]">
+            <!-- Mobile Drag Handle -->
+            <div class="w-full flex justify-center pt-3 pb-2 lg:hidden shrink-0 cursor-pointer" onclick="document.getElementById('sidebar').classList.remove('sidebar-open'); document.getElementById('drawer-overlay').classList.add('hidden');">
+                <div class="w-12 h-1.5 bg-[var(--border)] rounded-full"></div>
+            </div>
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex shrink-0">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
                     <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -635,45 +643,46 @@
 <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-       <!-- Dashboard Controls (Fixed Responsive Layout) -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col 2xl:flex-row justify-between items-start 2xl:items-center gap-5 relative transition-colors duration-200 z-30">
+       <!-- Dashboard Controls (Always locked at top of content) -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
                 
-                <!-- 1. Emoji & Title Area -->
-                <div class="flex items-center gap-4 w-full 2xl:w-auto overflow-hidden">
-                    <div class="w-14 h-14 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0 relative">
-                        <span id="active-topic-emoji" class="drop-shadow-sm select-none">📌</span>
-                    </div>
-                    <div class="flex flex-col gap-1.5 min-w-0 flex-1">
-                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                            <div id="active-topic-num" class="shrink-0"></div>
-                            <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]"></button>
+                <!-- 1. Top Row: Emoji, Title & Action Buttons -->
+                <div class="flex items-start justify-between gap-4 w-full">
+                    <div class="flex items-center gap-3 md:gap-4 flex-1 overflow-hidden">
+                        <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[var(--bg-app)] to-[var(--bg-sidebar)] border border-[var(--border)] rounded-xl md:rounded-2xl flex items-center justify-center text-2xl md:text-3xl shadow-inner shrink-0 relative">
+                            <span id="active-topic-emoji" class="drop-shadow-sm select-none">📌</span>
                         </div>
-                        <h2 id="active-topic-title-de" class="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight tracking-tight truncate w-full">Lade Thema...</h2>
+                        <div class="flex flex-col gap-1 min-w-0 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                                <div id="active-topic-num" class="shrink-0"></div>
+                                <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]"></button>
+                            </div>
+                            <h2 id="active-topic-title-de" class="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight tracking-tight truncate w-full">Lade Thema...</h2>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons (Desktop) -->
+                    <div class="hidden lg:flex items-center gap-2 shrink-0">
+                        <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-10 px-4 text-xs bg-[var(--accent)] hover:opacity-90 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">Sichern</button>
+                        <button onclick="printCurrentTopic()" class="h-10 px-4 text-xs bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">PDF Export</button>
+                        <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-10 px-3 flex items-center justify-center text-xs font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-lg transition-all shadow-sm cursor-pointer">Reset</button>
                     </div>
                 </div>
 
-                <!-- 2. The Clean Grid Sub-Nav (Mobile Optimized) -->
-                <div class="grid grid-cols-3 bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] w-full 2xl:w-auto shadow-inner order-last 2xl:order-none gap-1 shrink-0">
-                    <button onclick="switchTab('template')" id="subtab-template" class="w-full px-2 sm:px-4 min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm transition-all truncate">📝 Template</button>
-                    <button onclick="switchTab('diskussion')" id="subtab-diskussion" class="w-full px-2 sm:px-4 min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">💬 Diskussion</button>
-                    <button onclick="switchTab('wortschatz')" id="subtab-wortschatz" class="w-full px-2 sm:px-4 min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">🧠 Vokabeln</button>
+                <!-- 2. Middle Row: The Clean Grid Sub-Nav (ALWAYS FULL WIDTH) -->
+                <div class="grid grid-cols-3 bg-[var(--bg-app)] p-1 md:p-1.5 rounded-[14px] md:rounded-2xl border border-[var(--border)] w-full shadow-inner gap-1 mt-1">
+                    <button onclick="switchTab('template')" id="subtab-template" class="w-full min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm transition-all truncate">📝 Template</button>
+                    <button onclick="switchTab('diskussion')" id="subtab-diskussion" class="w-full min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">💬 Diskussion</button>
+                    <button onclick="switchTab('wortschatz')" id="subtab-wortschatz" class="w-full min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">🧠 Vokabeln</button>
                 </div>
 
-            <!-- 3. Action Buttons (Mobile Optimized) -->
-                <div class="flex items-center gap-2 bg-[var(--bg-app)] p-1.5 rounded-xl border border-[var(--border)] w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
-                    <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control min-h-[44px] md:h-10 px-4 text-[13px] md:text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                        Sichern
-                    </button>
-                    <div class="w-px h-6 bg-[var(--border)] mx-1 edit-only-control hidden md:block"></div>
-                    <button onclick="printCurrentTopic()" class="min-h-[44px] md:h-10 px-4 text-[13px] md:text-xs bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        PDF Export
-                    </button>
-                    <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control min-h-[44px] min-w-[44px] md:h-10 md:w-10 flex items-center justify-center text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-all shadow-sm shrink-0 cursor-pointer" title="Zurücksetzen">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    </button>
+                <!-- 3. Bottom Row: Action Buttons (Mobile Only) -->
+                <div class="flex lg:hidden items-center justify-between gap-2 w-full mt-1">
+                    <button id="save-progress-btn-mobile" onclick="saveEditsManual()" class="edit-only-control flex-1 min-h-[44px] text-[13px] bg-[var(--accent)] text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">Sichern</button>
+                    <button onclick="printCurrentTopic()" class="flex-1 min-h-[44px] text-[13px] bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">PDF Export</button>
+                    <button id="reset-edits-btn-mobile" onclick="resetCurrentTopic()" class="edit-only-control min-h-[44px] px-4 flex items-center justify-center text-[13px] font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-xl transition-all shadow-sm cursor-pointer">Reset</button>
                 </div>
+            </div>
             <!-- Content Container -->
             <div id="dashboard-tab-section" class="space-y-6 scalable-content relative overflow-hidden">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex flex-col gap-2">
@@ -1905,12 +1914,25 @@
             }
 
             // 4. Section Visibility Toggle
+          // 4. Section Visibility Toggle
             const dashboardSection = document.getElementById('dashboard-tab-section');
             const controls = document.getElementById('dashboard-controls');
             const fabs = document.getElementById('floating-action-buttons');
 
-            // FIX: Ensure non-topic sections are hidden when switching to a topic
-            ['mindmap', 'redemittel', 'grammar', 'settings'].forEach(t => {
+            const allSections = ['mindmap', 'redemittel', 'grammar', 'settings'];
+            
+            allSections.forEach(t => {
+                const section = document.getElementById(`${t}-tab-section`);
+                if (section) {
+                    if (t === tabId) {
+                        section.classList.remove('hidden');
+                        if (t === 'mindmap') section.classList.add('flex');
+                    } else {
+                        section.classList.add('hidden');
+                        section.classList.remove('flex');
+                    }
+                }
+            });
                 const section = document.getElementById(`${t}-tab-section`);
                 if (section) {
                     if (t === tabId && !isTopic) {
@@ -3276,14 +3298,14 @@
                 }
             }
 
-          const controlsEl = document.getElementById('dashboard-controls');
+         const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.classList.add('bg-emerald-50/80', 'dark:bg-emerald-950/20', 'border-emerald-200', 'dark:border-emerald-900/50');
+                    controlsEl.classList.add('bg-[var(--success-light)]', 'border-[var(--success)]');
                     controlsEl.classList.remove('bg-[var(--bg-card)]', 'border-[var(--border)]');
                 } else {
                     controlsEl.classList.add('bg-[var(--bg-card)]', 'border-[var(--border)]');
-                    controlsEl.classList.remove('bg-emerald-50/80', 'dark:bg-emerald-950/20', 'border-emerald-200', 'dark:border-emerald-900/50');
+                    controlsEl.classList.remove('bg-[var(--success-light)]', 'border-[var(--success)]');
                 }
             }
 
