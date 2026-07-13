@@ -1921,6 +1921,7 @@
                     }
                 }
             });
+
             if (isTopic) {
                 dashboardSection.classList.remove('hidden');
                 controls.classList.remove('hidden');
@@ -4519,7 +4520,7 @@ let navigationBar = `
                 return;
             }
 
-            // 3. Normal Horizontal Swipes
+           // 3. Normal Horizontal Swipes
             if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
                 if (deltaX > 0) { 
                     if (isDrawerOpen) {
