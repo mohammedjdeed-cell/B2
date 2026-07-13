@@ -509,13 +509,11 @@
         </div>
 
         <div class="flex items-center gap-3 relative z-10">
-            <div class="hidden lg:flex bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                <button onclick="switchTab('template')" id="tab-template-btn" class="px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap">📝 Template</button>
-                <button onclick="switchTab('diskussion')" id="tab-diskussion-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">💬 Diskussion</button>
-                <button onclick="switchTab('mindmap')" id="tab-mindmap-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📦 Raster</button>
-                <button onclick="switchTab('redemittel')" id="tab-redemittel-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🗣️ Redemittel</button>
-                <button onclick="switchTab('wortschatz')" id="tab-wortschatz-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">🧠 Vokabeln</button>
-                <button onclick="switchTab('grammar')" id="tab-grammar-btn" class="px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">📚 Grammatik</button>
+            <div class="hidden lg:flex bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] gap-1 shadow-inner">
+                <button onclick="switchTab('template')" id="nav-themen-desk" class="px-4 py-2 text-sm font-bold rounded-xl bg-[var(--accent)] text-white shadow-md transition-all">📚 Themen</button>
+                <button onclick="switchTab('mindmap')" id="nav-raster-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
+                <button onclick="switchTab('redemittel')" id="nav-tools-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">🛠️ Werkzeuge</button>
+                <button onclick="switchTab('settings')" id="nav-settings-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
             </div>
 
             <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
@@ -742,7 +740,11 @@
                         <h2 id="active-topic-title-de" class="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight tracking-tight">Lade Thema...</h2>
                     </div>
                 </div>
-
+<div class="flex bg-[var(--bg-app)] p-1.5 rounded-xl border border-[var(--border)] w-full lg:w-auto shadow-inner overflow-x-auto no-scrollbar order-last lg:order-none">
+                    <button onclick="switchTab('template')" id="subtab-template" class="flex-1 px-5 py-2 text-xs font-black rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm whitespace-nowrap transition-all">📝 Template</button>
+                    <button onclick="switchTab('diskussion')" id="subtab-diskussion" class="flex-1 px-5 py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap transition-all">💬 Diskussion</button>
+                    <button onclick="switchTab('wortschatz')" id="subtab-wortschatz" class="flex-1 px-5 py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap transition-all">🧠 Vokabeln</button>
+                </div>
                 <div class="flex items-center gap-2 bg-[var(--bg-app)] p-1.5 rounded-xl border border-[var(--border)] w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
                     <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-10 px-4 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
@@ -802,30 +804,23 @@
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
 
             <!-- Mobile Bottom Navigation -->
-            <div id="mobile-bottom-nav" class="md:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-2xl pb-safe pt-1 pb-1 px-1 flex overflow-x-auto no-scrollbar gap-1 items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="switchTab('template')" id="mob-tab-template" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--accent)] cursor-pointer transition-colors" aria-label="Template Tab">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Template</span>
+           <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
+            <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                <button onclick="switchTab('template')" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="text-[10px] font-bold">Themen</span>
                 </button>
-                <button onclick="switchTab('diskussion')" id="mob-tab-diskussion" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Diskussion Tab">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Diskussion</span>
+                <button onclick="switchTab('mindmap')" id="nav-raster-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[10px] font-bold">Raster</span>
                 </button>
-                <button onclick="switchTab('mindmap')" id="mob-tab-mindmap" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Mindmap Tab">
-                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Raster</span>
+                <button onclick="switchTab('redemittel')" id="nav-tools-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="text-[10px] font-bold">Tools</span>
                 </button>
-                <button onclick="switchTab('redemittel')" id="mob-tab-redemittel" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Redemittel Tab">
-                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Reden</span>
-                </button>
-                <button onclick="switchTab('wortschatz')" id="mob-tab-wortschatz" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Vokabeln Tab">
-                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Wortschatz</span>
-                </button>
-                <button onclick="switchTab('grammar')" id="mob-tab-grammar" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 min-w-[60px] text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" aria-label="Grammatik Tab">
-                    <svg class="w-5 h-5 opacity-70 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                    <span class="text-[9px] font-bold tracking-wide">Grammatik</span>
+                <button onclick="switchTab('settings')" id="nav-settings-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span class="text-[10px] font-bold">Profil</span>
                 </button>
             </div>
             
@@ -1785,40 +1780,74 @@
 
         function switchTab(tabId) {
             activeTab = tabId;
-            const btnClassActive = "px-3 py-1.5 text-xs font-bold rounded-md bg-[var(--bg-card)] text-[var(--accent)] shadow-sm whitespace-nowrap";
-            const btnClassInactive = "px-3 py-1.5 text-xs font-bold rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap";
-            ['template', 'classic', 'diskussion', 'mindmap', 'redemittel', 'grammar', 'wortschatz'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}-btn`);
-                if (btn) btn.className = (t === tabId) ? btnClassActive : btnClassInactive;
+
+            // 1. Group Identifiers
+            const isTopic = ['template', 'classic', 'diskussion', 'wortschatz'].includes(tabId);
+            const isTools = ['redemittel', 'grammar'].includes(tabId);
+            const isMindmap = tabId === 'mindmap';
+            const isSettings = tabId === 'settings';
+
+            // 2. Main Navigation Styling (Desktop & Mobile)
+            const mainNavs = [
+                { id: 'nav-themen', active: isTopic },
+                { id: 'nav-raster', active: isMindmap },
+                { id: 'nav-tools', active: isTools },
+                { id: 'nav-settings', active: isSettings }
+            ];
+
+            mainNavs.forEach(nav => {
+                const btnDesk = document.getElementById(nav.id + '-desk');
+                const btnMob = document.getElementById(nav.id + '-mob');
                 
-                const section = document.getElementById(`${t}-tab-section`);
-                if (section) {
-                    if (t === tabId && t !== 'template' && t !== 'classic' && t !== 'diskussion') {
-                        section.classList.remove('hidden');
-                        section.classList.add(t === 'mindmap' ? 'flex' : 'block');
-                    } else if (t !== 'template' && t !== 'classic' && t !== 'diskussion') {
-                        section.classList.add('hidden');
-                        section.classList.remove('flex', 'block');
-                    }
+                if (btnDesk) {
+                    btnDesk.className = nav.active 
+                        ? "px-4 py-2 text-sm font-bold rounded-xl bg-[var(--accent)] text-white shadow-md transition-all"
+                        : "px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all";
                 }
-                
-                const mobBtn = document.getElementById(`mob-tab-${t}`);
-                if (mobBtn) {
-                    if (t === tabId) {
-                        mobBtn.classList.add('text-[var(--accent)]');
-                        mobBtn.classList.remove('text-[var(--text-muted)]');
+                if (btnMob) {
+                    if (nav.active) {
+                        btnMob.classList.add('text-[var(--accent)]');
+                        btnMob.classList.remove('text-[var(--text-muted)]');
                     } else {
-                        mobBtn.classList.add('text-[var(--text-muted)]');
-                        mobBtn.classList.remove('text-[var(--accent)]');
+                        btnMob.classList.add('text-[var(--text-muted)]');
+                        btnMob.classList.remove('text-[var(--accent)]');
                     }
                 }
             });
 
+            // 3. Sub-Navigation Styling (Topic Workspace)
+            if (isTopic) {
+                ['template', 'diskussion', 'wortschatz'].forEach(t => {
+                    const subBtn = document.getElementById(`subtab-${t}`);
+                    if (subBtn) {
+                        if (t === tabId) {
+                            subBtn.className = "flex-1 px-5 py-2 text-xs font-black rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm whitespace-nowrap transition-all";
+                        } else {
+                            subBtn.className = "flex-1 px-5 py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap transition-all";
+                        }
+                    }
+                });
+            }
+
+            // 4. Section Visibility Toggle
             const dashboardSection = document.getElementById('dashboard-tab-section');
             const controls = document.getElementById('dashboard-controls');
             const fabs = document.getElementById('floating-action-buttons');
-            
-            if (tabId === 'template' || tabId === 'classic' || tabId === 'diskussion' || tabId === 'wortschatz') {
+
+            ['template', 'classic', 'diskussion', 'mindmap', 'redemittel', 'grammar', 'wortschatz', 'settings'].forEach(t => {
+                const section = document.getElementById(`${t}-tab-section`);
+                if (section) {
+                    if (t === tabId && !isTopic) {
+                        section.classList.remove('hidden');
+                        section.classList.add(t === 'mindmap' ? 'flex' : 'block');
+                    } else if (!isTopic) {
+                        section.classList.add('hidden');
+                        section.classList.remove('flex', 'block');
+                    }
+                }
+            });
+
+            if (isTopic) {
                 dashboardSection.classList.remove('hidden');
                 controls.classList.remove('hidden');
                 controls.classList.add('flex');
@@ -1838,9 +1867,7 @@
                         }
                     }
                 });
-                
                 if (fabs) fabs.style.display = tabId === 'classic' ? 'none' : 'flex';
-
                 renderActiveTopic();
             } else {
                 dashboardSection.classList.add('hidden');
@@ -3739,8 +3766,12 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
             
             if (!REDEMITTEL_DATA) REDEMITTEL_DATA = JSON.parse(JSON.stringify(structuralRedemittel));
 
-            let navigationBar = `<div class="sticky top-0 bg-[var(--bg-app)] z-30 py-2 flex gap-1.5 overflow-x-auto no-scrollbar border-b border-[var(--border)] mb-4">`;
-            Object.keys(REDEMITTEL_DATA).forEach((cat, idx) => {
+let navigationBar = `
+                <div class="bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] flex mb-6 mx-auto w-full max-w-md shadow-inner">
+                    <button onclick="switchTab('redemittel')" class="flex-1 px-4 py-2.5 text-xs font-black rounded-xl bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm transition-all">🗣️ Redemittel</button>
+                    <button onclick="switchTab('grammar')" class="flex-1 px-4 py-2.5 text-xs font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">📚 Grammatik</button>
+                </div>
+                <div class="sticky top-0 bg-[var(--bg-app)] z-30 py-2 flex gap-1.5 overflow-x-auto no-scrollbar border-b border-[var(--border)] mb-4">`;            Object.keys(REDEMITTEL_DATA).forEach((cat, idx) => {
                 navigationBar += `
                     <button onclick="document.getElementById('cat-anchor-${idx}').scrollIntoView({behavior: 'smooth'})" class="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] font-bold text-xs rounded-full whitespace-nowrap min-h-[44px] cursor-pointer">
                         ${cat}
@@ -3804,6 +3835,10 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
             const levels = ["all", "A1", "A2", "B1", "B2"];
             
             let filterHtml = `
+                <div class="bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] flex mb-6 mx-auto w-full max-w-md shadow-inner animate-fade-in">
+                    <button onclick="switchTab('redemittel')" class="flex-1 px-4 py-2.5 text-xs font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">🗣️ Redemittel</button>
+                    <button onclick="switchTab('grammar')" class="flex-1 px-4 py-2.5 text-xs font-black rounded-xl bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm transition-all">📚 Grammatik</button>
+                </div>
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-[var(--shadow-sm)] mb-6 animate-fade-in">
                     <h2 class="text-xl font-bold text-[var(--text-primary)]">📚 B1/B2 Grammatik</h2>
                     <p class="text-xs text-[var(--text-muted)] mt-1 mb-4">Lernen Sie wichtige grammatikalische Strukturen mit interaktiver Übersetzung.</p>
