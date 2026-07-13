@@ -131,7 +131,6 @@
     }
 
     /* We no longer need the 60vh media query restriction */
-    }
 
     .no-scrollbar::-webkit-scrollbar {
         display: none;
@@ -811,8 +810,6 @@
                 </button>
             </div>
         </main>
-        </main>
-
         <!-- Smart Split Panel (Right Sidebar) -->
         <aside id="right-panel" class="fixed lg:relative top-0 right-0 h-full w-[320px] lg:w-0 overflow-hidden bg-[var(--bg-sidebar)] border-l border-[var(--border)] shadow-2xl lg:shadow-none z-[100] lg:z-10 transform translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto shrink-0">
             
@@ -838,9 +835,6 @@
             </div>
         </aside>
 
-    </div>
-
-    <!-- Quick Preview Modal -->
     </div>
 
     <!-- Quick Preview Modal -->
@@ -1913,8 +1907,7 @@
                 });
             }
 
-            // 4. Section Visibility Toggle
-          // 4. Section Visibility Toggle
+        // 4. Section Visibility Toggle
             const dashboardSection = document.getElementById('dashboard-tab-section');
             const controls = document.getElementById('dashboard-controls');
             const fabs = document.getElementById('floating-action-buttons');
@@ -1933,18 +1926,6 @@
                     }
                 }
             });
-                const section = document.getElementById(`${t}-tab-section`);
-                if (section) {
-                    if (t === tabId && !isTopic) {
-                        section.classList.remove('hidden');
-                        section.classList.add(t === 'mindmap' ? 'flex' : 'block');
-                    } else {
-                        section.classList.add('hidden');
-                        section.classList.remove('flex', 'block');
-                    }
-                }
-            });
-
             if (isTopic) {
                 dashboardSection.classList.remove('hidden');
                 controls.classList.remove('hidden');
