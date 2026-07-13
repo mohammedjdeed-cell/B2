@@ -2501,13 +2501,16 @@
             const toolbar = document.getElementById('formatting-toolbar');
             toolbar.classList.remove('hidden');
 
-     const toolbarWidth = toolbar.offsetWidth || 180;
+  const toolbarWidth = toolbar.offsetWidth || 180;
             const toolbarHeight = toolbar.offsetHeight || 42;
             
             if (window.innerWidth < 768) {
-                // MOBILE FIX: Lock toolbar to the absolute top (like a Native PDF App)
+                // MOBILE FIX: Dock right above the keyboard (OneNote Style)
+                const vvTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
+                const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                
                 toolbar.style.bottom = 'auto';
-                toolbar.style.top = '12px'; // Docks flush to the top of the phone screen
+                toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`; // 12px padding above the keyboard
                 toolbar.style.left = '50%';
                 toolbar.style.transform = 'translateX(-50%)';
             } else {
@@ -4509,6 +4512,23 @@ ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc
                 renderActiveTopic();
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
+        }
+        // --- KEYBOARD OVERLAP FIX (VISUAL VIEWPORT) ---
+        // Forces the toolbar to stick right on top of the mobile keyboard (OneNote style)
+        if (window.visualViewport) {
+            function updateToolbarOnKeyboard() {
+                const toolbar = document.getElementById('formatting-toolbar');
+                if (toolbar && !toolbar.classList.contains('hidden') && window.innerWidth < 768) {
+                    const toolbarHeight = toolbar.offsetHeight || 42;
+                    const vvTop = window.visualViewport.offsetTop;
+                    const vvHeight = window.visualViewport.height;
+                    
+                    // Keep it glued safely above the keyboard edge
+                    toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`;
+                }
+            }
+            window.visualViewport.addEventListener('resize', updateToolbarOnKeyboard);
+            window.visualViewport.addEventListener('scroll', updateToolbarOnKeyboard);
         }
         // --- MODERN TOAST NOTIFICATION ---
         function showToast(message, isError = false) {
