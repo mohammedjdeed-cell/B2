@@ -3868,22 +3868,24 @@ let navigationBar = `
                 if (REDEMITTEL_DATA[category].length > 0) {
                     REDEMITTEL_DATA[category].forEach((phrase, phraseIdx) => {
                         const encodedText = encodeURIComponent(phrase.de);
+                       const editClass = isEditMode ? 'bg-white dark:bg-white/5 border border-[var(--border)] rounded p-1 shadow-inner cursor-text' : '';
                         contentsHtml += `
-                            <div class="flex items-center justify-between p-3 bg-[var(--bg-sidebar)] rounded-lg min-h-[44px] gap-4 relative group">
-                                <div class="flex-1">
-                                    <p class="text-[15px] font-medium text-[var(--accent)] leading-snug">${phrase.de}</p>
-                                    <p class="text-[13px] italic text-[var(--text-muted)] mt-0.5">${phrase.en}</p>
+                            <div class="flex flex-col p-3 bg-[var(--bg-sidebar)] rounded-[16px] min-h-[44px] gap-2 relative transition-all">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-[15px] font-medium text-[var(--accent)] leading-snug outline-none ${editClass}" ${isEditMode ? 'contenteditable="true"' : ''} onblur="updateRedemittelInline('${category}', ${phraseIdx}, 'de', this.innerText)">${phrase.de}</div>
+                                        <div class="text-[13px] italic text-[var(--text-muted)] mt-1 outline-none ${editClass}" ${isEditMode ? 'contenteditable="true"' : ''} onblur="updateRedemittelInline('${category}', ${phraseIdx}, 'en', this.innerText)">${phrase.en}</div>
+                                    </div>
+                                    <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] bg-[var(--bg-card)] rounded-xl border border-[var(--border)] shadow-sm shrink-0">
+                                        <span class="soundwave-bar"></span><span class="soundwave-bar"></span><span class="soundwave-bar"></span><span class="soundwave-bar"></span>
+                                    </button>
                                 </div>
-                                <div class="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity absolute right-14 top-3 bg-[var(--bg-card)] rounded-md border border-[var(--border)] p-1 shadow-sm">
-                                    <button onclick="openRedemittelEditor('${category}', ${phraseIdx})" class="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Bearbeiten">✏️</button>
-                                    <button onclick="deleteRedemittel('${category}', ${phraseIdx})" class="text-[10px] text-rose-500 hover:text-rose-700 p-1 hover:bg-[var(--bg-app)] rounded cursor-pointer" title="Löschen">🗑️</button>
+                                ${isEditMode ? `
+                                <div class="flex items-center justify-end gap-2 pt-3 border-t border-[var(--border)]/50 mt-1">
+                                    <button onclick="openRedemittelEditor('${category}', ${phraseIdx})" class="px-3 py-1.5 text-[11px] font-bold bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-sm text-[var(--text-primary)]">✏️ Editor</button>
+                                    <button onclick="deleteRedemittel('${category}', ${phraseIdx})" class="px-3 py-1.5 text-[11px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg shadow-sm">🗑️ Löschen</button>
                                 </div>
-                                <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] flex gap-0.5 cursor-pointer z-10 bg-[var(--bg-sidebar)] rounded-r-lg">
-                                    <span class="soundwave-bar"></span>
-                                    <span class="soundwave-bar"></span>
-                                    <span class="soundwave-bar"></span>
-                                    <span class="soundwave-bar"></span>
-                                </button>
+                                ` : ''}
                             </div>`;
                     });
                 } else {
