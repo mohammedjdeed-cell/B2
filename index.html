@@ -814,11 +814,11 @@
         <aside id="right-panel" class="fixed lg:relative top-0 right-0 h-full w-[320px] lg:w-0 overflow-hidden bg-[var(--bg-sidebar)] border-l border-[var(--border)] shadow-2xl lg:shadow-none z-[100] lg:z-10 transform translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto shrink-0">
             
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] flex justify-between items-center shadow-sm z-10 shrink-0">
-                <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2">
                     <span class="text-xl">🗂️</span>
                     <select id="mini-view-select" onchange="renderRightPanel()" class="bg-transparent font-black text-sm text-[var(--text-primary)] outline-none cursor-pointer">
-                        <option value="wortschatz">Mini-Wortschatz</option>
-                        <option value="redemittel">Mini-Redemittel</option>
+                        <option value="wortschatz" class="bg-[var(--bg-card)] text-[var(--text-primary)]">Mini-Wortschatz</option>
+                        <option value="redemittel" class="bg-[var(--bg-card)] text-[var(--text-primary)]">Mini-Redemittel</option>
                     </select>
                 </div>
                 <button onclick="toggleRightPanel()" class="p-2 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer transition-colors">
@@ -3387,7 +3387,7 @@
                     vocabHtml += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20">`;
               wordsToRender.forEach(w => {
                         const isLearnedClass = w.learned ? 'border-emerald-400 shadow-[0_4px_15px_rgba(16,185,129,0.1)]' : 'border-[var(--border)] shadow-sm hover:shadow-md';
-                        const editClass = currentEditMode ? 'bg-white dark:bg-black border border-[var(--border)] shadow-inner cursor-text' : 'bg-transparent border border-transparent';
+const editClass = currentEditMode ? 'bg-white dark:bg-white/5 border border-[var(--border)] shadow-inner cursor-text' : 'bg-transparent border border-transparent';
                         
                         vocabHtml += `
                         <div class="bg-[var(--bg-card)] border ${isLearnedClass} rounded-[24px] p-4 relative transition-all flex flex-col gap-3">
