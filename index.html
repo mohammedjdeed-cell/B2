@@ -528,34 +528,11 @@
         </div>
     </header>
 
-  <!-- Slide-out Drawer Overlay for Mobile -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden"></div>
-    
-    <!-- Smart Split Panel (Right Sidebar) -->
-    <aside id="right-panel" class="fixed lg:relative top-0 right-0 h-full w-[320px] lg:w-0 overflow-hidden bg-[var(--bg-sidebar)] border-l border-[var(--border)] shadow-2xl lg:shadow-none z-[100] lg:z-10 transform translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto shrink-0">
-        
-        <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] flex justify-between items-center shadow-sm z-10 shrink-0">
-            <div class="flex items-center gap-2">
-                <span class="text-xl">🗂️</span>
-                <select id="mini-view-select" onchange="renderRightPanel()" class="bg-transparent font-black text-sm text-[var(--text-primary)] outline-none cursor-pointer">
-                    <option value="wortschatz">Mini-Wortschatz</option>
-                    <option value="redemittel">Mini-Redemittel</option>
-                </select>
-            </div>
-            <button onclick="toggleRightPanel()" class="p-2 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        
-        <div class="p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0">
-            <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider text-center" id="mini-view-context">Synchrone Ansicht</p>
-        </div>
+  </header>
 
-        <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]">
-            <!-- Dynamic Content Renders Here -->
-        </div>
-    </aside>     
-        
+    <!-- Slide-out Drawer Overlay for Mobile -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden"></div>
+
     <!-- Modal: Profile & Settings -->
     <div id="profile-settings-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-6 shadow-2xl relative">
@@ -818,6 +795,36 @@
                 </button>
             </div>
         </main>
+        </main>
+
+        <!-- Smart Split Panel (Right Sidebar) -->
+        <aside id="right-panel" class="fixed lg:relative top-0 right-0 h-full w-[320px] lg:w-0 overflow-hidden bg-[var(--bg-sidebar)] border-l border-[var(--border)] shadow-2xl lg:shadow-none z-[100] lg:z-10 transform translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto shrink-0">
+            
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] flex justify-between items-center shadow-sm z-10 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🗂️</span>
+                    <select id="mini-view-select" onchange="renderRightPanel()" class="bg-transparent font-black text-sm text-[var(--text-primary)] outline-none cursor-pointer">
+                        <option value="wortschatz">Mini-Wortschatz</option>
+                        <option value="redemittel">Mini-Redemittel</option>
+                    </select>
+                </div>
+                <button onclick="toggleRightPanel()" class="p-2 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0">
+                <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider text-center" id="mini-view-context">Synchrone Ansicht</p>
+            </div>
+
+            <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]">
+                <!-- Dynamic Content Renders Here -->
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Quick Preview Modal -->
     </div>
 
     <!-- Quick Preview Modal -->
