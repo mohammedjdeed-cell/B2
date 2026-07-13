@@ -1909,7 +1909,7 @@
 
             const allSections = ['mindmap', 'redemittel', 'grammar', 'settings'];
             
-            allSections.forEach(t => {
+           allSections.forEach(t => {
                 const section = document.getElementById(`${t}-tab-section`);
                 if (section) {
                     if (t === tabId) {
@@ -2893,13 +2893,13 @@
                 let touchTimer;
                 let isLongPress = false;
 
-                card.addEventListener('touchstart', (e) => {
+               card.addEventListener('touchstart', (e) => {
                     isLongPress = false;
                     touchTimer = setTimeout(() => {
                         isLongPress = true;
                         showThemaPreview(topic);
                     }, 600);
-                
+                }, { passive: true });
 
                 card.addEventListener('touchend', (e) => {
                     clearTimeout(touchTimer);
