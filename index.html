@@ -252,7 +252,16 @@
         -ms-overflow-style: none !important;
         scrollbar-width: none !important;
     }
-
+/* 1. GLOBALE SCROLLBAR VERSTECKEN (APP-LOOK) */
+    ::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+    * {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+    }
     /* CSS-Keyframes für Wischübergangseffekte */
     @keyframes slideOutLeft {
         from { transform: translateX(0); opacity: 1; }
@@ -1745,6 +1754,12 @@
         applyTextScale();
 
       let isRightPanelOpen = false;
+        let miniVocabShowAll = false; // New variable for Mini-Panel
+
+        function toggleMiniVocabShowAll() {
+            miniVocabShowAll = !miniVocabShowAll;
+            renderRightPanel();
+        }
 
         function toggleRightPanel() {
             isRightPanelOpen = !isRightPanelOpen;
@@ -1779,12 +1794,27 @@
             let html = '';
             const tId = TEMPLATE_DATA[activeIdx].id;
 
-            if (mode === 'wortschatz') {
-                contextLabel.textContent = `Vokabeln für Thema ${tId}`;
-                const words = VOCAB_DATA[tId] || [];
+          if (mode === 'wortschatz') {
+                contextLabel.innerHTML = `
+                    <div class="flex justify-between items-center w-full px-1">
+                        <span class="truncate">${miniVocabShowAll ? 'Alle (1-52)' : `Thema ${tId}`}</span>
+                        <button onclick="toggleMiniVocabShowAll()" class="px-2 py-1 bg-[var(--accent)] text-white rounded text-[9px] hover:scale-105 transition-all shadow-sm">
+                            ${miniVocabShowAll ? '📌 Nur Thema' : '🌍 Alle zeigen'}
+                        </button>
+                    </div>
+                `;
+                
+                let words = [];
+                if (miniVocabShowAll) {
+                    Object.keys(VOCAB_DATA).forEach(keyId => {
+                        VOCAB_DATA[keyId].forEach(w => words.push({...w, originalTid: keyId}));
+                    });
+                } else {
+                    words = (VOCAB_DATA[tId] || []).map(w => ({...w, originalTid: tId}));
+                }
                 
                 if(words.length === 0) {
-                    html = `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln für Thema ${tId} gespeichert.</p>`;
+                    html = `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln gefunden.</p>`;
                 } else {
                     html = `<div class="space-y-3">`;
                     words.forEach(w => {
@@ -1794,8 +1824,9 @@
                                 <span class="font-black text-[var(--text-primary)] text-sm">${w.de}</span>
                                 ${w.learned ? '<span class="text-emerald-500 text-xs shadow-sm bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center">✓</span>' : ''}
                             </div>
-                            <div class="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">${w.en || '-'}</div>
+                            <div class="text-xs font-bold text-blue-500 dark:text-blue-300 mb-1">${w.en || '-'}</div>
                             ${w.ar ? `<div class="text-sm font-arabic font-bold text-purple-600 dark:text-purple-400 text-right" dir="rtl">${w.ar}</div>` : ''}
+                            ${miniVocabShowAll ? `<div class="text-[9px] text-[var(--text-faint)] mt-2 text-right border-t border-[var(--border)] pt-1">Thema ${w.originalTid}</div>` : ''}
                         </div>`;
                     });
                     html += `</div>`;
@@ -1877,13 +1908,14 @@
             const controls = document.getElementById('dashboard-controls');
             const fabs = document.getElementById('floating-action-buttons');
 
-            ['template', 'classic', 'diskussion', 'mindmap', 'redemittel', 'grammar', 'wortschatz', 'settings'].forEach(t => {
+            // FIX: Ensure non-topic sections are hidden when switching to a topic
+            ['mindmap', 'redemittel', 'grammar', 'settings'].forEach(t => {
                 const section = document.getElementById(`${t}-tab-section`);
                 if (section) {
                     if (t === tabId && !isTopic) {
                         section.classList.remove('hidden');
                         section.classList.add(t === 'mindmap' ? 'flex' : 'block');
-                    } else if (!isTopic) {
+                    } else {
                         section.classList.add('hidden');
                         section.classList.remove('flex', 'block');
                     }
@@ -3243,12 +3275,14 @@
                 }
             }
 
-            const controlsEl = document.getElementById('dashboard-controls');
+          const controlsEl = document.getElementById('dashboard-controls');
             if (controlsEl) {
                 if (isLearned) {
-                    controlsEl.className = "bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50 border p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative transition-colors duration-200 z-30";
+                    controlsEl.classList.add('bg-emerald-50/80', 'dark:bg-emerald-950/20', 'border-emerald-200', 'dark:border-emerald-900/50');
+                    controlsEl.classList.remove('bg-[var(--bg-card)]', 'border-[var(--border)]');
                 } else {
-                    controlsEl.className = "bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative transition-colors duration-200 z-30";
+                    controlsEl.classList.add('bg-[var(--bg-card)]', 'border-[var(--border)]');
+                    controlsEl.classList.remove('bg-emerald-50/80', 'dark:bg-emerald-950/20', 'border-emerald-200', 'dark:border-emerald-900/50');
                 }
             }
 
