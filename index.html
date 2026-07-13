@@ -4462,7 +4462,7 @@ let navigationBar = `
             touchStartTime = Date.now();
         }, { passive: true });
 
-        // FIXED iOS SWIPE BUG: Will no longer trigger page swipe if user has highlighted text
+        /// FIXED iOS SWIPE BUG: Will no longer trigger page swipe if user has highlighted text
         document.addEventListener('touchend', e => {
             if (window.getSelection() && window.getSelection().toString().length > 0) {
                 return;
