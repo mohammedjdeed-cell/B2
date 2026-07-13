@@ -522,115 +522,40 @@
                 </svg>
             </button>
 
-            <button id="menu-drawer-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Einstellungen und Werkzeuge">
-                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <button onclick="toggleRightPanel()" id="right-panel-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Mini-Ansicht (Split Screen) öffnen">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v18m4-18h6a2 2 0 012 2v14a2 2 0 01-2 2h-6m-4-18H5a2 2 0 00-2 2v14a2 2 0 002 2h4"></path></svg>
             </button>
         </div>
     </header>
 
-    <!-- Slide-out Universal Hamburger Drawer Menu -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
-    <aside id="drawer-menu" class="fixed top-0 right-0 h-full w-[310px] bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl z-[100] transform translate-x-full transition-transform duration-250 ease-out overflow-y-auto flex flex-col justify-between">
-        <div class="p-5 space-y-6">
-            <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
-                <h3 class="font-bold text-sm uppercase tracking-wider text-[var(--text-primary)]">⚙️ Einstellungen</h3>
-                <button id="drawer-close" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <!-- Profile & Account Section -->
-            <div class="space-y-2">
-                <button onclick="openProfileSettings()" class="w-full min-h-[48px] px-4 py-2 bg-[var(--accent)] text-white hover:bg-emerald-800 rounded-xl font-bold flex items-center justify-between transition-colors shadow-md cursor-pointer">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <span id="drawer-user-label">Benutzerprofil</span>
-                    </div>
-                    <span>➔</span>
-                </button>
-            </div>
-
-            <!-- Edit Mode -->
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Werkzeuge</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="smartUndo()" class="min-h-[40px] py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-primary)] rounded-lg cursor-pointer transition-colors">↩️ Zurück</button>
-                    <button onclick="smartRedo()" class="min-h-[40px] py-2 text-xs font-bold bg-[var(--bg-app)] hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-primary)] rounded-lg cursor-pointer transition-colors">↪️ Vor</button>
-                </div>
-                <button id="drawer-edit-toggle" class="w-full min-h-[44px] py-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-primary)] rounded-lg border border-[var(--border)] flex items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800">
-                    <span id="edit-mode-status-text">Edit-Modus umschalten</span>
-                </button>
-            </div>
-
-            <!-- Classic Tab -->
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Archiv / Altes Menü</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <button onclick="switchTab('classic'); toggleDrawer();" class="w-full min-h-[44px] py-2 text-xs font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded-lg border border-amber-200 dark:border-amber-800 flex items-center justify-center gap-2 cursor-pointer transition-colors">
-                    🏛️ Klassisches Menü öffnen
-                </button>
-                <p class="text-[10px] text-[var(--text-muted)] text-center leading-tight">Das alte Format (topics.json) – schreibgeschützt.</p>
-            </div>
-
-            <!-- Voice Settings -->
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Sprachausgabe</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full min-h-[40px] text-xs bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-2.5 text-[var(--text-primary)] mb-2 cursor-pointer focus:outline-none focus:border-[var(--accent)]">
-                    <option value="">Standard-Stimme</option>
+  <!-- Slide-out Drawer Overlay for Mobile -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden"></div>
+    
+    <!-- Smart Split Panel (Right Sidebar) -->
+    <aside id="right-panel" class="fixed lg:relative top-0 right-0 h-full w-[320px] lg:w-0 overflow-hidden bg-[var(--bg-sidebar)] border-l border-[var(--border)] shadow-2xl lg:shadow-none z-[100] lg:z-10 transform translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto shrink-0">
+        
+        <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] flex justify-between items-center shadow-sm z-10 shrink-0">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🗂️</span>
+                <select id="mini-view-select" onchange="renderRightPanel()" class="bg-transparent font-black text-sm text-[var(--text-primary)] outline-none cursor-pointer">
+                    <option value="wortschatz">Mini-Wortschatz</option>
+                    <option value="redemittel">Mini-Redemittel</option>
                 </select>
-                <div class="flex items-center justify-between gap-2 bg-[var(--bg-app)] p-2.5 rounded-lg border border-[var(--border)]">
-                    <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Tempo</span>
-                    <select id="drawer-voice-speed" onchange="localStorage.setItem('b2_voice_speed', this.value)" class="text-xs bg-transparent text-[var(--text-primary)] focus:outline-none cursor-pointer font-bold">
-                        <option value="0.8">0.8x</option>
-                        <option value="1.0" selected>1.0x</option>
-                        <option value="1.2">1.2x</option>
-                    </select>
-                </div>
             </div>
-
-            <!-- Visual Settings -->
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Ansicht & Design</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                
-                <span class="text-[10px] font-bold text-[var(--text-muted)] mb-1 block">Textgröße</span>
-                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg mb-3 border border-[var(--border)]">
-                    <button onclick="changeTextScale('80%')" id="scale-80" class="py-1.5 text-xs font-bold rounded cursor-pointer">80%</button>
-                    <button onclick="changeTextScale('100%')" id="scale-100" class="py-1.5 text-xs font-bold rounded cursor-pointer">100%</button>
-                    <button onclick="changeTextScale('125%')" id="scale-125" class="py-1.5 text-xs font-bold rounded cursor-pointer">125%</button>
-                </div>
-
-                <span class="text-[10px] font-bold text-[var(--text-muted)] mb-1 block">Farbschema</span>
-                <div class="grid grid-cols-3 gap-1 bg-[var(--bg-app)] p-1 rounded-lg border border-[var(--border)]">
-                    <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-1.5 text-xs font-bold rounded cursor-pointer">Hell</button>
-                    <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-1.5 text-xs font-bold rounded cursor-pointer">Dunkel</button>
-                    <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-1.5 text-xs font-bold rounded cursor-pointer">System</button>
-                </div>
-            </div>
-
-            <!-- Data & Export -->
-            <div class="space-y-2.5">
-                <h4 class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Daten-Steuerung</h4>
-                <div class="h-px bg-[var(--border)] w-full mb-2"></div>
-                
-                <button onclick="document.getElementById('import-backup-input').click()" class="w-full min-h-[40px] text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-3 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors">
-                    <span>📥 Backup einspielen (.json)</span>
-                </button>
-                <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
-                
-                <button onclick="exportTotalBackup()" class="w-full min-h-[40px] text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-colors flex items-center justify-center gap-1.5">
-                    <span>💾 Vollbackup speichern</span>
-                </button>
-                
-                <button onclick="exportRawTemplate()" class="w-full min-h-[36px] text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg cursor-pointer transition-colors flex items-center justify-center gap-1.5">
-                    📤 template.json exportieren
-                </button>
-            </div>
+            <button onclick="toggleRightPanel()" class="p-2 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
-    </aside>
+        
+        <div class="p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0">
+            <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider text-center" id="mini-view-context">Synchrone Ansicht</p>
+        </div>
 
+        <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]">
+            <!-- Dynamic Content Renders Here -->
+        </div>
+    </aside>     
+        
     <!-- Modal: Profile & Settings -->
     <div id="profile-settings-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-6 shadow-2xl relative">
@@ -725,26 +650,31 @@
 <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
             
-            <!-- Dashboard Controls (Fixed flex layout for Tablets) -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 relative transition-colors duration-200 z-30">
-                <div class="flex items-center gap-4">
+       <!-- Dashboard Controls (Fixed Responsive Layout) -->
+            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 md:rounded-[var(--radius-card)] md:shadow-[var(--shadow-sm)] flex flex-col 2xl:flex-row justify-between items-start 2xl:items-center gap-5 relative transition-colors duration-200 z-30">
+                
+                <!-- 1. Emoji & Title Area -->
+                <div class="flex items-center gap-4 w-full 2xl:w-auto overflow-hidden">
                     <div class="w-14 h-14 bg-[var(--bg-app)] border border-[var(--border)] rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0 relative">
                         <span id="active-topic-emoji" class="drop-shadow-sm select-none">📌</span>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <div class="flex items-center gap-2">
-                            <div id="active-topic-num"></div>
-                            <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]">
-                            </button>
+                    <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                            <div id="active-topic-num" class="shrink-0"></div>
+                            <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2 transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1 border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)] text-[var(--text-primary)]"></button>
                         </div>
-                        <h2 id="active-topic-title-de" class="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight tracking-tight">Lade Thema...</h2>
+                        <h2 id="active-topic-title-de" class="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight tracking-tight truncate w-full">Lade Thema...</h2>
                     </div>
                 </div>
-<div class="flex bg-[var(--bg-app)] p-1.5 rounded-xl border border-[var(--border)] w-full lg:w-auto shadow-inner overflow-x-auto no-scrollbar order-last lg:order-none">
-                    <button onclick="switchTab('template')" id="subtab-template" class="flex-1 px-5 py-2 text-xs font-black rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm whitespace-nowrap transition-all">📝 Template</button>
-                    <button onclick="switchTab('diskussion')" id="subtab-diskussion" class="flex-1 px-5 py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap transition-all">💬 Diskussion</button>
-                    <button onclick="switchTab('wortschatz')" id="subtab-wortschatz" class="flex-1 px-5 py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap transition-all">🧠 Vokabeln</button>
+
+                <!-- 2. The Clean Grid Sub-Nav -->
+                <div class="grid grid-cols-3 bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] w-full 2xl:w-auto shadow-inner order-last 2xl:order-none gap-1 shrink-0">
+                    <button onclick="switchTab('template')" id="subtab-template" class="w-full px-2 sm:px-4 py-2.5 text-xs font-black rounded-xl bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm transition-all truncate">📝 Template</button>
+                    <button onclick="switchTab('diskussion')" id="subtab-diskussion" class="w-full px-2 sm:px-4 py-2.5 text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">💬 Diskussion</button>
+                    <button onclick="switchTab('wortschatz')" id="subtab-wortschatz" class="w-full px-2 sm:px-4 py-2.5 text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">🧠 Vokabeln</button>
                 </div>
+
+                <!-- 3. Action Buttons -->
                 <div class="flex items-center gap-2 bg-[var(--bg-app)] p-1.5 rounded-xl border border-[var(--border)] w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
                     <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-10 px-4 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
@@ -760,7 +690,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- Content Container -->
             <div id="dashboard-tab-section" class="space-y-6 scalable-content relative overflow-hidden">
                 <div id="edit-tip-banner" class="hidden bg-[var(--accent-light)] border border-[var(--accent)]/10 rounded-xl p-3 flex flex-col gap-2">
@@ -802,7 +731,60 @@
 
             <section id="redemittel-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
             <section id="grammar-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)]"></section>
+<!-- New Full Page Settings Tab -->
+            <section id="settings-tab-section" class="hidden space-y-6 scalable-content bg-[var(--bg-app)] animate-fade-in p-1 lg:p-4 max-w-4xl mx-auto pb-28">
+                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] mb-6 text-center">
+                    <h2 class="text-2xl font-black text-[var(--text-primary)]">⚙️ Einstellungen</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-1">Passen Sie den TELC Trainer an Ihre Bedürfnisse an.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Voice Settings -->
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-sm">
+                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 border-b border-[var(--border)] pb-2">Sprachausgabe (TTS)</h4>
+                        <select id="drawer-voice-select" onchange="localStorage.setItem('b2_selected_voice', this.value)" class="w-full text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 py-2.5 text-[var(--text-primary)] mb-3 outline-none focus:ring-2 focus:ring-[var(--accent)] font-semibold"></select>
+                        <div class="flex items-center justify-between bg-[var(--bg-app)] p-3 rounded-lg border border-[var(--border)]">
+                            <span class="text-xs font-bold text-[var(--text-primary)]">Sprechtempo</span>
+                            <select id="drawer-voice-speed" onchange="localStorage.setItem('b2_voice_speed', this.value)" class="text-xs bg-transparent font-black outline-none cursor-pointer text-[var(--accent)]">
+                                <option value="0.8">0.8x</option><option value="1.0" selected>1.0x</option><option value="1.2">1.2x</option>
+                            </select>
+                        </div>
+                    </div>
 
+                    <!-- Appearance -->
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-sm">
+                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 border-b border-[var(--border)] pb-2">Ansicht & Design</h4>
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <button onclick="changeTextScale('80%')" id="scale-80" class="py-2 text-xs font-bold rounded-lg cursor-pointer bg-[var(--bg-app)] border border-[var(--border)] transition-colors">80%</button>
+                            <button onclick="changeTextScale('100%')" id="scale-100" class="py-2 text-xs font-bold rounded-lg cursor-pointer bg-[var(--bg-app)] border border-[var(--border)] transition-colors">100%</button>
+                            <button onclick="changeTextScale('125%')" id="scale-125" class="py-2 text-xs font-bold rounded-lg cursor-pointer bg-[var(--bg-app)] border border-[var(--border)] transition-colors">125%</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setThemePreference('light')" id="theme-light-btn" class="py-2 text-xs font-bold rounded-lg cursor-pointer bg-[var(--bg-app)] border border-[var(--border)] transition-colors">Hell</button>
+                            <button onclick="setThemePreference('dark')" id="theme-dark-btn" class="py-2 text-xs font-bold rounded-lg cursor-pointer bg-[var(--bg-app)] border border-[var(--border)] transition-colors">Dunkel</button>
+                            <button onclick="setThemePreference('system')" id="theme-system-btn" class="py-2 text-xs font-bold rounded-lg cursor-pointer bg-[var(--bg-app)] border border-[var(--border)] transition-colors">System</button>
+                        </div>
+                    </div>
+
+                    <!-- Data & Export -->
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-sm">
+                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 border-b border-[var(--border)] pb-2">Daten-Steuerung</h4>
+                        <button onclick="document.getElementById('import-backup-input').click()" class="w-full py-3 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-transform active:scale-95">📥 Backup einspielen (.json)</button>
+                        <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
+                        <button onclick="exportTotalBackup()" class="w-full py-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-transform active:scale-95">💾 Vollbackup speichern</button>
+                        <button onclick="exportRawTemplate()" class="w-full py-2.5 text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg cursor-pointer">📤 template.json exportieren</button>
+                    </div>
+
+                    <!-- Account & Advanced -->
+                    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-sm flex flex-col">
+                        <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 border-b border-[var(--border)] pb-2">Konto & System</h4>
+                        <button onclick="openProfileSettings()" class="w-full py-3 mb-4 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-black font-bold text-xs rounded-lg cursor-pointer shadow-sm transition-transform active:scale-95">👤 Cloud-Konto verwalten</button>
+                        <div class="h-px bg-[var(--border)] w-full mb-4 mt-auto"></div>
+                        <button onclick="switchTab('classic');" class="w-full py-2.5 text-xs font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 rounded-lg border border-amber-200 cursor-pointer">🏛️ Klassisches Archiv (Schreibgeschützt)</button>
+                    </div>
+                </div>
+            </section>
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
             <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
@@ -1755,28 +1737,82 @@
 
         applyTextScale();
 
-        function toggleDrawer() {
-            const drawerMenu = document.getElementById('drawer-menu');
-            const drawerOverlay = document.getElementById('drawer-overlay');
-            if (!drawerMenu) return;
+      let isRightPanelOpen = false;
 
-            const isOpen = !drawerMenu.classList.contains('translate-x-full');
-            if (isOpen) {
-                drawerMenu.classList.add('translate-x-full');
-                if (drawerOverlay) {
-                    drawerOverlay.classList.add('hidden');
-                    drawerOverlay.classList.remove('opacity-100');
+        function toggleRightPanel() {
+            isRightPanelOpen = !isRightPanelOpen;
+            const panel = document.getElementById('right-panel');
+            const overlay = document.getElementById('drawer-overlay');
+            
+            if (isRightPanelOpen) {
+                panel.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
+                panel.classList.remove('lg:w-0');
+                panel.classList.add('lg:w-[320px]'); 
+                
+                if (window.innerWidth < 1024) {
+                    overlay.classList.remove('hidden');
                 }
+                renderRightPanel();
             } else {
-                drawerMenu.classList.remove('translate-x-full');
-                if (drawerOverlay) {
-                    drawerOverlay.classList.remove('hidden');
-                    void drawerOverlay.offsetWidth; 
-                    drawerOverlay.classList.add('opacity-100');
-                }
-                populateVoicesList();
+                panel.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+                panel.classList.remove('lg:w-[320px]');
+                panel.classList.add('lg:w-0');
+                overlay.classList.add('hidden');
             }
         }
+
+        // --- NEW MINI-PANEL RENDERER ---
+        function renderRightPanel() {
+            if(!isRightPanelOpen) return;
+            const content = document.getElementById('right-panel-content');
+            const mode = document.getElementById('mini-view-select').value;
+            const contextLabel = document.getElementById('mini-view-context');
+            if(!content) return;
+            
+            let html = '';
+            const tId = TEMPLATE_DATA[activeIdx].id;
+
+            if (mode === 'wortschatz') {
+                contextLabel.textContent = `Vokabeln für Thema ${tId}`;
+                const words = VOCAB_DATA[tId] || [];
+                
+                if(words.length === 0) {
+                    html = `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln für Thema ${tId} gespeichert.</p>`;
+                } else {
+                    html = `<div class="space-y-3">`;
+                    words.forEach(w => {
+                        html += `
+                        <div class="bg-[var(--bg-card)] p-3 rounded-2xl border ${w.learned ? 'border-emerald-400 bg-emerald-50/20' : 'border-[var(--border)]'} shadow-sm">
+                            <div class="flex justify-between items-start mb-1.5">
+                                <span class="font-black text-[var(--text-primary)] text-sm">${w.de}</span>
+                                ${w.learned ? '<span class="text-emerald-500 text-xs shadow-sm bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center">✓</span>' : ''}
+                            </div>
+                            <div class="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">${w.en || '-'}</div>
+                            ${w.ar ? `<div class="text-sm font-arabic font-bold text-purple-600 dark:text-purple-400 text-right" dir="rtl">${w.ar}</div>` : ''}
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+            } else if (mode === 'redemittel') {
+                contextLabel.textContent = "Allgemeine Redemittel";
+                html = `<div class="space-y-4">`;
+                Object.keys(REDEMITTEL_DATA || {}).forEach(cat => {
+                    html += `<div><h5 class="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-wider mb-2">${cat}</h5><div class="space-y-2">`;
+                    REDEMITTEL_DATA[cat].forEach(phrase => {
+                        html += `<div class="bg-[var(--bg-card)] p-3 rounded-xl border border-[var(--border)] shadow-sm">
+                                    <span class="font-bold text-xs text-[var(--text-primary)] block leading-snug mb-1">${phrase.de}</span>
+                                    <span class="text-[10px] font-semibold text-blue-600 dark:text-blue-400">${phrase.en}</span>
+                                 </div>`;
+                    });
+                    html += `</div></div>`;
+                });
+                html += `</div>`;
+            }
+            content.innerHTML = html;
+        }
+
+        // Keep this tiny function so overlay click works
+        function toggleDrawer() { toggleRightPanel(); }
 
         function switchTab(tabId) {
             activeTab = tabId;
@@ -1869,6 +1905,8 @@
                 });
                 if (fabs) fabs.style.display = tabId === 'classic' ? 'none' : 'flex';
                 renderActiveTopic();
+                renderRightPanel();
+
             } else {
                 dashboardSection.classList.add('hidden');
                 controls.classList.add('hidden');
@@ -3154,8 +3192,8 @@
 
             const currentEditMode = isClassic ? false : isEditMode;
 
-            document.getElementById('active-topic-num').innerHTML = `
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52 ${isClassic ? '(Klassisch)' : (isDiskussion ? '(Diskussion)' : '')}</span>
+           document.getElementById('active-topic-num').innerHTML = `
+                <span class="whitespace-nowrap inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52 ${isClassic ? '(Klassisch)' : (isDiskussion ? '(Diskussion)' : '')}</span>
             `;
             
             const deStar = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 text-lg select-none animate-pulse">★</span>` : '';
