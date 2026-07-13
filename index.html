@@ -192,14 +192,13 @@
         color: #86efac;
     }
 
-    .modern-underline {
+   .modern-underline {
         text-decoration: underline;
         text-decoration-color: var(--accent);
-        text-decoration-thickness: 3px;
+        text-decoration-thickness: 2px; /* Dünnere, elegantere Linie */
         text-underline-offset: 4px;
         text-decoration-skip-ink: auto;
-        font-weight: 600;
-        color: var(--text-primary);
+        color: inherit; /* Lässt die normale Textfarbe und Dicke exakt so, wie sie ist */
     }
     [data-theme="dark"] .modern-underline {
         text-decoration-color: var(--accent);
