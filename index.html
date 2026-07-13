@@ -192,13 +192,18 @@
         color: #86efac;
     }
 
-    .word-circle {
-        border: 2px solid #E11D48;
-        border-radius: 50%;
-        padding: 0 4px;
-        display: inline-block;
+    .modern-underline {
+        text-decoration: underline;
+        text-decoration-color: var(--accent);
+        text-decoration-thickness: 3px;
+        text-underline-offset: 4px;
+        text-decoration-skip-ink: auto;
+        font-weight: 600;
+        color: var(--text-primary);
     }
-
+    [data-theme="dark"] .modern-underline {
+        text-decoration-color: var(--accent);
+    }
     .sidebar-only-emoji {
         font-size: 1.25rem;
         width: 1.75rem;
@@ -879,7 +884,7 @@
 
     <!-- Selection formatting toolbar --><div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('circle')" class="px-2 py-1 text-xs font-bold text-rose-600 hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Kreis">⭕</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Unterstreichen"><u style="text-underline-offset: 3px; text-decoration-thickness: 2px;">U</u></button>
         
         <!-- NEUER LIST BUTTON -->
         <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
@@ -2326,7 +2331,7 @@
                 // Rock-solid classic logic for highlights and circles
                 const range = selection.getRangeAt(0);
                 const span = document.createElement('span');
-                span.className = type === 'circle' ? 'word-circle' : `hl-${value}`;
+                span.className = type === 'underline' ? 'modern-underline' : `hl-${value}`;
                 try {
                     const contents = range.extractContents();
                     span.appendChild(contents);
@@ -2346,7 +2351,7 @@
             if (!selection || selection.rangeCount === 0) return;
 
             // Finds markers and removes only the color/bold, keeping the text intact
-            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .word-circle, .highlight, strong, b');
+            const spans = activeContainer.querySelectorAll('.hl-yellow, .hl-blue, .hl-red, .hl-green, .modern-underline, .highlight, strong, b');
             spans.forEach(span => {
                 if (selection.containsNode(span, true)) {
                     const parent = span.parentNode;
