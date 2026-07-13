@@ -1224,17 +1224,19 @@
         }
 
  let globalSaveTimeout;
-        // FIX: Force raw plain text on paste inside the editor
+   // FIX: Force raw plain text on paste EVERYWHERE inside the editor
         document.addEventListener('paste', function(e) {
-            // Check if the user is pasting inside an editable text box
-            const target = e.target;
-            if (target && target.hasAttribute('contenteditable') && target.getAttribute('contenteditable') === 'true') {
-                e.preventDefault(); // Stop the normal paste
+            // Check if the target or any of its parent elements is the editable box
+            const targetElement = e.target.nodeType === 3 ? e.target.parentNode : e.target;
+            const isInsideEditor = targetElement.closest('[contenteditable="true"]');
+            
+            if (isInsideEditor) {
+                e.preventDefault(); // Stop the normal rich-text paste
                 
-                // Get the raw plain text from the clipboard
+                // Get the pure, raw text without any background colors or fonts
                 const text = (e.clipboardData || window.clipboardData).getData('text/plain');
                 
-                // Insert the raw text safely at the cursor position
+                // Insert the clean text
                 document.execCommand('insertText', false, text);
             }
         });
