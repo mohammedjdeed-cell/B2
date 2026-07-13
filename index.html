@@ -2326,17 +2326,46 @@
             document.execCommand('insertUnorderedList', false, null);
         } else if (type === 'clear') {
                 unwrapSelection(activeContainer);
-            } else {
-                // Rock-solid classic logic for highlights and circles
-                const range = selection.getRangeAt(0);
-                const span = document.createElement('span');
-                span.className = type === 'underline' ? 'modern-underline' : `hl-${value}`;
-                try {
-                    const contents = range.extractContents();
-                    span.appendChild(contents);
-                    range.insertNode(span);
-                } catch (e) {
-                    console.error("Marker failed:", e);
+      } else {
+                const targetClass = type === 'underline' ? 'modern-underline' : `hl-${value}`;
+                
+                // 1. Check if the selection is ALREADY inside this specific formatting
+                let currentNode = selection.anchorNode;
+                let existingSpan = null;
+                
+                while (currentNode) {
+                    // Stop checking if we hit the main editor box
+                    if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.hasAttribute('contenteditable')) {
+                        break; 
+                    }
+                    // If we find our target class, save it and stop looking
+                    if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.classList.contains(targetClass)) {
+                        existingSpan = currentNode;
+                        break;
+                    }
+                    currentNode = currentNode.parentNode;
+                }
+
+                // 2. Apply Toggle Logic
+                if (existingSpan) {
+                    // TOGGLE OFF: The text is already highlighted! Remove the span, keep the text.
+                    const parent = existingSpan.parentNode;
+                    while (existingSpan.firstChild) { 
+                        parent.insertBefore(existingSpan.firstChild, existingSpan); 
+                    }
+                    parent.removeChild(existingSpan);
+                    activeContainer.normalize(); // Clean up broken text nodes
+                } else {
+                    // TOGGLE ON: Apply the new highlight/underline
+                    const range = selection.getRangeAt(0);
+                    const span = document.createElement('span');
+                    span.className = targetClass;
+                    try {
+                        span.appendChild(range.extractContents());
+                        range.insertNode(span);
+                    } catch (e) {
+                        console.error("Marker failed:", e);
+                    }
                 }
             }
 
@@ -2344,7 +2373,6 @@
             activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
             handleSelectionChange();
         }
-
         function unwrapSelection(activeContainer) {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
