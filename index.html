@@ -439,18 +439,39 @@
         margin-bottom: 0.5rem !important;
         line-height: 1.85;
     }
-  /* --- 2026 Flashcard 3D Effects --- */
+  /* --- 2026 Flashcard 3D Effects (Glitch & Blur Fix) --- */
     .perspective-1000 { perspective: 1000px; }
-    .transform-style-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); }
-    .backface-hidden { backface-visibility: hidden; }
+    
+    .transform-style-3d { 
+        transform-style: preserve-3d; 
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform: scale(1) rotateY(0deg); 
+    }
+    
+    /* Hardware acceleration to fix blurry text during transitions */
+    .flashcard-front, .flashcard-back {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(1px); 
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    .flashcard-back {
+        transform: rotateY(180deg) translateZ(1px);
+    }
+
     .flashcard-container { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     
-    /* The Flip Action */
-    .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
-    
-    /* Laptop Hover Fix: Only zoom if the card is NOT flipped! */
+    /* Laptop Hover Fix: Use exact explicit transforms so they don't fight the flip */
     @media (hover: hover) and (pointer: fine) {
-        .flashcard-container:not(.flipped):hover .flashcard-inner { transform: scale(1.02); }
+        .flashcard-container:not(.flipped):hover .flashcard-inner { 
+            transform: scale(1.02) rotateY(0deg); 
+        }
+    }
+
+    /* Safe Flip Action */
+    .flashcard-container.flipped .flashcard-inner { 
+        transform: scale(1) rotateY(180deg); 
     }
 
     /* FIX FOR OVERLAPPING BUTTONS */
@@ -3288,6 +3309,7 @@
                 } else {
                     // ==========================================
                    // ==========================================
+                    // ==========================================
                     // PRACTICE MODE (FLASHCARDS - 2026 UI)
                     // ==========================================
                     vocabHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">`;
@@ -3295,12 +3317,16 @@
                         const encodedDe = encodeURIComponent(w.de);
                         vocabHtml += `
                         <div class="perspective-1000 flashcard-container h-56" onclick="this.classList.toggle('flipped')">
-                            <div class="flashcard-inner w-full h-full relative transform-style-3d transition-transform duration-700">
+                            <div class="flashcard-inner w-full h-full relative transform-style-3d shadow-sm hover:shadow-md rounded-[24px]">
                                 
                                 <!-- FRONT (German Word - High Focus) -->
-                                <div class="flashcard-front absolute w-full h-full backface-hidden bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5">
+                                <div class="flashcard-front absolute w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)]'} rounded-[24px] flex flex-col items-center justify-center p-5 overflow-hidden">
+                                    
+                                    <!-- Modern German Flag Background -->
+                                    <div class="absolute -right-4 -top-4 text-7xl opacity-[0.04] dark:opacity-10 filter grayscale pointer-events-none select-none">🇩🇪</div>
+                                    
                                     <!-- Top Floating Bar -->
-                                    <div class="absolute top-4 w-full px-5 flex justify-between items-start">
+                                    <div class="absolute top-4 w-full px-5 flex justify-between items-start z-10">
                                         <button onclick="event.stopPropagation(); playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm hover:scale-110 text-[var(--accent)] transition-transform border border-[var(--border)]" title="Vorlesen">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                         </button>
@@ -3311,34 +3337,36 @@
                                     </div>
 
                                     <!-- Core Word Area -->
-                                    <div class="mt-4 flex flex-col items-center w-full px-2">
-                                        <span class="text-[10px] font-bold text-[var(--accent)] bg-[var(--accent-light)] px-3 py-1 rounded-full uppercase tracking-widest mb-3 border border-[var(--accent)]/10 shadow-inner">🇩🇪 Deutsch</span>
-                                        <h4 class="text-2xl sm:text-3xl font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-sm w-full line-clamp-3">${w.de}</h4>
+                                    <div class="mt-4 flex flex-col items-center w-full px-2 relative z-10">
+                                        <h4 class="text-3xl sm:text-4xl font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-md w-full line-clamp-3 px-2">${w.de}</h4>
                                     </div>
 
                                     <!-- Bottom Hint -->
-                                    <div class="absolute bottom-4 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider animate-pulse flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full">
+                                    <div class="absolute bottom-4 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider animate-pulse flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full z-10">
                                         <span>Drehen</span> <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                                     </div>
                                 </div>
 
                                 <!-- BACK (Translations - Color Zoned) -->
-                                <div class="flashcard-back absolute w-full h-full backface-hidden rotate-y-180 bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px] flex flex-col p-2.5 shadow-xl cursor-default" onclick="event.stopPropagation()">
+                                <div class="flashcard-back absolute w-full h-full bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px] flex flex-col p-2.5 shadow-xl cursor-default" onclick="event.stopPropagation()">
                                     
                                     <div class="flex-1 flex flex-col gap-2.5 p-1" onclick="this.parentElement.parentElement.parentElement.classList.remove('flipped')">
                                         
                                         <!-- English Zone -->
                                         <div class="flex-1 bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-blue-100/60 transition-colors">
+                                            <div class="absolute -right-3 -top-3 text-5xl opacity-[0.07] dark:opacity-10 filter grayscale pointer-events-none select-none">🇬🇧</div>
                                             <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 z-10 bg-blue-100/50 dark:bg-blue-900/30 px-2 py-0.5 rounded text-center">English</span>
                                             <h5 class="text-base font-extrabold text-blue-950 dark:text-blue-100 text-center z-10 leading-snug px-2 line-clamp-2">${w.en || '-'}</h5>
                                         </div>
 
                                         <!-- Arabic Zone -->
                                         <div class="flex-1 bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-purple-100/60 transition-colors">
+                                            <div class="absolute -left-3 -top-3 text-5xl opacity-[0.07] dark:opacity-10 filter grayscale pointer-events-none select-none">🇸🇾</div>
                                             <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-1 z-10 bg-purple-100/50 dark:bg-purple-900/30 px-2 py-0.5 rounded text-center">العربية</span>
                                             <h5 class="text-lg font-arabic font-extrabold text-purple-950 dark:text-purple-100 text-center z-10 leading-snug px-2 line-clamp-2" dir="rtl">${w.ar || '-'}</h5>
                                         </div>
                                     </div>
+
                                     <!-- Bottom Action Bar -->
                                     <div class="flex justify-between items-center px-2 pb-1 pt-1.5 border-t border-[var(--border)]/50 mt-1">
                                         <button onclick="playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2 bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-xl border border-[var(--border)] shadow-sm hover:scale-105 transition-all">
