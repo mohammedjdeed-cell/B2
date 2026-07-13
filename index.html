@@ -960,21 +960,21 @@
             </div>
         </div>
     </div>
-    <!-- Selection formatting toolbar --><div id="formatting-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="px-2 py-1 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Fett">B</button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Unterstreichen"><u style="text-underline-offset: 3px; text-decoration-thickness: 2px;">U</u></button>
+   <!-- Selection formatting toolbar -->
+    <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-2 py-2 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.2)] transition-all duration-150 ring-1 ring-black/5 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 px-3 py-1.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-lg border border-[var(--border)] cursor-pointer" title="Fett">B</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 px-3 py-1.5 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-lg border border-[var(--border)] cursor-pointer" title="Unterstreichen"><u style="text-underline-offset: 3px; text-decoration-thickness: 2px;">U</u></button>
         
-        <!-- NEUER LIST BUTTON -->
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
-        <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400/40 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-500/50 cursor-pointer" title="Rot"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
-        <div class="h-5 w-px bg-[var(--border)]"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
-   <div class="h-5 w-px bg-[var(--border)] mx-1"></div>
-        <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="px-2 py-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded border border-transparent transition-all cursor-pointer" title="Als Vokabel speichern">🧠+ Vokabel</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 px-3 py-1.5 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-lg border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400/40 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-500/50 cursor-pointer" title="Rot"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 px-3 py-1.5 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+        <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 px-3 py-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg border border-transparent transition-all cursor-pointer" title="Als Vokabel speichern">🧠+ Vokabel</button>
     </div>
 
     <!-- Bullet List Auto-Format Toolbar Helper -->
@@ -2501,16 +2501,16 @@
             const toolbar = document.getElementById('formatting-toolbar');
             toolbar.classList.remove('hidden');
 
-      const toolbarWidth = toolbar.offsetWidth || 180;
-        const toolbarHeight = toolbar.offsetHeight || 42;
-        
-        if (window.innerWidth < 768) {
-            // MOBILE FIX: Dock custom toolbar to the TOP (below header) to avoid Keyboard overlap!
-            toolbar.style.bottom = 'auto';
-            toolbar.style.top = '80px'; // Safely below the top header, always visible
-            toolbar.style.left = '50%';
-            toolbar.style.transform = 'translateX(-50%)';
-        } else {
+     const toolbarWidth = toolbar.offsetWidth || 180;
+            const toolbarHeight = toolbar.offsetHeight || 42;
+            
+            if (window.innerWidth < 768) {
+                // MOBILE FIX: Lock toolbar to the absolute top (like a Native PDF App)
+                toolbar.style.bottom = 'auto';
+                toolbar.style.top = '12px'; // Docks flush to the top of the phone screen
+                toolbar.style.left = '50%';
+                toolbar.style.transform = 'translateX(-50%)';
+            } else {
                 // DESKTOP: Float directly above the selected text
                 const top = r.top - toolbarHeight - 10; 
                 const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, r.left + (r.width / 2) - (toolbarWidth / 2)));
@@ -4122,13 +4122,15 @@ ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc
             if (!VOCAB_DATA[tId].find(w => w.de === text)) {
                 VOCAB_DATA[tId].push({ de: text, en: "", ar: "", learned: false });
                 saveVocabData();
-                alert(`"${text}" wurde zum Wortschatz für Thema ${tId} hinzugefügt!`);
+                showToast(`"${text}" gespeichert!`); // Silent Success Notification
             } else {
-                alert(`Das Wort "${text}" existiert bereits in diesem Thema.`);
+                showToast(`"${text}" existiert bereits!`, true); // Silent Error Notification
             }
+            
+            // Hide toolbar and remove the text highlight to keep the screen clean
             hideToolbar();
+            selection.removeAllRanges(); 
         }
-
         function updateVocabInline(tid, idx, lang, newText) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
             VOCAB_DATA[tid][idx][lang] = newText.trim();
@@ -4507,6 +4509,32 @@ ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc
                 renderActiveTopic();
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
+        }
+        // --- MODERN TOAST NOTIFICATION ---
+        function showToast(message, isError = false) {
+            // Remove existing toasts to prevent stacking
+            const existing = document.getElementById('b2-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'b2-toast';
+            toast.className = `fixed top-24 left-1/2 transform -translate-x-1/2 px-4 py-2.5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.15)] text-[12px] font-bold z-[9999] transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none flex items-center gap-2 ${isError ? 'bg-rose-600 text-white' : 'bg-[var(--accent)] text-white'}`;
+            toast.innerHTML = isError ? `<span>⚠️</span> <span>${message}</span>` : `<span>✅</span> <span>${message}</span>`;
+            
+            document.body.appendChild(toast);
+
+            // Animate In
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', '-translate-y-4');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            });
+
+            // Auto-hide after 2.5 seconds
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
         }
     </script>
     
