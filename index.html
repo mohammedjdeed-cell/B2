@@ -399,8 +399,9 @@
     }
     
     /* --- FIX: Verhindert unsichtbaren Text durch Browser-Formatierungsfehler --- */
-    .selectable-text, .selectable-text * {
+  .selectable-text, .selectable-text * {
         color: var(--text-primary) !important;
+        line-height: 1.85 !important; /* <--- FIX: Gives extra space between lines */
     }
     
     /* Sichert ab, dass unsere speziellen Marker ihre Farben behalten! */
@@ -431,8 +432,8 @@
         margin-bottom: 0.5rem !important;
     }
     .selectable-text li {
-        margin-bottom: 0.25rem !important;
-        line-height: 1.5;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.85;
     }
     </style>
 </head>
