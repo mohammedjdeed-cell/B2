@@ -439,20 +439,21 @@
         margin-bottom: 0.5rem !important;
         line-height: 1.85;
     }
-   /* --- 2026 Flashcard 3D Effects --- */
+  /* --- 2026 Flashcard 3D Effects --- */
     .perspective-1000 { perspective: 1000px; }
     .transform-style-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); }
     .backface-hidden { backface-visibility: hidden; }
-    .rotate-y-180 { transform: rotateY(180deg); }
     .flashcard-container { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    
+    /* The Flip Action */
     .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
     
-    /* Mobile Touch Fix: Hover only applies to real mice, preventing sticky taps on phones */
+    /* Laptop Hover Fix: Only zoom if the card is NOT flipped! */
     @media (hover: hover) and (pointer: fine) {
-        .flashcard-container:hover .flashcard-inner:not(.rotate-y-180) { transform: scale(1.015); }
+        .flashcard-container:not(.flipped):hover .flashcard-inner { transform: scale(1.02); }
     }
 
- /* FIX FOR OVERLAPPING BUTTONS */
+    /* FIX FOR OVERLAPPING BUTTONS */
     .flashcard-container:not(.flipped) .flashcard-back { pointer-events: none; }
     .flashcard-container.flipped .flashcard-front { pointer-events: none; }
     </style>
