@@ -3070,7 +3070,7 @@
         function renderActiveTopic() {
             const isClassic = activeTab === 'classic';
             const isDiskussion = activeTab === 'diskussion';
-            
+            const isWortschatz = activeTab === 'wortschatz';   /* <--- ADD THIS LINE! */
             let topic;
             if (isClassic) topic = TOPICS_DATA[activeIdx];
             else if (isDiskussion) topic = DISKUSSIONEN_DATA[activeIdx];
