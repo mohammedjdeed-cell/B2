@@ -284,19 +284,20 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* Mobile Bottom-Sheet Sidebar (Bigger & Bouncier) */
+    /* Mobile Bottom-Sheet Sidebar (Smooth & Performant) */
     #sidebar {
         position: fixed !important;
         bottom: 0; left: 0; right: 0; top: auto;
         z-index: 100 !important;
         width: 100% !important;
-        height: 92vh; /* Made much taller, no longer micro */
+        height: 92vh; 
         max-height: 92vh;
-        border-top-left-radius: 28px;
-        border-top-right-radius: 28px;
+        border-top-left-radius: 32px;
+        border-top-right-radius: 32px;
         transform: translateY(100%);
-        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Apple-style spring animation */
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth deceleration, no glitching */
         box-shadow: 0 -10px 50px rgba(0,0,0,0.3);
+        will-change: transform;
     }
     #sidebar.sidebar-open {
         transform: translateY(0) !important;
@@ -600,11 +601,12 @@
         <!-- Sidebar -->
         <!-- Sidebar (Bottom Sheet on Mobile) -->
         <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)]">
-            <!-- Mobile Drag Handle -->
-            <div class="w-full flex justify-center pt-3 pb-2 lg:hidden shrink-0 cursor-pointer" onclick="document.getElementById('sidebar').classList.remove('sidebar-open'); document.getElementById('drawer-overlay').classList.add('hidden');">
-                <div class="w-12 h-1.5 bg-[var(--border)] rounded-full"></div>
+            <!-- Mobile Drag Handle & Massive Swipe Down Zone -->
+            <div id="sidebar-drag-handle" class="w-full flex flex-col items-center pt-4 pb-3 lg:hidden shrink-0 cursor-pointer bg-[var(--bg-card)] rounded-t-[32px] active:bg-[var(--bg-app)] transition-colors" onclick="document.getElementById('sidebar').classList.remove('sidebar-open'); document.getElementById('drawer-overlay').classList.add('hidden');">
+                <div class="w-16 h-1.5 bg-[var(--text-faint)] rounded-full opacity-50 mb-2"></div>
+                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Schließen (Nach unten wischen)</span>
             </div>
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex shrink-0">
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] flex items-center justify-between sidebar-header-flex shrink-0 hidden lg:flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
                     <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -773,11 +775,11 @@
             </section>
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
-           <!-- Floating Themen Drawer Trigger (Swipe Indicator) -->
-            <div class="lg:hidden fixed bottom-24 left-1/2 transform -translate-x-1/2 z-30 animate-bounce" style="animation-duration: 2.5s;">
-                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" class="bg-[var(--bg-card)]/95 backdrop-blur-md border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.15)] rounded-full px-5 py-2.5 flex items-center gap-2 text-[var(--text-primary)] font-extrabold text-[13px] active:scale-95 transition-transform cursor-pointer">
-                    <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
-                    Themen Menü
+          <!-- Floating Themen Drawer Trigger (Sleek Swipe Pill) -->
+            <div class="lg:hidden fixed bottom-[90px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center gap-1 opacity-85 hover:opacity-100 transition-opacity">
+                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" class="bg-[var(--text-primary)] text-[var(--bg-card)] shadow-[0_8px_30px_rgba(0,0,0,0.2)] rounded-full px-5 py-2 flex items-center gap-2 font-bold text-[11px] uppercase tracking-wider active:scale-95 transition-transform cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                    Wischen für Themen
                 </button>
             </div>
 
@@ -801,7 +803,7 @@
                 </button>
             </div>
             
-            <div id="floating-action-buttons" class="fixed right-4 flex flex-col gap-3 z-40 bottom-[95px] lg:bottom-8">
+            <div id="floating-action-buttons" class="fixed right-4 flex flex-col gap-3 z-40 bottom-[140px] lg:bottom-8">
                 <button id="fab-undo" onmousedown="event.preventDefault(); smartUndo();" class="hidden edit-only-control w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 hover:bg-neutral-50 dark:hover:bg-zinc-700 cursor-pointer" title="Rückgängig machen (Text/Tippen)">
                     <span class="text-lg pointer-events-none">↩️</span>
                 </button>
@@ -4513,8 +4515,13 @@ let navigationBar = `
             const screenHeight = window.innerHeight;
 
            const target = e.target;
-            // Removed '#mobile-bottom-nav' from block list so swipes work everywhere!
-            if (target.closest('#sidebar') || 
+            const target = e.target;
+            
+            // Allow swiping down ON the sidebar drag handle specifically
+            const isSidebarHandle = target.closest('#sidebar-drag-handle');
+
+            if (!isSidebarHandle && (
+                target.closest('#topic-list') || // Allow scrolling inside the list without triggering document swipes
                 target.closest('#quick-preview-modal') || 
                 target.closest('#block-editor-modal') ||
                 target.closest('#redemittel-editor-modal') ||
@@ -4522,7 +4529,8 @@ let navigationBar = `
                 target.closest('select') || 
                 target.closest('textarea') || 
                 target.closest('input') ||
-                target.closest('[contenteditable="true"]')) { 
+                target.closest('[contenteditable="true"]')
+            )) { 
                 return;
             }
 
