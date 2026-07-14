@@ -4507,14 +4507,12 @@ let navigationBar = `
 
             touchEndX = e.changedTouches[0].clientX;
             touchEndY = e.changedTouches[0].clientY;
-            
-            const deltaX = touchEndX - touchStartX;
+           const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
-           const target = e.target;
             const target = e.target;
             
             // Allow swiping down ON the sidebar drag handle specifically
