@@ -32,7 +32,7 @@
         font-size: var(--text-scale, 100%) !important;
     }
 
-    /* 2026 Modern Educational Theme */
+    /* 2026 Modern Educational Theme (Sky Blue / Cyan) */
     :root {
         --bg-app:        #F8FAFC; 
         --bg-card:       #FFFFFF;
@@ -41,10 +41,10 @@
         --text-primary:  #0F172A; 
         --text-muted:    #64748B; 
         --text-faint:    #94A3B8; 
-        --accent:        #10B981; 
-        --accent-light:  #D1FAE5; 
-        --success:       #10B981;
-        --success-light: #D1FAE5;
+        --accent:        #0284c7; /* Sky Blue 600 */
+        --accent-light:  #e0f2fe; /* Sky Blue 100 */
+        --success:       #0284c7;
+        --success-light: #e0f2fe;
         --danger:        #EF4444;
         --danger-light:  #FEE2E2;
         --amber:         #F59E0B;
@@ -59,23 +59,32 @@
     }
 
     [data-theme="dark"] {
-        --bg-app:        #09090B; /* Deep Zinc (No Eye Strain) */
-        --bg-card:       #18181B; /* Elevated Card */
+        --bg-app:        #09090B; 
+        --bg-card:       #18181B; 
         --bg-sidebar:    #09090B;
         --border:        #27272A; 
         --text-primary:  #FAFAFA; 
         --text-muted:    #A1A1AA; 
         --text-faint:    #52525B;
-        --accent:        #10B981; /* Vibrant Emerald */
-        --accent-light:  rgba(16, 185, 129, 0.15);
-        --success:       #10B981;
-        --success-light: rgba(16, 185, 129, 0.15);
+        --accent:        #38bdf8; /* Sky Blue 400 */
+        --accent-light:  rgba(56, 189, 248, 0.15);
+        --success:       #38bdf8;
+        --success-light: rgba(56, 189, 248, 0.15);
         --danger:        #F87171;
         --danger-light:  rgba(248, 113, 113, 0.15);
         --amber:         #FBBF24;
         --amber-light:   rgba(251, 191, 36, 0.15);
         --shadow-sm:     0 4px 6px -1px rgba(0,0,0,0.3);
         --shadow-md:     0 10px 15px -3px rgba(0,0,0,0.4);
+    }
+
+    /* Tab Fade Animations */
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeInTab 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
     body {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -295,7 +304,7 @@
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;
         transform: translateY(100%);
-        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth deceleration, no glitching */
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         box-shadow: 0 -10px 50px rgba(0,0,0,0.3);
         will-change: transform;
     }
@@ -494,23 +503,25 @@
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
 
     <!-- Header -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden">
-        <div class="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none overflow-hidden select-none opacity-25 dark:opacity-10 flex items-center justify-end pr-12 gap-8">
-            <span class="text-xs font-serif italic text-emerald-600 dark:text-emerald-400">Aa</span>
-            <span class="text-xl font-black text-emerald-700 dark:text-emerald-500">Ö</span>
-            <span class="text-xs font-serif text-emerald-600 dark:text-emerald-400">gespräch</span>
+    <!-- Header -->
+    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden pt-5">
+        <!-- Sleek German Flag Strip at the very top -->
+        <div class="absolute top-0 left-0 w-full h-1.5 flex">
+            <div class="flex-1 bg-zinc-900"></div>
+            <div class="flex-1 bg-red-600"></div>
+            <div class="flex-1 bg-amber-400"></div>
         </div>
 
-      <div class="flex items-center gap-3 relative z-10">
+        <div class="flex items-center gap-3 relative z-10">
             <div class="relative w-10 h-10 flex-shrink-0 select-none hidden sm:block">
                 <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="24" fill="#3D6B48"/>
+                    <rect width="100" height="100" rx="24" fill="var(--accent)"/>
                     <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
                 </svg>
             </div>
             <div class="whitespace-nowrap min-w-max">
                 <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
-                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block">Interaktive Vorbereitung &amp; Strukturierte Analyse</p>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block uppercase">Interaktive Vorbereitung</p>
             </div>
         </div>
 
@@ -557,7 +568,7 @@
                 <div id="form-login" class="space-y-3">
                     <input type="email" id="auth-login-email" placeholder="E-Mail Adresse" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
                     <input type="password" id="auth-login-pwd" placeholder="Passwort" class="w-full min-h-[44px] text-sm bg-[var(--bg-app)] border border-[var(--border)] rounded-lg px-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
-                    <button id="btn-login-submit" class="w-full min-h-[44px] text-sm bg-[var(--accent)] text-white font-bold rounded-lg shadow-md hover:bg-emerald-800 transition-colors cursor-pointer mt-2">Einloggen</button>
+                    <button id="btn-login-submit" class="w-full min-h-[44px] text-sm bg-[var(--accent)] text-white font-bold rounded-lg shadow-md hover:bg-sky-800 transition-colors cursor-pointer mt-2">Einloggen</button>
                 </div>
 
                 <!-- Register Form -->
@@ -619,7 +630,7 @@
                     <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
                 </div>
                 <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
-                    <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    <div id="progress-bar" class="bg-sky-500 h-full transition-all duration-300" style="width: 0%"></div>
                 </div>
                 
                 <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
@@ -760,7 +771,7 @@
                         <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 border-b border-[var(--border)] pb-2">Daten-Steuerung</h4>
                         <button onclick="document.getElementById('import-backup-input').click()" class="w-full py-3 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-transform active:scale-95">📥 Backup einspielen (.json)</button>
                         <input type="file" id="import-backup-input" class="hidden" accept=".json" onchange="importTotalBackup(event)">
-                        <button onclick="exportTotalBackup()" class="w-full py-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-transform active:scale-95">💾 Vollbackup speichern</button>
+                        <button onclick="exportTotalBackup()" class="w-full py-3 text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white rounded-lg mb-3 cursor-pointer shadow-sm transition-transform active:scale-95">💾 Vollbackup speichern</button>
                         <button onclick="exportRawTemplate()" class="w-full py-2.5 text-[11px] font-semibold bg-[var(--bg-app)] border border-[var(--border)] text-[var(--text-primary)] hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg cursor-pointer">📤 template.json exportieren</button>
                     </div>
 
@@ -776,17 +787,29 @@
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
          <!-- Floating Themen Drawer Trigger (Sleek Swipe Pill) -->
-            <div class="lg:hidden fixed bottom-[115px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center opacity-95 hover:opacity-100 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-full">
-                <button onclick="document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden');" class="bg-[var(--bg-card)] text-[var(--accent)] border border-[var(--accent)]/30 rounded-full px-5 py-2.5 flex items-center gap-2.5 font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform cursor-pointer">
-                    <svg class="w-4 h-4 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
-                    Menü
-                </button>
+            <!-- Floating Drawer Pull-Tab (Unified Position, Up Arrow, with Vibration) -->
+            <div class="lg:hidden fixed bottom-[90px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center opacity-90 hover:opacity-100 transition-all shadow-lg rounded-t-2xl bg-[var(--bg-card)] border border-[var(--border)] border-b-0 px-8 py-2 cursor-pointer active:bg-[var(--bg-app)]" 
+                 onclick="if(navigator.vibrate) navigator.vibrate(50); document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden');">
+                <div class="w-10 h-1 bg-[var(--text-faint)] rounded-full mb-1.5 opacity-50"></div>
+                <svg class="w-5 h-5 text-[var(--accent)] animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
             </div>
 
             <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
-           <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
-            <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="if(activeTab==='template' || activeTab==='diskussion' || activeTab==='wortschatz'){ document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); } else { switchTab('template'); }" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
+            <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)] relative">
+                <!-- Themen Button (FIXED: Just goes to the tab, doesn't open the list) -->
+                <button onclick="switchTab('template');" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="text-[10px] font-bold">Themen</span>
+                </button>
+                <button onclick="switchTab('mindmap')" id="nav-raster-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[10px] font-bold">Raster</span>
+                </button>
+                <!-- Tools is now Ressourcen -->
+                <button onclick="switchTab('redemittel')" id="nav-tools-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span class="text-[10px] font-bold">Ressourcen</span>
+                </button>
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[10px] font-bold">Themen</span>
                 </button>
@@ -1070,7 +1093,7 @@
         };
 
         const CATEGORY_STYLES = {
-            'Freizeit & Gesundheit': { lightBg: 'bg-emerald-50/30', lightBorder: 'border-emerald-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-[#2A2A2C] dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/30', activeRing: 'ring-emerald-500/50 dark:ring-emerald-500/30' },
+            'Freizeit & Gesundheit': { lightBg: 'bg-sky-50/30', lightBorder: 'border-sky-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-sky-100 text-sky-800 dark:bg-[#2A2A2C] dark:text-sky-400 border-sky-200/50 dark:border-sky-900/30', activeRing: 'ring-sky-500/50 dark:ring-sky-500/30' },
             'Arbeit & Karriere': { lightBg: 'bg-blue-50/30', lightBorder: 'border-blue-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-blue-100 text-blue-800 dark:bg-[#2A2A2C] dark:text-blue-400 border-blue-200/50 dark:border-blue-900/30', activeRing: 'ring-blue-500/50 dark:ring-blue-500/30' },
             'Umwelt & Mobilität': { lightBg: 'bg-teal-50/30', lightBorder: 'border-teal-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-teal-100 text-teal-800 dark:bg-[#2A2A2C] dark:text-teal-400 border-teal-200/50 dark:border-teal-900/30', activeRing: 'ring-teal-500/50 dark:ring-teal-500/30' },
             'Gesellschaft & Politik': { lightBg: 'bg-purple-50/30', lightBorder: 'border-purple-200', darkBg: 'dark:bg-[#222224]', darkBorder: 'dark:border-[#2C2C2E]', glow: 'hover:shadow-md', badgeBg: 'bg-purple-100 text-purple-800 dark:bg-[#2A2A2C] dark:text-purple-400 border-purple-200/50 dark:border-purple-900/30', activeRing: 'ring-purple-500/50 dark:ring-purple-500/30' },
@@ -1827,10 +1850,10 @@
                     html = `<div class="space-y-3">`;
                     words.forEach(w => {
                         html += `
-                        <div class="bg-[var(--bg-card)] p-3 rounded-2xl border ${w.learned ? 'border-emerald-400 bg-emerald-50/20' : 'border-[var(--border)]'} shadow-sm">
+                        <div class="bg-[var(--bg-card)] p-3 rounded-2xl border ${w.learned ? 'border-sky-400 bg-sky-50/20' : 'border-[var(--border)]'} shadow-sm">
                             <div class="flex justify-between items-start mb-1.5">
                                 <span class="font-black text-[var(--text-primary)] text-sm">${w.de}</span>
-                                ${w.learned ? '<span class="text-emerald-500 text-xs shadow-sm bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center">✓</span>' : ''}
+                                ${w.learned ? '<span class="text-sky-500 text-xs shadow-sm bg-sky-100 rounded-full w-4 h-4 flex items-center justify-center">✓</span>' : ''}
                             </div>
                             <div class="text-xs font-bold text-blue-500 dark:text-blue-300 mb-1">${w.en || '-'}</div>
                             ${w.ar ? `<div class="text-sm font-arabic font-bold text-purple-600 dark:text-purple-400 text-right" dir="rtl">${w.ar}</div>` : ''}
@@ -1932,6 +1955,11 @@
                 if (section) {
                     if (t === tabId) {
                         section.classList.remove('hidden');
+                        // Add fade animation
+                        section.classList.remove('animate-fade-in');
+                        void section.offsetWidth; // Trigger reflow to restart animation
+                        section.classList.add('animate-fade-in');
+                        
                         if (t === 'mindmap') section.classList.add('flex');
                     } else {
                         section.classList.add('hidden');
@@ -1939,9 +1967,14 @@
                     }
                 }
             });
-
-            if (isTopic) {
+           if (isTopic) {
                 dashboardSection.classList.remove('hidden');
+                
+                // Add fade animation to topic container
+                dashboardSection.classList.remove('animate-fade-in');
+                void dashboardSection.offsetWidth;
+                dashboardSection.classList.add('animate-fade-in');
+                
                 controls.classList.remove('hidden');
                 controls.classList.add('flex');
                 
@@ -2690,7 +2723,7 @@
                 const activeClass = isActive 
                     ? 'bg-[var(--accent)] text-white shadow-sm font-semibold' 
                     : (isLearned 
-                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-500/10 border-l-4 border-emerald-500 font-semibold'
+                        ? 'bg-sky-500/20 text-sky-800 dark:text-sky-300 dark:bg-sky-500/10 border-l-4 border-sky-500 font-semibold'
                         : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
                       );
 
@@ -2699,7 +2732,7 @@
                 const emoji = TOPIC_ICONS[topic.id] || "📌";
                 const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
                 const learnMarker = isLearned 
-                    ? `<span class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] flex-shrink-0"></span>` 
+                    ? `<span class="w-3 h-3 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] flex-shrink-0"></span>` 
                     : `<span class="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
                 const displayTitle = TOPIC_KEYWORDS[topic.id] || topic.title_de || topic.title;
@@ -2828,11 +2861,11 @@
             const finalTopicId = topicId || (topic ? topic.id : 0);
             
             const cardBgClass = isLearned 
-                ? "bg-emerald-50/60 dark:bg-emerald-950/15 border-emerald-200 dark:border-emerald-900/60" 
+                ? "bg-sky-50/60 dark:bg-sky-950/15 border-sky-200 dark:border-sky-900/60" 
                 : "bg-[var(--bg-card)] border border-[var(--border)]";
             
             const titleBulletClass = isLearned 
-                ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                ? "bg-sky-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
                 : "bg-[var(--accent)]";
 
             return `
@@ -2890,7 +2923,7 @@
                     isActive 
                     ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
                     : 'shadow-sm'
-                } ${isLearned ? 'bg-emerald-500/5 border-emerald-500/30' : ''}`;
+                } ${isLearned ? 'bg-sky-500/5 border-sky-500/30' : ''}`;
 
                // 2026 Modern Bento-Box Design for Raster
                 card.innerHTML = `
@@ -2922,7 +2955,7 @@
                         <!-- Bottom: Status -->
                         <div class="flex items-center justify-between border-t border-[var(--border)]/50 pt-3 mt-auto">
                             ${isLearned 
-                                ? `<span class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse"></span> Gelernt</span>` 
+                                ? `<span class="text-[11px] font-extrabold uppercase tracking-widest text-sky-600 dark:text-sky-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse"></span> Gelernt</span>` 
                                 : `<span class="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-muted)] flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700"></span> Offen</span>`
                             }
                             <span class="text-[var(--text-faint)] group-hover:text-[var(--accent)] transition-colors">➔</span>
@@ -3296,13 +3329,13 @@
                         <span class="text-white animate-pulse text-sm drop-shadow-md">✨</span>
                         <span class="tracking-wide">GELERNT</span>
                     `;
-                    learnedBtn.className = "h-8 text-[11px] bg-gradient-to-r from-emerald-400 to-emerald-500 text-white border-none rounded-lg px-3 font-black transition-all shadow-[0_0_16px_rgba(16,185,129,0.5)] shrink-0 cursor-pointer flex items-center justify-center gap-1.5 mt-1 md:mt-0 transform hover:scale-105 active:scale-95";
+                    learnedBtn.className = "h-8 text-[11px] bg-gradient-to-r from-sky-400 to-sky-500 text-white border-none rounded-lg px-3 font-black transition-all shadow-[0_0_16px_rgba(16,185,129,0.5)] shrink-0 cursor-pointer flex items-center justify-center gap-1.5 mt-1 md:mt-0 transform hover:scale-105 active:scale-95";
                 } else {
                     learnedBtn.innerHTML = `
                         <span class="text-zinc-400 text-sm">⚡</span>
                         <span>Als gelernt markieren</span>
                     `;
-                    learnedBtn.className = "h-8 text-[11px] bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg px-2.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 hover:bg-emerald-50/50 hover:border-emerald-500/30 mt-1 md:mt-0";
+                    learnedBtn.className = "h-8 text-[11px] bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg px-2.5 font-bold transition-all shadow-sm shrink-0 cursor-pointer flex items-center justify-center gap-1.5 hover:bg-sky-50/50 hover:border-sky-500/30 mt-1 md:mt-0";
                 }
             }
 
@@ -3422,7 +3455,7 @@
                     // ==========================================
                     vocabHtml += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20">`;
               wordsToRender.forEach(w => {
-                        const isLearnedClass = w.learned ? 'border-emerald-400 shadow-[0_4px_15px_rgba(16,185,129,0.1)]' : 'border-[var(--border)] shadow-sm hover:shadow-md';
+                        const isLearnedClass = w.learned ? 'border-sky-400 shadow-[0_4px_15px_rgba(16,185,129,0.1)]' : 'border-[var(--border)] shadow-sm hover:shadow-md';
 const editClass = currentEditMode ? 'bg-white dark:bg-white/5 border border-[var(--border)] shadow-inner cursor-text' : 'bg-transparent border border-transparent';
                         
                         vocabHtml += `
@@ -3460,7 +3493,7 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                                 <div class="flex gap-2">
                                     ${currentEditMode ? `<button onclick="deleteVocabByTid(${w.originalTid}, ${w.originalIdx})" class="px-3 py-1.5 text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 rounded-xl border border-rose-200/50 flex items-center gap-1 transition-colors">🗑️ Löschen</button>` : '<div></div>'}
                                 </div>
-                                <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-4 py-2 text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1.5 ${w.learned ? 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)] hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-300'}">
+                                <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-4 py-2 text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1.5 ${w.learned ? 'bg-sky-500 text-white border-sky-600 shadow-sky-500/20' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)] hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-300'}">
                                     ${w.learned ? '✓ Gelernt' : '⏳ Als gelernt markieren'}
                                 </button>
                             </div>
@@ -3481,7 +3514,7 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                             <div class="flashcard-inner w-full h-full relative transform-style-3d shadow-sm hover:shadow-md rounded-[24px]">
                                 
                                 <!-- FRONT (German Word - High Focus) -->
-                                <div class="flashcard-front absolute w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-emerald-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5 overflow-hidden">
+                                <div class="flashcard-front absolute w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-sky-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5 overflow-hidden">
                                     
                                     <!-- Modern SVG Flag Watermark (Fix for Windows) -->
                                     <img src="https://flagcdn.com/de.svg" class="absolute -right-6 -top-4 w-32 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="DE" />
@@ -3493,7 +3526,7 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                                         </button>
                                         <div class="flex gap-1.5 flex-col items-end">
                                             ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded-lg border border-black/5 backdrop-blur-sm flex items-center gap-1.5 shadow-sm"><span class="text-xs filter drop-shadow-sm">${TOPIC_ICONS[w.originalTid] || '📌'}</span> Thema ${w.originalTid}</span>` : ''}
-                                            ${w.learned ? '<span class="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">✓ Gelernt</span>' : ''}
+                                            ${w.learned ? '<span class="bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-400 text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1 border border-sky-200/50 dark:border-sky-800/50 backdrop-blur-sm shadow-sm">✓ Gelernt</span>' : ''}
                                         </div>
                                     </div>
 
@@ -3532,7 +3565,7 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                                         <button onclick="playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2 bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-xl border border-[var(--border)] shadow-sm hover:scale-105 transition-all">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                         </button>
-                                        <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-4 py-2 text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1.5 ${w.learned ? 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)] hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-300'}">
+                                        <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-4 py-2 text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1.5 ${w.learned ? 'bg-sky-500 text-white border-sky-600 shadow-sky-500/20' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)] hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-300'}">
                                             ${w.learned ? '✓ Gelernt' : '⏳ Als gelernt markieren'}
                                         </button>
                                     </div>
@@ -4584,16 +4617,6 @@ let navigationBar = `
                 return;
             }
 
-            // 4. Swipe Up from bottom edge -> Open Sidebar (Huge hit zone)
-            if (touchStartY > screenHeight - 150 && isSwipeUp) {
-                if (sidebar && window.innerWidth < 1024) {
-                    sidebar.classList.remove('sidebar-collapsed');
-                    sidebar.classList.add('sidebar-open');
-                    if (overlay) overlay.classList.remove('hidden');
-                }
-                return;
-            }
-
             // 5. Horizontal Nav Swipes (Topic Navigation)
             if (!isSidebarOpen && (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') && Math.abs(deltaX) > 100 && duration < 350) {
                 if (deltaX > 0) navigateTopicStep(-1);
@@ -4646,7 +4669,7 @@ let navigationBar = `
         function handleLearningToggleAnimation(buttonEl, isNowLearned) {
             if (isNowLearned) {
                 buttonEl.style.transform = "scale(1.08) rotate(1deg)";
-                buttonEl.classList.add("ring-4", "ring-emerald-400/40");
+                buttonEl.classList.add("ring-4", "ring-sky-400/40");
                 
                 const mainContainer = document.querySelector('main');
                 if (mainContainer) {
@@ -4659,7 +4682,7 @@ let navigationBar = `
 
                 setTimeout(() => {
                     buttonEl.style.transform = "scale(1)";
-                    buttonEl.classList.remove("ring-4", "ring-emerald-400/40");
+                    buttonEl.classList.remove("ring-4", "ring-sky-400/40");
                 }, 300);
             }
         }
