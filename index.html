@@ -776,29 +776,18 @@
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
          <!-- Floating Themen Drawer Trigger (Sleek Swipe Pill) -->
-            <div class="lg:hidden fixed bottom-[105px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center opacity-95 hover:opacity-100 transition-all">
-                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" class="bg-[var(--bg-card)] text-[var(--accent)] border border-[var(--accent)]/30 shadow-[0_8px_24px_rgba(16,185,129,0.15)] rounded-full px-5 py-2.5 flex items-center gap-2.5 font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform cursor-pointer">
+            <div class="lg:hidden fixed bottom-[115px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center opacity-95 hover:opacity-100 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-full">
+                <button onclick="document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden');" class="bg-[var(--bg-card)] text-[var(--accent)] border border-[var(--accent)]/30 rounded-full px-5 py-2.5 flex items-center gap-2.5 font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform cursor-pointer">
                     <svg class="w-4 h-4 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
                     Menü
                 </button>
             </div>
+
             <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
             <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <button onclick="switchTab('template')" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[10px] font-bold">Themen</span>
-                </button>
-                <button onclick="switchTab('mindmap')" id="nav-raster-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="text-[10px] font-bold">Raster</span>
-                </button>
-                <button onclick="switchTab('redemittel')" id="nav-tools-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span class="text-[10px] font-bold">Tools</span>
-                </button>
-                <button onclick="switchTab('settings')" id="nav-settings-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span class="text-[10px] font-bold">Profil</span>
                 </button>
             </div>
             
@@ -4546,6 +4535,11 @@ let navigationBar = `
                 return;
             }
 
+            // Prevent sloppy taps on buttons from triggering horizontal side-panels
+            if (target.closest('button') && Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) < 100) {
+                return; 
+            }
+
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('drawer-overlay');
             const isSidebarOpen = sidebar && sidebar.classList.contains('sidebar-open');
@@ -4557,13 +4551,14 @@ let navigationBar = `
             const isSwipeDown = deltaY > 40 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && duration < 400;
 
             // 1. Right Edge Swipe Left -> Open Right Panel (Mini-View)
-            if (touchStartX > screenWidth - 50 && isSwipeLeft) {
+            // Stricter edge detection so it doesn't fire when hitting buttons
+            if (touchStartX > screenWidth - 30 && isSwipeLeft) {
                 if (!isRightPanelOpen) toggleRightPanel();
                 return;
             }
 
             // 2. Left Edge Swipe Right -> Open Sidebar
-            if (touchStartX < 50 && isSwipeRight) {
+            if (touchStartX < 30 && isSwipeRight) {
                 if (sidebar) {
                     sidebar.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('sidebar-open');
