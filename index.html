@@ -1829,22 +1829,22 @@
             }
         }
 
-        // --- NEW MINI-PANEL RENDERER ---
+       // --- NEW MINI-PANEL RENDERER ---
         function renderRightPanel() {
-            if(!isRightPanelOpen) return;
             const content = document.getElementById('right-panel-content');
-            const mode = document.getElementById('mini-view-select').value;
-            const contextLabel = document.getElementById('mini-view-context');
-            if(!content) return;
+            const selectEl = document.getElementById('mini-view-select');
             
-            let html = '';
+            if(!content || !selectEl || !TEMPLATE_DATA || !TEMPLATE_DATA[activeIdx]) return;
+            
+            const mode = selectEl.value;
             const tId = TEMPLATE_DATA[activeIdx].id;
+            let html = '';
 
-          if (mode === 'wortschatz') {
-                // Removed the tiny top button and centered the title
-                contextLabel.innerHTML = `
-                    <div class="flex justify-center items-center w-full px-1">
-                        <span class="truncate text-center font-black w-full">${miniVocabShowAll ? 'Alle Themen (1-52)' : `Thema ${tId}`}</span>
+            if (mode === 'wortschatz') {
+                // Inline Title
+                html += `
+                    <div class="mb-4 text-center">
+                        <span class="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">${miniVocabShowAll ? 'Alle Themen (1-52)' : `Nur Thema ${tId}`}</span>
                     </div>
                 `;
                 
@@ -1858,9 +1858,9 @@
                 }
                 
                 if(words.length === 0) {
-                    html = `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln gefunden.</p>`;
+                    html += `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln gefunden.</p>`;
                 } else {
-                    html = `<div class="space-y-3">`;
+                    html += `<div class="space-y-3">`;
                     words.forEach(w => {
                         html += `
                         <div class="bg-[var(--bg-card)] p-3 rounded-2xl border ${w.learned ? 'border-sky-400 bg-sky-50/20' : 'border-[var(--border)]'} shadow-sm">
@@ -1876,7 +1876,7 @@
                     html += `</div>`;
                 }
                 
-                // ADDED: Huge sticky thumb-friendly button at the bottom
+                // Sticky Toggle Button
                 html += `
                 <div class="sticky bottom-0 w-full pt-4 pb-2 bg-[var(--bg-sidebar)] z-10 mt-auto">
                     <button onclick="toggleMiniVocabShowAll()" class="w-full min-h-[48px] bg-[var(--accent)] text-white rounded-xl font-bold text-[13px] shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer">
@@ -1885,8 +1885,13 @@
                 </div>`;
 
             } else if (mode === 'redemittel') {
-                contextLabel.textContent = "Allgemeine Redemittel";
-                html = `<div class="space-y-4">`;
+                // Inline Title
+                html += `
+                    <div class="mb-4 text-center">
+                        <span class="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">Allgemeine Redemittel</span>
+                    </div>
+                    <div class="space-y-4">
+                `;
                 Object.keys(REDEMITTEL_DATA || {}).forEach(cat => {
                     html += `<div><h5 class="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-wider mb-2">${cat}</h5><div class="space-y-2">`;
                     REDEMITTEL_DATA[cat].forEach(phrase => {
