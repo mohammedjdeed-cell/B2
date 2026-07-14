@@ -551,8 +551,6 @@
             </button>
         </div>
     </header>
-  </header>
-
     <!-- Slide-out Drawer Overlay for Mobile -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden"></div>
 
@@ -2071,32 +2069,7 @@ function toggleSidebarTab(tab) {
             }
         }
 
-        function closeMiniDropdown() {
-            const options = document.getElementById('mini-view-options');
-            const chevron = document.getElementById('mini-view-chevron');
-            if (!options) return;
-            
-            options.classList.add('opacity-0', 'scale-95');
-            chevron.style.transform = 'rotate(0deg)';
-            setTimeout(() => {
-                options.classList.add('hidden');
-            }, 200);
-        }
-
-        function selectMiniView(value, text) {
-            document.getElementById('mini-view-select').value = value;
-            document.getElementById('mini-view-selected-text').textContent = text;
-            closeMiniDropdown();
-            renderRightPanel();
-        }
-
-        // Close dropdown if clicking outside
-        document.addEventListener('click', (e) => {
-            const container = document.getElementById('mini-dropdown-container');
-            if (container && !container.contains(e.target)) {
-                closeMiniDropdown();
-            }
-        });
+        
         function closeMiniDropdown() {
             const options = document.getElementById('mini-view-options');
             const chevron = document.getElementById('mini-view-chevron');
