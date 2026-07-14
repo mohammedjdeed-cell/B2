@@ -500,13 +500,7 @@
             <span class="text-xs font-serif text-emerald-600 dark:text-emerald-400">gespräch</span>
         </div>
 
-        <div class="flex items-center gap-3 relative z-10">
-           <button id="tablet-sidebar-toggle" class="lg:hidden p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer active:scale-90" title="Themen hochziehen">
-                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"></path>
-                </svg>
-            </button>
-
+      <div class="flex items-center gap-3 relative z-10">
             <div class="relative w-10 h-10 flex-shrink-0 select-none hidden sm:block">
                 <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="100" height="100" rx="24" fill="#3D6B48"/>
@@ -780,7 +774,7 @@
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
             <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="switchTab('template')" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors">
+                <button onclick="if(activeTab==='template' || activeTab==='diskussion'){ document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); } else { switchTab('template'); }" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[10px] font-bold">Themen</span>
                 </button>
@@ -1728,6 +1722,12 @@
 
         applyThemeSetting();
 
+        // Dynamically load the high-quality voices when the app starts
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = populateVoicesList;
+            setTimeout(populateVoicesList, 500); 
+        }
+
         function applyTextScale() {
             document.documentElement.style.setProperty('--text-scale', textScale);
             
@@ -1940,8 +1940,7 @@
                             el.classList.toggle('hidden', !isEditMode);
                         }
                     }
-                });
-                if (fabs) fabs.style.display = tabId === 'classic' ? 'none' : 'flex';
+             });
                 renderActiveTopic();
                 renderRightPanel();
 
@@ -1949,14 +1948,23 @@
                 dashboardSection.classList.add('hidden');
                 controls.classList.add('hidden');
                 controls.classList.remove('flex');
-                if (fabs) fabs.style.display = 'none';
+            }
+
+            // Always show the Floating Edit Button on these 4 tabs!
+            if (fabs) {
+                if (['template', 'diskussion', 'wortschatz', 'redemittel'].includes(tabId)) {
+                    fabs.style.display = 'flex';
+                } else {
+                    fabs.style.display = 'none';
+                }
             }
 
             renderSidebar();
 
-            if (tabId === 'mindmap') renderSimplisticBoxGrid();
+         if (tabId === 'mindmap') renderSimplisticBoxGrid();
             if (tabId === 'redemittel') renderRedemittel();
             if (tabId === 'grammar') renderGrammar();
+            if (tabId === 'settings') populateVoicesList(); // Load voices when Setup is opened
             
             closeSidebarMobile();
         }
@@ -2607,23 +2615,25 @@
   const toolbarWidth = toolbar.offsetWidth || 180;
             const toolbarHeight = toolbar.offsetHeight || 42;
             
-            if (window.innerWidth < 768) {
-                // MOBILE FIX: Dock right above the keyboard (OneNote Style)
+            // UNIVERSAL KEYBOARD FIX: Dock right above the keyboard on ALL touch/tablet screens
+            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            
+            if (isTouchDevice) {
                 const vvTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
                 const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
                 
                 toolbar.style.bottom = 'auto';
-                toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`; // 12px padding above the keyboard
+                toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`; 
                 toolbar.style.left = '50%';
                 toolbar.style.transform = 'translateX(-50%)';
             } else {
-                // DESKTOP: Float directly above the selected text
+                // DESKTOP (Mouse): Float directly above the selected text
                 const top = r.top - toolbarHeight - 10; 
                 const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, r.left + (r.width / 2) - (toolbarWidth / 2)));
                 
                 toolbar.style.bottom = 'auto';
                 toolbar.style.transform = 'none';
-                toolbar.style.top = `${top > 0 ? top : r.bottom + 10}px`; // Show below if too close to screen top
+                toolbar.style.top = `${top > 0 ? top : r.bottom + 10}px`;
                 toolbar.style.left = `${left}px`;
             }
         }
@@ -2665,23 +2675,23 @@
                         : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
                       );
 
-                item.className = `w-full text-left p-3 rounded-lg flex items-center justify-between gap-2.5 transition-all duration-200 select-none topic-list-item cursor-pointer ${activeClass} ${isStarred ? 'is-starred' : ''}`;
+               item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justify-between gap-3 transition-all duration-200 select-none topic-list-item cursor-pointer ${activeClass} ${isStarred ? 'is-starred' : ''}`;
 
                 const emoji = TOPIC_ICONS[topic.id] || "📌";
                 const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
                 const learnMarker = isLearned 
-                    ? `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] flex-shrink-0"></span>` 
-                    : `<span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
+                    ? `<span class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] flex-shrink-0"></span>` 
+                    : `<span class="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0"></span>`;
 
                 const displayTitle = TOPIC_KEYWORDS[topic.id] || topic.title_de || topic.title;
 
                 item.innerHTML = `
-                    <div class="flex items-center gap-2.5 w-full overflow-hidden">
-                        <span class="sidebar-only-emoji text-base select-none leading-none flex-shrink-0">${emoji}</span>
-                        <div class="flex items-center gap-2 truncate collapse-text-container w-full">
-                            <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded">${topic.id}</span>
+                    <div class="flex items-center gap-3 w-full overflow-hidden">
+                        <span class="sidebar-only-emoji text-[22px] select-none leading-none flex-shrink-0">${emoji}</span>
+                        <div class="flex items-center gap-2.5 truncate collapse-text-container w-full">
+                            <span class="px-1.5 py-0.5 text-[11px] font-mono font-bold bg-black/10 dark:bg-white/10 text-current rounded">${topic.id}</span>
                             ${starMarker}
-                            <span class="truncate text-xs topic-title font-semibold">${displayTitle}</span>
+                            <span class="truncate text-[15px] md:text-sm topic-title font-extrabold">${displayTitle}</span>
                         </div>
                     </div>
                     <div class="collapse-status-dot flex-shrink-0">${learnMarker}</div>
@@ -3892,11 +3902,13 @@ let navigationBar = `
                     contentsHtml += `<p class="text-xs text-[var(--text-muted)] italic py-2">Keine Phrasen in dieser Kategorie.</p>`;
                 }
                 
-                contentsHtml += `
-                    <button onclick="addRedemittel('${category}')" class="w-full min-h-[38px] py-2 mt-2 text-xs font-bold bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg border border-dashed border-[var(--border)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
-                        <span>➕ Phrase hinzufügen</span>
-                    </button>
-                </div></div>`;
+                if (isEditMode) {
+                    contentsHtml += `
+                        <button onclick="addRedemittel('${category}')" class="w-full min-h-[44px] py-2 mt-2 text-[13px] font-bold bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-xl border border-dashed border-[var(--border)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                            <span>➕ Phrase hinzufügen</span>
+                        </button>`;
+                }
+                contentsHtml += `</div></div>`;
             });
             contentsHtml += `</div>`;
 
@@ -4069,9 +4081,14 @@ let navigationBar = `
                 if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
                 if (tipBanner) tipBanner.classList.add('hidden');
             }
-            renderActiveTopic();
+            
+            // Re-render the correct screen when Edit Mode changes
+            if (activeTab === 'redemittel') {
+                renderRedemittel();
+            } else {
+                renderActiveTopic();
+            }
         }
-
         const drawerEditToggle = document.getElementById('drawer-edit-toggle');
         if (drawerEditToggle) {
             drawerEditToggle.onclick = toggleEditMode;
@@ -4477,11 +4494,11 @@ let navigationBar = `
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
 
             const target = e.target;
             if (target.closest('#mobile-bottom-nav') || 
                 target.closest('#sidebar') || 
-                target.closest('#drawer-menu') || 
                 target.closest('#quick-preview-modal') || 
                 target.closest('#block-editor-modal') ||
                 target.closest('#redemittel-editor-modal') ||
@@ -4494,13 +4511,23 @@ let navigationBar = `
             }
 
             const sidebar = document.getElementById('sidebar');
-            const drawer = document.getElementById('drawer-menu');
             const overlay = document.getElementById('drawer-overlay');
             const isSidebarOpen = sidebar && sidebar.classList.contains('sidebar-open');
-            const isDrawerOpen = drawer && !drawer.classList.contains('translate-x-full');
 
-            // 1. Edge Swipe Right (Left-to-Right from the edge) to open Sidebar
-            if (touchStartX < 40 && deltaX > 50 && duration < 400 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            // Strictly calibrated gesture thresholds
+            const isSwipeLeft = deltaX < -50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && duration < 400;
+            const isSwipeRight = deltaX > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && duration < 400;
+            const isSwipeUp = deltaY < -50 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5 && duration < 400;
+            const isSwipeDown = deltaY > 50 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5 && duration < 400;
+
+            // 1. Right Edge Swipe Left -> Open Right Panel (Mini-View)
+            if (touchStartX > screenWidth - 40 && isSwipeLeft) {
+                if (!isRightPanelOpen) toggleRightPanel();
+                return;
+            }
+
+            // 2. Left Edge Swipe Right -> Open Sidebar
+            if (touchStartX < 40 && isSwipeRight) {
                 if (sidebar) {
                     sidebar.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('sidebar-open');
@@ -4509,8 +4536,15 @@ let navigationBar = `
                 return;
             }
 
-            // 2. Swipe UP from bottom half of the screen to open Sidebar
-            if (touchStartY > window.innerHeight * 0.6 && deltaY < -50 && duration < 400 && Math.abs(deltaY) > Math.abs(deltaX)) {
+            // 3. Swipe Down on open Sidebar -> Close it
+            if (isSidebarOpen && isSwipeDown) {
+                sidebar.classList.remove('sidebar-open');
+                if (overlay) overlay.classList.add('hidden');
+                return;
+            }
+
+            // 4. Swipe Up from bottom edge -> Open Sidebar
+            if (touchStartY > screenHeight - 60 && isSwipeUp) {
                 if (sidebar && window.innerWidth < 1024) {
                     sidebar.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('sidebar-open');
@@ -4519,38 +4553,10 @@ let navigationBar = `
                 return;
             }
 
-           // 3. Normal Horizontal Swipes
-            if (duration < 350 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
-                if (deltaX > 0) { 
-                    if (isDrawerOpen) {
-                        drawer.classList.add('translate-x-full');
-                        if (overlay) {
-                            overlay.classList.add('hidden');
-                            overlay.classList.remove('opacity-100');
-                        }
-                    }
-                } else { 
-                    if (touchStartX > screenWidth * 0.6) {
-                        if (drawer) {
-                            drawer.classList.remove('translate-x-full');
-                            if (overlay) {
-                                overlay.classList.remove('hidden');
-                                void overlay.offsetWidth;
-                                overlay.classList.add('opacity-100');
-                            }
-                            populateVoicesList();
-                        }
-                    } else if (isSidebarOpen) {
-                        sidebar.classList.remove('sidebar-open');
-                        if (overlay) overlay.classList.add('hidden');
-                    }
-                }
-            } else if (!isSidebarOpen && !isDrawerOpen && (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') && duration < 350 && Math.abs(deltaX) > 100 && Math.abs(deltaX) > 3 * Math.abs(deltaY)) {
-                if (deltaX > 0) {
-                    navigateTopicStep(-1);
-                } else {
-                    navigateTopicStep(1);
-                }
+            // 5. Horizontal Nav Swipes (Topic Navigation)
+            if (!isSidebarOpen && (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') && Math.abs(deltaX) > 100 && duration < 350) {
+                if (deltaX > 0) navigateTopicStep(-1);
+                else navigateTopicStep(1);
             }
         }, { passive: true });
             
@@ -4646,12 +4652,14 @@ let navigationBar = `
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-        // --- KEYBOARD OVERLAP FIX (VISUAL VIEWPORT) ---
-        // Forces the toolbar to stick right on top of the mobile keyboard (OneNote style)
+       // --- KEYBOARD OVERLAP FIX (VISUAL VIEWPORT) ---
+        // Forces the toolbar to stick right on top of the keyboard on ALL devices
         if (window.visualViewport) {
             function updateToolbarOnKeyboard() {
                 const toolbar = document.getElementById('formatting-toolbar');
-                if (toolbar && !toolbar.classList.contains('hidden') && window.innerWidth < 768) {
+                const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+                
+                if (toolbar && !toolbar.classList.contains('hidden') && isTouchDevice) {
                     const toolbarHeight = toolbar.offsetHeight || 42;
                     const vvTop = window.visualViewport.offsetTop;
                     const vvHeight = window.visualViewport.height;
