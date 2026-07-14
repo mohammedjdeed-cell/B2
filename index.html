@@ -347,27 +347,54 @@
             height: 100% !important;
             max-height: 100% !important;
         }
-        #sidebar.sidebar-collapsed {
-            width: 4.5rem !important; 
+       #sidebar.sidebar-collapsed {
+            width: 5.5rem !important; 
         }
         #sidebar.sidebar-collapsed .sidebar-header-flex {
             justify-content: center !important;
             padding-left: 0.5rem !important;
             padding-right: 0.5rem !important;
         }
+        
+        /* Modern 2026 Minimized Icons (Squircles) */
         #sidebar.sidebar-collapsed .topic-list-item {
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
             padding: 0 !important; 
-            border-radius: 9999px !important;
-            width: 3rem !important;
-            height: 3rem !important;
-            margin: 0.25rem auto !important;
+            border-radius: 16px !important; /* Modern Squircle */
+            width: 3.5rem !important; /* Better touch size */
+            height: 3.5rem !important; 
+            margin: 0.6rem auto !important;
             border-left: none !important;
             position: relative !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--shadow-sm) !important;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+
+        /* Active Topic Glow (Blue) */
+        #sidebar.sidebar-collapsed .topic-list-item.is-active {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35) !important;
+            transform: scale(1.08) !important;
+            z-index: 10;
         }
         
+        #sidebar.sidebar-collapsed .topic-list-item.is-active .sidebar-only-emoji {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)) !important;
+            transform: scale(1.15) !important;
+        }
+
+        /* Important Topic Glow (Amber) */
+        #sidebar.sidebar-collapsed .topic-list-item.is-starred {
+            border: 2px solid rgba(245, 158, 11, 0.5) !important; 
+            box-shadow: 0 0 16px 3px rgba(245, 158, 11, 0.15) !important; 
+        }
+
+        /* Fix internal formatting */
         #sidebar.sidebar-collapsed .topic-list-item > div:first-child {
             display: flex !important;
             justify-content: center !important;
@@ -377,49 +404,31 @@
             gap: 0 !important;
             overflow: visible !important; 
         }
-        
+
+        #sidebar.sidebar-collapsed .sidebar-only-emoji {
+            margin: 0 !important;
+            font-size: 1.6rem !important;
+            transition: transform 0.3s ease;
+        }
+
+        /* Re-position the Gelernt (Learned) Dot to hover as a notification badge */
         #sidebar.sidebar-collapsed .collapse-status-dot {
             display: flex !important;
             position: absolute !important;
-            bottom: 3px !important;
-            right: 3px !important;
+            top: -4px !important;
+            right: -4px !important;
             width: auto !important;
             height: auto !important;
             pointer-events: none !important;
+            z-index: 20;
         }
         
         #sidebar.sidebar-collapsed .collapse-status-dot span {
             border: 2px solid var(--bg-sidebar) !important;
-            width: 10px !important;
-            height: 10px !important;
-            box-sizing: border-box !important;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+            width: 14px !important;
+            height: 14px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
         }
-        
-        #sidebar.sidebar-collapsed .topic-list-item.bg-\[var\(--accent\)\] .collapse-status-dot span {
-            border-color: var(--accent) !important;
-        }
-
-        #sidebar.sidebar-collapsed .sidebar-only-emoji {
-            margin: 0 !important;
-            font-size: 1.35rem !important;
-        }
-
-        /* Fixed Glow for important elements on collapsed sidebar */
-        #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji {
-            position: relative;
-            border-radius: 50%;
-            border: 2px solid var(--amber); 
-            box-shadow: 0 0 8px 1px rgba(245, 158, 11, 0.5); 
-            background: rgba(245, 158, 11, 0.15);
-            width: 2.25rem !important; 
-            height: 2.25rem !important;
-        }
-        #sidebar.sidebar-collapsed .topic-list-item.is-starred .sidebar-only-emoji::after {
-            content: none !important;
-            display: none !important;
-        }
-    }
     
     /* --- FIX: Verhindert unsichtbaren Text durch Browser-Formatierungsfehler --- */
   .selectable-text, .selectable-text * {
@@ -629,9 +638,11 @@
                 <button id="sbar-tab-mini" onclick="toggleSidebarTab('mini')" class="flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors">🗂️ Mini-Ansicht</button>
             </div>
 
-            <!-- TAB 1: THEMEN CONTENT -->
-            <div id="sidebar-themen-content" class="flex-1 flex flex-col overflow-hidden hide-on-collapse">
-                <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 shrink-0">
+        <!-- TAB 1: THEMEN CONTENT -->
+            <!-- FIX: Removed "hide-on-collapse" from the main wrapper -->
+            <div id="sidebar-themen-content" class="flex-1 flex flex-col overflow-hidden">
+                <!-- FIX: Moved "hide-on-collapse" here so only the filters hide! -->
+                <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 shrink-0 hide-on-collapse">
                     <div class="flex items-center justify-between text-xs font-bold">
                         <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Fortschritt</span>
                         <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
@@ -656,10 +667,9 @@
             <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
                 <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
                     
-                    <!-- Modern Custom Dropdown -->
-                    <div class="relative w-full">
-                        <button onclick="toggleMiniDropdown()" class="w-full bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-3 flex justify-between items-center text-sm font-black text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors cursor-pointer">
-                            <span id="mini-view-selected-text">🗂️ Mini-Wortschatz</span>
+                  <!-- Modern Custom Dropdown -->
+                    <div class="relative w-full" id="mini-dropdown-container">
+                        <button onclick="toggleMiniDropdown(event)" class="w-full bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-3 flex justify-between items-center text-sm font-black text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors cursor-pointer">                            <span id="mini-view-selected-text">🗂️ Mini-Wortschatz</span>
                             <svg class="w-5 h-5 text-[var(--text-muted)] transition-transform duration-200" id="mini-view-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         
@@ -1226,7 +1236,13 @@
                 sidebarToggleBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (sidebar) sidebar.classList.toggle('sidebar-collapsed');
+                    if (sidebar) {
+                        sidebar.classList.toggle('sidebar-collapsed');
+                        // Smart Toggle: Force switch to the Icon list when collapsing!
+                        if (sidebar.classList.contains('sidebar-collapsed')) {
+                            toggleSidebarTab('list');
+                        }
+                    }
                 });
             }
 
@@ -2038,8 +2054,9 @@ function toggleSidebarTab(tab) {
                 renderRightPanel();
             }
         }
-        // --- Custom UI Dropdown Logic ---
-        function toggleMiniDropdown() {
+       // --- Custom UI Dropdown Logic ---
+        function toggleMiniDropdown(event) {
+            if (event) event.stopPropagation(); // <-- FIX: Stops the instant close bug!
             const options = document.getElementById('mini-view-options');
             const chevron = document.getElementById('mini-view-chevron');
             
@@ -2054,6 +2071,32 @@ function toggleSidebarTab(tab) {
             }
         }
 
+        function closeMiniDropdown() {
+            const options = document.getElementById('mini-view-options');
+            const chevron = document.getElementById('mini-view-chevron');
+            if (!options) return;
+            
+            options.classList.add('opacity-0', 'scale-95');
+            chevron.style.transform = 'rotate(0deg)';
+            setTimeout(() => {
+                options.classList.add('hidden');
+            }, 200);
+        }
+
+        function selectMiniView(value, text) {
+            document.getElementById('mini-view-select').value = value;
+            document.getElementById('mini-view-selected-text').textContent = text;
+            closeMiniDropdown();
+            renderRightPanel();
+        }
+
+        // Close dropdown if clicking outside
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('mini-dropdown-container');
+            if (container && !container.contains(e.target)) {
+                closeMiniDropdown();
+            }
+        });
         function closeMiniDropdown() {
             const options = document.getElementById('mini-view-options');
             const chevron = document.getElementById('mini-view-chevron');
@@ -2786,8 +2829,7 @@ function toggleSidebarTab(tab) {
                         : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:translate-x-1'
                       );
 
-               item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justify-between gap-3 transition-all duration-200 select-none topic-list-item cursor-pointer ${activeClass} ${isStarred ? 'is-starred' : ''}`;
-
+item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justify-between gap-3 transition-all duration-200 select-none topic-list-item cursor-pointer ${activeClass} ${isStarred ? 'is-starred' : ''} ${isActive ? 'is-active' : ''}`;
                 const emoji = TOPIC_ICONS[topic.id] || "📌";
                 const starMarker = isStarred ? `<span class="text-amber-500 font-bold select-none ${isActive ? 'text-white' : ''}">★</span>` : '';
                 const learnMarker = isLearned 
