@@ -784,10 +784,23 @@
             </div>
 
             <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
+           <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
             <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="switchTab('template')" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
+                <button onclick="if(activeTab==='template' || activeTab==='diskussion' || activeTab==='wortschatz'){ document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); } else { switchTab('template'); }" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[10px] font-bold">Themen</span>
+                </button>
+                <button onclick="switchTab('mindmap')" id="nav-raster-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="text-[10px] font-bold">Raster</span>
+                </button>
+                <button onclick="switchTab('redemittel')" id="nav-tools-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="text-[10px] font-bold">Tools</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                    <svg class="w-6 h-6 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span class="text-[10px] font-bold">Profil</span>
                 </button>
             </div>
             
@@ -4499,30 +4512,28 @@ let navigationBar = `
             touchStartTime = Date.now();
         }, { passive: true });
 
-        /// FIXED iOS SWIPE BUG: Will no longer trigger page swipe if user has highlighted text
+        // CLEAN, UNIFIED SWIPE GESTURE LOGIC
         document.addEventListener('touchend', e => {
-            if (window.getSelection() && window.getSelection().toString().length > 0) {
-                return;
-            }
+            if (window.getSelection() && window.getSelection().toString().length > 0) return;
 
             touchEndX = e.changedTouches[0].clientX;
             touchEndY = e.changedTouches[0].clientY;
-           const deltaX = touchEndX - touchStartX;
+            
+            const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-
             const target = e.target;
-            
+
             const isSidebarHeader = target.closest('#sidebar-drag-handle') || target.closest('.sidebar-header-flex');
             const topicList = target.closest('#topic-list');
             
-            // Magic UX Fix: Allow swipe down if the user is pulling down at the very top of the topic list!
+            // Allow smooth swipe down to close the menu if the user is at the top of the list!
             const isPullingDownList = topicList && deltaY > 40 && topicList.scrollTop <= 10;
 
             if (!isSidebarHeader && !isPullingDownList && (
-                topicList || // Ignore swipes if scrolling normally inside the list
+                topicList || 
                 target.closest('#quick-preview-modal') || 
                 target.closest('#block-editor-modal') ||
                 target.closest('#redemittel-editor-modal') ||
@@ -4535,7 +4546,7 @@ let navigationBar = `
                 return;
             }
 
-            // Prevent sloppy taps on buttons from triggering horizontal side-panels
+            // Prevent tapping buttons from triggering accidental side-panel swipes
             if (target.closest('button') && Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) < 100) {
                 return; 
             }
@@ -4551,7 +4562,6 @@ let navigationBar = `
             const isSwipeDown = deltaY > 40 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && duration < 400;
 
             // 1. Right Edge Swipe Left -> Open Right Panel (Mini-View)
-            // Stricter edge detection so it doesn't fire when hitting buttons
             if (touchStartX > screenWidth - 30 && isSwipeLeft) {
                 if (!isRightPanelOpen) toggleRightPanel();
                 return;
@@ -4574,7 +4584,7 @@ let navigationBar = `
                 return;
             }
 
-            // 4. Swipe Up from bottom edge -> Open Sidebar (Expanded hit zone to 150px)
+            // 4. Swipe Up from bottom edge -> Open Sidebar (Huge hit zone)
             if (touchStartY > screenHeight - 150 && isSwipeUp) {
                 if (sidebar && window.innerWidth < 1024) {
                     sidebar.classList.remove('sidebar-collapsed');
@@ -4590,12 +4600,13 @@ let navigationBar = `
                 else navigateTopicStep(1);
             }
         }, { passive: true });
-            
+        
         document.addEventListener('click', e => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
-                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#mobile-nav-toggle-center') && !e.target.closest('#tablet-sidebar-toggle')) {
+                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('.animate-bounce') && !e.target.closest('#tablet-sidebar-toggle')) {
                     sidebar.classList.remove('sidebar-open');
+                    document.getElementById('drawer-overlay').classList.add('hidden');
                 }
             }
         });
