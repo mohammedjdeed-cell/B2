@@ -775,14 +775,13 @@
             </section>
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
-          <!-- Floating Themen Drawer Trigger (Sleek Swipe Pill) -->
-            <div class="lg:hidden fixed bottom-[90px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center gap-1 opacity-85 hover:opacity-100 transition-opacity">
-                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" class="bg-[var(--text-primary)] text-[var(--bg-card)] shadow-[0_8px_30px_rgba(0,0,0,0.2)] rounded-full px-5 py-2 flex items-center gap-2 font-bold text-[11px] uppercase tracking-wider active:scale-95 transition-transform cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
-                    Wischen für Themen
+         <!-- Floating Themen Drawer Trigger (Sleek Swipe Pill) -->
+            <div class="lg:hidden fixed bottom-[105px] left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center opacity-95 hover:opacity-100 transition-all">
+                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" class="bg-[var(--bg-card)] text-[var(--accent)] border border-[var(--accent)]/30 shadow-[0_8px_24px_rgba(16,185,129,0.15)] rounded-full px-5 py-2.5 flex items-center gap-2.5 font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform cursor-pointer">
+                    <svg class="w-4 h-4 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                    Menü
                 </button>
             </div>
-
             <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
             <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                 <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
@@ -803,7 +802,7 @@
                 </button>
             </div>
             
-            <div id="floating-action-buttons" class="fixed right-4 flex flex-col gap-3 z-40 bottom-[140px] lg:bottom-8">
+           <div id="floating-action-buttons" class="fixed right-4 flex flex-col gap-3 z-40 bottom-[160px] lg:bottom-8">
                 <button id="fab-undo" onmousedown="event.preventDefault(); smartUndo();" class="hidden edit-only-control w-12 h-12 bg-white dark:bg-zinc-800 text-[var(--text-primary)] rounded-full shadow-[var(--shadow-md)] border border-[var(--border)] flex items-center justify-center transition-all active:scale-90 hover:bg-neutral-50 dark:hover:bg-zinc-700 cursor-pointer" title="Rückgängig machen (Text/Tippen)">
                     <span class="text-lg pointer-events-none">↩️</span>
                 </button>
@@ -4527,11 +4526,14 @@ let navigationBar = `
 
             const target = e.target;
             
-            // Allow swiping down ON the sidebar drag handle specifically
-            const isSidebarHandle = target.closest('#sidebar-drag-handle');
+            const isSidebarHeader = target.closest('#sidebar-drag-handle') || target.closest('.sidebar-header-flex');
+            const topicList = target.closest('#topic-list');
+            
+            // Magic UX Fix: Allow swipe down if the user is pulling down at the very top of the topic list!
+            const isPullingDownList = topicList && deltaY > 40 && topicList.scrollTop <= 10;
 
-            if (!isSidebarHandle && (
-                target.closest('#topic-list') || // Allow scrolling inside the list without triggering document swipes
+            if (!isSidebarHeader && !isPullingDownList && (
+                topicList || // Ignore swipes if scrolling normally inside the list
                 target.closest('#quick-preview-modal') || 
                 target.closest('#block-editor-modal') ||
                 target.closest('#redemittel-editor-modal') ||
