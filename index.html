@@ -773,9 +773,18 @@
             </section>
             <!-- Mobile Bottom Navigation -->
            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
+           <!-- Floating Themen Drawer Trigger (Swipe Indicator) -->
+            <div class="lg:hidden fixed bottom-24 left-1/2 transform -translate-x-1/2 z-30 animate-bounce" style="animation-duration: 2.5s;">
+                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" class="bg-[var(--bg-card)]/95 backdrop-blur-md border border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.15)] rounded-full px-5 py-2.5 flex items-center gap-2 text-[var(--text-primary)] font-extrabold text-[13px] active:scale-95 transition-transform cursor-pointer">
+                    <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                    Themen Menü
+                </button>
+            </div>
+
+            <!-- Mobile Bottom Navigation (Modern 4-Tab Layout) -->
             <div id="mobile-bottom-nav" class="lg:hidden fixed bottom-4 left-4 right-4 bg-[var(--bg-card)]/90 backdrop-blur-lg border border-[var(--border)] rounded-[24px] pb-safe pt-1.5 pb-1.5 px-2 flex justify-around items-center z-40 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                <button onclick="if(activeTab==='template' || activeTab==='diskussion'){ document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); } else { switchTab('template'); }" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <button onclick="switchTab('template'); setTimeout(() => { document.getElementById('sidebar').classList.add('sidebar-open'); document.getElementById('drawer-overlay').classList.remove('hidden'); }, 50);" id="nav-themen-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--accent)] transition-colors active:scale-95">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     <span class="text-[10px] font-bold">Themen</span>
                 </button>
                 <button onclick="switchTab('mindmap')" id="nav-raster-mob" class="flex flex-col items-center justify-center gap-1 p-2 flex-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
@@ -1793,12 +1802,10 @@
             const tId = TEMPLATE_DATA[activeIdx].id;
 
           if (mode === 'wortschatz') {
+                // Removed the tiny top button and centered the title
                 contextLabel.innerHTML = `
-                    <div class="flex justify-between items-center w-full px-1">
-                        <span class="truncate">${miniVocabShowAll ? 'Alle (1-52)' : `Thema ${tId}`}</span>
-                        <button onclick="toggleMiniVocabShowAll()" class="px-2 py-1 bg-[var(--accent)] text-white rounded text-[9px] hover:scale-105 transition-all shadow-sm">
-                            ${miniVocabShowAll ? '📌 Nur Thema' : '🌍 Alle zeigen'}
-                        </button>
+                    <div class="flex justify-center items-center w-full px-1">
+                        <span class="truncate text-center font-black w-full">${miniVocabShowAll ? 'Alle Themen (1-52)' : `Thema ${tId}`}</span>
                     </div>
                 `;
                 
@@ -1825,10 +1832,19 @@
                             <div class="text-xs font-bold text-blue-500 dark:text-blue-300 mb-1">${w.en || '-'}</div>
                             ${w.ar ? `<div class="text-sm font-arabic font-bold text-purple-600 dark:text-purple-400 text-right" dir="rtl">${w.ar}</div>` : ''}
                             ${miniVocabShowAll ? `<div class="text-[9px] text-[var(--text-faint)] mt-2 text-right border-t border-[var(--border)] pt-1">Thema ${w.originalTid}</div>` : ''}
-                        </div>`;
+                       </div>`;
                     });
                     html += `</div>`;
                 }
+                
+                // ADDED: Huge sticky thumb-friendly button at the bottom
+                html += `
+                <div class="sticky bottom-0 w-full pt-4 pb-2 bg-[var(--bg-sidebar)] z-10 mt-auto">
+                    <button onclick="toggleMiniVocabShowAll()" class="w-full min-h-[48px] bg-[var(--accent)] text-white rounded-xl font-bold text-[13px] shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer">
+                        ${miniVocabShowAll ? '📌 Nur Thema ' + tId + ' zeigen' : '🌍 Alle 52 Themen zeigen'}
+                    </button>
+                </div>`;
+
             } else if (mode === 'redemittel') {
                 contextLabel.textContent = "Allgemeine Redemittel";
                 html = `<div class="space-y-4">`;
@@ -4496,9 +4512,9 @@ let navigationBar = `
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
-            const target = e.target;
-            if (target.closest('#mobile-bottom-nav') || 
-                target.closest('#sidebar') || 
+           const target = e.target;
+            // Removed '#mobile-bottom-nav' from block list so swipes work everywhere!
+            if (target.closest('#sidebar') || 
                 target.closest('#quick-preview-modal') || 
                 target.closest('#block-editor-modal') ||
                 target.closest('#redemittel-editor-modal') ||
@@ -4515,19 +4531,19 @@ let navigationBar = `
             const isSidebarOpen = sidebar && sidebar.classList.contains('sidebar-open');
 
             // Strictly calibrated gesture thresholds
-            const isSwipeLeft = deltaX < -50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && duration < 400;
-            const isSwipeRight = deltaX > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && duration < 400;
-            const isSwipeUp = deltaY < -50 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5 && duration < 400;
-            const isSwipeDown = deltaY > 50 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5 && duration < 400;
+            const isSwipeLeft = deltaX < -40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 400;
+            const isSwipeRight = deltaX > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 400;
+            const isSwipeUp = deltaY < -40 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && duration < 400;
+            const isSwipeDown = deltaY > 40 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2 && duration < 400;
 
             // 1. Right Edge Swipe Left -> Open Right Panel (Mini-View)
-            if (touchStartX > screenWidth - 40 && isSwipeLeft) {
+            if (touchStartX > screenWidth - 50 && isSwipeLeft) {
                 if (!isRightPanelOpen) toggleRightPanel();
                 return;
             }
 
             // 2. Left Edge Swipe Right -> Open Sidebar
-            if (touchStartX < 40 && isSwipeRight) {
+            if (touchStartX < 50 && isSwipeRight) {
                 if (sidebar) {
                     sidebar.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('sidebar-open');
@@ -4543,8 +4559,8 @@ let navigationBar = `
                 return;
             }
 
-            // 4. Swipe Up from bottom edge -> Open Sidebar
-            if (touchStartY > screenHeight - 60 && isSwipeUp) {
+            // 4. Swipe Up from bottom edge -> Open Sidebar (Expanded hit zone to 150px)
+            if (touchStartY > screenHeight - 150 && isSwipeUp) {
                 if (sidebar && window.innerWidth < 1024) {
                     sidebar.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('sidebar-open');
