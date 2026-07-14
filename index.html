@@ -338,12 +338,14 @@
         display: none !important;
     }
 
-    @media (min-width: 1024px) {
+   @media (min-width: 1024px) {
         #sidebar {
             position: relative !important;
             transform: translateX(0) !important;
             z-index: 10 !important;
             width: 20rem !important;
+            height: 100% !important;
+            max-height: 100% !important;
         }
         #sidebar.sidebar-collapsed {
             width: 4.5rem !important; 
@@ -533,18 +535,13 @@
                 <button onclick="switchTab('settings')" id="nav-settings-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
             </div>
 
-            <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
+           <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
                 <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
                 </svg>
             </button>
-
-            <button onclick="toggleRightPanel()" id="right-panel-toggle" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Mini-Ansicht (Split Screen) öffnen">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v18m4-18h6a2 2 0 012 2v14a2 2 0 01-2 2h-6m-4-18H5a2 2 0 00-2 2v14a2 2 0 002 2h4"></path></svg>
-            </button>
         </div>
     </header>
-
   </header>
 
     <!-- Slide-out Drawer Overlay for Mobile -->
@@ -610,7 +607,6 @@
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
         <!-- Sidebar -->
-       <!-- Sidebar (Bottom Sheet on Mobile) -->
         <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)]">
             
             <!-- Mobile Drag Handle -->
@@ -619,9 +615,17 @@
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Schließen</span>
             </div>
 
+            <!-- RESTORED: Desktop Sidebar Header with Minimize Button -->
+            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] items-center justify-between sidebar-header-flex shrink-0 hidden lg:flex">
+                <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
+                <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
             <!-- TAB SWITCHER (Themen vs Mini-Ansicht) -->
             <div class="flex gap-2 p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0 hide-on-collapse">
-                <button id="sbar-tab-list" onclick="toggleSidebarTab('list')" class="flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-sky-600 rounded-lg shadow-sm border border-[var(--border)] transition-colors">📚 Themen</button>
+                <button id="sbar-tab-list" onclick="toggleSidebarTab('list')" class="flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-[var(--accent)] rounded-lg shadow-sm border border-[var(--border)] transition-colors">📚 Themen</button>
                 <button id="sbar-tab-mini" onclick="toggleSidebarTab('mini')" class="flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors">🗂️ Mini-Ansicht</button>
             </div>
 
@@ -633,7 +637,7 @@
                         <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
                     </div>
                     <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
-                        <div id="progress-bar" class="bg-sky-500 h-full transition-all duration-300" style="width: 0%"></div>
+                        <div id="progress-bar" class="bg-[var(--accent)] h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                     <div class="grid grid-cols-3 gap-1 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border)] text-[10px] font-bold">
                         <button id="filter-all-btn" onclick="setFilter('all')" class="py-1 text-center rounded bg-[var(--bg-app)] text-[var(--text-primary)] cursor-pointer shadow-sm">Alle</button>
@@ -648,16 +652,25 @@
                 <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
             </div>
 
-            <!-- TAB 2: MINI-ANSICHT CONTENT -->
+            <!-- TAB 2: MINI-ANSICHT CONTENT (With Custom UI Dropdown) -->
             <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
-                <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] flex justify-between items-center shadow-sm shrink-0">
-                    <select id="mini-view-select" onchange="renderRightPanel()" class="bg-transparent font-black text-sm text-[var(--text-primary)] outline-none cursor-pointer w-full">
-                        <option value="wortschatz">Mini-Wortschatz</option>
-                        <option value="redemittel">Mini-Redemittel</option>
-                    </select>
-                </div>
-                <div class="p-2 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0">
-                    <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider text-center" id="mini-view-context">Synchrone Ansicht</p>
+                <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
+                    
+                    <!-- Modern Custom Dropdown -->
+                    <div class="relative w-full">
+                        <button onclick="toggleMiniDropdown()" class="w-full bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-3 flex justify-between items-center text-sm font-black text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors cursor-pointer">
+                            <span id="mini-view-selected-text">🗂️ Mini-Wortschatz</span>
+                            <svg class="w-5 h-5 text-[var(--text-muted)] transition-transform duration-200" id="mini-view-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        
+                        <div id="mini-view-options" class="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all duration-200 opacity-0 scale-95">
+                            <button onclick="selectMiniView('wortschatz', '🗂️ Mini-Wortschatz')" class="w-full text-left px-4 py-3 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--accent-light)] transition-colors border-b border-[var(--border)]">🗂️ Mini-Wortschatz</button>
+                            <button onclick="selectMiniView('redemittel', '💬 Mini-Redemittel')" class="w-full text-left px-4 py-3 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--accent-light)] transition-colors">💬 Mini-Redemittel</button>
+                        </div>
+                    </div>
+                    <!-- Hidden input to keep logic working -->
+                    <input type="hidden" id="mini-view-select" value="wortschatz">
+
                 </div>
                 <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]">
                     <!-- Dynamic Content Renders Here -->
@@ -850,31 +863,6 @@
                 </button>
             </div>
         </main>
-        <!-- Smart Split Panel (Right Sidebar) -->
-        <aside id="right-panel" class="fixed lg:relative top-0 right-0 h-full w-[320px] lg:w-0 overflow-hidden bg-[var(--bg-sidebar)] border-l border-[var(--border)] shadow-2xl lg:shadow-none z-[100] lg:z-10 transform translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto shrink-0">
-            
-            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] flex justify-between items-center shadow-sm z-10 shrink-0">
-              <div class="flex items-center gap-2">
-                    <span class="text-xl">🗂️</span>
-                    <select id="mini-view-select" onchange="renderRightPanel()" class="bg-transparent font-black text-sm text-[var(--text-primary)] outline-none cursor-pointer">
-                        <option value="wortschatz" class="bg-[var(--bg-card)] text-[var(--text-primary)]">Mini-Wortschatz</option>
-                        <option value="redemittel" class="bg-[var(--bg-card)] text-[var(--text-primary)]">Mini-Redemittel</option>
-                    </select>
-                </div>
-                <button onclick="toggleRightPanel()" class="p-2 rounded-full hover:bg-[var(--bg-app)] text-[var(--text-muted)] cursor-pointer transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div class="p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0">
-                <p class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider text-center" id="mini-view-context">Synchrone Ansicht</p>
-            </div>
-
-            <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]">
-                <!-- Dynamic Content Renders Here -->
-            </div>
-        </aside>
-
     </div>
 
     <!-- Quick Preview Modal -->
@@ -2050,6 +2038,48 @@ function toggleSidebarTab(tab) {
                 renderRightPanel();
             }
         }
+        // --- Custom UI Dropdown Logic ---
+        function toggleMiniDropdown() {
+            const options = document.getElementById('mini-view-options');
+            const chevron = document.getElementById('mini-view-chevron');
+            
+            if (options.classList.contains('hidden')) {
+                options.classList.remove('hidden');
+                setTimeout(() => {
+                    options.classList.remove('opacity-0', 'scale-95');
+                    chevron.style.transform = 'rotate(180deg)';
+                }, 10);
+            } else {
+                closeMiniDropdown();
+            }
+        }
+
+        function closeMiniDropdown() {
+            const options = document.getElementById('mini-view-options');
+            const chevron = document.getElementById('mini-view-chevron');
+            if (!options) return;
+            
+            options.classList.add('opacity-0', 'scale-95');
+            chevron.style.transform = 'rotate(0deg)';
+            setTimeout(() => {
+                options.classList.add('hidden');
+            }, 200);
+        }
+
+        function selectMiniView(value, text) {
+            document.getElementById('mini-view-select').value = value;
+            document.getElementById('mini-view-selected-text').textContent = text;
+            closeMiniDropdown();
+            renderRightPanel();
+        }
+
+        // Close dropdown if clicking outside
+        document.addEventListener('click', (e) => {
+            const container = document.querySelector('.relative.w-full');
+            if (container && !container.contains(e.target)) {
+                closeMiniDropdown();
+            }
+        });
         function closeSidebarMobile() {
             if (window.innerWidth < 1024) {
                 const sidebar = document.getElementById('sidebar');
