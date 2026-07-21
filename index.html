@@ -990,24 +990,31 @@
             </div>
         </div>
     </div>
- <!-- Selection formatting toolbar (Mobile Optimized) -->
-    <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-2.5 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-3 md:px-2 md:py-2 rounded-[20px] md:rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 px-4 py-2.5 md:px-3 md:py-1.5 text-sm md:text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Fett">B</button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 px-4 py-2.5 md:px-3 md:py-1.5 text-sm md:text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Unterstreichen"><u style="text-underline-offset: 3px; text-decoration-thickness: 2px;">U</u></button>
+ <!-- Selection formatting toolbar (Touch & Mobile Optimized) -->
+    <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-2.5 rounded-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
+        <!-- Quick Select All Block Button (Touch Helper) -->
+        <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 px-3 py-2 text-xs font-bold text-[var(--accent)] bg-[var(--accent-light)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--accent)]/30 cursor-pointer" title="Ganzen Block markieren">
+            🔍 Alles
+        </button>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 px-3.5 py-2 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Fett">B</button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 px-3.5 py-2 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Unterstreichen"><u style="text-underline-offset: 3px; text-decoration-thickness: 2px;">U</u></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 px-3.5 py-2 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
         
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 px-4 py-2.5 md:px-3 md:py-1.5 text-sm md:text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">• Liste</button>
-        <div class="h-8 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
         
-        <!-- Bigger Color Circles for Fat Fingers -->
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-9 h-9 md:w-7 md:h-7 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-9 h-9 md:w-7 md:h-7 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-9 h-9 md:w-7 md:h-7 rounded-full bg-red-400/40 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-500/50 cursor-pointer" title="Rot"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-9 h-9 md:w-7 md:h-7 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
+        <!-- Color Highlights -->
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-8 h-8 rounded-full bg-yellow-400/40 hover:scale-110 border border-yellow-300 dark:border-yellow-600 dark:bg-yellow-500/50 cursor-pointer" title="Gelb"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-8 h-8 rounded-full bg-blue-400/40 hover:scale-110 border border-blue-300 dark:border-blue-600 dark:bg-blue-500/50 cursor-pointer" title="Blau"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-8 h-8 rounded-full bg-red-400/40 hover:scale-110 border border-red-300 dark:border-red-600 dark:bg-red-500/50 cursor-pointer" title="Rot"></button>
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-8 h-8 rounded-full bg-green-400/40 hover:scale-110 border border-green-300 dark:border-green-600 dark:bg-green-500/50 cursor-pointer" title="Grün"></button>
         
-        <div class="h-8 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 px-4 py-2.5 md:px-3 md:py-1.5 text-sm md:text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="🧹 Radiergummi (Formatierung löschen)">🧹 Radieren</button>
-        <div class="h-8 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-        <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 px-4 py-2.5 md:px-3 md:py-1.5 text-sm md:text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl border border-transparent transition-all cursor-pointer" title="Als Vokabel speichern">🧠+ Vokabel</button>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+        
+        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 px-3.5 py-2 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl border border-transparent hover:border-rose-200 transition-all cursor-pointer" title="Formatierung löschen">🧹 Radieren</button>
+        <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+        <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 px-3.5 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl border border-transparent transition-all cursor-pointer" title="Als Vokabel speichern">🧠+ Vokabel</button>
     </div>
 
     <!-- Bullet List Auto-Format Toolbar Helper -->
@@ -2637,7 +2644,35 @@ function toggleSidebarTab(tab) {
             }
         }
 
+       // Touch Haptic Feedback Helper
+        function triggerHaptic(ms = 10) {
+            if ('vibrate' in navigator) {
+                try { navigator.vibrate(ms); } catch(e){}
+            }
+        }
+
+        // Helper: Select all text inside the currently active block (solves touchhandle drag pain)
+        function selectActiveBlockText() {
+            const selection = window.getSelection();
+            if (!selection) return;
+            
+            let parent = selection.anchorNode;
+            while (parent && (!parent.hasAttribute || !parent.hasAttribute('contenteditable'))) {
+                parent = parent.parentNode;
+            }
+            if (!parent) return;
+
+            const range = document.createRange();
+            range.selectNodeContents(parent);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            handleSelectionChange();
+        }
+
         function applySelectionFormat(type, value) {
+            triggerHaptic(12); // Haptic feedback on button touch
+            
             const selection = window.getSelection();
             
             // Allow bullet points even if no text is highlighted (just blinking cursor)
@@ -2653,25 +2688,21 @@ function toggleSidebarTab(tab) {
             pushToHistory();
 
             if (type === 'bold') {
-                // Revert to native command: It handles toggling (unbolding) perfectly!
                 document.execCommand('bold', false, null);
             } else if (type === 'bullet') {
-            document.execCommand('insertUnorderedList', false, null);
-        } else if (type === 'clear') {
+                document.execCommand('insertUnorderedList', false, null);
+            } else if (type === 'clear') {
                 unwrapSelection(activeContainer);
-      } else {
+            } else {
                 const targetClass = type === 'underline' ? 'modern-underline' : `hl-${value}`;
                 
-                // 1. Check if the selection is ALREADY inside this specific formatting
                 let currentNode = selection.anchorNode;
                 let existingSpan = null;
                 
                 while (currentNode) {
-                    // Stop checking if we hit the main editor box
                     if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.hasAttribute('contenteditable')) {
                         break; 
                     }
-                    // If we find our target class, save it and stop looking
                     if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.classList.contains(targetClass)) {
                         existingSpan = currentNode;
                         break;
@@ -2679,17 +2710,14 @@ function toggleSidebarTab(tab) {
                     currentNode = currentNode.parentNode;
                 }
 
-                // 2. Apply Toggle Logic
                 if (existingSpan) {
-                    // TOGGLE OFF: The text is already highlighted! Remove the span, keep the text.
                     const parent = existingSpan.parentNode;
                     while (existingSpan.firstChild) { 
                         parent.insertBefore(existingSpan.firstChild, existingSpan); 
                     }
                     parent.removeChild(existingSpan);
-                    activeContainer.normalize(); // Clean up broken text nodes
+                    activeContainer.normalize();
                 } else {
-                    // TOGGLE ON: Apply the new highlight/underline
                     const range = selection.getRangeAt(0);
                     const span = document.createElement('span');
                     span.className = targetClass;
@@ -2702,7 +2730,6 @@ function toggleSidebarTab(tab) {
                 }
             }
 
-            // Trigger auto-save in the background
             activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
             handleSelectionChange();
         }
@@ -2742,24 +2769,24 @@ function toggleSidebarTab(tab) {
             const range = selection.getRangeAt(0);
             const r = range.getBoundingClientRect();
             const toolbar = document.getElementById('formatting-toolbar');
+            if (!toolbar) return;
+
             toolbar.classList.remove('hidden');
 
-  const toolbarWidth = toolbar.offsetWidth || 180;
-            const toolbarHeight = toolbar.offsetHeight || 42;
-            
-            // UNIVERSAL KEYBOARD FIX: Dock right above the keyboard on ALL touch/tablet screens
-            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 1024;
             
             if (isTouchDevice) {
-                const vvTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
-                const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-                
-                toolbar.style.bottom = 'auto';
-                toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`; 
+                // Dock seamlessly at bottom on mobile/tablet to avoid native context menu collisions
+                toolbar.classList.add('docked-mobile');
+                toolbar.style.top = 'auto';
                 toolbar.style.left = '50%';
                 toolbar.style.transform = 'translateX(-50%)';
             } else {
-                // DESKTOP (Mouse): Float directly above the selected text
+                // Desktop Mode: Float near selection
+                toolbar.classList.remove('docked-mobile');
+                const toolbarWidth = toolbar.offsetWidth || 280;
+                const toolbarHeight = toolbar.offsetHeight || 42;
+                
                 const top = r.top - toolbarHeight - 10; 
                 const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, r.left + (r.width / 2) - (toolbarWidth / 2)));
                 
@@ -2769,7 +2796,6 @@ function toggleSidebarTab(tab) {
                 toolbar.style.left = `${left}px`;
             }
         }
-
         function hideToolbar() {
             const toolbar = document.getElementById('formatting-toolbar');
             if (toolbar) toolbar.classList.add('hidden');
@@ -4556,6 +4582,42 @@ let navigationBar = `
                             .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
                             .hl-green { background: rgba(187, 247, 208, 0.3); border-bottom: 2px solid rgba(5, 150, 105, 0.85); padding: 1px 3px; }
                             @media print { body { padding: 0; } .no-print { display: none; } }
+                            /* =========================================================
+       5 TOUCH & EDIT MODE MOBILE IMPROVEMENTS
+       ========================================================= */
+
+    /* 1. Mobile Keyboard Toolbar Docking */
+    @media (max-width: 1024px) {
+        #formatting-toolbar.docked-mobile {
+            position: fixed !important;
+            bottom: max(12px, env(safe-area-inset-bottom)) !important;
+            top: auto !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: calc(100vw - 24px) !important;
+            max-width: 500px !important;
+            border-radius: 20px !important;
+            background: var(--bg-card) !important;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--border) !important;
+            padding: 8px 12px !important;
+            z-index: 99999 !important;
+        }
+    }
+
+    /* 2. Visual Focus Indicator for Touch Edit Mode */
+    [contenteditable="true"]:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 2px var(--accent) !important;
+        border-radius: 8px !important;
+        background-color: var(--accent-light) !important;
+        transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* 3. Smooth Touch Button Active Feedback */
+    #formatting-toolbar button:active {
+        transform: scale(0.92) !important;
+        opacity: 0.8;
+    }
                         </style>
                     </head>
                     <body>
@@ -4761,25 +4823,37 @@ let navigationBar = `
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-       // --- KEYBOARD OVERLAP FIX (VISUAL VIEWPORT) ---
-        // Forces the toolbar to stick right on top of the keyboard on ALL devices
+   // Visual Viewport & Focus Handler to prevent soft keyboard content jumping
         if (window.visualViewport) {
             function updateToolbarOnKeyboard() {
                 const toolbar = document.getElementById('formatting-toolbar');
-                const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-                
-                if (toolbar && !toolbar.classList.contains('hidden') && isTouchDevice) {
-                    const toolbarHeight = toolbar.offsetHeight || 42;
+                if (!toolbar || toolbar.classList.contains('hidden')) return;
+
+                const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 1024;
+                if (isTouchDevice) {
                     const vvTop = window.visualViewport.offsetTop;
                     const vvHeight = window.visualViewport.height;
-                    
-                    // Keep it glued safely above the keyboard edge
+                    const toolbarHeight = toolbar.offsetHeight || 50;
+
+                    // Stick above keyboard cleanly
                     toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`;
+                    toolbar.style.bottom = 'auto';
                 }
             }
+
             window.visualViewport.addEventListener('resize', updateToolbarOnKeyboard);
             window.visualViewport.addEventListener('scroll', updateToolbarOnKeyboard);
         }
+
+        // Auto-center focused block on mobile so virtual keyboard doesn't cover text
+        document.addEventListener('focusin', (e) => {
+            if (e.target && e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
+                triggerHaptic(8);
+                setTimeout(() => {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300); // Waits for virtual keyboard animation to finish
+            }
+        });
         // --- MODERN TOAST NOTIFICATION ---
         function showToast(message, isError = false) {
             // Remove existing toasts to prevent stacking
