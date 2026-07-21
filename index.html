@@ -1603,27 +1603,20 @@
                 if (!isEditMode || activeTab === 'classic') return;
                 setTimeout(() => {
                     const selection = window.getSelection();
-                    if (!selection || selection.isCollapsed) {
-                        if (!e.target.closest('#formatting-toolbar') && !e.target.closest('#list-helper-toolbar')) {
-                            hideToolbar();
-                        }
-                    } else {
-                        let parent = selection.anchorNode;
-                        let isValidTarget = false;
-                        while (parent) {
-                            if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
-                                isValidTarget = true;
-                                break;
-                            }
-                            parent = parent.parentNode;
-                        }
-                        if (isValidTarget) {
-                            handleSelectionChange();
-                        } else {
-                            hideToolbar();
-                        }
+                    const activeEl = document.activeElement;
+                    const isEditable = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
+
+                    // Don't hide if user clicked on toolbar buttons
+                    if (e.target.closest('#formatting-toolbar') || e.target.closest('#list-helper-toolbar')) {
+                        return;
                     }
-                }, 50);
+
+                    if (isEditable || (selection && !selection.isCollapsed)) {
+                        handleSelectionChange();
+                    } else {
+                        hideToolbar();
+                    }
+                }, 100);
             });
         });
 
@@ -2754,9 +2747,16 @@ function toggleSidebarTab(tab) {
         function handleSelectionChange() {
             if (!isEditMode || activeTab === 'classic') { hideToolbar(); return; }
             const selection = window.getSelection();
-            if (!selection || selection.isCollapsed || selection.rangeCount === 0) { hideToolbar(); return; }
+            const activeEl = document.activeElement;
+            const isEditableFocused = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
+
+            // On mobile, show toolbar if text is selected OR if an editable block is active
+            if ((!selection || selection.isCollapsed) && !isEditableFocused) { 
+                hideToolbar(); 
+                return; 
+            }
             
-            let parent = selection.anchorNode;
+            let parent = selection ? selection.anchorNode : null;
             let isInsideEditable = false;
             while (parent) {
                 if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
@@ -2764,10 +2764,8 @@ function toggleSidebarTab(tab) {
                 }
                 parent = parent.parentNode;
             }
-            if (!isInsideEditable) { hideToolbar(); return; }
+            if (!isInsideEditable && !isEditableFocused) { hideToolbar(); return; }
 
-            const range = selection.getRangeAt(0);
-            const r = range.getBoundingClientRect();
             const toolbar = document.getElementById('formatting-toolbar');
             if (!toolbar) return;
 
@@ -2776,14 +2774,13 @@ function toggleSidebarTab(tab) {
             const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 1024;
             
             if (isTouchDevice) {
-                // Dock seamlessly at bottom on mobile/tablet to avoid native context menu collisions
                 toolbar.classList.add('docked-mobile');
-                toolbar.style.top = 'auto';
-                toolbar.style.left = '50%';
-                toolbar.style.transform = 'translateX(-50%)';
+                positionToolbarAboveKeyboard();
             } else {
-                // Desktop Mode: Float near selection
+                // Desktop Mode: Float cleanly near text selection
                 toolbar.classList.remove('docked-mobile');
+                const range = selection.getRangeAt(0);
+                const r = range.getBoundingClientRect();
                 const toolbarWidth = toolbar.offsetWidth || 280;
                 const toolbarHeight = toolbar.offsetHeight || 42;
                 
@@ -4586,12 +4583,10 @@ let navigationBar = `
        5 TOUCH & EDIT MODE MOBILE IMPROVEMENTS
        ========================================================= */
 
-    /* 1. Mobile Keyboard Toolbar Docking */
+    /* 1. Mobile Keyboard Toolbar Docking (Clean Fixed Dock) */
     @media (max-width: 1024px) {
         #formatting-toolbar.docked-mobile {
             position: fixed !important;
-            bottom: max(12px, env(safe-area-inset-bottom)) !important;
-            top: auto !important;
             left: 50% !important;
             transform: translateX(-50%) !important;
             width: calc(100vw - 24px) !important;
@@ -4601,9 +4596,9 @@ let navigationBar = `
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--border) !important;
             padding: 8px 12px !important;
             z-index: 99999 !important;
+            transition: bottom 0.1s ease-out, top 0.1s ease-out, opacity 0.15s ease;
         }
     }
-
     /* 2. Visual Focus Indicator for Touch Edit Mode */
     [contenteditable="true"]:focus {
         outline: none !important;
@@ -4823,35 +4818,38 @@ let navigationBar = `
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-   // Visual Viewport & Focus Handler to prevent soft keyboard content jumping
-        if (window.visualViewport) {
-            function updateToolbarOnKeyboard() {
-                const toolbar = document.getElementById('formatting-toolbar');
-                if (!toolbar || toolbar.classList.contains('hidden')) return;
+  // Universal Keyboard Offset Calculator
+        function positionToolbarAboveKeyboard() {
+            const toolbar = document.getElementById('formatting-toolbar');
+            if (!toolbar || toolbar.classList.contains('hidden')) return;
 
-                const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 1024;
-                if (isTouchDevice) {
-                    const vvTop = window.visualViewport.offsetTop;
-                    const vvHeight = window.visualViewport.height;
-                    const toolbarHeight = toolbar.offsetHeight || 50;
+            if (window.visualViewport) {
+                // Calculate actual distance from bottom of screen to top of virtual keyboard
+                const keyboardOffset = window.innerHeight - (window.visualViewport.height + window.visualViewport.offsetTop);
+                const safeBottom = Math.max(12, keyboardOffset + 10);
 
-                    // Stick above keyboard cleanly
-                    toolbar.style.top = `${vvTop + vvHeight - toolbarHeight - 12}px`;
-                    toolbar.style.bottom = 'auto';
-                }
+                toolbar.style.top = 'auto';
+                toolbar.style.bottom = `${safeBottom}px`;
+            } else {
+                toolbar.style.top = 'auto';
+                toolbar.style.bottom = '16px';
             }
-
-            window.visualViewport.addEventListener('resize', updateToolbarOnKeyboard);
-            window.visualViewport.addEventListener('scroll', updateToolbarOnKeyboard);
         }
 
-        // Auto-center focused block on mobile so virtual keyboard doesn't cover text
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', positionToolbarAboveKeyboard);
+            window.visualViewport.addEventListener('scroll', positionToolbarAboveKeyboard);
+        }
+
+        // Auto-center focused text block on mobile so soft keyboard doesn't cover typing area
         document.addEventListener('focusin', (e) => {
             if (e.target && e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
                 triggerHaptic(8);
+                handleSelectionChange();
                 setTimeout(() => {
+                    positionToolbarAboveKeyboard();
                     e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300); // Waits for virtual keyboard animation to finish
+                }, 300);
             }
         });
         // --- MODERN TOAST NOTIFICATION ---
