@@ -3562,7 +3562,70 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 btn.disabled = false;
             }
         }
+// Instant German Grammar Sanitizer (Auto-Article + POS Detector)
+        function sanitizeGermanVocabItem(w) {
+            if (!w || !w.de) return w;
+            let clean = w.de.trim();
+            
+            let article = "";
+            let base = clean;
+            const artMatch = clean.match(/^(der|die|das)\s+(.+)$/i);
+            if (artMatch) {
+                article = artMatch[1].toLowerCase();
+                base = artMatch[2].trim();
+                w.type = w.type || "Nomen";
+            }
 
+            if (!w.type) {
+                const lower = clean.toLowerCase();
+                if (/^[A-ZÄÖÜ]/.test(clean)) {
+                    w.type = "Nomen";
+                    if (!article) {
+                        if (/(ung|heit|keit|schaft|tion|tät|ik|ei|enz|anz|ur|e)$/i.test(lower)) article = "die";
+                        else if (/(ismus|ling|or|er)$/i.test(lower)) article = "der";
+                        else if (/(tum|ment|chen|lein|um)$/i.test(lower)) article = "das";
+                        else article = "die";
+                    }
+                } else if (/(en|eln|ern)$/i.test(lower)) {
+                    w.type = "Verb";
+                } else if (/(ig|lich|isch|bar|sam|haft|los)$/i.test(lower)) {
+                    w.type = "Adjektiv";
+                } else {
+                    w.type = "Redewendung";
+                }
+            }
+
+            if (w.type === "Nomen") {
+                const cap = base.charAt(0).toUpperCase() + base.slice(1);
+                w.de = article ? `${article} ${cap}` : cap;
+            } else if (w.type === "Verb" || w.type === "Adjektiv") {
+                w.de = clean.toLowerCase();
+            }
+
+            return w;
+        }
+
+        // Silent Background Translator for Missing Vocab Fields
+        async function fetchMissingVocabTranslations(tid, idx, wordDe) {
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(wordDe)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(wordDe)}`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                let transEn = (dataEn && dataEn[0]) ? dataEn[0].map(s => s[0]).join('') : "";
+                let transAr = (dataAr && dataAr[0]) ? dataAr[0].map(s => s[0]).join('') : "";
+
+                if (VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
+                    if (!VOCAB_DATA[tid][idx].en) VOCAB_DATA[tid][idx].en = transEn;
+                    if (!VOCAB_DATA[tid][idx].ar) VOCAB_DATA[tid][idx].ar = transAr;
+                    saveVocabData();
+                    renderActiveTopic();
+                }
+            } catch(e) {}
+        }
         function renderActiveTopic() {
             const isClassic = activeTab === 'classic';
             const isDiskussion = activeTab === 'diskussion';
@@ -3670,12 +3733,9 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             bannerDiv.innerHTML = bannerHtml;
             container.appendChild(bannerDiv);
             // ==========================================
-            // WORTSCHATZ (FLASHCARDS) RENDERING LOGIC
-            // ==========================================
-            // ==========================================
             // WORTSCHATZ (FLASHCARDS / LIST) RENDERING LOGIC
             // ==========================================
-            if (isWortschatz) {
+           if (isWortschatz) {
                 const tId = topic.id;
                 if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
 
@@ -3690,6 +3750,14 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 } else {
                     wordsToRender = (VOCAB_DATA[tId] || []).map((w, idx) => ({ ...w, originalTid: tId, originalIdx: idx }));
                 }
+
+                // AUTO-ENRICH LIVE: Clean words and fetch missing translations automatically
+                wordsToRender.forEach(w => {
+                    sanitizeGermanVocabItem(w);
+                    if (!w.en || !w.ar) {
+                        fetchMissingVocabTranslations(w.originalTid, w.originalIdx, w.de);
+                    }
+                });
 
                 const learnedCount = wordsToRender.filter(w => w.learned).length;
                 const progressPercent = wordsToRender.length > 0 ? (learnedCount / wordsToRender.length) * 100 : 0;
@@ -4373,7 +4441,7 @@ let navigationBar = `
             });
         }
 
-        function toggleEditMode() {
+       function toggleEditMode() {
             if (activeTab === 'classic') {
                 showToast("Der Klassisch-Modus ist schreibgeschützt.", true);
                 return;
@@ -4390,9 +4458,15 @@ let navigationBar = `
             const redoFab = document.getElementById('fab-redo');
             
             if (isEditMode) {
-                // Enter Studio Workspace Phase
                 body.classList.add('studio-mode-active');
-                if (studioBar) studioBar.classList.remove('hidden');
+                
+                // ONLY show top Studio bar on Template and Diskussion tabs!
+                if (studioBar && (activeTab === 'template' || activeTab === 'diskussion')) {
+                    studioBar.classList.remove('hidden');
+                } else if (studioBar) {
+                    studioBar.classList.add('hidden');
+                }
+
                 if (tipBanner) tipBanner.classList.remove('hidden');
 
                 if (fab) {
@@ -4403,10 +4477,7 @@ let navigationBar = `
                 
                 if (undoFab) undoFab.classList.remove('hidden');
                 if (redoFab) redoFab.classList.remove('hidden');
-
-                showToast("🎨 Edit Studio gestartet!");
             } else {
-                // Exit Studio Workspace Phase
                 body.classList.remove('studio-mode-active');
                 if (studioBar) studioBar.classList.add('hidden');
                 if (tipBanner) tipBanner.classList.add('hidden');
@@ -4422,21 +4493,14 @@ let navigationBar = `
                 if (redoFab) redoFab.classList.add('hidden');
 
                 saveEditsSilent();
-                showToast("✅ Änderungen gesichert & Studio beendet.");
             }
             
-            // Refresh view to apply contenteditable changes
             if (activeTab === 'redemittel') {
                 renderRedemittel();
             } else {
                 renderActiveTopic();
             }
         }
-        const drawerEditToggle = document.getElementById('drawer-edit-toggle');
-        if (drawerEditToggle) {
-            drawerEditToggle.onclick = toggleEditMode;
-        }
-
   function exportTotalBackup() {
             const backupObj = {
                 version: "B2Trainer_Unified_Backup_v6",
