@@ -1319,7 +1319,9 @@
         let isEditMode = false;
         let activeTab = "template"; 
         let currentFilter = "all";
-        let activeGrammarFilter = "all";
+       let activeGrammarFilter = "all";
+        let vocabPracticeMode = false;
+        let vocabShowAll = false;
         
         let learnedList = [];
         let highlightsStore = {};
@@ -3526,7 +3528,7 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             closeBlockEditor();
         }
 
-        async function autoTranslateBlockModal() {
+       async function autoTranslateBlockModal() {
             const textDe = document.getElementById('modal-edit-de').value;
             if (!textDe) return;
             
@@ -3557,6 +3559,8 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             }
+        }
+
         // Color-coded POS Badge Generator for All German Word Classes
         function getPosBadgeHTML(type) {
             if (!type) return '';
@@ -4765,9 +4769,6 @@ let navigationBar = `
             reader.readAsText(file);
         }
 // --- WORTSCHATZ (VOCABULARY) LOGIC ---
-        let vocabPracticeMode = false;
-        let vocabShowAll = false;
-
         function toggleVocabPracticeMode() { vocabPracticeMode = !vocabPracticeMode; renderActiveTopic(); }
         function toggleVocabShowAll() { vocabShowAll = !vocabShowAll; renderActiveTopic(); }
 // 1. Global Vocabulary Duplicate Scanner across ALL 52 topics
