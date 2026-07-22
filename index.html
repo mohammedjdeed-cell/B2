@@ -3605,8 +3605,12 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             return w;
         }
 
-        // Silent Background Translator for Missing Vocab Fields
+       // Silent Background Translator with Loop Guard
         async function fetchMissingVocabTranslations(tid, idx, wordDe) {
+            if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
+            if (VOCAB_DATA[tid][idx]._isTranslating) return; // Prevent duplicate infinite fetches
+            VOCAB_DATA[tid][idx]._isTranslating = true;
+
             try {
                 const [resEn, resAr] = await Promise.all([
                     fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(wordDe)}`),
@@ -3621,10 +3625,15 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 if (VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
                     if (!VOCAB_DATA[tid][idx].en) VOCAB_DATA[tid][idx].en = transEn;
                     if (!VOCAB_DATA[tid][idx].ar) VOCAB_DATA[tid][idx].ar = transAr;
+                    VOCAB_DATA[tid][idx]._isTranslating = false;
                     saveVocabData();
                     renderActiveTopic();
                 }
-            } catch(e) {}
+            } catch(e) {
+                if (VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
+                    VOCAB_DATA[tid][idx]._isTranslating = false;
+                }
+            }
         }
         function renderActiveTopic() {
             const isClassic = activeTab === 'classic';
@@ -4207,6 +4216,11 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
             }
         }
 
+        function updateRedemittelInline(category, idx, lang, newText) {
+            if (!REDEMITTEL_DATA || !REDEMITTEL_DATA[category] || !REDEMITTEL_DATA[category][idx]) return;
+            REDEMITTEL_DATA[category][idx][lang] = newText.trim();
+            saveRedemittelData();
+        }
         function addRedemittel(category) {
             pushToHistory();
             if (!REDEMITTEL_DATA[category]) REDEMITTEL_DATA[category] = [];
@@ -4811,19 +4825,22 @@ let navigationBar = `
             }
         }
 
-        function openVocabEditor(index = null) {
+        ffunction openVocabEditor(index = null) {
             currentVocabModalParams = index;
             const tId = TEMPLATE_DATA[activeIdx].id;
             
-            if (index !== null) {
+            const typeEl = document.getElementById('modal-vocab-type');
+            if (index !== null && VOCAB_DATA[tId] && VOCAB_DATA[tId][index]) {
                 const w = VOCAB_DATA[tId][index];
                 document.getElementById('modal-vocab-de').value = w.de || "";
                 document.getElementById('modal-vocab-en').value = w.en || "";
                 document.getElementById('modal-vocab-ar').value = w.ar || "";
+                if (typeEl) typeEl.value = w.type || "Nomen";
             } else {
                 document.getElementById('modal-vocab-de').value = "";
                 document.getElementById('modal-vocab-en').value = "";
                 document.getElementById('modal-vocab-ar').value = "";
+                if (typeEl) typeEl.value = "Nomen";
             }
             document.getElementById('wortschatz-editor-modal').classList.remove('hidden');
         }
@@ -4850,13 +4867,14 @@ let navigationBar = `
             showToast(`✨ Wörterbuch: ${processed.de} (${processed.type || 'Analysiert'})`);
         }
 
-       async function saveVocabEditor() {
+        async function saveVocabEditor() {
             const tId = TEMPLATE_DATA[activeIdx].id;
             if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
 
             const wDe = document.getElementById('modal-vocab-de').value.trim();
             let wEn = document.getElementById('modal-vocab-en').value.trim();
             let wAr = document.getElementById('modal-vocab-ar').value.trim();
+            const wType = document.getElementById('modal-vocab-type')?.value || "Nomen";
 
             if (!wDe) return alert("Bitte mindestens das deutsche Wort eingeben.");
 
@@ -4881,8 +4899,9 @@ let navigationBar = `
                 VOCAB_DATA[tId][currentVocabModalParams].de = wDe;
                 VOCAB_DATA[tId][currentVocabModalParams].en = wEn;
                 VOCAB_DATA[tId][currentVocabModalParams].ar = wAr;
+                VOCAB_DATA[tId][currentVocabModalParams].type = wType;
             } else {
-                VOCAB_DATA[tId].push({ de: wDe, en: wEn, ar: wAr, learned: false });
+                VOCAB_DATA[tId].push({ de: wDe, en: wEn, ar: wAr, type: wType, learned: false });
             }
 
             saveVocabData();
@@ -4897,13 +4916,7 @@ let navigationBar = `
             renderActiveTopic();
         }
 
-        function toggleVocabLearned(index, event) {
-            event.stopPropagation(); // Prevent card from flipping when clicking the button
-            const tId = TEMPLATE_DATA[activeIdx].id;
-            VOCAB_DATA[tId][index].learned = !VOCAB_DATA[tId][index].learned;
-            saveVocabData();
-            renderActiveTopic();
-        }
+    
         function toggleVocabLearned(index, event) {
             event.stopPropagation(); // Prevent card from flipping when clicking the button
             const tId = TEMPLATE_DATA[activeIdx].id;
@@ -4971,40 +4984,7 @@ let navigationBar = `
                             .hl-red { background: rgba(254, 202, 202, 0.3); border-bottom: 2px solid rgba(220, 38, 38, 0.85); padding: 1px 3px; }
                             .hl-green { background: rgba(187, 247, 208, 0.3); border-bottom: 2px solid rgba(5, 150, 105, 0.85); padding: 1px 3px; }
                             @media print { body { padding: 0; } .no-print { display: none; } }
-                            /* =========================================================
-       5 TOUCH & EDIT MODE MOBILE IMPROVEMENTS
-       ========================================================= */
-
-    /* 1. Mobile Keyboard Toolbar Docking (Clean Fixed Dock) */
-    @media (max-width: 1024px) {
-        #formatting-toolbar.docked-mobile {
-            position: fixed !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: calc(100vw - 24px) !important;
-            max-width: 500px !important;
-            border-radius: 20px !important;
-            background: var(--bg-card) !important;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--border) !important;
-            padding: 8px 12px !important;
-            z-index: 99999 !important;
-            transition: bottom 0.1s ease-out, top 0.1s ease-out, opacity 0.15s ease;
-        }
-    }
-    /* 2. Visual Focus Indicator for Touch Edit Mode */
-    [contenteditable="true"]:focus {
-        outline: none !important;
-        box-shadow: 0 0 0 2px var(--accent) !important;
-        border-radius: 8px !important;
-        background-color: var(--accent-light) !important;
-        transition: box-shadow 0.2s ease, background-color 0.2s ease;
-    }
-
-    /* 3. Smooth Touch Button Active Feedback */
-    #formatting-toolbar button:active {
-        transform: scale(0.92) !important;
-        opacity: 0.8;
-    }
+                           
                         </style>
                     </head>
                     <body>
