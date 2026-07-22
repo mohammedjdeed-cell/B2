@@ -3730,8 +3730,10 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                 </button>
                                 <div class="flex-1 min-w-0 pr-16">
-                                    <span class="text-[9px] font-bold text-[var(--accent)] uppercase tracking-wider mb-1 block">🇩🇪 Deutsch</span>
-                                    <div class="text-lg sm:text-xl font-black text-[var(--text-primary)] p-1.5 -ml-1.5 rounded-lg ${editClass} outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
+<div class="flex items-center gap-2 mb-1">
+    <span class="text-[9px] font-bold text-[var(--accent)] uppercase tracking-wider">🇩🇪 Deutsch</span>
+    ${w.type ? `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50">${w.type}</span>` : ''}
+</div>                                    <div class="text-lg sm:text-xl font-black text-[var(--text-primary)] p-1.5 -ml-1.5 rounded-lg ${editClass} outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
                                 </div>
                             </div>
 
@@ -4579,27 +4581,133 @@ let navigationBar = `
 
         function toggleVocabPracticeMode() { vocabPracticeMode = !vocabPracticeMode; renderActiveTopic(); }
         function toggleVocabShowAll() { vocabShowAll = !vocabShowAll; renderActiveTopic(); }
-
-        function addSelectedToVocab() {
-            const selection = window.getSelection();
-            const text = selection.toString().trim();
-            if (!text) return;
+// 1. Global Vocabulary Duplicate Scanner across ALL 52 topics
+        function findVocabDuplicate(rawWord) {
+            if (!rawWord) return null;
+            const clean = rawWord.trim().toLowerCase().replace(/^(der|die|das)\s+/, '');
             
+            for (const tId in VOCAB_DATA) {
+                const list = VOCAB_DATA[tId];
+                if (Array.isArray(list)) {
+                    const found = list.find(w => {
+                        const deClean = w.de.trim().toLowerCase().replace(/^(der|die|das)\s+/, '');
+                        return deClean === clean;
+                    });
+                    if (found) {
+                        return { topicId: tId, word: found };
+                    }
+                }
+            }
+            return null;
+        }
+
+        // 2. Built-in German Dictionary Engine (Auto-Article, POS, & Translation)
+        async function processAndCleanGermanWord(inputWord) {
+            let clean = inputWord.trim();
+            if (!clean) return { de: "", en: "", ar: "", type: "" };
+
+            let detectedArticle = "";
+            let baseWord = clean;
+            let type = "";
+
+            // Check if input already includes article
+            const articleMatch = clean.match(/^(der|die|das)\s+(.+)$/i);
+            if (articleMatch) {
+                detectedArticle = articleMatch[1].toLowerCase();
+                baseWord = articleMatch[2].trim();
+                type = "Nomen";
+            }
+
+            // Smart Rule-Based POS & Article Inspector
+            if (!type) {
+                const lower = clean.toLowerCase();
+                const isCapitalized = /^[A-ZÄÖÜ]/.test(clean);
+
+                if (isCapitalized) {
+                    type = "Nomen";
+                    if (!detectedArticle) {
+                        if (/(ung|heit|keit|schaft|tion|tät|ik|ei|enz|anz|ur)$/i.test(lower)) detectedArticle = "die";
+                        else if (/(ismus|ling|or)$/i.test(lower)) detectedArticle = "der";
+                        else if (/(tum|ment|chen|lein|um)$/i.test(lower)) detectedArticle = "das";
+                        else detectedArticle = "die"; // default fallback for nouns
+                    }
+                } else if (/(en|eln|ern)$/i.test(lower)) {
+                    type = "Verb";
+                } else if (/(ig|lich|isch|bar|sam|haft|los)$/i.test(lower)) {
+                    type = "Adjektiv";
+                } else {
+                    type = "Redewendung";
+                }
+            }
+
+            // Clean & Format German Entry
+            let formattedDe = clean;
+            if (type === "Nomen") {
+                const capNoun = baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
+                formattedDe = detectedArticle ? `${detectedArticle} ${capNoun}` : capNoun;
+            } else if (type === "Verb" || type === "Adjektiv") {
+                formattedDe = clean.toLowerCase();
+            }
+
+            // Auto-Fetch English & Arabic Translations
+            let transEn = "";
+            let transAr = "";
+            try {
+                const [resEn, resAr] = await Promise.all([
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(formattedDe)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(formattedDe)}`)
+                ]);
+                const dataEn = await resEn.json();
+                const dataAr = await resAr.json();
+
+                if (dataEn && dataEn[0]) transEn = dataEn[0].map(s => s[0]).join('');
+                if (dataAr && dataAr[0]) transAr = dataAr[0].map(s => s[0]).join('');
+            } catch (e) {
+                console.warn("Translation API unavailable:", e);
+            }
+
+            return {
+                de: formattedDe,
+                en: transEn || "",
+                ar: transAr || "",
+                type: type
+            };
+        }
+        async function addSelectedToVocab() {
+            const selection = window.getSelection();
+            const rawText = selection.toString().trim();
+            if (!rawText) return;
+            
+            hideToolbar();
+            selection.removeAllRanges();
+
+            // 1. Check Global Duplicates Across ALL 52 Topics
+            const dup = findVocabDuplicate(rawText);
+            if (dup) {
+                const topicKeyword = TOPIC_KEYWORDS[dup.topicId] || `Thema ${dup.topicId}`;
+                showToast(`⚠️ Existiert bereits in Thema ${dup.topicId} (${topicKeyword}): "${dup.word.de}"`, true);
+                return;
+            }
+
+            showToast(`⏳ Wörterbuch verarbeitet "${rawText}"...`);
+
+            // 2. Run Dictionary Engine (Article, Word Type, EN/AR Translation)
+            const processed = await processAndCleanGermanWord(rawText);
+
             const tId = TEMPLATE_DATA[activeIdx].id;
             if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
-            
-            // Avoid duplicates
-            if (!VOCAB_DATA[tId].find(w => w.de === text)) {
-                VOCAB_DATA[tId].push({ de: text, en: "", ar: "", learned: false });
-                saveVocabData();
-                showToast(`"${text}" gespeichert!`); // Silent Success Notification
-            } else {
-                showToast(`"${text}" existiert bereits!`, true); // Silent Error Notification
-            }
-            
-            // Hide toolbar and remove the text highlight to keep the screen clean
-            hideToolbar();
-            selection.removeAllRanges(); 
+
+            VOCAB_DATA[tId].push({
+                de: processed.de,
+                en: processed.en,
+                ar: processed.ar,
+                type: processed.type,
+                learned: false
+            });
+
+            saveVocabData();
+            showToast(`✨ Hinzugefügt: "${processed.de}" (${processed.type})`);
+            if (activeTab === 'wortschatz') renderActiveTopic();
         }
         function updateVocabInline(tid, idx, lang, newText) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
@@ -4671,15 +4779,32 @@ let navigationBar = `
             }
         }
 
-        function saveVocabEditor() {
+       async function saveVocabEditor() {
             const tId = TEMPLATE_DATA[activeIdx].id;
             if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
 
             const wDe = document.getElementById('modal-vocab-de').value.trim();
-            const wEn = document.getElementById('modal-vocab-en').value.trim();
-            const wAr = document.getElementById('modal-vocab-ar').value.trim();
+            let wEn = document.getElementById('modal-vocab-en').value.trim();
+            let wAr = document.getElementById('modal-vocab-ar').value.trim();
 
             if (!wDe) return alert("Bitte mindestens das deutsche Wort eingeben.");
+
+            // Global Duplicate Check
+            if (currentVocabModalParams === null) {
+                const dup = findVocabDuplicate(wDe);
+                if (dup) {
+                    const topicKeyword = TOPIC_KEYWORDS[dup.topicId] || `Thema ${dup.topicId}`;
+                    alert(`Dieses Wort existiert bereits in Thema ${dup.topicId} (${topicKeyword}) als "${dup.word.de}"!`);
+                    return;
+                }
+            }
+
+            // Run dictionary cleaner if translations are empty
+            if (!wEn || !wAr) {
+                const processed = await processAndCleanGermanWord(wDe);
+                if (!wEn) wEn = processed.en;
+                if (!wAr) wAr = processed.ar;
+            }
 
             if (currentVocabModalParams !== null) {
                 VOCAB_DATA[tId][currentVocabModalParams].de = wDe;
@@ -4691,9 +4816,8 @@ let navigationBar = `
 
             saveVocabData();
             closeVocabEditor();
-            renderActiveTopic(); // Refresh the grid
+            renderActiveTopic();
         }
-
         function deleteVocab(index) {
             if (!confirm("Vokabel wirklich löschen?")) return;
             const tId = TEMPLATE_DATA[activeIdx].id;
