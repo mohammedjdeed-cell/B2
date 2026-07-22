@@ -1105,10 +1105,13 @@
                 <div class="flex-1">
                     <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Wortart (Type)</label>
                     <select id="modal-vocab-type" class="w-full text-xs font-bold p-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] outline-none">
-                        <option value="Nomen">Nomen</option>
-                        <option value="Verb">Verb</option>
-                        <option value="Adjektiv">Adjektiv</option>
-                        <option value="Redewendung">Redewendung</option>
+                        <option value="Nomen">Nomen (Substantiv)</option>
+                        <option value="Verb">Verb (Tätigkeitswort)</option>
+                        <option value="Adjektiv">Adjektiv (Eigenschaftswort)</option>
+                        <option value="Adverb">Adverb (Umstandswort)</option>
+                        <option value="Präposition">Präposition (Verhältniswort)</option>
+                        <option value="Konjunktion">Konjunktion (Bindewort)</option>
+                        <option value="Redewendung">Redewendung / Phrase</option>
                     </select>
                 </div>
                 <button onclick="autoTranslateVocab()" class="self-end px-3 py-2 text-xs font-bold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
@@ -3561,13 +3564,12 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             }
-        }
-        // Color-coded POS Badge Generator (Fixes Practice Mode Crash)
+        // Color-coded POS Badge Generator for All German Word Classes
         function getPosBadgeHTML(type) {
             if (!type) return '';
             let colorClass = 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200';
             const t = type.toLowerCase();
-            if (t.includes('nomen') || t.includes('substantiv')) {
+            if (t.includes('nomen') || t.includes('substantiv') || t.includes('noun')) {
                 colorClass = 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200/60';
             } else if (t.includes('verb')) {
                 colorClass = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200/60';
@@ -3577,16 +3579,42 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 colorClass = 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200/60';
             } else if (t.includes('präp') || t.includes('prep')) {
                 colorClass = 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border-rose-200/60';
+            } else if (t.includes('konj') || t.includes('conj')) {
+                colorClass = 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 border-teal-200/60';
             } else if (t.includes('redewendung') || t.includes('phrase')) {
                 colorClass = 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-200/60';
             }
             return `<span class="text-[9px] font-black px-2 py-0.5 rounded-md border ${colorClass} uppercase tracking-wider">${type}</span>`;
         }
 
-        // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
-        function sanitizeGermanVocabItem(w) {
-// Instant German Grammar Sanitizer (Auto-Article + POS Detector)
-        // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
+        // Offline German B2 Word Classifier Database
+        const GERMAN_WORD_DICT = {
+            // Adjectives
+            "wichtig": "Adjektiv", "moeglich": "Adjektiv", "möglich": "Adjektiv", "bekannt": "Adjektiv",
+            "gut": "Adjektiv", "schlecht": "Adjektiv", "gross": "Adjektiv", "groß": "Adjektiv", "klein": "Adjektiv",
+            "schnell": "Adjektiv", "langsam": "Adjektiv", "schwierig": "Adjektiv", "einfach": "Adjektiv",
+            "stark": "Adjektiv", "schwach": "Adjektiv", "sicher": "Adjektiv", "unsicher": "Adjektiv",
+            "klar": "Adjektiv", "deutlich": "Adjektiv", "nuetzlich": "Adjektiv", "nützlich": "Adjektiv",
+            "sinnvoll": "Adjektiv", "notwendig": "Adjektiv", "erfolgreich": "Adjektiv", "nachhaltig": "Adjektiv",
+            
+            // Adverbs
+            "oft": "Adverb", "manchmal": "Adverb", "selten": "Adverb", "immer": "Adverb", "nie": "Adverb",
+            "heute": "Adverb", "heutzutage": "Adverb", "besonders": "Adverb", "ausserdem": "Adverb", "außerdem": "Adverb",
+            "jedoch": "Adverb", "vielleicht": "Adverb", "wahrscheinlich": "Adverb", "hoffentlich": "Adverb",
+            "mittlerweile": "Adverb", "trotzdem": "Adverb", "deshalb": "Adverb", "deswegen": "Adverb",
+
+            // Prepositions
+            "fuer": "Präposition", "für": "Präposition", "gegen": "Präposition", "ohne": "Präposition",
+            "durch": "Präposition", "um": "Präposition", "mit": "Präposition", "nach": "Präposition",
+            "bei": "Präposition", "von": "Präposition", "zu": "Präposition", "trotz": "Präposition",
+            "wegen": "Präposition", "waehrend": "Präposition", "während": "Präposition",
+
+            // Conjunctions
+            "und": "Konjunktion", "oder": "Konjunktion", "aber": "Konjunktion", "denn": "Konjunktion",
+            "weil": "Konjunktion", "dass": "Konjunktion", "obwohl": "Konjunktion", "wenn": "Konjunktion"
+        };
+
+        // German Grammar Sanitizer with Multi-Dictionary Lookup Engine
         function sanitizeGermanVocabItem(w) {
             if (!w || !w.de) return w;
             let clean = w.de.trim();
@@ -3601,47 +3629,58 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             }
 
             const lower = clean.toLowerCase();
+            const lowerBase = base.toLowerCase();
             const isCapitalized = /^[A-ZÄÖÜ]/.test(clean);
 
-            // 1. Check Noun
+            // 1. Check Offline Word Dictionary First
+            if (!w.type && GERMAN_WORD_DICT[lowerBase]) {
+                w.type = GERMAN_WORD_DICT[lowerBase];
+            }
+
+            // 2. Check Noun by Capitalization & Gender Suffixes
             if (isCapitalized && !w.type) {
                 w.type = "Nomen";
                 if (!article) {
-                    if (/(ung|heit|keit|schaft|tion|tät|ik|ei|enz|anz|ur|e|nahme|gabe)$/i.test(lower)) article = "die";
+                    if (/(ung|heit|keit|schaft|tion|tät|taet|ik|ei|enz|anz|ur|e|nahme|gabe)$/i.test(lower)) article = "die";
                     else if (/(ismus|ling|or|er)$/i.test(lower)) article = "der";
                     else if (/(tum|ment|chen|lein|um)$/i.test(lower)) article = "das";
                     else article = "die";
                 }
             }
 
-            // 2. Check Adjective (Includes declined forms like -igen, -lichen, -ischen, -baren, -samen)
+            // 3. Check Adverb
+            if (!w.type && (lower.endsWith('weise') || lower.endsWith('sweise') || ['heutzutage','mittlerweile','trotzdem','deshalb'].includes(lower))) {
+                w.type = "Adverb";
+            }
+
+            // 4. Check Adjective (Includes suffixes and declined forms: -ig, -lich, -isch, -bar, -sam, -haft, -los, -voll, -reich)
             const isAdjSuffix = /(ig|igen|igem|iger|iges|lich|lichen|lichem|licher|liches|isch|ischen|ischem|ischer|isches|bar|baren|barem|barer|bares|sam|samen|samem|samer|sames|haft|haften|haftem|hafter|haftes|los|losen|losem|loser|loses|voll|vollen|reich|reichen)$/i.test(lower);
-            if (isAdjSuffix && !isCapitalized) {
+            if (isAdjSuffix && !isCapitalized && (!w.type || w.type === "Wort")) {
                 w.type = "Adjektiv";
             }
 
-            // 3. Check Verb (Only if NOT an adjective)
-            if (!w.type && /(en|eln|ern)$/i.test(lower) && !isCapitalized) {
+            // 5. Check Verb (Infinitive or conjugated endings)
+            if ((!w.type || w.type === "Wort") && /(en|eln|ern)$/i.test(lower) && !isCapitalized) {
                 w.type = "Verb";
             }
 
-            // 4. Default Fallback
-            if (!w.type) {
+            // 6. Sentence or Multiple Words -> Redewendung
+            if (!w.type || w.type === "Wort") {
                 w.type = clean.includes(" ") ? "Redewendung" : "Wort";
             }
 
-            // Format clean string
+            // Format string neatly
             if (w.type === "Nomen") {
                 const cap = base.charAt(0).toUpperCase() + base.slice(1);
                 w.de = article ? `${article} ${cap}` : cap;
-            } else if (w.type === "Verb" || w.type === "Adjektiv") {
+            } else if (w.type === "Verb" || w.type === "Adjektiv" || w.type === "Adverb") {
                 w.de = clean.toLowerCase();
             }
 
             return w;
         }
 
-        // Silent Dictionary POS Verifier & Translator
+        // Live Dictionary API Fetcher (Fetches translations AND official dictionary Part-of-Speech)
         async function fetchMissingVocabTranslations(tid, idx, wordDe) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
             if (VOCAB_DATA[tid][idx]._isTranslating) return;
@@ -3662,12 +3701,15 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                     if (!VOCAB_DATA[tid][idx].en) VOCAB_DATA[tid][idx].en = transEn;
                     if (!VOCAB_DATA[tid][idx].ar) VOCAB_DATA[tid][idx].ar = transAr;
 
-                    // Double-check word type using Google Dictionary API
+                    // Verify Official Dictionary Part-Of-Speech from API
                     if (dataEn && dataEn[1] && dataEn[1][0] && dataEn[1][0][0]) {
                         const pos = dataEn[1][0][0].toLowerCase();
                         if (pos === "noun") VOCAB_DATA[tid][idx].type = "Nomen";
                         else if (pos === "verb") VOCAB_DATA[tid][idx].type = "Verb";
-                        else if (pos === "adjective" || pos === "adverb") VOCAB_DATA[tid][idx].type = "Adjektiv";
+                        else if (pos === "adjective") VOCAB_DATA[tid][idx].type = "Adjektiv";
+                        else if (pos === "adverb") VOCAB_DATA[tid][idx].type = "Adverb";
+                        else if (pos === "preposition") VOCAB_DATA[tid][idx].type = "Präposition";
+                        else if (pos === "conjunction") VOCAB_DATA[tid][idx].type = "Konjunktion";
                     }
 
                     VOCAB_DATA[tid][idx]._isTranslating = false;
