@@ -563,14 +563,15 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
     }
 
-       /* Hide duplicate floating toolbar on Laptop/Desktop when Studio Mode is active */
-    @media (min-width: 1024px) {
+      /* Hide duplicate floating toolbar on Tablets and Desktops (≥ 768px) */
+    @media (min-width: 768px) {
         body.studio-mode-active #formatting-toolbar {
             display: none !important;
         }
     }
-       /* Hide top Studio Command Bar on Mobile and Tablet (< 1024px) */
-    @media (max-width: 1023px) {
+
+    /* Hide top Studio Command Bar ONLY on Mobile Phones (< 768px) */
+    @media (max-width: 767px) {
         #studio-command-bar {
             display: none !important;
         }
@@ -754,52 +755,69 @@
 <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
 
-<!-- Studio Workspace Floating Icon Island (Minimalist 2026 Design) -->
+<!-- Studio Workspace Floating Icon Island (Ultra-Sleek 2026 Vector UI) -->
 <div id="studio-command-bar" class="hidden sticky top-3 z-[80] w-max mx-auto bg-[var(--bg-card)]/90 backdrop-blur-xl border border-[var(--border)] rounded-2xl p-1.5 shadow-2xl transition-all">
     <div class="flex items-center gap-1">
         
-        <!-- Status Indicator Dot (Green = Saved, Amber = Saving) -->
+        <!-- Status Indicator Dot -->
         <div id="studio-save-status" class="flex items-center justify-center px-2 py-1.5 rounded-xl" title="Automatisch gespeichert">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 studio-pulse"></span>
         </div>
 
         <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
 
-        <!-- Formatting Tools (Pure Icons) -->
-        <button onclick="triggerHaptic(); selectActiveBlockText();" class="w-8 h-8 flex items-center justify-center text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl transition-colors cursor-pointer" title="Ganzen Block markieren">🔍</button>
-        <button onclick="applySelectionFormat('bold')" class="w-8 h-8 flex items-center justify-center text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl transition-colors cursor-pointer" title="Fett">B</button>
-        <button onclick="applySelectionFormat('underline')" class="w-8 h-8 flex items-center justify-center text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl transition-colors cursor-pointer" title="Unterstreichen"><u>U</u></button>
-        <button onclick="applySelectionFormat('bullet')" class="w-8 h-8 flex items-center justify-center text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl transition-colors cursor-pointer" title="Aufzählungsliste">•</button>
+        <!-- Formatting Tools (2026 SVGs) -->
+        <button onclick="triggerHaptic(); selectActiveBlockText();" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--accent-light)] transition-all active:scale-90 cursor-pointer" title="Ganzen Block markieren">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
+        </button>
+
+        <button onclick="applySelectionFormat('bold')" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] font-black text-sm transition-all active:scale-90 cursor-pointer" title="Fett">B</button>
+        
+        <button onclick="applySelectionFormat('underline')" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] font-bold text-sm transition-all active:scale-90 cursor-pointer" title="Unterstreichen"><u>U</u></button>
+
+        <button onclick="applySelectionFormat('bullet')" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] transition-all active:scale-90 cursor-pointer" title="Aufzählungsliste">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
         
         <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
 
-        <!-- Color Palette -->
-        <button onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/80 hover:scale-110 transition-transform cursor-pointer" title="Gelb"></button>
-        <button onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/80 hover:scale-110 transition-transform cursor-pointer" title="Blau"></button>
-        <button onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400/80 hover:scale-110 transition-transform cursor-pointer" title="Rot"></button>
-        <button onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400/80 hover:scale-110 transition-transform cursor-pointer" title="Grün"></button>
+        <!-- Color Palette Rings -->
+        <button onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20 hover:scale-110 transition-all cursor-pointer" title="Gelb"></button>
+        <button onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400 ring-2 ring-blue-400/20 hover:scale-110 transition-all cursor-pointer" title="Blau"></button>
+        <button onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400 ring-2 ring-red-400/20 hover:scale-110 transition-all cursor-pointer" title="Rot"></button>
+        <button onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400 ring-2 ring-green-400/20 hover:scale-110 transition-all cursor-pointer" title="Grün"></button>
         
         <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
 
         <!-- Clear & Add Vocab -->
-        <button onclick="applySelectionFormat('clear')" class="w-8 h-8 flex items-center justify-center text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer" title="Formatierung radieren">🧹</button>
-        <button onclick="addSelectedToVocab()" class="w-8 h-8 flex items-center justify-center text-xs font-extrabold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors cursor-pointer" title="Als Vokabel speichern">🧠+</button>
+        <button onclick="applySelectionFormat('clear')" class="w-8 h-8 flex items-center justify-center rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all active:scale-90 cursor-pointer" title="Formatierung radieren">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+
+        <button onclick="addSelectedToVocab()" class="w-8 h-8 flex items-center justify-center rounded-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all active:scale-90 cursor-pointer" title="Als Vokabel speichern">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
 
         <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
 
         <!-- Undo / Redo -->
-        <button onclick="smartUndo()" class="w-8 h-8 flex items-center justify-center text-xs font-bold hover:bg-[var(--bg-app)] rounded-xl text-[var(--text-primary)] transition-all cursor-pointer" title="Rückgängig (Ctrl+Z)">↩️</button>
-        <button onclick="smartRedo()" class="w-8 h-8 flex items-center justify-center text-xs font-bold hover:bg-[var(--bg-app)] rounded-xl text-[var(--text-primary)] transition-all cursor-pointer" title="Wiederholen (Ctrl+Y)">↪️</button>
+        <button onclick="smartUndo()" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all active:scale-90 cursor-pointer" title="Rückgängig (Ctrl+Z)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        </button>
+
+        <button onclick="smartRedo()" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all active:scale-90 cursor-pointer" title="Wiederholen (Ctrl+Y)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
+        </button>
 
         <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
 
-     <!-- Exit Studio Button -->
-            <button onclick="toggleEditMode()" class="w-8 h-8 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all cursor-pointer active:scale-90" title="Studio Beenden">
-                ✓
-            </button>
+        <!-- Exit Studio Button -->
+        <button onclick="toggleEditMode()" class="w-8 h-8 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all active:scale-90 cursor-pointer" title="Studio Beenden">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </button>
 
-        </div>
     </div>
+</div>
 
     <!-- Dashboard Controls (Always locked at top of content) -->
     <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
@@ -1103,29 +1121,42 @@
             </div>
         </div>
     </div>
- <!-- Selection formatting toolbar (Touch & Mobile Icon-Only) -->
-    <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-2 rounded-[20px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
-        <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-xs font-bold text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 cursor-pointer" title="Ganzen Block markieren">🔍</button>
-        <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+<!-- Selection Formatting Toolbar (Mobile Vector Dock) -->
+<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
+    <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
+    </button>
 
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 w-8 h-8 flex items-center justify-center text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Fett">B</button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 w-8 h-8 flex items-center justify-center text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Unterstreichen"><u>U</u></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 w-8 h-8 flex items-center justify-center text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] cursor-pointer" title="Aufzählungsliste">•</button>
-        
-        <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-        
-        <!-- Color Highlights -->
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400/80 cursor-pointer" title="Gelb"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400/80 cursor-pointer" title="Blau"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400/80 cursor-pointer" title="Rot"></button>
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400/80 cursor-pointer" title="Grün"></button>
-        
-        <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-        
-        <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 w-8 h-8 flex items-center justify-center text-xs font-bold text-rose-500 rounded-xl transition-all cursor-pointer" title="Formatierung löschen">🧹</button>
-        <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-        <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 w-8 h-8 flex items-center justify-center text-xs font-extrabold text-indigo-600 dark:text-indigo-400 rounded-xl transition-all cursor-pointer" title="Als Vokabel speichern">🧠+</button>
-    </div>
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 w-8 h-8 flex items-center justify-center font-black text-sm text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Fett">B</button>
+
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 w-8 h-8 flex items-center justify-center font-bold text-sm text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Unterstreichen"><u>U</u></button>
+
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Aufzählungsliste">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+    <!-- Color Palette -->
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20 active:scale-110 transition-all cursor-pointer" title="Gelb"></button>
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400 ring-2 ring-blue-400/20 active:scale-110 transition-all cursor-pointer" title="Blau"></button>
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400 ring-2 ring-red-400/20 active:scale-110 transition-all cursor-pointer" title="Rot"></button>
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400 ring-2 ring-green-400/20 active:scale-110 transition-all cursor-pointer" title="Grün"></button>
+
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 w-8 h-8 flex items-center justify-center text-rose-500 hover:bg-rose-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Formatierung löschen">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    </button>
+
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+    <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Als Vokabel speichern">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    </button>
+</div>
 
     <!-- Bullet List Auto-Format Toolbar Helper -->
     <div id="list-helper-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
@@ -1716,23 +1747,27 @@
             return getHighlight(topicId, blockKey) || fallback;
         }
 
-        ['mouseup', 'touchend'].forEach(evt => {
+       ['mouseup', 'touchend'].forEach(evt => {
             document.addEventListener(evt, function(e) {
                 if (!isEditMode || activeTab === 'classic') return;
                 setTimeout(() => {
                     const selection = window.getSelection();
-                    const activeEl = document.activeElement;
-                    const isEditable = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
+                    const isMobilePhone = window.innerWidth < 768;
 
                     // Don't hide if user clicked on toolbar buttons
                     if (e.target.closest('#formatting-toolbar') || e.target.closest('#list-helper-toolbar')) {
                         return;
                     }
 
-                    if (isEditable || (selection && !selection.isCollapsed)) {
-                        handleSelectionChange();
+                    // On Mobile Phones: Only trigger toolbar if text is explicitly highlighted
+                    if (isMobilePhone) {
+                        if (selection && !selection.isCollapsed) {
+                            handleSelectionChange();
+                        } else {
+                            hideToolbar();
+                        }
                     } else {
-                        hideToolbar();
+                        handleSelectionChange();
                     }
                 }, 100);
             });
@@ -2308,7 +2343,7 @@ function toggleSidebarTab(tab) {
             loadTopics();
         }
 
-        const btnLoginSubmit = document.getElementById('btn-login-submit');
+       const btnLoginSubmit = document.getElementById('btn-login-submit');
         if (btnLoginSubmit) {
             btnLoginSubmit.onclick = async () => {
                 if (!auth) { alert("Firebase ist offline."); return; }
@@ -2319,6 +2354,8 @@ function toggleSidebarTab(tab) {
                     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                     await auth.signInWithEmailAndPassword(email, password);
                     document.getElementById('auth-login-pwd').value = "";
+                    closeProfileSettings(); // FIX: Close modal and unblock UI
+                    showToast("Erfolgreich eingeloggt!");
                 } catch (err) { alert("Login Fehler: " + err.message); }
             };
         }
@@ -2341,7 +2378,8 @@ function toggleSidebarTab(tab) {
                     await userCredential.user.updateProfile({ displayName: name });
                     currentUser = userCredential.user;
                     updateProfileUI();
-                    alert("Konto erfolgreich erstellt!");
+                    closeProfileSettings(); // FIX: Close modal and unblock UI
+                    showToast("Konto erfolgreich erstellt!");
                 } catch (err) { alert("Registrierungsfehler: " + err.message); }
             };
         }
@@ -2782,12 +2820,10 @@ function toggleSidebarTab(tab) {
         }
 
         function applySelectionFormat(type, value) {
-            triggerHaptic(12); // Haptic feedback on button touch
-            
+            triggerHaptic(12);
             const selection = window.getSelection();
-            
-            // Allow bullet points even if no text is highlighted (just blinking cursor)
-            if (type !== 'bullet' && (!selection || selection.rangeCount === 0 || selection.isCollapsed)) return;
+            if (!selection || selection.rangeCount === 0) return;
+            if (type !== 'bullet' && selection.isCollapsed) return;
 
             let activeContainer = selection.anchorNode;
             while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
@@ -2795,7 +2831,6 @@ function toggleSidebarTab(tab) {
             }
             if (!activeContainer) return;
 
-            // Save state before modifying so the Undo button knows what to revert to
             pushToHistory();
 
             if (type === 'bold') {
@@ -2807,36 +2842,48 @@ function toggleSidebarTab(tab) {
             } else {
                 const targetClass = type === 'underline' ? 'modern-underline' : `hl-${value}`;
                 
-                let currentNode = selection.anchorNode;
+                // Smart Inspector: Check if selection is already inside this highlight
                 let existingSpan = null;
-                
-                while (currentNode) {
-                    if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.hasAttribute('contenteditable')) {
-                        break; 
-                    }
-                    if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.classList.contains(targetClass)) {
-                        existingSpan = currentNode;
+                let node = selection.anchorNode;
+                while (node && node !== activeContainer) {
+                    if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains(targetClass)) {
+                        existingSpan = node;
                         break;
                     }
-                    currentNode = currentNode.parentNode;
+                    node = node.parentNode;
+                }
+
+                if (!existingSpan) {
+                    node = selection.focusNode;
+                    while (node && node !== activeContainer) {
+                        if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains(targetClass)) {
+                            existingSpan = node;
+                            break;
+                        }
+                        node = node.parentNode;
+                    }
                 }
 
                 if (existingSpan) {
+                    // TOGGLE OFF: Remove existing highlight
                     const parent = existingSpan.parentNode;
-                    while (existingSpan.firstChild) { 
-                        parent.insertBefore(existingSpan.firstChild, existingSpan); 
+                    while (existingSpan.firstChild) {
+                        parent.insertBefore(existingSpan.firstChild, existingSpan);
                     }
                     parent.removeChild(existingSpan);
                     activeContainer.normalize();
                 } else {
+                    // TOGGLE ON: Apply new highlight
                     const range = selection.getRangeAt(0);
-                    const span = document.createElement('span');
-                    span.className = targetClass;
-                    try {
-                        span.appendChild(range.extractContents());
-                        range.insertNode(span);
-                    } catch (e) {
-                        console.error("Marker failed:", e);
+                    if (!range.collapsed) {
+                        const span = document.createElement('span');
+                        span.className = targetClass;
+                        try {
+                            span.appendChild(range.extractContents());
+                            range.insertNode(span);
+                        } catch (e) {
+                            console.error("Marker error:", e);
+                        }
                     }
                 }
             }
@@ -2864,11 +2911,19 @@ function toggleSidebarTab(tab) {
 
         function handleSelectionChange() {
             if (!isEditMode || activeTab === 'classic') { hideToolbar(); return; }
+            
             const selection = window.getSelection();
+            const isMobilePhone = window.innerWidth < 768;
+
+            // ON PHONES (< 768px): Only show toolbar when text is ACTUALLY highlighted!
+            if (isMobilePhone && (!selection || selection.isCollapsed)) {
+                hideToolbar();
+                return;
+            }
+
             const activeEl = document.activeElement;
             const isEditableFocused = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
 
-            // On mobile, show toolbar if text is selected OR if an editable block is active
             if ((!selection || selection.isCollapsed) && !isEditableFocused) { 
                 hideToolbar(); 
                 return; 
@@ -2887,28 +2942,14 @@ function toggleSidebarTab(tab) {
             const toolbar = document.getElementById('formatting-toolbar');
             if (!toolbar) return;
 
-            toolbar.classList.remove('hidden');
-
-            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 1024;
-            
-            if (isTouchDevice) {
+            // Mobile Phones (< 768px): Dock at bottom above keyboard when text is selected
+            if (isMobilePhone) {
+                toolbar.classList.remove('hidden');
                 toolbar.classList.add('docked-mobile');
                 positionToolbarAboveKeyboard();
             } else {
-                // Desktop Mode: Float cleanly near text selection
-                toolbar.classList.remove('docked-mobile');
-                const range = selection.getRangeAt(0);
-                const r = range.getBoundingClientRect();
-                const toolbarWidth = toolbar.offsetWidth || 280;
-                const toolbarHeight = toolbar.offsetHeight || 42;
-                
-                const top = r.top - toolbarHeight - 10; 
-                const left = Math.max(16, Math.min(window.innerWidth - toolbarWidth - 16, r.left + (r.width / 2) - (toolbarWidth / 2)));
-                
-                toolbar.style.bottom = 'auto';
-                toolbar.style.transform = 'none';
-                toolbar.style.top = `${top > 0 ? top : r.bottom + 10}px`;
-                toolbar.style.left = `${left}px`;
+                // Tablets & Desktop (≥ 768px): Top Studio Command Bar handles everything
+                hideToolbar();
             }
         }
         function hideToolbar() {
