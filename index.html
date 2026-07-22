@@ -3573,28 +3573,40 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             if (artMatch) {
                 article = artMatch[1].toLowerCase();
                 base = artMatch[2].trim();
-                w.type = w.type || "Nomen";
+                w.type = "Nomen";
             }
 
-            if (!w.type) {
-                const lower = clean.toLowerCase();
-                if (/^[A-ZÄÖÜ]/.test(clean)) {
-                    w.type = "Nomen";
-                    if (!article) {
-                        if (/(ung|heit|keit|schaft|tion|tät|ik|ei|enz|anz|ur|e)$/i.test(lower)) article = "die";
-                        else if (/(ismus|ling|or|er)$/i.test(lower)) article = "der";
-                        else if (/(tum|ment|chen|lein|um)$/i.test(lower)) article = "das";
-                        else article = "die";
-                    }
-                } else if (/(en|eln|ern)$/i.test(lower)) {
-                    w.type = "Verb";
-                } else if (/(ig|lich|isch|bar|sam|haft|los)$/i.test(lower)) {
-                    w.type = "Adjektiv";
-                } else {
-                    w.type = "Redewendung";
+            const lower = clean.toLowerCase();
+            const isCapitalized = /^[A-ZÄÖÜ]/.test(clean);
+
+            // 1. Check Noun
+            if (isCapitalized && !w.type) {
+                w.type = "Nomen";
+                if (!article) {
+                    if (/(ung|heit|keit|schaft|tion|tät|ik|ei|enz|anz|ur|e|nahme|gabe)$/i.test(lower)) article = "die";
+                    else if (/(ismus|ling|or|er)$/i.test(lower)) article = "der";
+                    else if (/(tum|ment|chen|lein|um)$/i.test(lower)) article = "das";
+                    else article = "die";
                 }
             }
 
+            // 2. Check Adjective (Includes declined forms like -igen, -lichen, -ischen, -baren, -samen)
+            const isAdjSuffix = /(ig|igen|igem|iger|iges|lich|lichen|lichem|licher|liches|isch|ischen|ischem|ischer|isches|bar|baren|barem|barer|bares|sam|samen|samem|samer|sames|haft|haften|haftem|hafter|haftes|los|losen|losem|loser|loses|voll|vollen|reich|reichen)$/i.test(lower);
+            if (isAdjSuffix && !isCapitalized) {
+                w.type = "Adjektiv";
+            }
+
+            // 3. Check Verb (Only if NOT an adjective)
+            if (!w.type && /(en|eln|ern)$/i.test(lower) && !isCapitalized) {
+                w.type = "Verb";
+            }
+
+            // 4. Default Fallback
+            if (!w.type) {
+                w.type = clean.includes(" ") ? "Redewendung" : "Wort";
+            }
+
+            // Format clean string
             if (w.type === "Nomen") {
                 const cap = base.charAt(0).toUpperCase() + base.slice(1);
                 w.de = article ? `${article} ${cap}` : cap;
@@ -3605,15 +3617,15 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             return w;
         }
 
-       // Silent Background Translator with Loop Guard
+        // Silent Dictionary POS Verifier & Translator
         async function fetchMissingVocabTranslations(tid, idx, wordDe) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
-            if (VOCAB_DATA[tid][idx]._isTranslating) return; // Prevent duplicate infinite fetches
+            if (VOCAB_DATA[tid][idx]._isTranslating) return;
             VOCAB_DATA[tid][idx]._isTranslating = true;
 
             try {
                 const [resEn, resAr] = await Promise.all([
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(wordDe)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&dt=bd&q=${encodeURIComponent(wordDe)}`),
                     fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(wordDe)}`)
                 ]);
                 const dataEn = await resEn.json();
@@ -3625,6 +3637,15 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 if (VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
                     if (!VOCAB_DATA[tid][idx].en) VOCAB_DATA[tid][idx].en = transEn;
                     if (!VOCAB_DATA[tid][idx].ar) VOCAB_DATA[tid][idx].ar = transAr;
+
+                    // Double-check word type using Google Dictionary API
+                    if (dataEn && dataEn[1] && dataEn[1][0] && dataEn[1][0][0]) {
+                        const pos = dataEn[1][0][0].toLowerCase();
+                        if (pos === "noun") VOCAB_DATA[tid][idx].type = "Nomen";
+                        else if (pos === "verb") VOCAB_DATA[tid][idx].type = "Verb";
+                        else if (pos === "adjective" || pos === "adverb") VOCAB_DATA[tid][idx].type = "Adjektiv";
+                    }
+
                     VOCAB_DATA[tid][idx]._isTranslating = false;
                     saveVocabData();
                     renderActiveTopic();
@@ -3855,68 +3876,71 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                     });
                     vocabHtml += `</div>`;
                 } else {
-                    // ==========================================
-                   // ==========================================
-                    // ==========================================
+                  // ==========================================
                     // PRACTICE MODE (FLASHCARDS - 2026 UI)
                     // ==========================================
                     vocabHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">`;
                     wordsToRender.forEach(w => {
                         const encodedDe = encodeURIComponent(w.de);
                         vocabHtml += `
-                        <div class="perspective-1000 flashcard-container h-56" onclick="this.classList.toggle('flipped')">
+                        <div class="perspective-1000 flashcard-container min-h-[240px]" onclick="this.classList.toggle('flipped')">
                             <div class="flashcard-inner w-full h-full relative transform-style-3d shadow-sm hover:shadow-md rounded-[24px]">
                                 
                                 <!-- FRONT (German Word - High Focus) -->
-                                <div class="flashcard-front absolute w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-sky-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-center p-5 overflow-hidden">
+                                <div class="flashcard-front absolute inset-0 w-full h-full bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-sidebar)] border ${w.learned ? 'border-sky-400 shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : 'border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]'} rounded-[24px] flex flex-col items-center justify-between p-4 overflow-hidden">
                                     
-                                    <!-- Modern SVG Flag Watermark (Fix for Windows) -->
+                                    <!-- Modern SVG Flag Watermark -->
                                     <img src="https://flagcdn.com/de.svg" class="absolute -right-6 -top-4 w-32 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="DE" />
                                     
                                     <!-- Top Floating Bar -->
-                                    <div class="absolute top-4 w-full px-5 flex justify-between items-start z-10">
-                                        <button onclick="event.stopPropagation(); playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm hover:scale-110 text-[var(--accent)] transition-transform border border-[var(--border)]" title="Vorlesen">
+                                    <div class="w-full flex justify-between items-start z-10 shrink-0">
+                                        <button onclick="event.stopPropagation(); playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2 bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm hover:scale-110 text-[var(--accent)] transition-transform border border-[var(--border)] shrink-0" title="Vorlesen">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                         </button>
-                                        <div class="flex gap-1.5 flex-col items-end">
-                                            ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded-lg border border-black/5 backdrop-blur-sm flex items-center gap-1.5 shadow-sm"><span class="text-xs filter drop-shadow-sm">${TOPIC_ICONS[w.originalTid] || '📌'}</span> Thema ${w.originalTid}</span>` : ''}
-                                            ${w.learned ? '<span class="bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-400 text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1 border border-sky-200/50 dark:border-sky-800/50 backdrop-blur-sm shadow-sm">✓ Gelernt</span>' : ''}
+                                        <div class="flex gap-1 flex-col items-end shrink-0">
+                                            ${vocabShowAll ? `<span class="text-[9px] font-black bg-zinc-200/80 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-lg border border-black/5 backdrop-blur-sm flex items-center gap-1 shadow-sm"><span class="text-xs filter drop-shadow-sm">${TOPIC_ICONS[w.originalTid] || '📌'}</span> #${w.originalTid}</span>` : ''}
+                                            ${w.learned ? '<span class="bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-400 text-[9px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 border border-sky-200/50 dark:border-sky-800/50 backdrop-blur-sm shadow-sm">✓ Gelernt</span>' : ''}
                                         </div>
                                     </div>
 
-                                    <!-- Core Word Area (Smart Auto-Resizing) -->
-<div class="mt-4 flex flex-col items-center w-full px-2 relative z-10 max-h-[110px]" style="container-type: inline-size;">
-    ${w.type ? `<span class="mb-1 px-2.5 py-0.5 text-[10px] font-black rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 shadow-sm">${w.type}</span>` : ''}
-    <h4 class="font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-md w-full overflow-y-auto no-scrollbar pb-2 px-1" style="font-size: clamp(1.1rem, 10cqi, 2rem); word-break: keep-all; overflow-wrap: break-word;" lang="de">${w.de}</h4>
-</div>
+                                    <!-- Core Word Area (Centered & Auto-Hyphenated) -->
+                                    <div class="flex-1 flex flex-col items-center justify-center w-full px-2 my-auto relative z-10">
+                                        ${w.type ? `<span class="mb-1.5 px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 shadow-sm shrink-0">${w.type}</span>` : ''}
+                                        <h4 class="font-black text-[var(--text-primary)] text-center leading-snug tracking-tight drop-shadow-sm w-full" style="font-size: clamp(1rem, 6.5cqi, 1.6rem); word-break: break-word; overflow-wrap: anywhere; hyphens: auto;" lang="de">${w.de}</h4>
+                                    </div>
+
+                                    <!-- Bottom Hint -->
+                                    <div class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1 bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full z-10 shrink-0">
+                                        <span>Drehen</span> <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    </div>
                                 </div>
 
                                 <!-- BACK (Translations - Color Zoned) -->
-                                <div class="flashcard-back absolute w-full h-full bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px] flex flex-col p-2.5 shadow-xl cursor-default" onclick="event.stopPropagation()">
+                                <div class="flashcard-back absolute inset-0 w-full h-full bg-[var(--bg-card)] border border-[var(--border)] rounded-[24px] flex flex-col p-3 shadow-xl cursor-default" onclick="event.stopPropagation()">
                                     
-                                    <div class="flex-1 flex flex-col gap-2.5 p-1" onclick="this.parentElement.parentElement.parentElement.classList.remove('flipped')">
+                                    <div class="flex-1 flex flex-col gap-2 p-0.5 overflow-y-auto no-scrollbar" onclick="this.parentElement.parentElement.parentElement.classList.remove('flipped')">
                                         
                                         <!-- English Zone -->
-                                        <div class="flex-1 bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-blue-100/60 transition-colors" style="container-type: inline-size;">
-                                            <img src="https://flagcdn.com/gb.svg" class="absolute -right-2 -top-2 w-20 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="GB" />
-                                            <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 z-10 bg-blue-100/50 dark:bg-blue-900/30 px-2 py-0.5 rounded text-center">English</span>
-<h5 class="font-extrabold text-blue-950 dark:text-blue-100 text-center z-10 leading-snug px-2 overflow-y-auto no-scrollbar max-h-[60px] w-full" style="font-size: clamp(0.9rem, 8cqi, 1.125rem); word-break: keep-all; overflow-wrap: break-word;" lang="en">${w.en || '-'}</h5>                                        </div>
+                                        <div class="flex-1 bg-gradient-to-br from-blue-50/80 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200/50 dark:border-blue-800/30 rounded-[16px] p-2.5 flex flex-col justify-center items-center relative overflow-hidden group min-h-[55px]">
+                                            <span class="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-0.5 z-10">English</span>
+                                            <h5 class="font-extrabold text-blue-950 dark:text-blue-100 text-center z-10 leading-snug px-1 text-xs sm:text-sm" style="word-break: break-word;" lang="en">${w.en || '-'}</h5>
+                                        </div>
 
-                                        <!-- Arabic Zone (Hides automatically if empty) -->
+                                        <!-- Arabic Zone -->
                                         ${w.ar ? `
-                                        <div class="flex-1 bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[18px] p-3 flex flex-col justify-center items-center relative overflow-hidden group hover:bg-purple-100/60 transition-colors" style="container-type: inline-size;">
-                                            <img src="https://flagcdn.com/sa.svg" class="absolute -left-2 -top-2 w-20 opacity-[0.06] dark:opacity-10 pointer-events-none select-none filter grayscale mix-blend-multiply dark:mix-blend-screen" alt="SA" />
-                                            <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-1 z-10 bg-purple-100/50 dark:bg-purple-900/30 px-2 py-0.5 rounded text-center">العربية</span>
-<h5 class="font-arabic font-extrabold text-purple-950 dark:text-purple-100 text-center z-10 leading-snug px-2 overflow-y-auto no-scrollbar max-h-[60px] w-full" dir="rtl" style="font-size: clamp(1rem, 9cqi, 1.25rem); word-break: keep-all; overflow-wrap: break-word;" lang="ar">${w.ar}</h5>                                        </div>
+                                        <div class="flex-1 bg-gradient-to-br from-purple-50/80 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/10 border border-purple-200/50 dark:border-purple-800/30 rounded-[18px] p-2.5 flex flex-col justify-center items-center relative overflow-hidden group min-h-[55px]">
+                                            <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-0.5 z-10">العربية</span>
+                                            <h5 class="font-arabic font-extrabold text-purple-950 dark:text-purple-100 text-center z-10 leading-snug px-1 text-sm sm:text-base" dir="rtl" style="word-break: break-word;" lang="ar">${w.ar}</h5>
+                                        </div>
                                         ` : ''}
                                     </div>
 
                                     <!-- Bottom Action Bar -->
-                                    <div class="flex justify-between items-center px-2 pb-1 pt-1.5 border-t border-[var(--border)]/50 mt-1">
-                                        <button onclick="playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-2 bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-xl border border-[var(--border)] shadow-sm hover:scale-105 transition-all">
+                                    <div class="flex justify-between items-center px-1 pt-2 border-t border-[var(--border)]/50 mt-1 shrink-0">
+                                        <button onclick="playBlockAudio(decodeURIComponent('${encodedDe}'), this)" class="audio-btn p-1.5 bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--accent-light)] rounded-xl border border-[var(--border)] shadow-sm hover:scale-105 transition-all">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                         </button>
-                                        <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-4 py-2 text-[11px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1.5 ${w.learned ? 'bg-sky-500 text-white border-sky-600 shadow-sky-500/20' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)] hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-300'}">
+                                        <button onclick="toggleVocabLearnedByTid(${w.originalTid}, ${w.originalIdx}, event)" class="px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all shadow-sm active:scale-95 border flex items-center gap-1 ${w.learned ? 'bg-sky-500 text-white border-sky-600' : 'bg-white dark:bg-zinc-800 text-[var(--text-primary)] border-[var(--border)]'}">
                                             ${w.learned ? '✓ Gelernt' : '⏳ Als gelernt markieren'}
                                         </button>
                                     </div>
@@ -3925,6 +3949,7 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                             </div>
                         </div>`;
                     });
+                    vocabHtml += `</div>`;
                     vocabHtml += `</div>`;
                 }
                 const vocabDiv = document.createElement('div');
@@ -4688,77 +4713,48 @@ let navigationBar = `
         }
 
         // 2. Built-in German Dictionary Engine (Auto-Article, POS, & Translation)
+        // Built-in Dictionary Engine with Declension Intelligence
+       // Built-in Dictionary Engine with Declension Intelligence
         async function processAndCleanGermanWord(inputWord) {
             let clean = inputWord.trim();
             if (!clean) return { de: "", en: "", ar: "", type: "" };
 
-            let detectedArticle = "";
-            let baseWord = clean;
-            let type = "";
+            let item = { de: clean };
+            sanitizeGermanVocabItem(item);
 
-            // Check if input already includes article
-            const articleMatch = clean.match(/^(der|die|das)\s+(.+)$/i);
-            if (articleMatch) {
-                detectedArticle = articleMatch[1].toLowerCase();
-                baseWord = articleMatch[2].trim();
-                type = "Nomen";
-            }
-
-            // Smart Rule-Based POS & Article Inspector
-            if (!type) {
-                const lower = clean.toLowerCase();
-                const isCapitalized = /^[A-ZÄÖÜ]/.test(clean);
-
-                if (isCapitalized) {
-                    type = "Nomen";
-                    if (!detectedArticle) {
-                        if (/(ung|heit|keit|schaft|tion|tät|ik|ei|enz|anz|ur)$/i.test(lower)) detectedArticle = "die";
-                        else if (/(ismus|ling|or)$/i.test(lower)) detectedArticle = "der";
-                        else if (/(tum|ment|chen|lein|um)$/i.test(lower)) detectedArticle = "das";
-                        else detectedArticle = "die"; // default fallback for nouns
-                    }
-                } else if (/(en|eln|ern)$/i.test(lower)) {
-                    type = "Verb";
-                } else if (/(ig|lich|isch|bar|sam|haft|los)$/i.test(lower)) {
-                    type = "Adjektiv";
-                } else {
-                    type = "Redewendung";
-                }
-            }
-
-            // Clean & Format German Entry
-            let formattedDe = clean;
-            if (type === "Nomen") {
-                const capNoun = baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
-                formattedDe = detectedArticle ? `${detectedArticle} ${capNoun}` : capNoun;
-            } else if (type === "Verb" || type === "Adjektiv") {
-                formattedDe = clean.toLowerCase();
-            }
-
-            // Auto-Fetch English & Arabic Translations
+            // Fetch Translations & Official Google Dictionary POS
             let transEn = "";
             let transAr = "";
             try {
                 const [resEn, resAr] = await Promise.all([
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(formattedDe)}`),
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(formattedDe)}`)
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&dt=bd&q=${encodeURIComponent(item.de)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(item.de)}`)
                 ]);
                 const dataEn = await resEn.json();
                 const dataAr = await resAr.json();
 
                 if (dataEn && dataEn[0]) transEn = dataEn[0].map(s => s[0]).join('');
                 if (dataAr && dataAr[0]) transAr = dataAr[0].map(s => s[0]).join('');
+
+                // Official Google Dictionary POS Verification
+                if (dataEn && dataEn[1] && dataEn[1][0] && dataEn[1][0][0]) {
+                    const pos = dataEn[1][0][0].toLowerCase();
+                    if (pos === "noun") item.type = "Nomen";
+                    else if (pos === "verb") item.type = "Verb";
+                    else if (pos === "adjective" || pos === "adverb") item.type = "Adjektiv";
+                }
             } catch (e) {
-                console.warn("Translation API unavailable:", e);
+                console.warn("Dictionary API warning:", e);
             }
 
             return {
-                de: formattedDe,
+                de: item.de,
                 en: transEn || "",
                 ar: transAr || "",
-                type: type
+                type: item.type
             };
         }
+
         async function addSelectedToVocab() {
             const selection = window.getSelection();
             const rawText = selection.toString().trim();
@@ -4795,10 +4791,11 @@ let navigationBar = `
             showToast(`✨ Hinzugefügt: "${processed.de}" (${processed.type})`);
             if (activeTab === 'wortschatz') renderActiveTopic();
         }
+
         function updateVocabInline(tid, idx, lang, newText) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
             VOCAB_DATA[tid][idx][lang] = newText.trim();
-            saveVocabData(); // Automatically saves when you click outside the text box
+            saveVocabData();
         }
 
         function deleteVocabByTid(tid, idx) {
@@ -4809,11 +4806,12 @@ let navigationBar = `
         }
 
         function toggleVocabLearnedByTid(tid, idx, event) {
-            if(event) event.stopPropagation(); // Stops the card from flipping
+            if(event) event.stopPropagation();
             VOCAB_DATA[tid][idx].learned = !VOCAB_DATA[tid][idx].learned;
             saveVocabData();
             renderActiveTopic();
         }
+
         async function saveVocabData() {
             const suffix = getSelectedUserSuffix();
             if (currentUser && db) {
@@ -4825,6 +4823,25 @@ let navigationBar = `
             }
         }
 
+        function openVocabEditor(index = null) {
+            currentVocabModalParams = index;
+            const tId = TEMPLATE_DATA[activeIdx].id;
+            
+            const typeEl = document.getElementById('modal-vocab-type');
+            if (index !== null && VOCAB_DATA[tId] && VOCAB_DATA[tId][index]) {
+                const w = VOCAB_DATA[tId][index];
+                document.getElementById('modal-vocab-de').value = w.de || "";
+                document.getElementById('modal-vocab-en').value = w.en || "";
+                document.getElementById('modal-vocab-ar').value = w.ar || "";
+                if (typeEl) typeEl.value = w.type || "Nomen";
+            } else {
+                document.getElementById('modal-vocab-de').value = "";
+                document.getElementById('modal-vocab-en').value = "";
+                document.getElementById('modal-vocab-ar').value = "";
+                if (typeEl) typeEl.value = "Nomen";
+            }
+            document.getElementById('wortschatz-editor-modal').classList.remove('hidden');
+        }
         function openVocabEditor(index = null) {
             currentVocabModalParams = index;
             const tId = TEMPLATE_DATA[activeIdx].id;
