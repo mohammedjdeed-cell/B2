@@ -549,8 +549,10 @@
 
     /* Studio Mode Pulse Dot */
     .studio-pulse {
-        width: 8 h-8;
+        width: 8px;
+        height: 8px;
         background: #0284c7;
+        border-radius: 9999px;
         box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.7);
         animation: studio-pulse-anim 1.8s infinite;
     }
@@ -791,16 +793,16 @@
 
         <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
 
-        <!-- Exit Studio Button -->
-        <button onclick="toggleEditMode()" class="w-8 h-8 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all cursor-pointer active:scale-90" title="Studio Beenden">
-            ✓
-        </button>
+     <!-- Exit Studio Button -->
+            <button onclick="toggleEditMode()" class="w-8 h-8 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all cursor-pointer active:scale-90" title="Studio Beenden">
+                ✓
+            </button>
 
+        </div>
     </div>
-</div>
-    </div>
-       <!-- Dashboard Controls (Always locked at top of content) -->
-            <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
+
+    <!-- Dashboard Controls (Always locked at top of content) -->
+    <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
                 
                 <!-- 1. Top Row: Emoji, Title & Action Buttons -->
                 <div class="flex items-start justify-between gap-4 w-full">
