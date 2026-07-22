@@ -471,6 +471,14 @@
         margin-bottom: 0.5rem !important;
         line-height: 1.85;
     }
+       /* --- German Auto-Hyphenation & Word-Fit Fix --- */
+    .de-word-fit {
+        hyphens: auto !important;
+        -webkit-hyphens: auto !important;
+        -ms-hyphens: auto !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
   /* --- 2026 Flashcard 3D Effects (Glitch & Blur Fix) --- */
     .perspective-1000 { perspective: 1000px; }
     
@@ -3584,47 +3592,66 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             return `<span class="text-[9px] font-black px-2 py-0.5 rounded-md border ${colorClass} uppercase tracking-wider">${type}</span>`;
         }
 
-        // Offline German B2 Word Classifier Database
-        const GERMAN_WORD_DICT = {
-            // Adjectives
-            "wichtig": "Adjektiv", "moeglich": "Adjektiv", "möglich": "Adjektiv", "bekannt": "Adjektiv",
-            "gut": "Adjektiv", "schlecht": "Adjektiv", "gross": "Adjektiv", "groß": "Adjektiv", "klein": "Adjektiv",
-            "schnell": "Adjektiv", "langsam": "Adjektiv", "schwierig": "Adjektiv", "einfach": "Adjektiv",
-            "stark": "Adjektiv", "schwach": "Adjektiv", "sicher": "Adjektiv", "unsicher": "Adjektiv",
-            "klar": "Adjektiv", "deutlich": "Adjektiv", "nuetzlich": "Adjektiv", "nützlich": "Adjektiv",
-            "sinnvoll": "Adjektiv", "notwendig": "Adjektiv", "erfolgreich": "Adjektiv", "nachhaltig": "Adjektiv",
-            
-            // Adverbs
-            "oft": "Adverb", "manchmal": "Adverb", "selten": "Adverb", "immer": "Adverb", "nie": "Adverb",
-            "heute": "Adverb", "heutzutage": "Adverb", "besonders": "Adverb", "ausserdem": "Adverb", "außerdem": "Adverb",
-            "jedoch": "Adverb", "vielleicht": "Adverb", "wahrscheinlich": "Adverb", "hoffentlich": "Adverb",
-            "mittlerweile": "Adverb", "trotzdem": "Adverb", "deshalb": "Adverb", "deswegen": "Adverb",
+        // High-Precision German B1/B2 Linguistic Lexicon Sets
+        const GERMAN_PREPOSITIONS = new Set([
+            'in', 'an', 'auf', 'über', 'unter', 'vor', 'hinter', 'neben', 'zwischen',
+            'mit', 'nach', 'bei', 'von', 'zu', 'aus', 'ausser', 'außer', 'gegenüber',
+            'seit', 'für', 'fuer', 'gegen', 'ohne', 'durch', 'um', 'statt', 'anstelle',
+            'trotz', 'wegen', 'während', 'waehrend', 'infolge', 'binnen', 'dank'
+        ]);
 
-            // Prepositions
-            "fuer": "Präposition", "für": "Präposition", "gegen": "Präposition", "ohne": "Präposition",
-            "durch": "Präposition", "um": "Präposition", "mit": "Präposition", "nach": "Präposition",
-            "bei": "Präposition", "von": "Präposition", "zu": "Präposition", "trotz": "Präposition",
-            "wegen": "Präposition", "waehrend": "Präposition", "während": "Präposition",
+        const GERMAN_CONJUNCTIONS = new Set([
+            'und', 'oder', 'aber', 'denn', 'sondern', 'weil', 'da', 'dass', 'daß',
+            'wenn', 'als', 'obwohl', 'obgleich', 'falls', 'sodass', 'damit', 'indem',
+            'bevor', 'nachdem', 'solange', 'sofern', 'wie', 'sowohl', 'weder', 'entweder'
+        ]);
 
-            // Conjunctions
-            "und": "Konjunktion", "oder": "Konjunktion", "aber": "Konjunktion", "denn": "Konjunktion",
-            "weil": "Konjunktion", "dass": "Konjunktion", "obwohl": "Konjunktion", "wenn": "Konjunktion"
-        };
+        const GERMAN_ADVERBS = new Set([
+            'oft', 'selten', 'manchmal', 'immer', 'nie', 'heute', 'gestern', 'morgen',
+            'heutzutage', 'mittlerweile', 'besonders', 'außerdem', 'ausserdem', 'jedoch',
+            'vielleicht', 'wahrscheinlich', 'hoffentlich', 'trotzdem', 'deshalb',
+            'deswegen', 'daher', 'darum', 'damit', 'stattdessen', 'ansonsten',
+            'schließlich', 'schliesslich', 'glücklicherweise', 'dazu', 'daraus', 'davon',
+            'zuerst', 'zunächst', 'zuletzt', 'ebenfalls', 'ebenso', 'kaum', 'sehr'
+        ]);
 
-       // Helper: Stemmer to strip adjective declension endings (-en, -er, -es, -em, -e)
+        // Dynamic Font-Size Calculator for Long German Words
+        function getFitFontSizeClass(text, baseType = 'flashcard') {
+            if (!text) return 'text-base sm:text-lg';
+            const len = text.trim().length;
+            if (baseType === 'flashcard') {
+                if (len > 28) return 'text-[11px] sm:text-xs leading-tight font-extrabold';
+                if (len > 20) return 'text-xs sm:text-sm leading-snug font-extrabold';
+                if (len > 14) return 'text-sm sm:text-base leading-snug font-extrabold';
+                return 'text-base sm:text-lg leading-normal font-extrabold';
+            } else if (baseType === 'list') {
+                if (len > 28) return 'text-xs sm:text-sm leading-tight font-black';
+                if (len > 20) return 'text-sm sm:text-base leading-tight font-black';
+                return 'text-lg sm:text-xl leading-snug font-black';
+            }
+            return 'text-base font-bold';
+        }
+
+        // Stemmer: Strips Adjective Declension Endings (-en, -er, -es, -em, -e)
         function getGermanWordStem(wordStr) {
             let w = wordStr.toLowerCase().trim();
-            if (w.length <= 3) return w;
+            if (w.length <= 4) return w;
             if (w.endsWith('en') || w.endsWith('es') || w.endsWith('er') || w.endsWith('em')) return w.slice(0, -2);
             if (w.endsWith('e')) return w.slice(0, -1);
             return w;
         }
 
-        // German Grammar Sanitizer with Declension-Aware Multi-Dictionary Lookup Engine
+        // Multi-Layer German Linguistic Analyzer & Gender Inferencer
         function sanitizeGermanVocabItem(w) {
             if (!w || !w.de) return w;
             let clean = w.de.trim();
             
+            // 1. Multiple Words or Phrases (e.g., "auf der hand liegen")
+            if (clean.includes(" ") && !clean.match(/^(der|die|das)\s+/i)) {
+                w.type = "Redewendung";
+                return w;
+            }
+
             let article = "";
             let base = clean;
             const artMatch = clean.match(/^(der|die|das)\s+(.+)$/i);
@@ -3639,59 +3666,59 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             const stem = getGermanWordStem(lowerBase);
             const isCapitalized = /^[A-ZÄÖÜ]/.test(clean);
 
-            // 1. Check Offline Word Dictionary (Base word or declension stem)
-            if (!w.type || w.type === "Wort") {
-                if (GERMAN_WORD_DICT[lowerBase]) {
-                    w.type = GERMAN_WORD_DICT[lowerBase];
-                } else if (GERMAN_WORD_DICT[stem]) {
-                    w.type = GERMAN_WORD_DICT[stem];
+            // 2. Prepositions, Conjunctions, Adverbs Check
+            if (!artMatch && !isCapitalized) {
+                if (GERMAN_PREPOSITIONS.has(lowerBase)) { w.type = "Präposition"; w.de = lowerBase; return w; }
+                if (GERMAN_CONJUNCTIONS.has(lowerBase)) { w.type = "Konjunktion"; w.de = lowerBase; return w; }
+                if (GERMAN_ADVERBS.has(lowerBase) || lowerBase.endsWith('weise') || lowerBase.endsWith('sweise')) { 
+                    w.type = "Adverb"; w.de = lowerBase; return w; 
                 }
             }
 
-            // 2. Check Noun by Capitalization & Gender Suffixes
-            if (isCapitalized && (!w.type || w.type === "Wort")) {
+            // 3. High-Precision Noun Endings & Capitalization
+            const nounSuffixes = /(ung|heit|keit|schaft|tion|tät|taet|ik|ei|enz|anz|ur|ismus|ling|or|ment|chen|lein|um|nis|tum|sal|nahme|gabe|kraft|mittel|wesen|raum|platz|haus|zeit|plan|schutz|stand)$/i;
+            
+            if (isCapitalized || nounSuffixes.test(lowerBase)) {
                 w.type = "Nomen";
                 if (!article) {
-                    if (/(ung|heit|keit|schaft|tion|tät|taet|ik|ei|enz|anz|ur|e|nahme|gabe)$/i.test(lower)) article = "die";
-                    else if (/(ismus|ling|or|er)$/i.test(lower)) article = "der";
-                    else if (/(tum|ment|chen|lein|um)$/i.test(lower)) article = "das";
+                    if (/(ung|heit|keit|schaft|tion|tät|taet|ik|ei|enz|anz|ur|e|nahme|gabe|kraft)$/i.test(lowerBase)) article = "die";
+                    else if (/(ismus|ling|or|er|platz|stand|raum|plan|schutz)$/i.test(lowerBase)) article = "der";
+                    else if (/(tum|ment|chen|lein|um|nis|sal|mittel|wesen|haus)$/i.test(lowerBase)) article = "das";
                     else article = "die";
                 }
-            }
-
-            // 3. Check Adverb
-            if ((!w.type || w.type === "Wort") && (lower.endsWith('weise') || lower.endsWith('sweise') || ['heutzutage','mittlerweile','trotzdem','deshalb','oft','manchmal','selten','immer','nie','heute','besonders','außerdem','jedoch','vielleicht','wahrscheinlich','hoffentlich'].includes(lower))) {
-                w.type = "Adverb";
-            }
-
-            // 4. Check Adjective (Suffixes and declensions)
-            const isAdjSuffix = /(ig|igen|igem|iger|iges|lich|lichen|lichem|licher|liches|isch|ischen|ischem|ischer|isches|bar|baren|barem|barer|bares|sam|samen|samem|samer|sames|haft|haften|haftem|hafter|haftes|los|losen|losem|loser|loses|voll|vollen|reich|reichen|end|ende|enden|ender|endes|t|te|ten|ter|tes)$/i.test(lower);
-            if (isAdjSuffix && !isCapitalized && (!w.type || w.type === "Wort")) {
-                w.type = "Adjektiv";
-            }
-
-            // 5. Check Verb (Infinitive -en, -eln, -ern only if NOT marked as Adjektiv)
-            if ((!w.type || w.type === "Wort") && /(en|eln|ern)$/i.test(lower) && !isCapitalized) {
-                w.type = "Verb";
-            }
-
-            // 6. Sentence or Multiple Words -> Redewendung
-            if (!w.type || w.type === "Wort") {
-                w.type = clean.includes(" ") ? "Redewendung" : "Wort";
-            }
-
-            // Format string neatly
-            if (w.type === "Nomen") {
                 const cap = base.charAt(0).toUpperCase() + base.slice(1);
-                w.de = article ? `${article} ${cap}` : cap;
-            } else if (w.type === "Verb" || w.type === "Adjektiv" || w.type === "Adverb") {
-                w.de = clean.toLowerCase();
+                w.de = `${article} ${cap}`.trim();
+                return w;
+            }
+
+            // 4. Adjective Suffixes (Tested on Root and Declension Stem)
+            const adjSuffixes = /(ig|lich|isch|bar|sam|haft|los|voll|reich|ant|ent|iv|al|ell|el|wert)$/i;
+            if (adjSuffixes.test(lowerBase) || adjSuffixes.test(stem)) {
+                w.type = "Adjektiv";
+                w.de = lowerBase;
+                return w;
+            }
+
+            // 5. Infinitive Verbs
+            if (/(en|eln|ern)$/i.test(lowerBase) && !isCapitalized) {
+                w.type = "Verb";
+                w.de = lowerBase;
+                return w;
+            }
+
+            // Fallback: Default to Noun if Capitalized, else Word
+            if (isCapitalized) {
+                w.type = "Nomen";
+                w.de = article ? `${article} ${base}` : base;
+            } else if (!w.type) {
+                w.type = "Wort";
+                w.de = lowerBase;
             }
 
             return w;
         }
 
-        // Live Dictionary API Fetcher (Fetches translations AND official dictionary Part-of-Speech)
+        // Live Dictionary Fetcher
         async function fetchMissingVocabTranslations(tid, idx, wordDe) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
             if (VOCAB_DATA[tid][idx]._isTranslating) return;
@@ -3705,16 +3732,16 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 const dataEn = await resEn.json();
                 const dataAr = await resAr.json();
 
-                let transEn = (dataEn && dataEn[0]) ? dataEn[0].map(s => s[0]).join('') : "";
-                let transAr = (dataAr && dataAr[0]) ? dataAr[0].map(s => s[0]).join('') : "";
+                let transEn = (dataEn && dataEn[0]) ? dataEn[0].map(s => s[0] || '').join('') : "";
+                let transAr = (dataAr && dataAr[0]) ? dataAr[0].map(s => s[0] || '').join('') : "";
 
                 if (VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
                     if (!VOCAB_DATA[tid][idx].en) VOCAB_DATA[tid][idx].en = transEn;
                     if (!VOCAB_DATA[tid][idx].ar) VOCAB_DATA[tid][idx].ar = transAr;
 
-                    // Verify Official Dictionary Part-Of-Speech from API
+                    // Verify Official Google Dictionary POS
                     if (dataEn && dataEn[1] && dataEn[1][0] && dataEn[1][0][0]) {
-                        const pos = dataEn[1][0][0].toLowerCase();
+                        const pos = String(dataEn[1][0][0]).toLowerCase();
                         if (pos === "noun") VOCAB_DATA[tid][idx].type = "Nomen";
                         else if (pos === "verb") VOCAB_DATA[tid][idx].type = "Verb";
                         else if (pos === "adjective") VOCAB_DATA[tid][idx].type = "Adjektiv";
@@ -3912,20 +3939,20 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                         <div class="bg-[var(--bg-card)] border ${isLearnedClass} rounded-[24px] p-4 relative transition-all flex flex-col gap-3">
                             ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 px-2 py-1 rounded-lg border border-black/5 backdrop-blur-sm flex items-center gap-1.5 shadow-sm"><span class="text-xs filter drop-shadow-sm">${TOPIC_ICONS[w.originalTid] || '📌'}</span> Thema ${w.originalTid}</span>` : ''}
                             
-                            <!-- German Header Row -->
+                            <!-- German Header Row (Upgraded with Auto-Scaling & Hyphenation) -->
                             <div class="flex items-start gap-3 mt-1">
-                                <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(w.de)}'), this)" class="audio-btn p-2.5 bg-[var(--accent-light)] text-[var(--accent)] rounded-xl border border-[var(--accent)]/20 shadow-sm hover:scale-105 transition-all mt-1 shrink-0">
+                                <button onclick="playBlockAudio(decodeURIComponent('${encodeURIComponent(w.de)}'), this)" class="audio-btn p-2.5 bg-[var(--accent-light)] text-[var(--accent)] rounded-xl border border-[var(--accent)]/20 shadow-sm hover:scale-105 transition-all mt-1 shrink-0 cursor-pointer" title="Vorlesen">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.546-2.07-2.584-1.22l-4.148 3.407H4.5A2.5 2.5 0 002 8.75v6.5a2.5 2.5 0 002.5 2.5h2.268l4.148 3.407c1.038.85 2.584.116 2.584-1.22V4.06z"/></svg>
                                 </button>
-                                <div class="flex-1 min-w-0 pr-16">
-                                    <div class="flex items-center gap-2 mb-1">
+                                <div class="flex-1 min-w-0 ${vocabShowAll ? 'pr-20' : 'pr-2'}">
+                                    <div class="flex items-center gap-2 mb-1 flex-wrap">
                                         <span class="text-[9px] font-bold text-[var(--accent)] uppercase tracking-wider">🇩🇪 Deutsch</span>
                                         ${w.type ? getPosBadgeHTML(w.type) : ''}
                                     </div>                                    
-                                    <div class="text-lg sm:text-xl font-black text-[var(--text-primary)] p-1.5 -ml-1.5 rounded-lg ${editClass} outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
+                                    <div lang="de" class="${getFitFontSizeClass(w.de, 'list')} de-word-fit text-[var(--text-primary)] p-1.5 -ml-1.5 rounded-lg ${editClass} outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all break-words" ${currentEditMode ? 'contenteditable="true"' : ''} onblur="updateVocabInline(${w.originalTid}, ${w.originalIdx}, 'de', this.innerText)">${w.de}</div>
                                 </div>
                             </div>
-
+                            
                             <!-- Translations Grid (Color Zoned) -->
                             <div class="grid ${(w.ar || currentEditMode) ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mt-1">
                                 <!-- English -->
