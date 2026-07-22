@@ -509,6 +509,57 @@
     /* FIX FOR OVERLAPPING BUTTONS */
     .flashcard-container:not(.flipped) .flashcard-back { pointer-events: none; }
     .flashcard-container.flipped .flashcard-front { pointer-events: none; }
+       /* =========================================================
+       STUDIO WORKSPACE MODE (2026 SLEEK DESIGN)
+       ========================================================= */
+
+    /* 1. Studio Canvas Mode Active State */
+    body.studio-mode-active main {
+        background-color: var(--bg-sidebar) !important;
+    }
+
+    /* Editable Block Canvas Styling in Studio Mode */
+    body.studio-mode-active [contenteditable="true"] {
+        background-color: var(--bg-card) !important;
+        border: 1.5px dashed rgba(2, 132, 199, 0.4) !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    body.studio-mode-active [contenteditable="true"]:hover {
+        border-color: var(--accent) !important;
+        background-color: var(--accent-light) !important;
+    }
+
+    body.studio-mode-active [contenteditable="true"]:focus {
+        border-style: solid !important;
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 4px var(--accent-light), 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        background-color: var(--bg-card) !important;
+    }
+
+    /* 2. Studio Command Header (Laptop / Desktop) */
+    #studio-command-bar {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--border);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Studio Mode Pulse Dot */
+    .studio-pulse {
+        width: 8 h-8;
+        background: #0284c7;
+        box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.7);
+        animation: studio-pulse-anim 1.8s infinite;
+    }
+
+    @keyframes studio-pulse-anim {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(2, 132, 199, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+    }
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -687,7 +738,58 @@
         </aside>
 <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
+
+    <!-- Studio Workspace Floating Command Bar (Laptop & Desktop) -->
+    <div id="studio-command-bar" class="hidden sticky top-3 z-[80] w-full bg-[var(--bg-card)]/90 border border-[var(--border)] rounded-2xl p-2.5 md:px-5 md:py-3 mb-4 transition-all">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             
+            <!-- Left: Studio Status Badge & Topic Indicator -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-sky-500/10 border border-sky-500/20 px-3 py-1.5 rounded-xl">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500 studio-pulse"></span>
+                    <span class="text-xs font-black text-[var(--accent)] tracking-wider uppercase">EDIT STUDIO</span>
+                </div>
+                
+                <div class="hidden sm:flex items-center gap-1.5 border-l border-[var(--border)] pl-3 text-xs text-[var(--text-muted)] font-bold">
+                    <span id="studio-save-status" class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg> 
+                        Automatisch gespeichert
+                    </span>
+                </div>
+            </div>
+
+            <!-- Center: Rich Formatting Quick Toolbar (Desktop/Laptop) -->
+            <div class="hidden lg:flex items-center gap-1 bg-[var(--bg-app)] p-1 rounded-xl border border-[var(--border)]">
+                <button onclick="triggerHaptic(); selectActiveBlockText();" class="px-2.5 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-card)] rounded-lg transition-colors" title="Ganzen Block markieren">🔍 Alles</button>
+                <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
+                <button onclick="applySelectionFormat('bold')" class="px-2.5 py-1 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-card)] rounded-lg transition-colors" title="Fett">B</button>
+                <button onclick="applySelectionFormat('underline')" class="px-2.5 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-card)] rounded-lg transition-colors" title="Unterstreichen"><u>U</u></button>
+                <button onclick="applySelectionFormat('bullet')" class="px-2.5 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-card)] rounded-lg transition-colors" title="Aufzählungsliste">• Liste</button>
+                <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
+                <button onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400/60 hover:scale-110 transition-transform cursor-pointer" title="Gelb"></button>
+                <button onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400/60 hover:scale-110 transition-transform cursor-pointer" title="Blau"></button>
+                <button onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400/60 hover:scale-110 transition-transform cursor-pointer" title="Rot"></button>
+                <button onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400/60 hover:scale-110 transition-transform cursor-pointer" title="Grün"></button>
+                <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
+                <button onclick="applySelectionFormat('clear')" class="px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Formatierung radieren">🧹</button>
+            </div>
+
+            <!-- Right: Actions & Exit Studio Button -->
+            <div class="flex items-center gap-2 ml-auto">
+                <button onclick="smartUndo()" class="p-2 text-xs font-bold bg-[var(--bg-app)] border border-[var(--border)] hover:bg-[var(--bg-card)] rounded-xl text-[var(--text-primary)] transition-all cursor-pointer" title="Rückgängig (Ctrl+Z)">
+                    ↩️ <span class="hidden sm:inline">Rückgängig</span>
+                </button>
+                <button onclick="smartRedo()" class="p-2 text-xs font-bold bg-[var(--bg-app)] border border-[var(--border)] hover:bg-[var(--bg-card)] rounded-xl text-[var(--text-primary)] transition-all cursor-pointer" title="Wiederholen (Ctrl+Y)">
+                    ↪️ <span class="hidden sm:inline">Wiederholen</span>
+                </button>
+
+                <button onclick="toggleEditMode()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95">
+                    <span>✓ Studio Beenden</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
        <!-- Dashboard Controls (Always locked at top of content) -->
             <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
                 
@@ -1395,12 +1497,20 @@
                 }
 
                 clearTimeout(globalSaveTimeout);
+                const saveStatusEl = document.getElementById('studio-save-status');
+                if (saveStatusEl) {
+                    saveStatusEl.innerHTML = `⏳ Speichere Änderungen...`;
+                    saveStatusEl.className = "flex items-center gap-1 text-amber-500 font-bold animate-pulse";
+                }
+
                 globalSaveTimeout = setTimeout(() => {
-                    // Force save the highlights to Firebase AND LocalStorage
                     saveHighlight(topicId, blockKey, htmlVal);
-                    // Force save the topic text to Firebase AND LocalStorage
                     saveEditsSilent();
-                }, 1500);
+                    if (saveStatusEl) {
+                        saveStatusEl.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg> Automatisch gespeichert`;
+                        saveStatusEl.className = "flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold";
+                    }
+                }, 1200);
             }
         });
 
@@ -4206,39 +4316,45 @@ let navigationBar = `
 
         function toggleEditMode() {
             if (activeTab === 'classic') {
-                alert("Der Klassisch-Modus ist schreibgeschützt. Bitte wechseln Sie zum Template- oder Diskussion-Tab, um zu bearbeiten.");
+                showToast("Der Klassisch-Modus ist schreibgeschützt.", true);
                 return;
             }
             
             isEditMode = !isEditMode;
+            triggerHaptic(15);
             
-            const statusLabel = document.querySelector('#drawer-edit-toggle span');
-            const menuStatusLabel = document.getElementById('edit-mode-status-text');
+            const body = document.body;
+            const studioBar = document.getElementById('studio-command-bar');
             const tipBanner = document.getElementById('edit-tip-banner');
-            
             const fab = document.getElementById('mobile-edit-fab');
             const undoFab = document.getElementById('fab-undo');
             const redoFab = document.getElementById('fab-redo');
-            const drawerToggle = document.getElementById('drawer-edit-toggle');
             
             if (isEditMode) {
-                if (drawerToggle) drawerToggle.classList.add('bg-[var(--accent)]', 'text-white');
+                // Enter Studio Workspace Phase
+                body.classList.add('studio-mode-active');
+                if (studioBar) studioBar.classList.remove('hidden');
+                if (tipBanner) tipBanner.classList.remove('hidden');
+
                 if (fab) {
-                    fab.classList.add('bg-[var(--accent)]', 'text-white');
+                    fab.classList.add('bg-emerald-600', 'text-white', 'ring-4', 'ring-emerald-500/30');
                     fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
-                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                    document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>';
                 }
                 
                 if (undoFab) undoFab.classList.remove('hidden');
                 if (redoFab) redoFab.classList.remove('hidden');
 
-                if (statusLabel) statusLabel.textContent = "Edit-Modus: AN";
-                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren: AN";
-                if (tipBanner) tipBanner.classList.remove('hidden');
+                showToast("🎨 Edit Studio gestartet!");
             } else {
-                if (drawerToggle) drawerToggle.classList.remove('bg-[var(--accent)]', 'text-white');
+                // Exit Studio Workspace Phase
+                body.classList.remove('studio-mode-active');
+                if (studioBar) studioBar.classList.add('hidden');
+                if (tipBanner) tipBanner.classList.add('hidden');
+                hideToolbar();
+
                 if (fab) {
-                    fab.classList.remove('bg-[var(--accent)]', 'text-white');
+                    fab.classList.remove('bg-emerald-600', 'text-white', 'ring-4', 'ring-emerald-500/30');
                     fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
@@ -4246,12 +4362,11 @@ let navigationBar = `
                 if (undoFab) undoFab.classList.add('hidden');
                 if (redoFab) redoFab.classList.add('hidden');
 
-                if (statusLabel) statusLabel.textContent = "Edit-Modus umschalten";
-                if (menuStatusLabel) menuStatusLabel.textContent = "Editieren";
-                if (tipBanner) tipBanner.classList.add('hidden');
+                saveEditsSilent();
+                showToast("✅ Änderungen gesichert & Studio beendet.");
             }
             
-            // Re-render the correct screen when Edit Mode changes
+            // Refresh view to apply contenteditable changes
             if (activeTab === 'redemittel') {
                 renderRedemittel();
             } else {
