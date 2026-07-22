@@ -3563,6 +3563,7 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             }
         }
 // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
+        // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
         function sanitizeGermanVocabItem(w) {
             if (!w || !w.de) return w;
             let clean = w.de.trim();
@@ -4844,26 +4845,6 @@ let navigationBar = `
             }
             document.getElementById('wortschatz-editor-modal').classList.remove('hidden');
         }
-        function openVocabEditor(index = null) {
-            currentVocabModalParams = index;
-            const tId = TEMPLATE_DATA[activeIdx].id;
-            
-            const typeEl = document.getElementById('modal-vocab-type');
-            if (index !== null && VOCAB_DATA[tId] && VOCAB_DATA[tId][index]) {
-                const w = VOCAB_DATA[tId][index];
-                document.getElementById('modal-vocab-de').value = w.de || "";
-                document.getElementById('modal-vocab-en').value = w.en || "";
-                document.getElementById('modal-vocab-ar').value = w.ar || "";
-                if (typeEl) typeEl.value = w.type || "Nomen";
-            } else {
-                document.getElementById('modal-vocab-de').value = "";
-                document.getElementById('modal-vocab-en').value = "";
-                document.getElementById('modal-vocab-ar').value = "";
-                if (typeEl) typeEl.value = "Nomen";
-            }
-            document.getElementById('wortschatz-editor-modal').classList.remove('hidden');
-        }
-
         function closeVocabEditor() {
             document.getElementById('wortschatz-editor-modal').classList.add('hidden');
             currentVocabModalParams = null;
