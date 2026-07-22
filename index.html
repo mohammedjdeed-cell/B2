@@ -3562,6 +3562,29 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 btn.disabled = false;
             }
         }
+        // Color-coded POS Badge Generator (Fixes Practice Mode Crash)
+        function getPosBadgeHTML(type) {
+            if (!type) return '';
+            let colorClass = 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200';
+            const t = type.toLowerCase();
+            if (t.includes('nomen') || t.includes('substantiv')) {
+                colorClass = 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200/60';
+            } else if (t.includes('verb')) {
+                colorClass = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200/60';
+            } else if (t.includes('adj')) {
+                colorClass = 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200/60';
+            } else if (t.includes('adv')) {
+                colorClass = 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200/60';
+            } else if (t.includes('präp') || t.includes('prep')) {
+                colorClass = 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border-rose-200/60';
+            } else if (t.includes('redewendung') || t.includes('phrase')) {
+                colorClass = 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-200/60';
+            }
+            return `<span class="text-[9px] font-black px-2 py-0.5 rounded-md border ${colorClass} uppercase tracking-wider">${type}</span>`;
+        }
+
+        // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
+        function sanitizeGermanVocabItem(w) {
 // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
         // Instant German Grammar Sanitizer (Auto-Article + POS Detector)
         function sanitizeGermanVocabItem(w) {
@@ -3953,7 +3976,7 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                             </div>
                         </div>`;
                     });
-                    vocabHtml += `</div>`;
+                   vocabHtml += `</div>`;
                 }
                 const vocabDiv = document.createElement('div');
                 vocabDiv.innerHTML = vocabHtml;
