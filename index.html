@@ -1089,38 +1089,49 @@
             </div>
         </div>
     </div>
-<!-- Wortschatz Editor Modal -->
-    <div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-4 shadow-2xl relative">
-            <button onclick="closeVocabEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
-            <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">🧠 Neue Vokabel</h3>
+<!-- Wortschatz Editor Modal (With Smart Dictionary Engine) -->
+<div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-4 shadow-2xl relative">
+        <button onclick="closeVocabEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
+        <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">🧠 Neue Vokabel</h3>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">🇩🇪 Wort / Phrase (Deutsch)</label>
+                <input type="text" id="modal-vocab-de" class="w-full text-sm font-bold p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" placeholder="z.B. Herausforderung">
+            </div>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">🇩🇪 Wort / Phrase (Deutsch)</label>
-                    <input type="text" id="modal-vocab-de" class="w-full text-sm font-bold p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" placeholder="z.B. die Herausforderung">
+            <div class="flex justify-between items-center gap-2">
+                <div class="flex-1">
+                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Wortart (Type)</label>
+                    <select id="modal-vocab-type" class="w-full text-xs font-bold p-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] outline-none">
+                        <option value="Nomen">Nomen</option>
+                        <option value="Verb">Verb</option>
+                        <option value="Adjektiv">Adjektiv</option>
+                        <option value="Redewendung">Redewendung</option>
+                    </select>
                 </div>
-                <div class="flex justify-end">
-                    <button onclick="autoTranslateVocab()" class="px-3 py-1.5 text-xs font-bold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer">
-                        ✨ Auto-Übersetzen
-                    </button>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">🇬🇧 Englisch</label>
-                    <input type="text" id="modal-vocab-en" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none" placeholder="z.B. the challenge">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1 text-right">🇸🇾 العربية</label>
-                    <input type="text" id="modal-vocab-ar" dir="rtl" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-arabic focus:outline-none" placeholder="التحدي">
-                </div>
+                <button onclick="autoTranslateVocab()" class="self-end px-3 py-2 text-xs font-bold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
+                    ✨ Auto-Wörterbuch
+                </button>
             </div>
 
-            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
-                <button onclick="closeVocabEditor()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all cursor-pointer">Abbrechen</button>
-                <button onclick="saveVocabEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:opacity-90 transition-all cursor-pointer">Speichern</button>
+            <div>
+                <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">🇬🇧 Englisch</label>
+                <input type="text" id="modal-vocab-en" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none" placeholder="z.B. the challenge">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1 text-right">🇸🇾 العربية</label>
+                <input type="text" id="modal-vocab-ar" dir="rtl" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-arabic focus:outline-none" placeholder="التحدي">
             </div>
         </div>
+
+        <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+            <button onclick="closeVocabEditor()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all cursor-pointer">Abbrechen</button>
+            <button onclick="saveVocabEditor()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:opacity-90 transition-all cursor-pointer">Speichern</button>
+        </div>
     </div>
+</div>
 <!-- Selection Formatting Toolbar (Mobile Vector Dock) -->
 <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
     <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
@@ -3797,13 +3808,10 @@ ${vocabShowAll ? `<span class="absolute top-3 right-3 text-[9px] font-black bg-z
                                     </div>
 
                                     <!-- Core Word Area (Smart Auto-Resizing) -->
-                                    <div class="mt-4 flex flex-col items-center w-full px-2 relative z-10 max-h-[110px]" style="container-type: inline-size;">
-<h4 class="font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-md w-full overflow-y-auto no-scrollbar pb-2 px-1" style="font-size: clamp(1.1rem, 10cqi, 2rem); word-break: keep-all; overflow-wrap: break-word;" lang="de">${w.de}</h4>                                    </div>
-
-                                    <!-- Bottom Hint -->
-                                    <div class="absolute bottom-4 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider animate-pulse flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full z-10">
-                                        <span>Drehen</span> <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                    </div>
+<div class="mt-4 flex flex-col items-center w-full px-2 relative z-10 max-h-[110px]" style="container-type: inline-size;">
+    ${w.type ? `<span class="mb-1 px-2.5 py-0.5 text-[10px] font-black rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 shadow-sm">${w.type}</span>` : ''}
+    <h4 class="font-black text-[var(--text-primary)] text-center leading-tight tracking-tight drop-shadow-md w-full overflow-y-auto no-scrollbar pb-2 px-1" style="font-size: clamp(1.1rem, 10cqi, 2rem); word-break: keep-all; overflow-wrap: break-word;" lang="de">${w.de}</h4>
+</div>
                                 </div>
 
                                 <!-- BACK (Translations - Color Zoned) -->
@@ -4762,21 +4770,20 @@ let navigationBar = `
         }
 
         async function autoTranslateVocab() {
-            const textDe = document.getElementById('modal-vocab-de').value;
-            if (!textDe) return;
-            try {
-                const [resEn, resAr] = await Promise.all([
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(textDe)}`),
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(textDe)}`)
-                ]);
-                const dataEn = await resEn.json();
-                const dataAr = await resAr.json();
+            const textDe = document.getElementById('modal-vocab-de').value.trim();
+            if (!textDe) return alert("Bitte zuerst ein deutsches Wort eingeben.");
+            
+            showToast("⏳ Wörterbuch analysiert Wort...");
+            const processed = await processAndCleanGermanWord(textDe);
 
-                if (dataEn && dataEn[0]) document.getElementById('modal-vocab-en').value = dataEn[0].map(s => s[0]).join('');
-                if (dataAr && dataAr[0]) document.getElementById('modal-vocab-ar').value = dataAr[0].map(s => s[0]).join('');
-            } catch (e) {
-                alert("Übersetzung fehlgeschlagen.");
-            }
+            document.getElementById('modal-vocab-de').value = processed.de;
+            document.getElementById('modal-vocab-en').value = processed.en;
+            document.getElementById('modal-vocab-ar').value = processed.ar;
+            
+            const typeEl = document.getElementById('modal-vocab-type');
+            if (typeEl && processed.type) typeEl.value = processed.type;
+
+            showToast(`✨ Wörterbuch: ${processed.de} (${processed.type || 'Analysiert'})`);
         }
 
        async function saveVocabEditor() {
@@ -4832,6 +4839,39 @@ let navigationBar = `
             VOCAB_DATA[tId][index].learned = !VOCAB_DATA[tId][index].learned;
             saveVocabData();
             renderActiveTopic();
+        }
+        function toggleVocabLearned(index, event) {
+            event.stopPropagation(); // Prevent card from flipping when clicking the button
+            const tId = TEMPLATE_DATA[activeIdx].id;
+            VOCAB_DATA[tId][index].learned = !VOCAB_DATA[tId][index].learned;
+            saveVocabData();
+            renderActiveTopic();
+        }
+
+        // Utility: Retroactively runs Dictionary Engine on all old pre-existing words
+        async function enrichAllExistingVocab() {
+            showToast("⏳ Wörterbuch-Scan für alle 52 Themen gestartet...");
+            let count = 0;
+
+            for (const tId in VOCAB_DATA) {
+                if (Array.isArray(VOCAB_DATA[tId])) {
+                    for (let i = 0; i < VOCAB_DATA[tId].length; i++) {
+                        const item = VOCAB_DATA[tId][i];
+                        if (!item.type || !item.en || !item.ar) {
+                            const processed = await processAndCleanGermanWord(item.de);
+                            item.de = processed.de;
+                            if (!item.type) item.type = processed.type;
+                            if (!item.en) item.en = processed.en;
+                            if (!item.ar) item.ar = processed.ar;
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            saveVocabData();
+            renderActiveTopic();
+            showToast(`✅ ${count} alte Vokabeln im Wörterbuch aktualisiert!`);
         }
         function printCurrentTopic() {
             const isClassic = activeTab === 'classic';
