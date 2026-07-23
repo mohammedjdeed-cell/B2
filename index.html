@@ -126,18 +126,18 @@
     }
 
     .accordion-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.25s ease-out, opacity 0.25s ease-out;
-        opacity: 0;
-    }
-    
-    /* FIX: Removed max-height limits and hidden overflows to prevent clipping */
-    .accordion-content.expanded {
-        max-height: none !important; 
-        opacity: 1;
-        overflow: visible !important;
-    }
+    max-height: 0;
+    overflow: hidden;
+    /* transition parameters configured for smooth interpolation */
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out;
+    opacity: 0;
+}
+
+.accordion-content.expanded {
+    max-height: 1500px !important; /* Fixed value allows CSS to animate smoothly */
+    opacity: 1;
+    overflow: auto !important;
+}
 
     /* We no longer need the 60vh media query restriction */
 
@@ -584,6 +584,32 @@
             display: none !important;
         }
     }
+       /* Missing Arabic font family definition */
+.font-arabic {
+    font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+/* Fallback utility for iOS and mobile safe-area paddings (notches) */
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 12px) !important;
+}
+
+/* Tablet Ergonomics: Center and limit the bottom sheet width on vertical tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
+    #sidebar {
+        width: 450px !important;
+        margin: 0 auto !important;
+        left: 50% !important;
+        transform: translate(-50%, 100%) !important;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        height: 80vh !important;
+        max-height: 80vh !important;
+    }
+    #sidebar.sidebar-open {
+        transform: translate(-50%, 0) !important;
+    }
+}
     </style>
 </head>
 <body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -630,7 +656,7 @@
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden"></div>
 
     <!-- Modal: Profile & Settings -->
-    <div id="profile-settings-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="profile-settings-modal" class="hidden fixed inset-0 z-[210] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-6 shadow-2xl relative">
             <button onclick="closeProfileSettings()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 cursor-pointer">✕</button>
             
@@ -1013,7 +1039,7 @@
     </div>
 
     <!-- Quick Preview Modal -->
-    <div id="quick-preview-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="quick-preview-modal" class="hidden fixed inset-0 z-200 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 pt-8 space-y-4 shadow-2xl transition-all relative">
             <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             
@@ -1042,7 +1068,7 @@
     </div>
 
     <!-- Block Editor Modal -->
-    <div id="block-editor-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="block-editor-modal" class="hidden fixed inset-0 z-200 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
             <button onclick="closeBlockEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Block-Editor</h3>
@@ -1075,7 +1101,7 @@
     </div>
 
     <!-- Redemittel Editor Modal -->
-    <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-200 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
             <button onclick="closeRedemittelEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Redemittel bearbeiten</h3>
@@ -1625,11 +1651,11 @@
         }
 
         // FIXED MEMORY LEAK: Undo logic optimized
-        function undo() {
-            if (undoStack.length === 0) {
-                alert("Keine weiteren Änderungen vorhanden!");
-                return;
-            }
+       function undo() {
+    if (undoStack.length === 0) {
+        showToast("Keine weiteren Änderungen zum Rückgängig machen.", true);
+        return;
+    }
             
             let currentSnapshot = null;
             if (activeTab === 'diskussion') {
@@ -1669,10 +1695,10 @@
 
         // FIXED MEMORY LEAK: Redo logic optimized
         function redo() {
-            if (redoStack.length === 0) {
-                alert("Nichts zum Wiederholen!");
-                return;
-            }
+    if (redoStack.length === 0) {
+        showToast("Keine Änderungen zum Wiederholen.", true);
+        return;
+    }
             
             let currentSnapshot = null;
             if (activeTab === 'diskussion') {
@@ -3048,9 +3074,9 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             const total = dataset.length;
             const learnedCount = dataset.filter(t => learnedList.includes(t.id)).length;
             
-            const progressText = document.getElementById('progress-text');
-            if (progressText) progressText.textContent = `${learnedCount} / total`;
-
+           const progressText = document.getElementById('progress-text');
+if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
+            
             const progressBar = document.getElementById('progress-bar');
             if (progressBar) {
                 const percent = (learnedCount / total) * 100;
@@ -3312,16 +3338,17 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             if (modal) modal.classList.add('hidden');
         }
 
-        function applyConnectorsHighlight(text) {
-            if (!text) return "";
-            let highlighted = text;
-            CONNECTORS.forEach(conn => {
-                const escapedConn = conn.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                const regex = new RegExp(`\\b${escapedConn}\\b`, 'gi');
-                highlighted = highlighted.replace(regex, (matched) => `<span class="highlight">${matched}</span>`);
-            });
-            return highlighted;
-        }
+       function applyConnectorsHighlight(text) {
+    if (!text) return "";
+    let highlighted = text;
+    CONNECTORS.forEach(conn => {
+        const escapedConn = conn.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        // This advanced regex ensures we only match words OUTSIDE HTML brackets/attributes
+        const regex = new RegExp(`\\b(${escapedConn})\\b(?![^<]*>)`, 'gi');
+        highlighted = highlighted.replace(regex, (matched) => `<span class="highlight">${matched}</span>`);
+    });
+    return highlighted;
+}
 
         function toggleTranslation(event, blockId, encodedText) {
             if (event) {
@@ -5294,53 +5321,68 @@ let navigationBar = `
         }
 
         let isRepairRunning = false;
-        let hasAutoRepairedThisSession = false;
+let hasAutoRepairedThisSession = false;
 
-        // Universal Context & Tracing Repair Engine
-        async function repairAllVocabImmediately() {
-            if (isRepairRunning || hasAutoRepairedThisSession) return;
-            isRepairRunning = true;
-            let modified = false;
+// Universal Context & Tracing Repair Engine (Optimized for performance & rate-limiting)
+async function repairAllVocabImmediately() {
+    if (isRepairRunning || hasAutoRepairedThisSession) return;
+    isRepairRunning = true;
+    let modified = false;
 
-            for (const tId in VOCAB_DATA) {
-                if (!Array.isArray(VOCAB_DATA[tId])) continue;
+    // Only repair vocab items for the currently active topic to save bandwidth and prevent lag
+    const activeTopic = TEMPLATE_DATA[activeIdx];
+    if (!activeTopic) {
+        isRepairRunning = false;
+        return;
+    }
+    const activeId = activeTopic.id;
+    const vocabList = VOCAB_DATA[activeId];
 
-                for (let i = 0; i < VOCAB_DATA[tId].length; i++) {
-                    const item = VOCAB_DATA[tId][i];
-                    if (!item || !item.de) continue;
+    if (Array.isArray(vocabList)) {
+        for (let i = 0; i < vocabList.length; i++) {
+            const item = vocabList[i];
+            if (!item || !item.de) continue;
 
-                    const origDe = item.de;
-                    const origType = item.type;
+            // Only request API translations/lookups if crucial data is missing
+            if (!item.type || item.type === 'Wort' || !item.en || !item.ar) {
+                const origDe = item.de;
+                const origType = item.type;
 
-                    let baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
-                    const contextSentence = getSentenceContextForTopicWord(tId, baseWord);
+                let baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
+                const contextSentence = getSentenceContextForTopicWord(activeId, baseWord);
 
-                    // Process with context & dictionary lemmatization
-                    const processed = await processAndCleanGermanWord(baseWord, contextSentence);
+                // Process with context & dictionary lemmatization
+                const processed = await processAndCleanGermanWord(baseWord, contextSentence);
 
-                    if (processed) {
-                        if (processed.type) item.type = processed.type;
-                        if (processed.de) item.de = processed.de;
-                    }
-
-                    // Run Universal Type Protection Guard
-                    sanitizeGermanVocabItem(item);
-
-                    if (item.de !== origDe || item.type !== origType) {
-                        modified = true;
-                    }
+                if (processed) {
+                    if (processed.type) item.type = processed.type;
+                    if (processed.de) item.de = processed.de;
+                    if (!item.en && processed.en) item.en = processed.en;
+                    if (!item.ar && processed.ar) item.ar = processed.ar;
                 }
-            }
 
-            hasAutoRepairedThisSession = true;
-            isRepairRunning = false;
+                // Run Universal Type Protection Guard
+                sanitizeGermanVocabItem(item);
 
-            if (modified) {
-                saveVocabData();
-                renderActiveTopic();
-                showToast("✨ Alle Vokabeltypen geschützt & korrigiert!");
+                if (item.de !== origDe || item.type !== origType) {
+                    modified = true;
+                }
+                
+                // 300ms pause to avoid hitting translation API rate limits
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
         }
+    }
+
+    hasAutoRepairedThisSession = true;
+    isRepairRunning = false;
+
+    if (modified) {
+        saveVocabData();
+        renderActiveTopic();
+        showToast("✨ Vokabeltypen für dieses Thema korrigiert!");
+    }
+}
         function printCurrentTopic() {
             const isClassic = activeTab === 'classic';
             const isDiskussion = activeTab === 'diskussion';
@@ -5448,13 +5490,19 @@ let navigationBar = `
         }, { passive: true });
 
         // CLEAN, UNIFIED SWIPE GESTURE LOGIC (STRICT)
-        document.addEventListener('touchend', e => {
-            if (window.getSelection() && window.getSelection().toString().length > 0) return;
+        // CLEAN, UNIFIED SWIPE GESTURE LOGIC (STRICT)
+document.addEventListener('touchend', e => {
+    if (window.getSelection() && window.getSelection().toString().length > 0) return;
 
-            touchEndX = e.changedTouches[0].clientX;
-            touchEndY = e.changedTouches[0].clientY;
-            
-            const deltaX = touchEndX - touchStartX;
+    // Prevent accidental swipe triggers if user is scrolling through horizontal tabs or panels
+    if (e.target.closest('.overflow-x-auto') || e.target.closest('.overflow-y-auto') || e.target.closest('#right-panel-content')) {
+        return;
+    }
+
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             
