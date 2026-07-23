@@ -4967,14 +4967,80 @@ let navigationBar = `
         // 2. Built-in German Dictionary Engine (Auto-Article, POS, & Translation)
         // Built-in Dictionary Engine with Declension Intelligence
        // Built-in Dictionary Engine with Declension Intelligence
-        // Clean & Process German Word Input
-        async function processAndCleanGermanWord(inputWord) {
+       // Automatic Sentence Context Extractor from Screen Selection
+        function getSelectionContextSentence() {
+            const sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0) return "";
+
+            try {
+                const range = sel.getRangeAt(0);
+                let node = range.commonAncestorContainer;
+                if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+
+                const text = node.innerText || node.textContent || "";
+                const selectedText = sel.toString().trim();
+
+                if (!text || !selectedText) return "";
+
+                // Split text into sentences
+                const sentences = text.split(/(?<=[.!?])\s+/);
+                const match = sentences.find(s => s.includes(selectedText));
+                return (match || text).trim();
+            } catch(e) {
+                return "";
+            }
+        }
+
+        // Clean & Process German Word Input with Context Awareness
+        async function processAndCleanGermanWord(inputWord, contextSentence = "") {
             let clean = inputWord.trim();
             if (!clean) return { de: "", en: "", ar: "", type: "" };
 
-            // Check dictionary online or read from local cache
+            let detectedType = "";
+
+            // 1. CONTEXTUAL SYNTAX ANALYSIS (If context sentence is available)
+            if (contextSentence) {
+                const escaped = clean.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                
+                // Rule A: Lowercased word followed by a Capitalized Noun (e.g., "in bestimmten Fällen", "des ehrlichen Mannes")
+                const adjBeforeNounRegex = new RegExp(`\\b${escaped}\\s+([A-ZÄÖÜ][a-zäöüß]+)\\b`);
+                if (adjBeforeNounRegex.test(contextSentence) && !/^[A-ZÄÖÜ]/.test(clean)) {
+                    detectedType = "Adjektiv";
+                }
+
+                // Rule B: Word between Article and Noun (e.g., "des ehrlichen Mannes")
+                const betweenArtAndNounRegex = new RegExp(`\\b(der|die|das|den|dem|des|ein|eine|einen|einem|einer|eines)\\s+${escaped}\\s+([A-ZÄÖÜ][a-zäöüß]+)\\b`, 'i');
+                if (betweenArtAndNounRegex.test(contextSentence)) {
+                    detectedType = "Adjektiv";
+                }
+            }
+
+            // 2. Online Dictionary & Local Cache Lookup
             const dictResult = await lookupGermanDictionaryOnline(clean);
 
+            if (dictResult) {
+                if (!detectedType && dictResult.type) detectedType = dictResult.type;
+            }
+
+            // Fallback to local sanitizer if still unknown
+            if (!detectedType) {
+                const tempItem = { de: clean };
+                sanitizeGermanVocabItem(tempItem);
+                detectedType = tempItem.type;
+            }
+
+            // Assemble clean word & gender article
+            let finalDe = clean;
+            if (detectedType === 'Nomen') {
+                const baseWord = clean.replace(/^(der|die|das)\s+/i, '').trim();
+                const cleanCap = baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
+                const art = dictResult?.article || GERMAN_NOUN_GENDERS[baseWord.toLowerCase()] || "";
+                finalDe = art ? `${art} ${cleanCap}` : cleanCap;
+            } else if (detectedType === 'Adjektiv' || detectedType === 'Verb' || detectedType === 'Adverb') {
+                finalDe = clean.replace(/^(der|die|das)\s+/i, '').toLowerCase();
+            }
+
+            // Fetch English and Arabic translations
             let transEn = "";
             let transAr = "";
             try {
@@ -4990,28 +5056,51 @@ let navigationBar = `
             } catch (e) {}
 
             return {
-                de: dictResult?.de || clean,
+                de: finalDe,
                 en: transEn || "",
                 ar: transAr || "",
-                type: dictResult?.type || "Nomen"
+                type: detectedType || "Nomen"
             };
         }
-
-        async function addSelectedToVocab() {
+       async function addSelectedToVocab() {
             const selection = window.getSelection();
             const rawText = selection.toString().trim();
             if (!rawText) return;
             
+            // Auto-capture the full sentence context around the highlighted word
+            const contextSentence = getSelectionContextSentence();
+
             hideToolbar();
             selection.removeAllRanges();
 
-            // 1. Check Global Duplicates Across ALL 52 Topics
+            // 1. Check Global Duplicates
             const dup = findVocabDuplicate(rawText);
             if (dup) {
                 const topicKeyword = TOPIC_KEYWORDS[dup.topicId] || `Thema ${dup.topicId}`;
                 showToast(`⚠️ Existiert bereits in Thema ${dup.topicId} (${topicKeyword}): "${dup.word.de}"`, true);
                 return;
             }
+
+            showToast(`⏳ Analysiere Kontext für "${rawText}"...`);
+
+            // 2. Process with Context Sentence
+            const processed = await processAndCleanGermanWord(rawText, contextSentence);
+
+            const tId = TEMPLATE_DATA[activeIdx].id;
+            if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
+
+            VOCAB_DATA[tId].push({
+                de: processed.de,
+                en: processed.en,
+                ar: processed.ar,
+                type: processed.type,
+                learned: false
+            });
+
+            saveVocabData();
+            showToast(`✨ Hinzugefügt: "${processed.de}" (${processed.type})`);
+            if (activeTab === 'wortschatz') renderActiveTopic();
+        }
 
             showToast(`⏳ Wörterbuch verarbeitet "${rawText}"...`);
 
@@ -5163,14 +5252,47 @@ let navigationBar = `
             saveVocabData();
             renderActiveTopic();
         }
+// Helper: Finds full sentence context for any word inside a topic's German text blocks
+        function getSentenceContextForTopicWord(tId, word) {
+            if (!word) return "";
+            const cleanWord = word.replace(/^(der|die|das)\s+/i, '').trim();
+            if (!cleanWord) return "";
 
-      let isRepairRunning = false;
+            // Find topic object in TEMPLATE_DATA, DISKUSSIONEN_DATA, or TOPICS_DATA
+            const topic = (TEMPLATE_DATA && TEMPLATE_DATA.find(t => t.id == tId)) ||
+                          (DISKUSSIONEN_DATA && DISKUSSIONEN_DATA.find(t => t.id == tId)) ||
+                          (TOPICS_DATA && TOPICS_DATA.find(t => t.id == tId));
 
-        // Auto-Repair All Stored Vocabulary (Fixes existing cards like "das Ehrlichen" -> "ehrlichen [ADJEKTIV]")
+            if (!topic) return "";
+
+            // Combine all text blocks of this topic
+            const textBlocks = [];
+            if (topic.einleitung_de) textBlocks.push(topic.einleitung_de);
+            if (topic.pers_erfahrung_de) textBlocks.push(topic.pers_erfahrung_de);
+            if (topic.schluss_de) textBlocks.push(topic.schluss_de);
+            if (topic.content) textBlocks.push(topic.content);
+            if (Array.isArray(topic.pro_de)) textBlocks.push(...topic.pro_de);
+            if (Array.isArray(topic.contra_de)) textBlocks.push(...topic.contra_de);
+            if (Array.isArray(topic.dialog)) {
+                topic.dialog.forEach(d => { if (d && d.de) textBlocks.push(d.de); });
+            }
+
+            const fullText = stripHtml(textBlocks.join(" "));
+            if (!fullText) return "";
+
+            // Search for sentence containing the word
+            const sentences = fullText.split(/(?<=[.!?])\s+/);
+            const match = sentences.find(s => s.toLowerCase().includes(cleanWord.toLowerCase()));
+            return match ? match.trim() : "";
+        }
+
+        let isRepairRunning = false;
+
+        // Advanced Retroactive Context & Tracing Repair Engine
         async function repairAllVocabImmediately() {
             if (isRepairRunning) return;
             isRepairRunning = true;
-            let modified = false;
+            let count = 0;
 
             for (const tId in VOCAB_DATA) {
                 if (!Array.isArray(VOCAB_DATA[tId])) continue;
@@ -5182,36 +5304,37 @@ let navigationBar = `
                     const origDe = item.de;
                     const origType = item.type;
 
-                    // Extract raw word (strip der/die/das)
-                    let base = item.de.replace(/^(der|die|das)\s+/i, '').trim();
+                    // 1. Extract raw base word
+                    let baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
 
-                    // Query online dictionary API + local cache with auto-lemmatization
-                    const dictRes = await lookupGermanDictionaryOnline(base);
+                    // 2. Automatically find sentence context from this topic's text!
+                    const contextSentence = getSentenceContextForTopicWord(tId, baseWord);
 
-                    if (dictRes) {
-                        if (dictRes.type) item.type = dictRes.type;
+                    // 3. Process with Context Awareness + Lemma Tracing
+                    const processed = await processAndCleanGermanWord(baseWord, contextSentence);
 
-                        if (dictRes.type === 'Nomen' && dictRes.article) {
-                            const cap = base.charAt(0).toUpperCase() + base.slice(1);
-                            item.de = `${dictRes.article} ${cap}`;
-                        } else if (dictRes.type === 'Adjektiv' || dictRes.type === 'Verb' || dictRes.type === 'Adverb') {
-                            item.de = base.toLowerCase();
+                    if (processed) {
+                        if (processed.type) item.type = processed.type;
+
+                        // Trace back adjectives/verbs, or attach clean articles to nouns
+                        if (item.type === 'Nomen') {
+                            item.de = processed.de; // e.g., "der Verlust"
+                        } else if (item.type === 'Adjektiv' || item.type === 'Verb' || item.type === 'Adverb') {
+                            // Strip any bogus article prepended in the past
+                            item.de = baseWord.toLowerCase();
                         }
                     }
 
-                    // Fallback local sanitizer
-                    sanitizeGermanVocabItem(item);
-
                     if (item.de !== origDe || item.type !== origType) {
-                        modified = true;
+                        count++;
                     }
                 }
             }
 
-            if (modified) {
+            if (count > 0) {
                 saveVocabData();
                 renderActiveTopic();
-                showToast("✨ Vokabeln automatisch korrigiert!");
+                showToast(`✨ ${count} Vokabeln mit Kontext & Root-Tracing korrigiert!`);
             }
             isRepairRunning = false;
         }
