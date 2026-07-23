@@ -4968,6 +4968,7 @@ let navigationBar = `
         // Built-in Dictionary Engine with Declension Intelligence
        // Built-in Dictionary Engine with Declension Intelligence
        // Automatic Sentence Context Extractor from Screen Selection
+        // Automatic Sentence Context Extractor from Screen Selection
         function getSelectionContextSentence() {
             const sel = window.getSelection();
             if (!sel || sel.rangeCount === 0) return "";
@@ -5037,7 +5038,7 @@ let navigationBar = `
                 const art = dictResult?.article || GERMAN_NOUN_GENDERS[baseWord.toLowerCase()] || "";
                 finalDe = art ? `${art} ${cleanCap}` : cleanCap;
             } else if (detectedType === 'Adjektiv' || detectedType === 'Verb' || detectedType === 'Adverb') {
-                finalDe = clean.replace(/^(der|die|das)\s+/i, '').toLowerCase();
+                finalDe = (dictResult?.de || clean.replace(/^(der|die|das)\s+/i, '')).toLowerCase();
             }
 
             // Fetch English and Arabic translations
@@ -5062,7 +5063,8 @@ let navigationBar = `
                 type: detectedType || "Nomen"
             };
         }
-       async function addSelectedToVocab() {
+
+        async function addSelectedToVocab() {
             const selection = window.getSelection();
             const rawText = selection.toString().trim();
             if (!rawText) return;
@@ -5099,7 +5101,9 @@ let navigationBar = `
 
             saveVocabData();
             showToast(`✨ Hinzugefügt: "${processed.de}" (${processed.type})`);
-            if (activeTab === '
+            if (activeTab === 'wortschatz') renderActiveTopic();
+        }
+
         function updateVocabInline(tid, idx, lang, newText) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
             VOCAB_DATA[tid][idx][lang] = newText.trim();
@@ -5150,6 +5154,7 @@ let navigationBar = `
             }
             document.getElementById('wortschatz-editor-modal').classList.remove('hidden');
         }
+
         function closeVocabEditor() {
             document.getElementById('wortschatz-editor-modal').classList.add('hidden');
             currentVocabModalParams = null;
@@ -5213,6 +5218,7 @@ let navigationBar = `
             closeVocabEditor();
             renderActiveTopic();
         }
+
         function deleteVocab(index) {
             if (!confirm("Vokabel wirklich löschen?")) return;
             const tId = TEMPLATE_DATA[activeIdx].id;
@@ -5221,28 +5227,26 @@ let navigationBar = `
             renderActiveTopic();
         }
 
-    
         function toggleVocabLearned(index, event) {
-            event.stopPropagation(); // Prevent card from flipping when clicking the button
+            event.stopPropagation();
             const tId = TEMPLATE_DATA[activeIdx].id;
             VOCAB_DATA[tId][index].learned = !VOCAB_DATA[tId][index].learned;
             saveVocabData();
             renderActiveTopic();
         }
-// Helper: Finds full sentence context for any word inside a topic's German text blocks
+
+        // Helper: Finds full sentence context for any word inside a topic's German text blocks
         function getSentenceContextForTopicWord(tId, word) {
             if (!word) return "";
             const cleanWord = word.replace(/^(der|die|das)\s+/i, '').trim();
             if (!cleanWord) return "";
 
-            // Find topic object in TEMPLATE_DATA, DISKUSSIONEN_DATA, or TOPICS_DATA
             const topic = (TEMPLATE_DATA && TEMPLATE_DATA.find(t => t.id == tId)) ||
                           (DISKUSSIONEN_DATA && DISKUSSIONEN_DATA.find(t => t.id == tId)) ||
                           (TOPICS_DATA && TOPICS_DATA.find(t => t.id == tId));
 
             if (!topic) return "";
 
-            // Combine all text blocks of this topic
             const textBlocks = [];
             if (topic.einleitung_de) textBlocks.push(topic.einleitung_de);
             if (topic.pers_erfahrung_de) textBlocks.push(topic.pers_erfahrung_de);
@@ -5257,19 +5261,19 @@ let navigationBar = `
             const fullText = stripHtml(textBlocks.join(" "));
             if (!fullText) return "";
 
-            // Search for sentence containing the word
             const sentences = fullText.split(/(?<=[.!?])\s+/);
             const match = sentences.find(s => s.toLowerCase().includes(cleanWord.toLowerCase()));
             return match ? match.trim() : "";
         }
 
         let isRepairRunning = false;
+        let hasAutoRepairedThisSession = false;
 
-        // Advanced Retroactive Context & Tracing Repair Engine
+        // One-Time Safe Auto-Repair for Existing Vocabulary
         async function repairAllVocabImmediately() {
-            if (isRepairRunning) return;
+            if (isRepairRunning || hasAutoRepairedThisSession) return;
             isRepairRunning = true;
-            let count = 0;
+            let modified = false;
 
             for (const tId in VOCAB_DATA) {
                 if (!Array.isArray(VOCAB_DATA[tId])) continue;
@@ -5281,39 +5285,31 @@ let navigationBar = `
                     const origDe = item.de;
                     const origType = item.type;
 
-                    // 1. Extract raw base word
                     let baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
-
-                    // 2. Automatically find sentence context from this topic's text!
                     const contextSentence = getSentenceContextForTopicWord(tId, baseWord);
 
-                    // 3. Process with Context Awareness + Lemma Tracing
+                    // Process with context & dictionary lemmatization
                     const processed = await processAndCleanGermanWord(baseWord, contextSentence);
 
                     if (processed) {
                         if (processed.type) item.type = processed.type;
-
-                        // Trace back adjectives/verbs, or attach clean articles to nouns
-                        if (item.type === 'Nomen') {
-                            item.de = processed.de; // e.g., "der Verlust"
-                        } else if (item.type === 'Adjektiv' || item.type === 'Verb' || item.type === 'Adverb') {
-                            // Strip any bogus article prepended in the past
-                            item.de = baseWord.toLowerCase();
-                        }
+                        if (processed.de) item.de = processed.de;
                     }
 
                     if (item.de !== origDe || item.type !== origType) {
-                        count++;
+                        modified = true;
                     }
                 }
             }
 
-            if (count > 0) {
+            hasAutoRepairedThisSession = true;
+            isRepairRunning = false;
+
+            if (modified) {
                 saveVocabData();
                 renderActiveTopic();
-                showToast(`✨ ${count} Vokabeln mit Kontext & Root-Tracing korrigiert!`);
+                showToast("✨ Vokabeln mit Kontext & Lemma-Tracing korrigiert!");
             }
-            isRepairRunning = false;
         }
         function printCurrentTopic() {
             const isClassic = activeTab === 'classic';
