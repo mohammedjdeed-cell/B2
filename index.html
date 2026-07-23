@@ -4013,6 +4013,9 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             // WORTSCHATZ (FLASHCARDS / LIST) RENDERING LOGIC
             // ==========================================
            if (isWortschatz) {
+                // Auto-trigger retroactive repair for existing words in the background
+                setTimeout(repairAllVocabImmediately, 100);
+
                 const tId = topic.id;
                 if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
 
@@ -5161,45 +5164,56 @@ let navigationBar = `
             renderActiveTopic();
         }
 
-       // Automatic Retroactive Vocabulary Repair
-        async function enrichAllExistingVocab() {
-            let count = 0;
+      let isRepairRunning = false;
+
+        // Auto-Repair All Stored Vocabulary (Fixes existing cards like "das Ehrlichen" -> "ehrlichen [ADJEKTIV]")
+        async function repairAllVocabImmediately() {
+            if (isRepairRunning) return;
+            isRepairRunning = true;
+            let modified = false;
+
             for (const tId in VOCAB_DATA) {
-                if (Array.isArray(VOCAB_DATA[tId])) {
-                    for (let i = 0; i < VOCAB_DATA[tId].length; i++) {
-                        const item = VOCAB_DATA[tId][i];
-                        if (!item || !item.de) continue;
+                if (!Array.isArray(VOCAB_DATA[tId])) continue;
 
-                        const oldDe = item.de;
-                        const oldType = item.type;
+                for (let i = 0; i < VOCAB_DATA[tId].length; i++) {
+                    const item = VOCAB_DATA[tId][i];
+                    if (!item || !item.de) continue;
 
-                        // 1. Sanitize & Auto-correct
-                        sanitizeGermanVocabItem(item);
+                    const origDe = item.de;
+                    const origType = item.type;
 
-                        // 2. Query online dictionary for missing/suspicious items
-                        const baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
-                        const dictRes = await lookupGermanDictionaryOnline(baseWord);
+                    // Extract raw word (strip der/die/das)
+                    let base = item.de.replace(/^(der|die|das)\s+/i, '').trim();
 
-                        if (dictRes) {
-                            if (dictRes.type) item.type = dictRes.type;
-                            if (dictRes.article && item.type === 'Nomen') {
-                                const cap = baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
-                                item.de = `${dictRes.article} ${cap}`;
-                            }
+                    // Query online dictionary API + local cache with auto-lemmatization
+                    const dictRes = await lookupGermanDictionaryOnline(base);
+
+                    if (dictRes) {
+                        if (dictRes.type) item.type = dictRes.type;
+
+                        if (dictRes.type === 'Nomen' && dictRes.article) {
+                            const cap = base.charAt(0).toUpperCase() + base.slice(1);
+                            item.de = `${dictRes.article} ${cap}`;
+                        } else if (dictRes.type === 'Adjektiv' || dictRes.type === 'Verb' || dictRes.type === 'Adverb') {
+                            item.de = base.toLowerCase();
                         }
+                    }
 
-                        if (item.de !== oldDe || item.type !== oldType) {
-                            count++;
-                        }
+                    // Fallback local sanitizer
+                    sanitizeGermanVocabItem(item);
+
+                    if (item.de !== origDe || item.type !== origType) {
+                        modified = true;
                     }
                 }
             }
 
-            saveVocabData();
-            renderActiveTopic();
-            if (count > 0) {
-                showToast(`✨ ${count} Vokabeln korrigiert (z.B. ehrlichen, bestimmten)!`);
+            if (modified) {
+                saveVocabData();
+                renderActiveTopic();
+                showToast("✨ Vokabeln automatisch korrigiert!");
             }
+            isRepairRunning = false;
         }
         function printCurrentTopic() {
             const isClassic = activeTab === 'classic';
