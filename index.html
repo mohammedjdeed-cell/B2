@@ -3764,7 +3764,7 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             return w;
         }
 
-        // Real-Time Online German Dictionary Lookup (Wiktionary API + Google Dictionary)
+        // Real-Time Online German Dictionary Lookup with Auto-Lemmatization
         async function lookupGermanDictionaryOnline(rawWord) {
             if (!rawWord) return null;
             let word = rawWord.trim().replace(/^(der|die|das)\s+/i, '');
@@ -3780,36 +3780,57 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
 
             try {
                 // 2. Query Wiktionary API
-                const wikiUrl = `https://de.wiktionary.org/w/api.php?action=query&titles=${encodeURIComponent(word)}&prop=revisions&rvprop=content&format=json&origin=*`;
-                const res = await fetch(wikiUrl);
-                const data = await res.json();
+                let targetWord = word;
+                let wikiUrl = `https://de.wiktionary.org/w/api.php?action=query&titles=${encodeURIComponent(targetWord)}&prop=revisions&rvprop=content&format=json&origin=*`;
+                let res = await fetch(wikiUrl);
+                let data = await res.json();
 
-                const pages = data?.query?.pages;
+                let pages = data?.query?.pages;
                 if (pages) {
-                    const pageId = Object.keys(pages)[0];
+                    let pageId = Object.keys(pages)[0];
                     if (pageId !== "-1") {
-                        const content = pages[pageId]?.revisions?.[0]?.['*'] || '';
+                        let content = pages[pageId]?.revisions?.[0]?.['*'] || '';
 
-                        // Parse Official Gender (Genus)
+                        // AUTO-LEMMATIZATION: If Wiktionary says "Deklinierte Form von [[lemma]]" or "Form eines Adjektivs"
+                        const lemmaMatch = content.match(/Deklinierte Form (?:von|des Adjektivs)\s+\[\[([^\]]+)\]\]/i) ||
+                                           content.match(/(?:Partizip II|Grundform)\s+(?:von|des Verbs)\s+\[\[([^\]]+)\]\]/i) ||
+                                           content.match(/\[\[([^\]]+)\]\]/);
+
+                        if ((/Deklinierte Form|Form eines Adjektivs/i.test(content) || !/Wortart/i.test(content)) && lemmaMatch && lemmaMatch[1]) {
+                            targetWord = lemmaMatch[1].trim();
+                            // Follow link to base form (e.g. ehrlichen -> ehrlich)
+                            wikiUrl = `https://de.wiktionary.org/w/api.php?action=query&titles=${encodeURIComponent(targetWord)}&prop=revisions&rvprop=content&format=json&origin=*`;
+                            res = await fetch(wikiUrl);
+                            data = await res.json();
+                            pages = data?.query?.pages;
+                            if (pages) {
+                                pageId = Object.keys(pages)[0];
+                                if (pageId !== "-1") {
+                                    content = pages[pageId]?.revisions?.[0]?.['*'] || '';
+                                }
+                            }
+                        }
+
+                        // Parse Gender (Genus)
                         if (/Genus\s*=\|?\s*m\b|Genus\s+m\b|\{\{m\}\}/i.test(content)) article = 'der';
                         else if (/Genus\s*=\|?\s*f\b|Genus\s+f\b|\{\{f\}\}/i.test(content)) article = 'die';
                         else if (/Genus\s*=\|?\s*n\b|Genus\s+n\b|\{\{n\}\}/i.test(content)) article = 'das';
 
-                        // Parse Official Part of Speech (POS)
-                        if (/Wortart\|Substantiv|Wortart\|Eigenname/i.test(content)) type = 'Nomen';
+                        // Parse Part of Speech (POS)
+                        if (/Wortart\|Adjektiv|Form eines Adjektivs/i.test(content)) type = 'Adjektiv';
+                        else if (/Wortart\|Substantiv|Wortart\|Eigenname/i.test(content)) type = 'Nomen';
                         else if (/Wortart\|Verb/i.test(content)) type = 'Verb';
-                        else if (/Wortart\|Adjektiv/i.test(content)) type = 'Adjektiv';
                         else if (/Wortart\|Adverb/i.test(content)) type = 'Adverb';
                         else if (/Wortart\|Präposition/i.test(content)) type = 'Präposition';
                         else if (/Wortart\|Konjunktion/i.test(content)) type = 'Konjunktion';
                     }
                 }
             } catch (e) {
-                console.warn("Wiktionary API warning:", e);
+                console.warn("Wiktionary API error:", e);
             }
 
-            // 3. Secondary fallback
-            if (!type || (type === 'Nomen' && !article)) {
+            // 3. Fallback to Google Dictionary API if missing
+            if (!type) {
                 try {
                     const gUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&dt=bd&q=${encodeURIComponent(word)}`;
                     const gRes = await fetch(gUrl);
@@ -3817,23 +3838,23 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
 
                     if (gData && gData[1] && gData[1][0] && gData[1][0][0]) {
                         const pos = String(gData[1][0][0]).toLowerCase();
-                        if (!type) {
-                            if (pos === "noun") type = "Nomen";
-                            else if (pos === "verb") type = "Verb";
-                            else if (pos === "adjective") type = "Adjektiv";
-                            else if (pos === "adverb") type = "Adverb";
-                            else if (pos === "preposition") type = "Präposition";
-                            else if (pos === "conjunction") type = "Konjunktion";
-                        }
+                        if (pos === "adjective") type = "Adjektiv";
+                        else if (pos === "noun") type = "Nomen";
+                        else if (pos === "verb") type = "Verb";
+                        else if (pos === "adverb") type = "Adverb";
+                        else if (pos === "preposition") type = "Präposition";
+                        else if (pos === "conjunction") type = "Konjunktion";
                     }
                 } catch(e) {}
             }
 
+            // 4. Save result permanently into Local Storage Cache
+            const isNoun = type === 'Nomen' || (!type && article);
             const cleanCap = word.charAt(0).toUpperCase() + word.slice(1);
             const result = {
-                de: (article && (type === 'Nomen' || !type)) ? `${article} ${cleanCap}` : word,
+                de: (article && isNoun) ? `${article} ${cleanCap}` : word.toLowerCase(),
                 article: article,
-                type: type || 'Nomen'
+                type: type || (isNoun ? 'Nomen' : 'Adjektiv')
             };
 
             if (type || article) {
@@ -3843,7 +3864,6 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
 
             return result;
         }
-
         // Live Dictionary Fetcher
         async function fetchMissingVocabTranslations(tid, idx, wordDe) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
@@ -5141,7 +5161,7 @@ let navigationBar = `
             renderActiveTopic();
         }
 
-       // Automatic Retroactive Vocabulary Repair (Fixes all previously added words)
+       // Automatic Retroactive Vocabulary Repair
         async function enrichAllExistingVocab() {
             let count = 0;
             for (const tId in VOCAB_DATA) {
@@ -5153,16 +5173,16 @@ let navigationBar = `
                         const oldDe = item.de;
                         const oldType = item.type;
 
-                        // 1. Sanitize & Auto-correct article against lexicon
+                        // 1. Sanitize & Auto-correct
                         sanitizeGermanVocabItem(item);
 
-                        // 2. Query online dictionary for missing articles/types
+                        // 2. Query online dictionary for missing/suspicious items
                         const baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
                         const dictRes = await lookupGermanDictionaryOnline(baseWord);
 
                         if (dictRes) {
                             if (dictRes.type) item.type = dictRes.type;
-                            if (dictRes.article && (item.type === 'Nomen' || !item.type)) {
+                            if (dictRes.article && item.type === 'Nomen') {
                                 const cap = baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
                                 item.de = `${dictRes.article} ${cap}`;
                             }
@@ -5178,7 +5198,7 @@ let navigationBar = `
             saveVocabData();
             renderActiveTopic();
             if (count > 0) {
-                showToast(`✨ ${count} alte Vokabeln korrigiert (z.B. der Verlust)!`);
+                showToast(`✨ ${count} Vokabeln korrigiert (z.B. ehrlichen, bestimmten)!`);
             }
         }
         function printCurrentTopic() {
