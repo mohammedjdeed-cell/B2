@@ -5693,18 +5693,33 @@ document.addEventListener('touchend', e => {
     
     <!-- FIXED PWA: Mandatory Service Worker Registration -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch((err) => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
+   <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+            .then((registration) => {
+                console.log('ServiceWorker registration successful');
+                
+                // Monitor the service worker for updates on reload
+                registration.onupdatefound = () => {
+                    const installingWorker = registration.installing;
+                    if (installingWorker == null) return;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                // Inform the user that a new version of the app has been loaded
+                                showToast("Update geladen! Bitte laden Sie die Seite neu, um die neueste Version zu nutzen.", false);
+                            }
+                        }
+                    };
+                };
+            })
+            .catch((err) => {
+                console.log('ServiceWorker registration failed: ', err);
             });
-        }
-    </script>
+        });
+    }
+</script>
 </body>
 </html>
 
