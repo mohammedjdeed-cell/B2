@@ -5083,7 +5083,7 @@ let navigationBar = `
 
             showToast(`⏳ Analysiere Kontext für "${rawText}"...`);
 
-            // 2. Process with Context Sentence
+            // 2. Process with Context Sentence & Auto-Lemmatization
             const processed = await processAndCleanGermanWord(rawText, contextSentence);
 
             const tId = TEMPLATE_DATA[activeIdx].id;
@@ -5099,30 +5099,7 @@ let navigationBar = `
 
             saveVocabData();
             showToast(`✨ Hinzugefügt: "${processed.de}" (${processed.type})`);
-            if (activeTab === 'wortschatz') renderActiveTopic();
-        }
-
-            showToast(`⏳ Wörterbuch verarbeitet "${rawText}"...`);
-
-            // 2. Run Dictionary Engine (Article, Word Type, EN/AR Translation)
-            const processed = await processAndCleanGermanWord(rawText);
-
-            const tId = TEMPLATE_DATA[activeIdx].id;
-            if (!VOCAB_DATA[tId]) VOCAB_DATA[tId] = [];
-
-            VOCAB_DATA[tId].push({
-                de: processed.de,
-                en: processed.en,
-                ar: processed.ar,
-                type: processed.type,
-                learned: false
-            });
-
-            saveVocabData();
-            showToast(`✨ Hinzugefügt: "${processed.de}" (${processed.type})`);
-            if (activeTab === 'wortschatz') renderActiveTopic();
-        }
-
+            if (activeTab === '
         function updateVocabInline(tid, idx, lang, newText) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
             VOCAB_DATA[tid][idx][lang] = newText.trim();
