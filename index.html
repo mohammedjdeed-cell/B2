@@ -293,41 +293,44 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* Mobile & Tablet Bottom-Sheet Sidebar (Smooth & Performant) */
-    #sidebar {
-        position: fixed !important;
-        bottom: 0; left: 0; right: 0; top: auto;
-        z-index: 95 !important;
-        width: 100% !important;
-        height: 85vh !important; 
-        max-height: 85vh !important;
-        border-top-left-radius: 28px;
-        border-top-right-radius: 28px;
-        transform: translateY(100%);
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
-        will-change: transform;
-        padding-bottom: 6rem !important; /* Reserves space for bottom nav so no topics are hidden */
-    }
-    #sidebar.sidebar-open {
-        transform: translateY(0) !important;
-    }
+    /* ✅ AFTER (Paste this replacement): */
+    /* Mobile Bottom-Sheet Sidebar - Active ONLY on Mobile & Portrait Tablets (< 1024px) */
+    @media (max-width: 1023px) {
+        #sidebar {
+            position: fixed !important;
+            bottom: 0; left: 0; right: 0; top: auto;
+            z-index: 95 !important;
+            width: 100% !important;
+            height: 85vh !important; 
+            max-height: 85vh !important;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
+            will-change: transform;
+            padding-bottom: 6rem !important; /* Reserves space for bottom nav so no topics are hidden */
+        }
+        #sidebar.sidebar-open {
+            transform: translateY(0) !important;
+        }
 
-    /* Overlay Settings with Smooth Fading */
-    #drawer-overlay {
-        position: fixed !important;
-        inset: 0 !important;
-        background-color: rgba(0, 0, 0, 0.6) !important;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        z-index: 85 !important;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-    }
-    #drawer-overlay.overlay-open {
-        opacity: 1 !important;
-        pointer-events: auto !important;
+        /* Overlay Settings with Smooth Fading */
+        #drawer-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 85 !important;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #drawer-overlay.overlay-open {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
     }
 
     /* Completed state background override */
@@ -1008,10 +1011,10 @@
                     <svg class="w-6 h-6 opacity-90" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="currentColor"/></svg>
                     <span class="text-[10px] font-bold mt-0.5">Raster</span>
                 </button>
-
+                
                 <!-- CENTER MENU FAB (Floating Action Button) -->
                 <div class="relative -top-5 w-14 h-14 flex-shrink-0 mx-1">
-<button onclick="openMobileSidebar();" class="absolute inset-0 bg-gradient-to-tr from-sky-600 to-sky-400 text-white rounded-full shadow-[0_8px_20px_rgba(2,132,199,0.4)] border-[4px] border-[var(--bg-app)] flex items-center justify-center active:scale-90 transition-transform">                            class="absolute inset-0 bg-gradient-to-tr from-sky-600 to-sky-400 text-white rounded-full shadow-[0_8px_20px_rgba(2,132,199,0.4)] border-[4px] border-[var(--bg-app)] flex items-center justify-center active:scale-90 transition-transform">
+                    <button onclick="openMobileSidebar();" class="absolute inset-0 bg-gradient-to-tr from-sky-600 to-sky-400 text-white rounded-full shadow-[0_8px_20px_rgba(2,132,199,0.4)] border-[4px] border-[var(--bg-app)] flex items-center justify-center active:scale-90 transition-transform">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 14l8-8 8 8"></path></svg>
                     </button>
                 </div>
