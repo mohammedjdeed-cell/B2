@@ -3733,6 +3733,99 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             return w;
         }
 
+       // Permanent Local Dictionary Storage Cache
+        let dictCache = {};
+        try {
+            dictCache = JSON.parse(localStorage.getItem('b2_dict_cache') || '{}');
+        } catch(e) { dictCache = {}; }
+
+        function saveDictCache() {
+            try {
+                localStorage.setItem('b2_dict_cache', JSON.stringify(dictCache));
+            } catch(e) {}
+        }
+
+        // Real-Time Online German Dictionary Lookup (Wiktionary API + Google Dictionary)
+        async function lookupGermanDictionaryOnline(rawWord) {
+            if (!rawWord) return null;
+            let word = rawWord.trim().replace(/^(der|die|das)\s+/i, '');
+            const cacheKey = word.toLowerCase();
+
+            // 1. Instant Local Cache Hit (Never query online twice for the same word)
+            if (dictCache[cacheKey]) {
+                return dictCache[cacheKey];
+            }
+
+            let article = "";
+            let type = "";
+
+            try {
+                // 2. Query Wiktionary API (Supports CORS via origin=*)
+                const wikiUrl = `https://de.wiktionary.org/w/api.php?action=query&titles=${encodeURIComponent(word)}&prop=revisions&rvprop=content&format=json&origin=*`;
+                const res = await fetch(wikiUrl);
+                const data = await res.json();
+
+                const pages = data?.query?.pages;
+                if (pages) {
+                    const pageId = Object.keys(pages)[0];
+                    if (pageId !== "-1") {
+                        const content = pages[pageId]?.revisions?.[0]?.['*'] || '';
+
+                        // Parse Official Gender (Genus)
+                        if (/Genus\s*=\|?\s*m\b|Genus\s+m\b|\{\{m\}\}/i.test(content)) article = 'der';
+                        else if (/Genus\s*=\|?\s*f\b|Genus\s+f\b|\{\{f\}\}/i.test(content)) article = 'die';
+                        else if (/Genus\s*=\|?\s*n\b|Genus\s+n\b|\{\{n\}\}/i.test(content)) article = 'das';
+
+                        // Parse Official Part of Speech (POS)
+                        if (/Wortart\|Substantiv|Wortart\|Eigenname/i.test(content)) type = 'Nomen';
+                        else if (/Wortart\|Verb/i.test(content)) type = 'Verb';
+                        else if (/Wortart\|Adjektiv/i.test(content)) type = 'Adjektiv';
+                        else if (/Wortart\|Adverb/i.test(content)) type = 'Adverb';
+                        else if (/Wortart\|Präposition/i.test(content)) type = 'Präposition';
+                        else if (/Wortart\|Konjunktion/i.test(content)) type = 'Konjunktion';
+                    }
+                }
+            } catch (e) {
+                console.warn("Wiktionary API warning:", e);
+            }
+
+            // 3. Query Google Dictionary API as secondary fallback
+            if (!type || (type === 'Nomen' && !article)) {
+                try {
+                    const gUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&dt=bd&q=${encodeURIComponent(word)}`;
+                    const gRes = await fetch(gUrl);
+                    const gData = await gRes.json();
+
+                    if (gData && gData[1] && gData[1][0] && gData[1][0][0]) {
+                        const pos = String(gData[1][0][0]).toLowerCase();
+                        if (!type) {
+                            if (pos === "noun") type = "Nomen";
+                            else if (pos === "verb") type = "Verb";
+                            else if (pos === "adjective") type = "Adjektiv";
+                            else if (pos === "adverb") type = "Adverb";
+                            else if (pos === "preposition") type = "Präposition";
+                            else if (pos === "conjunction") type = "Konjunktion";
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            // 4. Save result permanently into Local Dictionary Storage
+            const cleanCap = word.charAt(0).toUpperCase() + word.slice(1);
+            const result = {
+                de: (article && (type === 'Nomen' || !type)) ? `${article} ${cleanCap}` : word,
+                article: article,
+                type: type || 'Nomen'
+            };
+
+            if (type || article) {
+                dictCache[cacheKey] = result;
+                saveDictCache();
+            }
+
+            return result;
+        }
+
         // Live Dictionary Fetcher
         async function fetchMissingVocabTranslations(tid, idx, wordDe) {
             if (!VOCAB_DATA[tid] || !VOCAB_DATA[tid][idx]) return;
@@ -3740,8 +3833,16 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             VOCAB_DATA[tid][idx]._isTranslating = true;
 
             try {
+                // 1. Query Online Dictionary & Read Local Cache
+                const dictResult = await lookupGermanDictionaryOnline(wordDe);
+                if (dictResult && VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
+                    if (dictResult.de) VOCAB_DATA[tid][idx].de = dictResult.de;
+                    if (dictResult.type) VOCAB_DATA[tid][idx].type = dictResult.type;
+                }
+
+                // 2. Fetch English and Arabic translations
                 const [resEn, resAr] = await Promise.all([
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&dt=bd&q=${encodeURIComponent(wordDe)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(wordDe)}`),
                     fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(wordDe)}`)
                 ]);
                 const dataEn = await resEn.json();
@@ -3753,17 +3854,6 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 if (VOCAB_DATA[tid] && VOCAB_DATA[tid][idx]) {
                     if (!VOCAB_DATA[tid][idx].en) VOCAB_DATA[tid][idx].en = transEn;
                     if (!VOCAB_DATA[tid][idx].ar) VOCAB_DATA[tid][idx].ar = transAr;
-
-                    // Verify Official Google Dictionary POS
-                    if (dataEn && dataEn[1] && dataEn[1][0] && dataEn[1][0][0]) {
-                        const pos = String(dataEn[1][0][0]).toLowerCase();
-                        if (pos === "noun") VOCAB_DATA[tid][idx].type = "Nomen";
-                        else if (pos === "verb") VOCAB_DATA[tid][idx].type = "Verb";
-                        else if (pos === "adjective") VOCAB_DATA[tid][idx].type = "Adjektiv";
-                        else if (pos === "adverb") VOCAB_DATA[tid][idx].type = "Adverb";
-                        else if (pos === "preposition") VOCAB_DATA[tid][idx].type = "Präposition";
-                        else if (pos === "conjunction") VOCAB_DATA[tid][idx].type = "Konjunktion";
-                    }
 
                     VOCAB_DATA[tid][idx]._isTranslating = false;
                     saveVocabData();
@@ -4836,46 +4926,33 @@ let navigationBar = `
         // 2. Built-in German Dictionary Engine (Auto-Article, POS, & Translation)
         // Built-in Dictionary Engine with Declension Intelligence
        // Built-in Dictionary Engine with Declension Intelligence
+        // Clean & Process German Word Input
         async function processAndCleanGermanWord(inputWord) {
             let clean = inputWord.trim();
             if (!clean) return { de: "", en: "", ar: "", type: "" };
 
-            let item = { de: clean };
-            sanitizeGermanVocabItem(item);
+            // Check dictionary online or read from local cache
+            const dictResult = await lookupGermanDictionaryOnline(clean);
 
-            // Fetch Translations & Official Google Dictionary POS
             let transEn = "";
             let transAr = "";
             try {
                 const [resEn, resAr] = await Promise.all([
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&dt=bd&q=${encodeURIComponent(item.de)}`),
-                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(item.de)}`)
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dt=t&q=${encodeURIComponent(clean)}`),
+                    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=ar&dt=t&q=${encodeURIComponent(clean)}`)
                 ]);
                 const dataEn = await resEn.json();
                 const dataAr = await resAr.json();
 
-                if (dataEn && dataEn[0]) transEn = dataEn[0].map(s => s[0]).join('');
-                if (dataAr && dataAr[0]) transAr = dataAr[0].map(s => s[0]).join('');
-
-                // Official Google Dictionary POS Verification
-                if (dataEn && dataEn[1] && dataEn[1][0] && dataEn[1][0][0]) {
-                    const pos = dataEn[1][0][0].toLowerCase();
-                    if (pos === "noun") item.type = "Nomen";
-                    else if (pos === "verb") item.type = "Verb";
-                    else if (pos === "adjective") item.type = "Adjektiv";
-                    else if (pos === "adverb") item.type = "Adverb";
-                    else if (pos === "preposition") item.type = "Präposition";
-                    else if (pos === "conjunction") item.type = "Konjunktion";
-                }
-            } catch (e) {
-                console.warn("Dictionary API warning:", e);
-            }
+                if (dataEn && dataEn[0]) transEn = dataEn[0].map(s => s[0] || '').join('');
+                if (dataAr && dataAr[0]) transAr = dataAr[0].map(s => s[0] || '').join('');
+            } catch (e) {}
 
             return {
-                de: item.de,
+                de: dictResult?.de || clean,
                 en: transEn || "",
                 ar: transAr || "",
-                type: item.type
+                type: dictResult?.type || "Nomen"
             };
         }
 
