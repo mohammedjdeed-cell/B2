@@ -3656,12 +3656,12 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
             return w;
         }
 
-        // Multi-Layer German Linguistic Analyzer
+       // Multi-Layer German Linguistic Analyzer with Auto-Correction
         function sanitizeGermanVocabItem(w) {
             if (!w || !w.de) return w;
             let clean = w.de.trim();
             
-            // 1. Multiple Words or Phrases (e.g. "auf der Hand liegen")
+            // 1. Multiple Words or Phrases (e.g., "auf der Hand liegen")
             if (clean.includes(" ") && !clean.match(/^(der|die|das)\s+/i)) {
                 w.type = "Redewendung";
                 return w;
@@ -3676,12 +3676,23 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 w.type = "Nomen";
             }
 
-            const lower = clean.toLowerCase();
             const lowerBase = base.toLowerCase();
             const stem = getGermanWordStem(lowerBase);
             const isCapitalized = /^[A-ZÄÖÜ]/.test(clean) || (artMatch && /^[A-ZÄÖÜ]/.test(base));
 
-            // 2. Prepositions, Conjunctions, Adverbs Check
+            // 2. Check if we have a verified article in Local Lexicon / Dict Cache
+            const correctArticle = GERMAN_NOUN_GENDERS[lowerBase] || (typeof dictCache !== 'undefined' && dictCache[lowerBase]?.article);
+
+            // AUTO-CORRECT WRONG ARTICLES (e.g., fixes "die Verlust" -> "der Verlust")
+            if (correctArticle) {
+                article = correctArticle;
+                w.type = "Nomen";
+                const cap = base.charAt(0).toUpperCase() + base.slice(1);
+                w.de = `${article} ${cap}`;
+                return w;
+            }
+
+            // 3. Prepositions, Conjunctions, Adverbs Check
             if (!artMatch && !isCapitalized) {
                 if (GERMAN_PREPOSITIONS.has(lowerBase)) { w.type = "Präposition"; w.de = lowerBase; return w; }
                 if (GERMAN_CONJUNCTIONS.has(lowerBase)) { w.type = "Konjunktion"; w.de = lowerBase; return w; }
@@ -3690,7 +3701,7 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 }
             }
 
-            // 3. Adjectives (Checks Root Lexicon & Suffixes after stripping declensions)
+            // 4. Adjectives
             const adjSuffixes = /(ig|lich|isch|bar|sam|haft|los|voll|reich|ant|ent|iv|al|ell|el|wert)$/i;
             if (!artMatch && !isCapitalized && (GERMAN_ROOT_ADJECTIVES.has(lowerBase) || GERMAN_ROOT_ADJECTIVES.has(stem) || adjSuffixes.test(lowerBase) || adjSuffixes.test(stem))) {
                 w.type = "Adjektiv";
@@ -3698,23 +3709,23 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
                 return w;
             }
 
-            // 4. High-Precision Noun Endings & Capitalization
+            // 5. Noun Endings
             const nounSuffixes = /(ung|heit|keit|schaft|tion|tät|taet|ik|ei|enz|anz|ur|ismus|ling|or|ment|chen|lein|um|nis|tum|sal|nahme|gabe|kraft|mittel|wesen|raum|platz|haus|zeit|plan|schutz|stand)$/i;
             
             if (isCapitalized || nounSuffixes.test(lowerBase)) {
                 w.type = "Nomen";
                 if (!article) {
                     if (/(ung|heit|keit|schaft|tion|tät|taet|ik|ei|enz|anz|ur|e|nahme|gabe|kraft)$/i.test(lowerBase)) article = "die";
-                    else if (/(ismus|ling|or|er|platz|stand|raum|plan|schutz)$/i.test(lowerBase)) article = "der";
+                    else if (/(ismus|ling|or|er|platz|stand|raum|plan|schutz|ust)$/i.test(lowerBase)) article = "der";
                     else if (/(tum|ment|chen|lein|um|nis|sal|mittel|wesen|haus)$/i.test(lowerBase)) article = "das";
-                    else article = "die";
+                    else article = "";
                 }
                 const cap = base.charAt(0).toUpperCase() + base.slice(1);
-                w.de = `${article} ${cap}`.trim();
+                w.de = article ? `${article} ${cap}` : cap;
                 return w;
             }
 
-            // 5. Infinitive & Participle Verbs
+            // 6. Infinitive & Participle Verbs
             if (!isCapitalized && (/(en|eln|ern)$/i.test(lowerBase) || lowerBase.startsWith('ge') || lowerBase.startsWith('ver'))) {
                 w.type = lowerBase.startsWith('ge') ? "Verb (Partizip)" : "Verb";
                 w.de = lowerBase;
@@ -3732,7 +3743,6 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
 
             return w;
         }
-
        // Permanent Local Dictionary Storage Cache
         let dictCache = {};
         try {
@@ -5123,21 +5133,34 @@ let navigationBar = `
             renderActiveTopic();
         }
 
-        // Utility: Retroactively runs Dictionary Engine on all old pre-existing words
+       // Automatic Retroactive Vocabulary Repair (Fixes all previously added words)
         async function enrichAllExistingVocab() {
-            showToast("⏳ Wörterbuch-Scan für alle 52 Themen gestartet...");
             let count = 0;
-
             for (const tId in VOCAB_DATA) {
                 if (Array.isArray(VOCAB_DATA[tId])) {
                     for (let i = 0; i < VOCAB_DATA[tId].length; i++) {
                         const item = VOCAB_DATA[tId][i];
-                        if (!item.type || !item.en || !item.ar) {
-                            const processed = await processAndCleanGermanWord(item.de);
-                            item.de = processed.de;
-                            if (!item.type) item.type = processed.type;
-                            if (!item.en) item.en = processed.en;
-                            if (!item.ar) item.ar = processed.ar;
+                        if (!item || !item.de) continue;
+
+                        const oldDe = item.de;
+                        const oldType = item.type;
+
+                        // 1. Sanitize & Auto-correct article against lexicon
+                        sanitizeGermanVocabItem(item);
+
+                        // 2. Query online dictionary for missing articles/types
+                        const baseWord = item.de.replace(/^(der|die|das)\s+/i, '').trim();
+                        const dictRes = await lookupGermanDictionaryOnline(baseWord);
+
+                        if (dictRes) {
+                            if (dictRes.type) item.type = dictRes.type;
+                            if (dictRes.article && (item.type === 'Nomen' || !item.type)) {
+                                const cap = baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
+                                item.de = `${dictRes.article} ${cap}`;
+                            }
+                        }
+
+                        if (item.de !== oldDe || item.type !== oldType) {
                             count++;
                         }
                     }
@@ -5146,7 +5169,9 @@ let navigationBar = `
 
             saveVocabData();
             renderActiveTopic();
-            showToast(`✅ ${count} alte Vokabeln im Wörterbuch aktualisiert!`);
+            if (count > 0) {
+                showToast(`✨ ${count} alte Vokabeln korrigiert (z.B. der Verlust)!`);
+            }
         }
         function printCurrentTopic() {
             const isClassic = activeTab === 'classic';
