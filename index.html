@@ -5515,12 +5515,6 @@ async function repairAllVocabImmediately() {
             printWindow.document.close();
         }
 
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            touchStartTime = Date.now();
-        }, { passive: true });
-
        let touchStartNode = null;
         document.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
@@ -5720,7 +5714,6 @@ async function repairAllVocabImmediately() {
     </script>
     
     <!-- FIXED PWA: Mandatory Service Worker Registration -->
-    <script>
    <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
