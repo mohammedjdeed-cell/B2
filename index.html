@@ -349,12 +349,12 @@
         display: none !important;
     }
 
-   @media (min-width: 1024px) {
+        @media (min-width: 1024px) {
         #sidebar {
             position: relative !important;
             transform: translateX(0) !important;
             z-index: 10 !important;
-            width: 20rem !important;
+            width: 25rem !important; /* Increased from 20rem to 25rem (400px) */
             height: 100% !important;
             max-height: 100% !important;
         }
@@ -772,9 +772,10 @@
                 <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
             </div>
 
+    
             <!-- TAB 2: MINI-ANSICHT CONTENT (With Custom UI Dropdown) -->
             <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
-                <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
+                <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
                     
                   <!-- Modern Custom Dropdown -->
                     <div class="relative w-full" id="mini-dropdown-container">
@@ -2066,16 +2067,16 @@
                     html += `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln gefunden.</p>`;
                 } else {
                     html += `<div class="space-y-3">`;
-                    words.forEach(w => {
+                     words.forEach(w => {
                         html += `
-                        <div class="bg-[var(--bg-card)] p-3 rounded-2xl border ${w.learned ? 'border-sky-400 bg-sky-50/20' : 'border-[var(--border)]'} shadow-sm">
-                            <div class="flex justify-between items-start mb-1.5">
-                                <span class="font-black text-[var(--text-primary)] text-sm">${w.de}</span>
-                                ${w.learned ? '<span class="text-sky-500 text-xs shadow-sm bg-sky-100 rounded-full w-4 h-4 flex items-center justify-center">✓</span>' : ''}
+                        <div class="bg-[var(--bg-card)] p-2.5 rounded-xl border ${w.learned ? 'border-sky-400 bg-sky-50/10' : 'border-[var(--border)]'} shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-extrabold text-[var(--text-primary)] text-xs truncate max-w-[80%]">${w.de}</span>
+                                ${w.learned ? '<span class="text-sky-500 text-[10px] font-bold bg-sky-100 dark:bg-sky-950/40 px-1.5 py-0.5 rounded-md">Gelernt</span>' : ''}
                             </div>
-                            <div class="text-xs font-bold text-blue-500 dark:text-blue-300 mb-1">${w.en || '-'}</div>
-                            ${w.ar ? `<div class="text-sm font-arabic font-bold text-purple-600 dark:text-purple-400 text-right" dir="rtl">${w.ar}</div>` : ''}
-                            ${miniVocabShowAll ? `<div class="text-[9px] text-[var(--text-faint)] mt-2 text-right border-t border-[var(--border)] pt-1">Thema ${w.originalTid}</div>` : ''}
+                            <div class="text-[11px] font-semibold text-blue-500 dark:text-blue-300 mb-0.5">${w.en || '-'}</div>
+                            ${w.ar ? `<div class="text-xs font-arabic font-bold text-purple-600 dark:text-purple-400 text-right" dir="rtl">${w.ar}</div>` : ''}
+                            ${miniVocabShowAll ? `<div class="text-[8px] text-[var(--text-faint)] mt-1.5 text-right border-t border-[var(--border)]/40 pt-1">Thema ${w.originalTid}</div>` : ''}
                        </div>`;
                     });
                     html += `</div>`;
