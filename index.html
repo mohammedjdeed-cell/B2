@@ -2033,7 +2033,8 @@
                 if (overlay) overlay.classList.add('hidden');
             }
         }
-       // --- NEW MINI-PANEL RENDERER ---
+       // ✅ AFTER (Paste this replacement):
+        // --- NEW MINI-PANEL RENDERER ---
         function renderRightPanel() {
             const content = document.getElementById('right-panel-content');
             const selectEl = document.getElementById('mini-view-select');
@@ -2047,7 +2048,7 @@
             if (mode === 'wortschatz') {
                 // Inline Title
                 html += `
-                    <div class="mb-4 text-center">
+                    <div class="mb-2 text-center">
                         <span class="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">${miniVocabShowAll ? 'Alle Themen (1-52)' : `Nur Thema ${tId}`}</span>
                     </div>
                 `;
@@ -2083,6 +2084,9 @@
                     if (words.length > 0) {
                         html += `<div class="h-16 w-full"></div>`;
                     }
+                    
+                    html += `</div>`; // Close cards list div
+                } // Close words checking else block
                 
                 // Sticky Toggle Button
                 html += `
