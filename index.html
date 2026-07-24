@@ -361,7 +361,7 @@
             position: relative !important;
             transform: translateX(0) !important;
             z-index: 10 !important;
-            width: 25rem !important; /* Increased from 20rem to 25rem (400px) */
+            width: 22rem !important; /* Optimized from 25rem to 22rem (352px) */
             height: 100% !important;
             max-height: 100% !important;
         }
@@ -2033,7 +2033,7 @@
                 if (overlay) overlay.classList.add('hidden');
             }
         }
-       // ✅ AFTER (Paste this replacement):
+      // ✅ AFTER (Paste this replacement):
         // --- NEW MINI-PANEL RENDERER ---
         function renderRightPanel() {
             const content = document.getElementById('right-panel-content');
@@ -2046,10 +2046,15 @@
             let html = '';
 
             if (mode === 'wortschatz') {
-                // Inline Title
+                // Sleek Header with Compact Toggle Button Badge
                 html += `
-                    <div class="mb-2 text-center">
-                        <span class="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">${miniVocabShowAll ? 'Alle Themen (1-52)' : `Nur Thema ${tId}`}</span>
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--border)]/60 shrink-0">
+                        <span class="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">
+                            ${miniVocabShowAll ? '🌍 Alle Themen' : `📌 Nur Thema ${tId}`}
+                        </span>
+                        <button onclick="toggleMiniVocabShowAll()" class="text-[10px] font-extrabold px-2.5 py-1 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)] bg-[var(--bg-card)] transition-colors shadow-sm flex items-center gap-1 cursor-pointer">
+                            ${miniVocabShowAll ? '📌 Nur Thema' : '🌍 Alle Zeigen'}
+                        </button>
                     </div>
                 `;
                 
@@ -2069,7 +2074,7 @@
                      
                     words.forEach(w => {
                         html += `
-                        <div class="bg-[var(--bg-card)] p-2.5 rounded-xl border ${w.learned ? 'border-sky-400 bg-sky-50/10' : 'border-[var(--border)]'} shadow-sm">
+                        <div class="bg-[var(--bg-card)] p-2.5 rounded-xl border ${w.learned ? 'border-sky-400 bg-sky-50/10' : 'border-[var(--border)]'} shadow-sm animate-fade-in">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="font-extrabold text-[var(--text-primary)] text-xs truncate max-w-[80%]">${w.de}</span>
                                 ${w.learned ? '<span class="text-sky-500 text-[10px] font-bold bg-sky-100 dark:bg-sky-950/40 px-1.5 py-0.5 rounded-md">Gelernt</span>' : ''}
@@ -2080,21 +2085,8 @@
                        </div>`;
                     });
                     
-                    // Safe scrolling padding so no words are covered by the bottom sticky button
-                    if (words.length > 0) {
-                        html += `<div class="h-16 w-full"></div>`;
-                    }
-                    
                     html += `</div>`; // Close cards list div
                 } // Close words checking else block
-                
-                // Sticky Toggle Button
-                html += `
-                <div class="sticky bottom-0 w-full pt-4 pb-2 bg-[var(--bg-sidebar)] z-10 mt-auto">
-                    <button onclick="toggleMiniVocabShowAll()" class="w-full min-h-[48px] bg-[var(--accent)] text-white rounded-xl font-bold text-[13px] shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer">
-                        ${miniVocabShowAll ? '📌 Nur Thema ' + tId + ' zeigen' : '🌍 Alle 52 Themen zeigen'}
-                    </button>
-                </div>`;
 
             } else if (mode === 'redemittel') {
                 // Inline Title
@@ -5577,14 +5569,7 @@ async function repairAllVocabImmediately() {
             }
         }, { passive: true });
         
-        document.addEventListener('click', e => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && sidebar.classList.contains('sidebar-open') && window.innerWidth < 1024) {
-                if (!sidebar.contains(e.target) && !e.target.closest('#mobile-bottom-nav') && !e.target.closest('#tablet-sidebar-toggle')) {
-                    closeMobileSidebar();
-                }
-            }
-        });
+       
         function navigateTopicStep(direction) {
             const targetIdx = activeIdx + direction;
             let dataset;
