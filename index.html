@@ -2033,8 +2033,7 @@
                 if (overlay) overlay.classList.add('hidden');
             }
         }
-    // ✅ AFTER (Paste this replacement):
-        // --- NEW MINI-PANEL RENDERER ---
+  // --- NEW MINI-PANEL RENDERER ---
         function renderRightPanel() {
             const content = document.getElementById('right-panel-content');
             const selectEl = document.getElementById('mini-view-select');
@@ -2076,7 +2075,7 @@
                 } else {
                     return '';
                 }
-                return `<span class="text-[8px] font-black px-1.5 py-0.5 rounded border ${colorClass} uppercase tracking-wider scale-90 origin-left shrink-0 select-none">${shortcut}</span>`;
+                return `<span class="text-[8px] font-black px-1.5 py-0.5 rounded border ${colorClass} uppercase tracking-wider scale-90 origin-right shrink-0 select-none">${shortcut}</span>`;
             }
 
             if (mode === 'wortschatz') {
@@ -2116,8 +2115,17 @@
                                     ${typeBadge}
                                 </div>
                                 ${w.learned ? '<span class="text-sky-500 text-[10px] font-bold bg-sky-100 dark:bg-sky-950/40 px-1.5 py-0.5 rounded-md shrink-0">Gelernt</span>' : ''}
-                            </div>`;
+                            </div>
+                            <div class="text-[11px] font-semibold text-blue-500 dark:text-blue-300 mb-0.5 select-text">${w.en || '-'}</div>
+                            ${w.ar ? `<div class="text-xs font-arabic font-bold text-purple-600 dark:text-purple-400 text-right select-text" dir="rtl">${w.ar}</div>` : ''}
+                            ${miniVocabShowAll ? `<div class="text-[8px] text-[var(--text-faint)] mt-1.5 text-right border-t border-[var(--border)]/40 pt-1">Thema ${w.originalTid}</div>` : ''}
+                        </div>`;
                     });
+                    
+                    // Safe scrolling padding so no words are covered by the bottom sticky button
+                    if (words.length > 0) {
+                        html += `<div class="h-16 w-full"></div>`;
+                    }
                     
                     html += `</div>`; // Close cards list div
                 } // Close words checking else block
