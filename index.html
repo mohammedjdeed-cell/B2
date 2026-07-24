@@ -293,24 +293,31 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* ✅ AFTER (Paste this replacement): */
     /* Mobile Bottom-Sheet Sidebar - Active ONLY on Mobile & Portrait Tablets (< 1024px) */
-    @media (max-width: 1023px) {
-        #sidebar {
-            position: fixed !important;
-            bottom: 0; left: 0; right: 0; top: auto;
-            z-index: 95 !important;
-            width: 100% !important;
-            height: 85vh !important; 
-            max-height: 85vh !important;
-            border-top-left-radius: 28px;
-            border-top-right-radius: 28px;
-            transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
-            will-change: transform;
-            padding-bottom: 6rem !important; /* Reserves space for bottom nav so no topics are hidden */
-        }
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed !important;
+                bottom: 0; left: 0; right: 0; top: auto;
+                z-index: 95 !important;
+                width: 100% !important;
+                height: 85vh !important; 
+                max-height: 85vh !important;
+                border-top-left-radius: 28px;
+                border-top-right-radius: 28px;
+                transform: translateY(100%);
+                transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
+                will-change: transform;
+                padding-bottom: 0 !important; /* Removed layout gap */
+            }
+            #sidebar.sidebar-open {
+                transform: translateY(0) !important;
+            }
+            
+            /* Add safe padding directly to scroll lists so no content is covered on mobile */
+            #topic-list, #right-panel-content {
+                padding-bottom: 8rem !important;
+            }
         #sidebar.sidebar-open {
             transform: translateY(0) !important;
         }
@@ -623,46 +630,7 @@
 }
     </style>
 </head>
-<body class="h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
-
-    <!-- Header -->
-    <!-- Header -->
-    <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden pt-5">
-        <!-- Sleek German Flag Strip at the very top -->
-        <div class="absolute top-0 left-0 w-full h-1.5 flex">
-            <div class="flex-1 bg-zinc-900"></div>
-            <div class="flex-1 bg-red-600"></div>
-            <div class="flex-1 bg-amber-400"></div>
-        </div>
-
-        <div class="flex items-center gap-3 relative z-10">
-            <div class="relative w-10 h-10 flex-shrink-0 select-none hidden sm:block">
-                <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="24" fill="var(--accent)"/>
-                    <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
-                </svg>
-            </div>
-            <div class="whitespace-nowrap min-w-max">
-                <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
-                <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block uppercase">Interaktive Vorbereitung</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3 relative z-10">
-            <div class="hidden lg:flex bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] gap-1 shadow-inner">
-                <button onclick="switchTab('template')" id="nav-themen-desk" class="px-4 py-2 text-sm font-bold rounded-xl bg-[var(--accent)] text-white shadow-md transition-all">📚 Themen</button>
-                <button onclick="switchTab('mindmap')" id="nav-raster-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
-                <button onclick="switchTab('redemittel')" id="nav-tools-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">🛠️ Werkzeuge</button>
-                <button onclick="switchTab('settings')" id="nav-settings-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
-            </div>
-
-           <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
-                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-                </svg>
-            </button>
-        </div>
-    </header>
+<body class="h-full flex flex-col lg:flex-row overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
     <!-- Slide-out Drawer Overlay for Mobile -->
 <div id="drawer-overlay" onclick="closeMobileSidebar()" class="fixed inset-0 bg-black/60 z-[85] hidden lg:hidden"></div>
     <!-- Modal: Profile & Settings -->
@@ -722,8 +690,47 @@
     </div>
 
     <!-- Main Workspace Container -->
-    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+<!-- ✅ AFTER (Replace with this): -->
+    <!-- Right-Hand Dashboard Container (Holds Header & Workspace next to Sidebar) -->
+    <div class="flex-1 flex flex-col overflow-hidden relative">
         
+        <!-- Header (Positioned dynamically on the right side on desktop) -->
+        <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden pt-5">
+            <!-- Sleek German Flag Strip at the very top -->
+            <div class="absolute top-0 left-0 w-full h-1.5 flex">
+                <div class="flex-1 bg-zinc-900"></div>
+                <div class="flex-1 bg-red-600"></div>
+                <div class="flex-1 bg-amber-400"></div>
+            </div>
+
+            <div class="flex items-center gap-3 relative z-10">
+                <div class="relative w-10 h-10 flex-shrink-0 select-none hidden sm:block">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100" height="100" rx="24" fill="var(--accent)"/>
+                        <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
+                    </svg>
+                </div>
+                <div class="whitespace-nowrap min-w-max">
+                    <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
+                    <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block uppercase">Interaktive Vorbereitung</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 relative z-10">
+                <div class="hidden lg:flex bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] gap-1 shadow-inner">
+                    <button onclick="switchTab('template')" id="nav-themen-desk" class="px-4 py-2 text-sm font-bold rounded-xl bg-[var(--accent)] text-white shadow-md transition-all">📚 Themen</button>
+                    <button onclick="switchTab('mindmap')" id="nav-raster-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
+                    <button onclick="switchTab('redemittel')" id="nav-tools-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">🛠️ Werkzeuge</button>
+                    <button onclick="switchTab('settings')" id="nav-settings-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
+                </div>
+
+               <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>        
         <!-- Sidebar -->
         <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)]">
             
@@ -1180,8 +1187,8 @@
     </div>
 </div>
 <!-- Selection Formatting Toolbar (Mobile Vector Dock) -->
-<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x;">
-    <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
+<!-- ✅ AFTER: -->
+<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x; -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">    <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
     </button>
 
@@ -2067,7 +2074,8 @@
                     html += `<p class="text-xs text-[var(--text-muted)] text-center p-4">Keine Vokabeln gefunden.</p>`;
                 } else {
                     html += `<div class="space-y-3">`;
-                     words.forEach(w => {
+                     
+                    words.forEach(w => {
                         html += `
                         <div class="bg-[var(--bg-card)] p-2.5 rounded-xl border ${w.learned ? 'border-sky-400 bg-sky-50/10' : 'border-[var(--border)]'} shadow-sm">
                             <div class="flex justify-between items-center mb-1">
@@ -2079,8 +2087,11 @@
                             ${miniVocabShowAll ? `<div class="text-[8px] text-[var(--text-faint)] mt-1.5 text-right border-t border-[var(--border)]/40 pt-1">Thema ${w.originalTid}</div>` : ''}
                        </div>`;
                     });
-                    html += `</div>`;
-                }
+                    
+                    // Safe scrolling padding so no words are covered by the bottom sticky button
+                    if (words.length > 0) {
+                        html += `<div class="h-16 w-full"></div>`;
+                    }
                 
                 // Sticky Toggle Button
                 html += `
@@ -2250,14 +2261,24 @@ function toggleSidebarTab(tab) {
             const btnList = document.getElementById('sbar-tab-list');
             const btnMini = document.getElementById('sbar-tab-mini');
 
+            if (!listContent || !miniContent) return;
+
             if (tab === 'list') {
-                listContent.classList.remove('hidden'); listContent.classList.add('flex');
-                miniContent.classList.add('hidden'); miniContent.classList.remove('flex');
+                // Force strict visibility attributes to prevent overlaps
+                listContent.style.display = 'flex';
+                miniContent.style.display = 'none';
+                listContent.classList.remove('hidden');
+                miniContent.classList.add('hidden');
+                
                 btnList.className = "flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-sky-600 rounded-lg shadow-sm border border-[var(--border)] transition-colors";
                 btnMini.className = "flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors";
             } else {
-                listContent.classList.add('hidden'); listContent.classList.remove('flex');
-                miniContent.classList.remove('hidden'); miniContent.classList.add('flex');
+                // Force strict visibility attributes to prevent overlaps
+                listContent.style.display = 'none';
+                miniContent.style.display = 'flex';
+                listContent.classList.add('hidden');
+                miniContent.classList.remove('hidden');
+                
                 btnMini.className = "flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-sky-600 rounded-lg shadow-sm border border-[var(--border)] transition-colors";
                 btnList.className = "flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors";
                 renderRightPanel();
