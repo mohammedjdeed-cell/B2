@@ -689,49 +689,8 @@
         </div>
     </div>
 
-    <!-- Main Workspace Container -->
-<!-- ✅ AFTER (Replace with this): -->
-    <!-- Right-Hand Dashboard Container (Holds Header & Workspace next to Sidebar) -->
-    <div class="flex-1 flex flex-col overflow-hidden relative">
-        
-        <!-- Header (Positioned dynamically on the right side on desktop) -->
-        <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden pt-5">
-            <!-- Sleek German Flag Strip at the very top -->
-            <div class="absolute top-0 left-0 w-full h-1.5 flex">
-                <div class="flex-1 bg-zinc-900"></div>
-                <div class="flex-1 bg-red-600"></div>
-                <div class="flex-1 bg-amber-400"></div>
-            </div>
-
-            <div class="flex items-center gap-3 relative z-10">
-                <div class="relative w-10 h-10 flex-shrink-0 select-none hidden sm:block">
-                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100" height="100" rx="24" fill="var(--accent)"/>
-                        <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
-                    </svg>
-                </div>
-                <div class="whitespace-nowrap min-w-max">
-                    <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
-                    <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block uppercase">Interaktive Vorbereitung</p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3 relative z-10">
-                <div class="hidden lg:flex bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] gap-1 shadow-inner">
-                    <button onclick="switchTab('template')" id="nav-themen-desk" class="px-4 py-2 text-sm font-bold rounded-xl bg-[var(--accent)] text-white shadow-md transition-all">📚 Themen</button>
-                    <button onclick="switchTab('mindmap')" id="nav-raster-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
-                    <button onclick="switchTab('redemittel')" id="nav-tools-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">🛠️ Werkzeuge</button>
-                    <button onclick="switchTab('settings')" id="nav-settings-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
-                </div>
-
-               <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-                    </svg>
-                </button>
-            </div>
-        </header>        
-        <!-- Sidebar -->
+  <!-- ✅ AFTER (Replace with this): -->
+        <!-- Sidebar (Full Height Left Panel on Desktop) -->
         <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)]">
             
             <!-- Mobile Drag Handle -->
@@ -740,7 +699,7 @@
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Schließen</span>
             </div>
 
-            <!-- RESTORED: Desktop Sidebar Header with Minimize Button -->
+            <!-- Desktop Sidebar Header with Minimize Button -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] items-center justify-between sidebar-header-flex shrink-0 hidden lg:flex">
                 <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
                 <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
@@ -754,10 +713,8 @@
                 <button id="sbar-tab-mini" onclick="toggleSidebarTab('mini')" class="flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors">🗂️ Mini-Ansicht</button>
             </div>
 
-        <!-- TAB 1: THEMEN CONTENT -->
-            <!-- FIX: Removed "hide-on-collapse" from the main wrapper -->
+            <!-- TAB 1: THEMEN CONTENT -->
             <div id="sidebar-themen-content" class="flex-1 flex flex-col overflow-hidden">
-                <!-- FIX: Moved "hide-on-collapse" here so only the filters hide! -->
                 <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 shrink-0 hide-on-collapse">
                     <div class="flex items-center justify-between text-xs font-bold">
                         <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Fortschritt</span>
@@ -779,31 +736,65 @@
                 <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
             </div>
 
-    
             <!-- TAB 2: MINI-ANSICHT CONTENT (With Custom UI Dropdown) -->
             <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
                 <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
-                    
-                  <!-- Modern Custom Dropdown -->
                     <div class="relative w-full" id="mini-dropdown-container">
-                        <button onclick="toggleMiniDropdown(event)" class="w-full bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-3 flex justify-between items-center text-sm font-black text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors cursor-pointer">                            <span id="mini-view-selected-text">🗂️ Mini-Wortschatz</span>
+                        <button onclick="toggleMiniDropdown(event)" class="w-full bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-3 flex justify-between items-center text-sm font-black text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors cursor-pointer">
+                            <span id="mini-view-selected-text">🗂️ Mini-Wortschatz</span>
                             <svg class="w-5 h-5 text-[var(--text-muted)] transition-transform duration-200" id="mini-view-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        
                         <div id="mini-view-options" class="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-xl overflow-hidden hidden transform origin-top transition-all duration-200 opacity-0 scale-95">
                             <button onclick="selectMiniView('wortschatz', '🗂️ Mini-Wortschatz')" class="w-full text-left px-4 py-3 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--accent-light)] transition-colors border-b border-[var(--border)]">🗂️ Mini-Wortschatz</button>
                             <button onclick="selectMiniView('redemittel', '💬 Mini-Redemittel')" class="w-full text-left px-4 py-3 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--accent-light)] transition-colors">💬 Mini-Redemittel</button>
                         </div>
                     </div>
-                    <!-- Hidden input to keep logic working -->
                     <input type="hidden" id="mini-view-select" value="wortschatz">
-
                 </div>
-                <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]">
-                    <!-- Dynamic Content Renders Here -->
-                </div>
+                <div id="right-panel-content" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--bg-sidebar)]"></div>
             </div>
         </aside>
+
+        <!-- Right-Hand Dashboard Container (Holds Header & Workspace stacked next to Sidebar) -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            
+            <!-- Header (Sits to the right of the sidebar on desktop) -->
+            <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between gap-4 z-40 shadow-sm flex-shrink-0 relative overflow-hidden pt-5">
+                <!-- Sleek German Flag Strip at the very top -->
+                <div class="absolute top-0 left-0 w-full h-1.5 flex">
+                    <div class="flex-1 bg-zinc-900"></div>
+                    <div class="flex-1 bg-red-600"></div>
+                    <div class="flex-1 bg-amber-400"></div>
+                </div>
+
+                <div class="flex items-center gap-3 relative z-10">
+                    <div class="relative w-10 h-10 flex-shrink-0 select-none hidden sm:block">
+                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100" height="100" rx="24" fill="var(--accent)"/>
+                            <text x="50%" y="54%" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="white" text-anchor="middle" dominant-baseline="middle">B2</text>
+                        </svg>
+                    </div>
+                    <div class="whitespace-nowrap min-w-max">
+                        <h1 class="text-lg font-extrabold text-[var(--text-primary)] tracking-tight">TELC B2 Trainer</h1>
+                        <p class="text-[10px] font-bold text-[var(--text-muted)] tracking-wider hidden sm:block uppercase">Interaktive Vorbereitung</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 relative z-10">
+                    <div class="hidden lg:flex bg-[var(--bg-app)] p-1.5 rounded-2xl border border-[var(--border)] gap-1 shadow-inner">
+                        <button onclick="switchTab('template')" id="nav-themen-desk" class="px-4 py-2 text-sm font-bold rounded-xl bg-[var(--accent)] text-white shadow-md transition-all">📚 Themen</button>
+                        <button onclick="switchTab('mindmap')" id="nav-raster-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
+                        <button onclick="switchTab('redemittel')" id="nav-tools-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">🛠️ Werkzeuge</button>
+                        <button onclick="switchTab('settings')" id="nav-settings-desk" class="px-4 py-2 text-sm font-bold rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
+                    </div>
+
+                   <button onclick="window.location.reload();" class="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] hover:text-[var(--accent)] transition-colors shadow-sm cursor-pointer" title="Seite neu laden">
+                        <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
 <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
 
