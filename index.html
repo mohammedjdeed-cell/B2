@@ -315,9 +315,15 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* Strict Tab Isolation (Prevents both menus from displaying together) */
+   /* Strict Tab Isolation */
     .tab-hidden {
         display: none !important;
+    }
+
+    /* Scrollable List Bottom Padding (Ensures last items scroll above bottom bar without outer gaps) */
+    #topic-list,
+    #right-panel-content {
+        padding-bottom: 6rem !important;
     }
 
     /* Responsive Bottom-Sheet Sidebar (When window is shrunken or on mobile/tablet) */
@@ -335,7 +341,7 @@
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
             will-change: transform;
-            padding-bottom: 5.5rem !important; /* Space for bottom navigation */
+            padding-bottom: 0 !important; /* Fix: Removed outer card gap */
         }
         #sidebar.sidebar-open {
             transform: translateY(0) !important;
