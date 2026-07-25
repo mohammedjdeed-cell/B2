@@ -1637,7 +1637,8 @@
             // Clear the 1.5s delay timer because we are saving IMMEDIATELY now
             clearTimeout(globalSaveTimeout);
             
-            const htmlVal = element.innerHTML;
+              // Clean up leading/trailing HTML spaces & nbsp
+            const htmlVal = element.innerHTML.replace(/^(\s|&nbsp;|<br\s*\/?>)+/gi, '').trim();
             const textVal = element.innerText.trim();
             
             let topic;
