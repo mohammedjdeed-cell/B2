@@ -112,6 +112,28 @@
         -webkit-user-select: text !important;
     }
 
+    /* Force Instant Bullet List Rendering & Fix Paragraph Gaps inside Editors */
+    [contenteditable="true"] ul {
+        display: block !important;
+        list-style-type: disc !important;
+        padding-left: 1.5rem !important;
+        margin: 0.5rem 0 !important;
+    }
+    [contenteditable="true"] li {
+        display: list-item !important;
+        margin-bottom: 0.25rem !important;
+    }
+    [contenteditable="true"] p,
+    [contenteditable="true"] div:not([data-block-key]) {
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline !important;
+    }
+    [contenteditable="true"] {
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+    }
+
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
                     background-color 0.25s ease, 
@@ -293,51 +315,48 @@
     .slide-out-right { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .slide-in-left { animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* Mobile Bottom-Sheet Sidebar - Active ONLY on Mobile & Portrait Tablets (< 1024px) */
-        @media (max-width: 1023px) {
-            #sidebar {
-                position: fixed !important;
-                bottom: 0; left: 0; right: 0; top: auto;
-                z-index: 95 !important;
-                width: 100% !important;
-                height: 85vh !important; 
-                max-height: 85vh !important;
-                border-top-left-radius: 28px;
-                border-top-right-radius: 28px;
-                transform: translateY(100%);
-                transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
-                will-change: transform;
-                padding-bottom: 0 !important; /* Removed layout gap */
-            }
-            #sidebar.sidebar-open {
-                transform: translateY(0) !important;
-            }
-            
-            /* Add safe padding directly to scroll lists so no content is covered on mobile */
-            #topic-list, #right-panel-content {
-                padding-bottom: 8rem !important;
-            }
+    /* Strict Tab Isolation (Prevents both menus from displaying together) */
+    .tab-hidden {
+        display: none !important;
+    }
+
+    /* Responsive Bottom-Sheet Sidebar (When window is shrunken or on mobile/tablet) */
+    @media (max-width: 1023px) {
+        #sidebar {
+            position: fixed !important;
+            bottom: 0; left: 0; right: 0; top: auto;
+            z-index: 95 !important;
+            width: 100% !important;
+            height: 85vh !important; 
+            max-height: 85vh !important;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
+            will-change: transform;
+            padding-bottom: 5.5rem !important; /* Space for bottom navigation */
+        }
         #sidebar.sidebar-open {
             transform: translateY(0) !important;
         }
+    }
 
-        /* Overlay Settings with Smooth Fading */
-        #drawer-overlay {
-            position: fixed !important;
-            inset: 0 !important;
-            background-color: rgba(0, 0, 0, 0.6) !important;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            z-index: 85 !important;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        #drawer-overlay.overlay-open {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-        }
+    /* Overlay Settings */
+    #drawer-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        background-color: rgba(0, 0, 0, 0.6) !important;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 85 !important;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    #drawer-overlay.overlay-open {
+        opacity: 1 !important;
+        pointer-events: auto !important;
     }
 
     /* Completed state background override */
@@ -350,6 +369,7 @@
     [data-theme="dark"] main.topic-done-state {
         background: radial-gradient(circle at 80% 15%, rgba(16, 185, 129, 0.12), var(--bg-app) 75%) !important;
     }
+
     /* Desktop/Tablet Collapsed Sidebar Logic */
     #sidebar.sidebar-collapsed .hide-on-collapse,
     #sidebar.sidebar-collapsed .collapse-text-container {
@@ -589,18 +609,9 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
     }
 
-      /* Hide duplicate floating toolbar on Tablets and Desktops (≥ 768px) */
-    @media (min-width: 768px) {
-        body.studio-mode-active #formatting-toolbar {
-            display: none !important;
-        }
-    }
-
-    /* Hide top Studio Command Bar ONLY on Mobile Phones (< 768px) */
-    @media (max-width: 767px) {
-        #studio-command-bar {
-            display: none !important;
-        }
+      /* Hide duplicate bottom floating toolbar whenever Studio Mode is active on ANY screen size */
+    body.studio-mode-active #formatting-toolbar {
+        display: none !important;
     }
        /* Missing Arabic font family definition */
 .font-arabic {
@@ -736,9 +747,9 @@
                 <nav id="topic-list" class="flex-1 overflow-y-auto p-3 space-y-1 bg-[var(--bg-sidebar)]"></nav>
             </div>
 
-            <!-- TAB 2: MINI-ANSICHT CONTENT (With Custom UI Dropdown) -->
-            <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
-                <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
+
+<!-- TAB 2: MINI-ANSICHT CONTENT (With Custom UI Dropdown) -->
+            <div id="sidebar-mini-content" class="flex-1 hidden tab-hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">                <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-sm shrink-0 relative z-50">
                     <div class="relative w-full" id="mini-dropdown-container">
                         <button onclick="toggleMiniDropdown(event)" class="w-full bg-[var(--bg-app)] border border-[var(--border)] rounded-xl p-3 flex justify-between items-center text-sm font-black text-[var(--text-primary)] hover:border-[var(--accent)] transition-colors cursor-pointer">
                             <span id="mini-view-selected-text">🗂️ Mini-Wortschatz</span>
@@ -2290,26 +2301,28 @@ function toggleSidebarTab(tab) {
             const btnList = document.getElementById('sbar-tab-list');
             const btnMini = document.getElementById('sbar-tab-mini');
 
-            if (!listContent || !miniContent) return;
-
             if (tab === 'list') {
-                // Force strict visibility attributes to prevent overlaps
-                listContent.style.display = 'flex';
-                miniContent.style.display = 'none';
-                listContent.classList.remove('hidden');
-                miniContent.classList.add('hidden');
-                
-                btnList.className = "flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-sky-600 rounded-lg shadow-sm border border-[var(--border)] transition-colors";
-                btnMini.className = "flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors";
+                if (listContent) {
+                    listContent.classList.remove('hidden', 'tab-hidden');
+                    listContent.classList.add('flex');
+                }
+                if (miniContent) {
+                    miniContent.classList.add('hidden', 'tab-hidden');
+                    miniContent.classList.remove('flex');
+                }
+                if (btnList) btnList.className = "flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-[var(--accent)] rounded-lg shadow-sm border border-[var(--border)] transition-colors";
+                if (btnMini) btnMini.className = "flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors";
             } else {
-                // Force strict visibility attributes to prevent overlaps
-                listContent.style.display = 'none';
-                miniContent.style.display = 'flex';
-                listContent.classList.add('hidden');
-                miniContent.classList.remove('hidden');
-                
-                btnMini.className = "flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-sky-600 rounded-lg shadow-sm border border-[var(--border)] transition-colors";
-                btnList.className = "flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors";
+                if (listContent) {
+                    listContent.classList.add('hidden', 'tab-hidden');
+                    listContent.classList.remove('flex');
+                }
+                if (miniContent) {
+                    miniContent.classList.remove('hidden', 'tab-hidden');
+                    miniContent.classList.add('flex');
+                }
+                if (btnMini) btnMini.className = "flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-[var(--accent)] rounded-lg shadow-sm border border-[var(--border)] transition-colors";
+                if (btnList) btnList.className = "flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors";
                 renderRightPanel();
             }
         }
@@ -2945,7 +2958,7 @@ function toggleSidebarTab(tab) {
             handleSelectionChange();
         }
 
-        function applySelectionFormat(type, value) {
+       function applySelectionFormat(type, value) {
             triggerHaptic(12);
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
@@ -2968,7 +2981,6 @@ function toggleSidebarTab(tab) {
             } else {
                 const targetClass = type === 'underline' ? 'modern-underline' : `hl-${value}`;
                 
-                // Smart Inspector: Check if selection is already inside this highlight
                 let existingSpan = null;
                 let node = selection.anchorNode;
                 while (node && node !== activeContainer) {
@@ -2979,19 +2991,7 @@ function toggleSidebarTab(tab) {
                     node = node.parentNode;
                 }
 
-                if (!existingSpan) {
-                    node = selection.focusNode;
-                    while (node && node !== activeContainer) {
-                        if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains(targetClass)) {
-                            existingSpan = node;
-                            break;
-                        }
-                        node = node.parentNode;
-                    }
-                }
-
                 if (existingSpan) {
-                    // TOGGLE OFF: Remove existing highlight
                     const parent = existingSpan.parentNode;
                     while (existingSpan.firstChild) {
                         parent.insertBefore(existingSpan.firstChild, existingSpan);
@@ -2999,13 +2999,13 @@ function toggleSidebarTab(tab) {
                     parent.removeChild(existingSpan);
                     activeContainer.normalize();
                 } else {
-                    // TOGGLE ON: Apply new highlight
                     const range = selection.getRangeAt(0);
                     if (!range.collapsed) {
                         const span = document.createElement('span');
                         span.className = targetClass;
                         try {
-                            span.appendChild(range.extractContents());
+                            const contents = range.extractContents();
+                            span.appendChild(contents);
                             range.insertNode(span);
                         } catch (e) {
                             console.error("Marker error:", e);
@@ -3014,6 +3014,9 @@ function toggleSidebarTab(tab) {
                 }
             }
 
+            // FORCE INSTANT BROWSER REPAINT (Fixes bullet points not showing on small screens until menu expand)
+            activeContainer.focus();
+            void activeContainer.offsetHeight; // Forces browser to recalculate layout & paint bullet dots immediately!
             activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
             handleSelectionChange();
         }
@@ -3035,9 +3038,15 @@ function toggleSidebarTab(tab) {
             activeContainer.normalize();
         }
 
-        function handleSelectionChange() {
+       function handleSelectionChange() {
             if (!isEditMode || activeTab === 'classic') { hideToolbar(); return; }
-            
+
+            // Guard: Do NOT show bottom floating toolbar if top Studio Command Bar is active
+            const studioBar = document.getElementById('studio-command-bar');
+            if (studioBar && !studioBar.classList.contains('hidden')) {
+                hideToolbar();
+                return;
+            }
             const selection = window.getSelection();
             const isMobilePhone = window.innerWidth < 768;
 
