@@ -123,16 +123,35 @@
         display: list-item !important;
         margin-bottom: 0.25rem !important;
     }
+    /* --- REPLACE WITH THIS (START) --- */
+    [contenteditable="true"] {
+        white-space: normal !important; /* Prevents code newlines from creating extra blank lines */
+        word-break: break-word !important;
+        outline: none !important;
+    }
+
     [contenteditable="true"] p,
     [contenteditable="true"] div:not([data-block-key]) {
         margin: 0 !important;
         padding: 0 !important;
-        display: inline !important;
+        display: block !important;
     }
-   [contenteditable="true"] {
-        white-space: pre-line !important; /* Collapses leading spaces & tabs while keeping line breaks */
-        word-break: break-word !important;
+
+    body.studio-mode-active [contenteditable="true"] {
+        background-color: var(--bg-card) !important;
+        border: 1.5px dashed rgba(2, 132, 199, 0.4) !important;
+        border-radius: 12px !important;
+        padding: 8px 12px !important;
+        margin: 4px 0 !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
+
+    body.studio-mode-active [contenteditable="true"]:focus {
+        border-style: solid !important;
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px var(--accent-light) !important;
+    }
+/* --- END OF REPLACEMENT --- */
 
     button, select, .sidebar-item, .topic-list-item, .card, .emoji-circle, .audio-btn {
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
@@ -615,10 +634,17 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
     }
 
-      /* Hide duplicate bottom floating toolbar whenever Studio Mode is active on ANY screen size */
-    body.studio-mode-active #formatting-toolbar {
-        display: none !important;
+      /* --- REPLACE WITH THIS (START) --- */
+    /* Show Floating Toolbar on Mobile & Tablet when Studio Edit Mode is active */
+    @media (max-width: 1023px) {
+        body.studio-mode-active #formatting-toolbar {
+            display: flex !important;
+        }
+        #studio-command-bar {
+            display: none !important; /* Hide desktop top bar on small screens */
+        }
     }
+/* --- END OF REPLACEMENT --- */
        /* Missing Arabic font family definition */
 .font-arabic {
     font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
@@ -1063,8 +1089,8 @@
         </main>
     </div>
 
-    <!-- Quick Preview Modal -->
-    <div id="quick-preview-modal" class="hidden fixed inset-0 z-200 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+  <!-- Quick Preview Modal -->
+    <div id="quick-preview-modal" class="hidden fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 pt-8 space-y-4 shadow-2xl transition-all relative">
             <button onclick="closeQuickPreview()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             
@@ -1092,8 +1118,8 @@
         </div>
     </div>
 
-    <!-- Block Editor Modal -->
-    <div id="block-editor-modal" class="hidden fixed inset-0 z-200 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+   <!-- Block Editor Modal -->
+    <div id="block-editor-modal" class="hidden fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
             <button onclick="closeBlockEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Block-Editor</h3>
@@ -1125,8 +1151,8 @@
         </div>
     </div>
 
-    <!-- Redemittel Editor Modal -->
-    <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-200 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+   <!-- Redemittel Editor Modal -->
+    <div id="redemittel-editor-modal" class="hidden fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-xl p-6 space-y-4 shadow-2xl relative">
             <button onclick="closeRedemittelEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer" aria-label="Schließen">✕</button>
             <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">✏️ Redemittel bearbeiten</h3>
@@ -1149,7 +1175,7 @@
         </div>
     </div>
 <!-- Wortschatz Editor Modal (With Smart Dictionary Engine) -->
-<div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-4 shadow-2xl relative">
         <button onclick="closeVocabEditor()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
         <h3 class="text-sm font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-3">🧠 Neue Vokabel</h3>
@@ -1194,43 +1220,42 @@
         </div>
     </div>
 </div>
-<!-- Selection Formatting Toolbar (Mobile Vector Dock) -->
-<!-- ✅ AFTER: -->
-<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-all duration-150 ring-1 ring-black/10 max-w-[96vw] overflow-x-auto no-scrollbar" style="touch-action: pan-x; -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">    <button onmousedown="event.preventDefault()" onclick="triggerHaptic(); selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
+<!-- --- REPLACE WITH THIS (START) --- -->
+<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-2xl">
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); selectActiveBlockText();" onclick="selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
     </button>
 
     <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 w-8 h-8 flex items-center justify-center font-black text-sm text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Fett">B</button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bold');" onclick="applySelectionFormat('bold')" class="shrink-0 w-8 h-8 flex items-center justify-center font-black text-sm text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Fett">B</button>
 
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 w-8 h-8 flex items-center justify-center font-bold text-sm text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Unterstreichen"><u>U</u></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('underline');" onclick="applySelectionFormat('underline')" class="shrink-0 w-8 h-8 flex items-center justify-center font-bold text-sm text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Unterstreichen"><u>U</u></button>
 
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Aufzählungsliste">
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bullet');" onclick="applySelectionFormat('bullet')" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Aufzählungsliste">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
     <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
     <!-- Color Palette -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20 active:scale-110 transition-all cursor-pointer" title="Gelb"></button>
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400 ring-2 ring-blue-400/20 active:scale-110 transition-all cursor-pointer" title="Blau"></button>
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400 ring-2 ring-red-400/20 active:scale-110 transition-all cursor-pointer" title="Rot"></button>
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400 ring-2 ring-green-400/20 active:scale-110 transition-all cursor-pointer" title="Grün"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'yellow');" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20 active:scale-110 transition-all cursor-pointer" title="Gelb"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'blue');" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400 ring-2 ring-blue-400/20 active:scale-110 transition-all cursor-pointer" title="Blau"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'red');" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400 ring-2 ring-red-400/20 active:scale-110 transition-all cursor-pointer" title="Rot"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'green');" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400 ring-2 ring-green-400/20 active:scale-110 transition-all cursor-pointer" title="Grün"></button>
 
     <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 w-8 h-8 flex items-center justify-center text-rose-500 hover:bg-rose-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Formatierung löschen">
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('clear');" onclick="applySelectionFormat('clear')" class="shrink-0 w-8 h-8 flex items-center justify-center text-rose-500 hover:bg-rose-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Formatierung löschen">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
     </button>
 
     <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Als Vokabel speichern">
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); addSelectedToVocab();" onclick="addSelectedToVocab()" class="shrink-0 w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Als Vokabel speichern">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
     </button>
 </div>
-
     <!-- Bullet List Auto-Format Toolbar Helper -->
     <div id="list-helper-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <span class="text-xs font-bold text-[var(--accent)] select-none">📝 Liste?</span>
@@ -1628,18 +1653,16 @@
             }
         });
 
-        function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
-            if (!isEditMode) return;
-            
-            // Hide the formatting toolbar immediately when leaving a text box
-            hideToolbar();
-            
-            // Clear the 1.5s delay timer because we are saving IMMEDIATELY now
-            clearTimeout(globalSaveTimeout);
-            
-              // Clean up leading/trailing HTML spaces & nbsp
-            const htmlVal = element.innerHTML.replace(/^(\s|&nbsp;|<br\s*\/?>)+/gi, '').trim();
-            const textVal = element.innerText.trim();
+      /* --- REPLACE WITH THIS (START) --- */
+function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
+    if (!isEditMode) return;
+    
+    hideToolbar();
+    clearTimeout(globalSaveTimeout);
+
+    const htmlVal = cleanEditableHTML(element.innerHTML);
+    const textVal = element.innerText.trim();
+/* --- END OF REPLACEMENT --- */
             
             let topic;
             if (activeTab === 'diskussion') {
@@ -2965,68 +2988,85 @@ function toggleSidebarTab(tab) {
             handleSelectionChange();
         }
 
-       function applySelectionFormat(type, value) {
-            triggerHaptic(12);
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0) return;
-            if (type !== 'bullet' && selection.isCollapsed) return;
+      /* --- REPLACE WITH THIS (START) --- */
+// Helper to clean leading/trailing empty lines & whitespace from HTML strings
+function cleanEditableHTML(html) {
+    if (!html) return '';
+    return String(html)
+        .replace(/^(\s|<br\s*\/?>|&nbsp;|\n)+/gi, '')
+        .replace(/(\s|<br\s*\/?>|&nbsp;|\n)+$/gi, '')
+        .trim();
+}
 
-            let activeContainer = selection.anchorNode;
-            while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
-                activeContainer = activeContainer.parentNode;
-            }
-            if (!activeContainer) return;
+let savedSelectionRange = null;
 
-            pushToHistory();
+function saveCurrentSelection() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+        savedSelectionRange = sel.getRangeAt(0).cloneRange();
+    }
+}
 
-            if (type === 'bold') {
-                document.execCommand('bold', false, null);
-            } else if (type === 'bullet') {
-                document.execCommand('insertUnorderedList', false, null);
-            } else if (type === 'clear') {
-                unwrapSelection(activeContainer);
-            } else {
-                const targetClass = type === 'underline' ? 'modern-underline' : `hl-${value}`;
+function restoreCurrentSelection() {
+    if (!savedSelectionRange) return false;
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedSelectionRange);
+    return true;
+}
+
+function applySelectionFormat(type, value) {
+    triggerHaptic(12);
+    restoreCurrentSelection();
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    if (type !== 'bullet' && selection.isCollapsed) return;
+
+    let activeContainer = selection.anchorNode;
+    while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
+        activeContainer = activeContainer.parentNode;
+    }
+    if (!activeContainer) return;
+
+    pushToHistory();
+
+    if (type === 'bold') {
+        document.execCommand('bold', false, null);
+    } else if (type === 'underline') {
+        document.execCommand('underline', false, null);
+    } else if (type === 'bullet') {
+        document.execCommand('insertUnorderedList', false, null);
+    } else if (type === 'clear') {
+        document.execCommand('removeFormat', false, null);
+        unwrapSelection(activeContainer);
+    } else if (type === 'highlight') {
+        const targetClass = `hl-${value}`;
+        const range = selection.getRangeAt(0);
+        
+        if (!range.collapsed) {
+            const span = document.createElement('span');
+            span.className = targetClass;
+            try {
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
                 
-                let existingSpan = null;
-                let node = selection.anchorNode;
-                while (node && node !== activeContainer) {
-                    if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains(targetClass)) {
-                        existingSpan = node;
-                        break;
-                    }
-                    node = node.parentNode;
-                }
-
-                if (existingSpan) {
-                    const parent = existingSpan.parentNode;
-                    while (existingSpan.firstChild) {
-                        parent.insertBefore(existingSpan.firstChild, existingSpan);
-                    }
-                    parent.removeChild(existingSpan);
-                    activeContainer.normalize();
-                } else {
-                    const range = selection.getRangeAt(0);
-                    if (!range.collapsed) {
-                        const span = document.createElement('span');
-                        span.className = targetClass;
-                        try {
-                            const contents = range.extractContents();
-                            span.appendChild(contents);
-                            range.insertNode(span);
-                        } catch (e) {
-                            console.error("Marker error:", e);
-                        }
-                    }
-                }
+                const newRange = document.createRange();
+                newRange.selectNodeContents(span);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                saveCurrentSelection();
+            } catch (e) {
+                console.error("Marker error:", e);
             }
-
-            // FORCE INSTANT BROWSER REPAINT (Fixes bullet points not showing on small screens until menu expand)
-            activeContainer.focus();
-            void activeContainer.offsetHeight; // Forces browser to recalculate layout & paint bullet dots immediately!
-            activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
-            handleSelectionChange();
         }
+    }
+
+    activeContainer.focus();
+    activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
+    handleSelectionChange();
+}
+/* --- END OF REPLACEMENT --- */
         function unwrapSelection(activeContainer) {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
@@ -3271,24 +3311,26 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                 ? "bg-sky-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
                 : "bg-[var(--accent)]";
 
-            return `
-                <div class="${cardBgClass} border rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in">
-                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
-                        </div>
-                        <button onclick="playBlockAudio(decodeURIComponent('${statementSpeechText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Anhören">
-                            <span class="soundwave-bar"></span>
-                            <span class="soundwave-bar"></span>
-                            <span class="soundwave-bar"></span>
-                            <span class="soundwave-bar"></span>
-                        </button>
-                    </div>
-                    <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}', '${activeTab}')">
-                        ${currentEditMode ? deVal : applyConnectorsHighlight(deVal)}
-                    </div>
-                    <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
+           /* --- REPLACE WITH THIS (START) --- */
+    const contentToDisplay = cleanEditableHTML(currentEditMode ? deVal : applyConnectorsHighlight(deVal));
+
+    return `
+        <div class="${cardBgClass} border rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 relative animate-fade-in">
+            <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full ${titleBulletClass}"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">${title}</span>
+                </div>
+                <button onclick="playBlockAudio(decodeURIComponent('${statementSpeechText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Anhören">
+                    <span class="soundwave-bar"></span>
+                    <span class="soundwave-bar"></span>
+                    <span class="soundwave-bar"></span>
+                    <span class="soundwave-bar"></span>
+                </button>
+            </div>
+            <div data-block-key="${blockKey}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${finalTopicId}, 'de', '${blockKey}', '${activeTab}')">${contentToDisplay}</div>
+            <div class="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2">
+/* --- END OF REPLACEMENT --- */
                         <button onclick="toggleTranslation(event, '${blockKey}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                         </button>
@@ -4376,10 +4418,13 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                 const fallbackContent = topic.content ? topic.content.replace(/\n\n/g, '<br><br>') : "";
                 const savedContent = getSavedText(topic.id, contentBlockKey, fallbackContent, isClassic);
 
-                const contentHtml = `
-                    <div class="p-1">
-                        <div data-block-key="${contentBlockKey}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${contentBlockKey}', 'diskussion')">${currentEditMode ? savedContent : applyConnectorsHighlight(savedContent)}</div>
-                        <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+               /* --- REPLACE WITH THIS (START) --- */
+const contentDisplay = cleanEditableHTML(currentEditMode ? savedContent : applyConnectorsHighlight(savedContent));
+const contentHtml = `
+    <div class="p-1">
+        <div data-block-key="${contentBlockKey}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${contentBlockKey}', 'diskussion')">${contentDisplay}</div>
+        <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+/* --- END OF REPLACEMENT --- */
                             <button onclick="toggleTranslation(event, '${contentBlockKey}', '${encodeURIComponent(stripHtml(savedContent))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                                 <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                             </button>
@@ -4422,10 +4467,13 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
             const einlDe = "einleitung_de"; 
             const savedEinl = getSavedText(topic.id, einlDe, topic[einlDe], isClassic);
 
-            const einleitungHtml = `
-                <div class="p-1">
-                    <div data-block-key="${einlDe}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')">${currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl)}</div>
-                    <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+           /* --- REPLACE WITH THIS (START) --- */
+const einleitungDisplay = cleanEditableHTML(currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl));
+const einleitungHtml = `
+    <div class="p-1">
+        <div data-block-key="${einlDe}" class="text-sm text-[var(--text-primary)] leading-relaxed selectable-text select-text font-medium" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${einlDe}')">${einleitungDisplay}</div>
+        <div class="mt-3 flex items-center justify-between border-t border-[var(--border)]/45 pt-2">
+/* --- END OF REPLACEMENT --- */
                         <button onclick="toggleTranslation(event, '${einlDe}', '${encodeURIComponent(stripHtml(savedEinl))}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                             <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                         </button>
@@ -4565,21 +4613,22 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                     const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
                     const isA = chat.role && chat.role.includes('A');
                     
-                    dialogHtml += `
-                        <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
-                            <div class="flex items-center justify-between gap-4 mb-2">
-                                <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role || 'Sprecher'} (Phase ${chat.phase || (index + 1)})</span>
-                                <button onclick="playBlockAudio(decodeURIComponent('${statementSpeechText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
-                                    <span class="soundwave-bar"></span>
-                                    <span class="soundwave-bar"></span>
-                                    <span class="soundwave-bar"></span>
-                                    <span class="soundwave-bar"></span>
-                                </button>
-                            </div>
-                            <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">
-                                ${currentEditMode ? deValChat : applyConnectorsHighlight(deValChat)}
-                            </div>
-                            <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
+            /* --- REPLACE WITH THIS (START) --- */
+const dialogDisplay = cleanEditableHTML(currentEditMode ? deValChat : applyConnectorsHighlight(deValChat));
+dialogHtml += `
+    <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
+        <div class="flex items-center justify-between gap-4 mb-2">
+            <span class="px-2 py-0.5 text-[9px] font-bold bg-[var(--bg-app)] border border-[var(--border)] rounded uppercase tracking-wider">${chat.role || 'Sprecher'} (Phase ${chat.phase || (index + 1)})</span>
+            <button onclick="playBlockAudio(decodeURIComponent('${statementSpeechText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-6 w-8 flex-shrink-0" title="Anhören">
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+                <span class="soundwave-bar"></span>
+            </button>
+        </div>
+        <div data-block-key="${skeyDe}" class="text-xs text-[var(--text-primary)] leading-relaxed selectable-text select-text" contenteditable="${currentEditMode ? 'true' : 'false'}" onblur="handleInlineBlur(this, ${topic.id}, 'de', '${skeyDe}')">${dialogDisplay}</div>
+        <div class="mt-2.5 pt-2 border-t border-[var(--border)] flex justify-between items-center">
+/* --- END OF REPLACEMENT --- */
                                 <button onclick="toggleTranslation(event, '${skeyDe}', '${statementSpeechText}')" class="text-[9px] text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1 transition-all active:scale-95 cursor-pointer">
                                     <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg> Translate
                                 </button>
@@ -5592,8 +5641,10 @@ async function repairAllVocabImmediately() {
             touchStartNode = e.target;
         }, { passive: true });
 
+        /* --- REPLACE WITH THIS (START) --- */
         // CLEAN, UNIFIED SWIPE GESTURE LOGIC
         document.addEventListener('touchend', e => {
+            if (isEditMode) return;
             if (window.getSelection() && window.getSelection().toString().length > 0) return;
 
             touchEndX = e.changedTouches[0].clientX;
@@ -5603,7 +5654,12 @@ async function repairAllVocabImmediately() {
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             
-            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('textarea') || e.target.closest('[contenteditable="true"]')) {
+            if (e.target.closest('button') || 
+                e.target.closest('input') || 
+                e.target.closest('textarea') || 
+                e.target.closest('[contenteditable="true"]') ||
+                e.target.closest('.selectable-text') ||
+                e.target.closest('#active-topic-container')) {
                 return; 
             }
 
@@ -5613,21 +5669,20 @@ async function repairAllVocabImmediately() {
             const isSwipeDown = deltaY > 60 && Math.abs(deltaY) > Math.abs(deltaX) * 2 && duration < 350;
             const isSwipeHorizontal = Math.abs(deltaX) > 100 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && duration < 350;
 
-            // 1. Swipe Down on open Sidebar Handle ONLY -> Close it (Prevents closing while scrolling list)
             if (isSidebarOpen && isSwipeDown && touchStartNode && touchStartNode.closest('#sidebar-drag-handle')) {
                 closeMobileSidebar();
                 return;
             }
 
-            // 2. Horizontal Nav Swipes (Topic Navigation)
-            if (!isSidebarOpen) {
+            if (!isSidebarOpen && isSwipeHorizontal) {
                 const allowedTabs = ['template', 'classic', 'diskussion', 'wortschatz'];
-                if (allowedTabs.includes(activeTab) && isSwipeHorizontal) {
-                    if (deltaX > 0) navigateTopicStep(-1); // Swiped Right
-                    else navigateTopicStep(1);             // Swiped Left
+                if (allowedTabs.includes(activeTab)) {
+                    if (deltaX > 0) navigateTopicStep(-1);
+                    else navigateTopicStep(1);
                 }
             }
         }, { passive: true });
+/* --- END OF REPLACEMENT --- */
         
        
         function navigateTopicStep(direction) {
