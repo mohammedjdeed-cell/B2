@@ -634,7 +634,7 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
     }
 
-      /* --- REPLACE WITH THIS (START) --- */
+   /* --- REPLACE WITH THIS (START) --- */
     /* Show Floating Toolbar on Mobile & Tablet when Studio Edit Mode is active */
     @media (max-width: 1023px) {
         body.studio-mode-active #formatting-toolbar {
@@ -644,6 +644,20 @@
             display: none !important; /* Hide desktop top bar on small screens */
         }
     }
+
+    /* Fixed Positioning & Anti-Lag Rule for Virtual Soft Keyboards */
+    #formatting-toolbar {
+        position: fixed !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        max-width: 94vw !important;
+        width: max-content !important;
+        z-index: 9999 !important;
+        /* Exclude 'bottom' from CSS transition to prevent toolbar lagging behind keyboard */
+        transition: opacity 0.15s ease, transform 0.15s ease !important;
+        will-change: bottom, transform;
+    }
+/* --- END OF REPLACEMENT --- */
 
        /* Missing Arabic font family definition */
 .font-arabic {
@@ -5768,38 +5782,50 @@ async function repairAllVocabImmediately() {
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-  // Universal Keyboard Offset Calculator
-        function positionToolbarAboveKeyboard() {
-            const toolbar = document.getElementById('formatting-toolbar');
-            if (!toolbar || toolbar.classList.contains('hidden')) return;
+// iOS Safari / Android Touch Keyboard Offset Positioner (Fixed Math)
+function positionToolbarAboveKeyboard() {
+    const toolbar = document.getElementById('formatting-toolbar');
+    if (!toolbar || toolbar.classList.contains('hidden')) return;
 
-            if (window.visualViewport) {
-                // Calculate actual distance from bottom of screen to top of virtual keyboard
-                const keyboardOffset = window.innerHeight - (window.visualViewport.height + window.visualViewport.offsetTop);
-                const safeBottom = Math.max(12, keyboardOffset + 10);
+    if (window.visualViewport) {
+        const viewport = window.visualViewport;
+        const layoutHeight = document.documentElement.clientHeight || window.innerHeight;
+        
+        // Correct distance from layout viewport bottom to visible screen area top of keyboard
+        const distFromBottom = layoutHeight - (viewport.offsetTop + viewport.height);
+        const bottomOffset = Math.max(16, distFromBottom + 12);
 
-                toolbar.style.top = 'auto';
-                toolbar.style.bottom = `${safeBottom}px`;
-            } else {
-                toolbar.style.top = 'auto';
-                toolbar.style.bottom = '16px';
-            }
-        }
+        toolbar.style.top = 'auto';
+        toolbar.style.bottom = `${bottomOffset}px`;
+        toolbar.style.left = '50%';
+        toolbar.style.transform = 'translateX(-50%)';
+    } else {
+        toolbar.style.top = 'auto';
+        toolbar.style.bottom = '16px';
+        toolbar.style.left = '50%';
+        toolbar.style.transform = 'translateX(-50%)';
+    }
+}
 
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', positionToolbarAboveKeyboard);
             window.visualViewport.addEventListener('scroll', positionToolbarAboveKeyboard);
         }
 
-        // Auto-center focused text block on mobile so soft keyboard doesn't cover typing area
+        // Auto-center focused text block and pin toolbar immediately above soft keyboard
         document.addEventListener('focusin', (e) => {
             if (e.target && e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
                 triggerHaptic(8);
                 handleSelectionChange();
+                
+                // Reposition toolbar instantly & smoothly scroll active box into view
                 setTimeout(() => {
                     positionToolbarAboveKeyboard();
                     e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
+                }, 150);
+                setTimeout(() => {
+                    positionToolbarAboveKeyboard();
+                }, 350);
             }
         });
         // --- MODERN TOAST NOTIFICATION ---
