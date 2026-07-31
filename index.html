@@ -644,7 +644,7 @@
         }
     }
 
-    /* Touch-Friendly Formatting Toolbar Anchored Above Keyboards */
+      /* Touch-Friendly Unified Toolbar Anchored Above Keyboards */
     #formatting-toolbar {
         position: fixed !important;
         left: 50% !important;
@@ -652,20 +652,27 @@
         max-width: 96vw !important;
         width: max-content !important;
         z-index: 9999 !important;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--border) !important;
-        /* Exclude 'bottom' from CSS transitions so it doesn't lag behind soft keyboards */
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border) !important;
         transition: opacity 0.15s ease, visibility 0.15s ease !important;
         will-change: bottom, transform;
         touch-action: pan-x;
     }
 
-    /* Bigger 44px Touch Targets for Mobile & Tablet */
+    /* Standard 40px Ergonomic Touch Targets */
     #formatting-toolbar button {
-        min-width: 42px !important;
-        min-height: 42px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+    }
+
+    /* Smoothly hide right-hand floating action buttons when keyboard toolbar is active */
+    #floating-action-buttons.toolbar-active {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transform: scale(0.85) !important;
+        transition: opacity 0.2s ease, transform 0.2s ease !important;
     }
 
        /* Missing Arabic font family definition */
@@ -1243,37 +1250,58 @@
         </div>
     </div>
 </div>
-<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-2 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-3 py-2 rounded-[24px] shadow-2xl overflow-x-auto no-scrollbar">
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); selectActiveBlockText();" onclick="selectActiveBlockText();" class="shrink-0 w-11 h-11 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-2xl border border-[var(--accent)]/30 active:scale-90 transition-transform cursor-pointer" title="Ganzen Block markieren">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
+<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-2.5 py-1.5 rounded-[22px] shadow-2xl overflow-x-auto no-scrollbar">
+    <!-- Block Select -->
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); selectActiveBlockText();" onclick="selectActiveBlockText();" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-transform cursor-pointer" title="Ganzen Block markieren">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
     </button>
 
-    <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bold');" onclick="applySelectionFormat('bold')" class="shrink-0 w-11 h-11 flex items-center justify-center font-black text-base text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Fett">B</button>
+    <!-- Text Styles -->
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bold');" onclick="applySelectionFormat('bold')" class="shrink-0 w-10 h-10 flex items-center justify-center font-black text-sm text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Fett">B</button>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('underline');" onclick="applySelectionFormat('underline')" class="shrink-0 w-11 h-11 flex items-center justify-center font-bold text-base text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Unterstreichen"><u>U</u></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('underline');" onclick="applySelectionFormat('underline')" class="shrink-0 w-10 h-10 flex items-center justify-center font-bold text-sm text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Unterstreichen"><u>U</u></button>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bullet');" onclick="applySelectionFormat('bullet')" class="shrink-0 w-11 h-11 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Aufzählungsliste">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bullet');" onclick="applySelectionFormat('bullet')" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Aufzählungsliste">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
-    <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
     <!-- Color Palette -->
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'yellow');" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-8 h-8 rounded-full bg-yellow-400 ring-2 ring-yellow-400/30 active:scale-110 transition-transform cursor-pointer" title="Gelb"></button>
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'blue');" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-8 h-8 rounded-full bg-blue-400 ring-2 ring-blue-400/30 active:scale-110 transition-transform cursor-pointer" title="Blau"></button>
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'red');" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-8 h-8 rounded-full bg-red-400 ring-2 ring-red-400/30 active:scale-110 transition-transform cursor-pointer" title="Rot"></button>
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'green');" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-8 h-8 rounded-full bg-green-400 ring-2 ring-green-400/30 active:scale-110 transition-transform cursor-pointer" title="Grün"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'yellow');" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400 ring-2 ring-yellow-400/30 active:scale-110 transition-transform cursor-pointer" title="Gelb"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'blue');" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400 ring-2 ring-blue-400/30 active:scale-110 transition-transform cursor-pointer" title="Blau"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'red');" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400 ring-2 ring-red-400/30 active:scale-110 transition-transform cursor-pointer" title="Rot"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'green');" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400 ring-2 ring-green-400/30 active:scale-110 transition-transform cursor-pointer" title="Grün"></button>
 
-    <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('clear');" onclick="applySelectionFormat('clear')" class="shrink-0 w-11 h-11 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Formatierung löschen">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    <!-- Clear & Vocab -->
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('clear');" onclick="applySelectionFormat('clear')" class="shrink-0 w-10 h-10 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Formatierung löschen">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
     </button>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); addSelectedToVocab();" onclick="addSelectedToVocab()" class="shrink-0 w-11 h-11 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Als Vokabel speichern">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); addSelectedToVocab();" onclick="addSelectedToVocab()" class="shrink-0 w-10 h-10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Als Vokabel speichern">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    </button>
+
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+    <!-- Undo & Redo (Integrated) -->
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); smartUndo();" onclick="smartUndo();" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Rückgängig">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+    </button>
+
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); smartRedo();" onclick="smartRedo();" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Wiederholen">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
+    </button>
+
+    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+
+    <!-- Done / Exit Edit Mode (Integrated) -->
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); toggleEditMode();" onclick="toggleEditMode();" class="shrink-0 w-10 h-10 flex items-center justify-center bg-emerald-600 text-white rounded-xl active:scale-90 transition-transform cursor-pointer shadow-md" title="Fertig">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
     </button>
 </div>
     <!-- Bullet List Auto-Format Toolbar Helper -->
@@ -3092,7 +3120,7 @@ function applySelectionFormat(type, value) {
             });
             activeContainer.normalize();
         }
-        function handleSelectionChange() {
+       function handleSelectionChange() {
             if (!isEditMode || activeTab === 'classic') { 
                 hideToolbar(); 
                 return; 
@@ -3104,7 +3132,6 @@ function applySelectionFormat(type, value) {
             const selection = window.getSelection();
             const hasHighlightedText = selection && !selection.isCollapsed;
 
-            // Check if focus or selection is inside an editable block
             let parent = selection ? selection.anchorNode : null;
             let isInsideEditable = false;
             while (parent) {
@@ -3115,27 +3142,34 @@ function applySelectionFormat(type, value) {
                 parent = parent.parentNode;
             }
 
-            // On touch screens (<1024px): Keep toolbar open whenever editing or text is selected
+            // On touch screens (<1024px): Show unified bottom toolbar and hide right-hand FABs
             if (isTouchScreen) {
                 if (isEditableFocused || (isInsideEditable && hasHighlightedText)) {
                     saveCurrentSelection();
                     const toolbar = document.getElementById('formatting-toolbar');
+                    const fabContainer = document.getElementById('floating-action-buttons');
+                    
                     if (toolbar) {
                         toolbar.classList.remove('hidden');
                         positionToolbarAboveKeyboard();
+                    }
+                    if (fabContainer) {
+                        fabContainer.classList.add('toolbar-active'); // Smoothly hides right buttons
                     }
                 } else {
                     hideToolbar();
                 }
             } else {
-                // Desktop uses top sticky bar
                 hideToolbar();
             }
         }
 
         function hideToolbar() {
             const toolbar = document.getElementById('formatting-toolbar');
+            const fabContainer = document.getElementById('floating-action-buttons');
+            
             if (toolbar) toolbar.classList.add('hidden');
+            if (fabContainer) fabContainer.classList.remove('toolbar-active'); // Restores right button when done
         }
         function renderSidebar() {
             const listContainer = document.getElementById('topic-list');
@@ -4937,7 +4971,7 @@ let navigationBar = `
             });
         }
 
-       function toggleEditMode() {
+        function toggleEditMode() {
             if (activeTab === 'classic') {
                 showToast("Der Klassisch-Modus ist schreibgeschützt.", true);
                 return;
@@ -4950,13 +4984,10 @@ let navigationBar = `
             const studioBar = document.getElementById('studio-command-bar');
             const tipBanner = document.getElementById('edit-tip-banner');
             const fab = document.getElementById('mobile-edit-fab');
-            const undoFab = document.getElementById('fab-undo');
-            const redoFab = document.getElementById('fab-redo');
             
             if (isEditMode) {
                 body.classList.add('studio-mode-active');
                 
-                // ONLY show top Studio bar on Template and Diskussion tabs!
                 if (studioBar && (activeTab === 'template' || activeTab === 'diskussion')) {
                     studioBar.classList.remove('hidden');
                 } else if (studioBar) {
@@ -4970,9 +5001,6 @@ let navigationBar = `
                     fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>';
                 }
-                
-                if (undoFab) undoFab.classList.remove('hidden');
-                if (redoFab) redoFab.classList.remove('hidden');
             } else {
                 body.classList.remove('studio-mode-active');
                 if (studioBar) studioBar.classList.add('hidden');
@@ -4984,9 +5012,6 @@ let navigationBar = `
                     fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
-                
-                if (undoFab) undoFab.classList.add('hidden');
-                if (redoFab) redoFab.classList.add('hidden');
 
                 saveEditsSilent();
             }
