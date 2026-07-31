@@ -634,30 +634,39 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
     }
 
-   /* --- REPLACE WITH THIS (START) --- */
-    /* Show Floating Toolbar on Mobile & Tablet when Studio Edit Mode is active */
+    /* Show Floating Toolbar on Mobile & Tablet (<1024px) when Edit Mode is active */
     @media (max-width: 1023px) {
         body.studio-mode-active #formatting-toolbar {
             display: flex !important;
         }
         #studio-command-bar {
-            display: none !important; /* Hide desktop top bar on small screens */
+            display: none !important; /* Strictly hide top desktop bar on mobile/tablet */
         }
     }
 
-    /* Fixed Positioning & Anti-Lag Rule for Virtual Soft Keyboards */
+    /* Touch-Friendly Formatting Toolbar Anchored Above Keyboards */
     #formatting-toolbar {
         position: fixed !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        max-width: 94vw !important;
+        max-width: 96vw !important;
         width: max-content !important;
         z-index: 9999 !important;
-        /* Exclude 'bottom' from CSS transition to prevent toolbar lagging behind keyboard */
-        transition: opacity 0.15s ease, transform 0.15s ease !important;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--border) !important;
+        /* Exclude 'bottom' from CSS transitions so it doesn't lag behind soft keyboards */
+        transition: opacity 0.15s ease, visibility 0.15s ease !important;
         will-change: bottom, transform;
+        touch-action: pan-x;
     }
-/* --- END OF REPLACEMENT --- */
+
+    /* Bigger 44px Touch Targets for Mobile & Tablet */
+    #formatting-toolbar button {
+        min-width: 42px !important;
+        min-height: 42px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
 
        /* Missing Arabic font family definition */
 .font-arabic {
@@ -1234,40 +1243,37 @@
         </div>
     </div>
 </div>
-<!-- --- REPLACE WITH THIS (START) --- -->
-<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] px-3 py-2 rounded-[22px] shadow-2xl">
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); selectActiveBlockText();" onclick="selectActiveBlockText();" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-all cursor-pointer" title="Ganzen Block markieren">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
+<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-2 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-3 py-2 rounded-[24px] shadow-2xl overflow-x-auto no-scrollbar">
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); selectActiveBlockText();" onclick="selectActiveBlockText();" class="shrink-0 w-11 h-11 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-2xl border border-[var(--accent)]/30 active:scale-90 transition-transform cursor-pointer" title="Ganzen Block markieren">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
     </button>
 
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+    <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bold');" onclick="applySelectionFormat('bold')" class="shrink-0 w-8 h-8 flex items-center justify-center font-black text-sm text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Fett">B</button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bold');" onclick="applySelectionFormat('bold')" class="shrink-0 w-11 h-11 flex items-center justify-center font-black text-base text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Fett">B</button>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('underline');" onclick="applySelectionFormat('underline')" class="shrink-0 w-8 h-8 flex items-center justify-center font-bold text-sm text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Unterstreichen"><u>U</u></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('underline');" onclick="applySelectionFormat('underline')" class="shrink-0 w-11 h-11 flex items-center justify-center font-bold text-base text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Unterstreichen"><u>U</u></button>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bullet');" onclick="applySelectionFormat('bullet')" class="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-all cursor-pointer" title="Aufzählungsliste">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('bullet');" onclick="applySelectionFormat('bullet')" class="shrink-0 w-11 h-11 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Aufzählungsliste">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+    <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
     <!-- Color Palette -->
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'yellow');" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20 active:scale-110 transition-all cursor-pointer" title="Gelb"></button>
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'blue');" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400 ring-2 ring-blue-400/20 active:scale-110 transition-all cursor-pointer" title="Blau"></button>
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'red');" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400 ring-2 ring-red-400/20 active:scale-110 transition-all cursor-pointer" title="Rot"></button>
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'green');" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400 ring-2 ring-green-400/20 active:scale-110 transition-all cursor-pointer" title="Grün"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'yellow');" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-8 h-8 rounded-full bg-yellow-400 ring-2 ring-yellow-400/30 active:scale-110 transition-transform cursor-pointer" title="Gelb"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'blue');" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-8 h-8 rounded-full bg-blue-400 ring-2 ring-blue-400/30 active:scale-110 transition-transform cursor-pointer" title="Blau"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'red');" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-8 h-8 rounded-full bg-red-400 ring-2 ring-red-400/30 active:scale-110 transition-transform cursor-pointer" title="Rot"></button>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('highlight', 'green');" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-8 h-8 rounded-full bg-green-400 ring-2 ring-green-400/30 active:scale-110 transition-transform cursor-pointer" title="Grün"></button>
 
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
+    <div class="h-6 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
 
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('clear');" onclick="applySelectionFormat('clear')" class="shrink-0 w-8 h-8 flex items-center justify-center text-rose-500 hover:bg-rose-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Formatierung löschen">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); applySelectionFormat('clear');" onclick="applySelectionFormat('clear')" class="shrink-0 w-11 h-11 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Formatierung löschen">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
     </button>
 
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-
-    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); addSelectedToVocab();" onclick="addSelectedToVocab()" class="shrink-0 w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 rounded-xl active:scale-90 transition-all cursor-pointer" title="Als Vokabel speichern">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    <button onmousedown="event.preventDefault()" ontouchstart="event.preventDefault(); addSelectedToVocab();" onclick="addSelectedToVocab()" class="shrink-0 w-11 h-11 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-2xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Als Vokabel speichern">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
     </button>
 </div>
     <!-- Bullet List Auto-Format Toolbar Helper -->
@@ -1860,29 +1866,17 @@ function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
             return getHighlight(topicId, blockKey) || fallback;
         }
 
-       ['mouseup', 'touchend'].forEach(evt => {
+       [/* --- REPLACE WITH THIS (START) --- */
+        ['mouseup', 'touchend'].forEach(evt => {
             document.addEventListener(evt, function(e) {
                 if (!isEditMode || activeTab === 'classic') return;
                 setTimeout(() => {
-                    const selection = window.getSelection();
-                    const isMobilePhone = window.innerWidth < 768;
-
-                    // Don't hide if user clicked on toolbar buttons
+                    // Don't hide if tapping inside formatting toolbar
                     if (e.target.closest('#formatting-toolbar') || e.target.closest('#list-helper-toolbar')) {
                         return;
                     }
-
-                    // On Mobile Phones: Only trigger toolbar if text is explicitly highlighted
-                    if (isMobilePhone) {
-                        if (selection && !selection.isCollapsed) {
-                            handleSelectionChange();
-                        } else {
-                            hideToolbar();
-                        }
-                    } else {
-                        handleSelectionChange();
-                    }
-                }, 100);
+                    handleSelectionChange();
+                }, 120);
             });
         });
 
@@ -3098,61 +3092,51 @@ function applySelectionFormat(type, value) {
             });
             activeContainer.normalize();
         }
-
-       function handleSelectionChange() {
-            if (!isEditMode || activeTab === 'classic') { hideToolbar(); return; }
-
-            // Guard: Do NOT show bottom floating toolbar if top Studio Command Bar is active
-            const studioBar = document.getElementById('studio-command-bar');
-            if (studioBar && !studioBar.classList.contains('hidden')) {
-                hideToolbar();
-                return;
-            }
-            const selection = window.getSelection();
-            const isMobilePhone = window.innerWidth < 768;
-
-            // ON PHONES (< 768px): Only show toolbar when text is ACTUALLY highlighted!
-            if (isMobilePhone && (!selection || selection.isCollapsed)) {
-                hideToolbar();
-                return;
-            }
-
-            const activeEl = document.activeElement;
-            const isEditableFocused = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
-
-            if ((!selection || selection.isCollapsed) && !isEditableFocused) { 
+        function handleSelectionChange() {
+            if (!isEditMode || activeTab === 'classic') { 
                 hideToolbar(); 
                 return; 
             }
-            
+
+            const isTouchScreen = window.innerWidth < 1024;
+            const activeEl = document.activeElement;
+            const isEditableFocused = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
+            const selection = window.getSelection();
+            const hasHighlightedText = selection && !selection.isCollapsed;
+
+            // Check if focus or selection is inside an editable block
             let parent = selection ? selection.anchorNode : null;
             let isInsideEditable = false;
             while (parent) {
-                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable') && parent.hasAttribute('data-block-key')) {
-                    isInsideEditable = true; break;
+                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
+                    isInsideEditable = true; 
+                    break;
                 }
                 parent = parent.parentNode;
             }
-            if (!isInsideEditable && !isEditableFocused) { hideToolbar(); return; }
 
-            const toolbar = document.getElementById('formatting-toolbar');
-            if (!toolbar) return;
-
-            // Mobile Phones (< 768px): Dock at bottom above keyboard when text is selected
-            if (isMobilePhone) {
-                toolbar.classList.remove('hidden');
-                toolbar.classList.add('docked-mobile');
-                positionToolbarAboveKeyboard();
+            // On touch screens (<1024px): Keep toolbar open whenever editing or text is selected
+            if (isTouchScreen) {
+                if (isEditableFocused || (isInsideEditable && hasHighlightedText)) {
+                    saveCurrentSelection();
+                    const toolbar = document.getElementById('formatting-toolbar');
+                    if (toolbar) {
+                        toolbar.classList.remove('hidden');
+                        positionToolbarAboveKeyboard();
+                    }
+                } else {
+                    hideToolbar();
+                }
             } else {
-                // Tablets & Desktop (≥ 768px): Top Studio Command Bar handles everything
+                // Desktop uses top sticky bar
                 hideToolbar();
             }
         }
+
         function hideToolbar() {
             const toolbar = document.getElementById('formatting-toolbar');
             if (toolbar) toolbar.classList.add('hidden');
         }
-
         function renderSidebar() {
             const listContainer = document.getElementById('topic-list');
             if (!listContainer) return;
@@ -5782,17 +5766,17 @@ async function repairAllVocabImmediately() {
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-// iOS Safari / Android Touch Keyboard Offset Positioner (Fixed Math)
+// Fixed Keyboard Offset Positioner for Mobile & Tablet
 function positionToolbarAboveKeyboard() {
     const toolbar = document.getElementById('formatting-toolbar');
     if (!toolbar || toolbar.classList.contains('hidden')) return;
 
     if (window.visualViewport) {
-        const viewport = window.visualViewport;
+        const vv = window.visualViewport;
         const layoutHeight = document.documentElement.clientHeight || window.innerHeight;
         
-        // Correct distance from layout viewport bottom to visible screen area top of keyboard
-        const distFromBottom = layoutHeight - (viewport.offsetTop + viewport.height);
+        // Accurate distance from layout bottom to the visual top of the virtual keyboard
+        const distFromBottom = layoutHeight - (vv.offsetTop + vv.height);
         const bottomOffset = Math.max(16, distFromBottom + 12);
 
         toolbar.style.top = 'auto';
