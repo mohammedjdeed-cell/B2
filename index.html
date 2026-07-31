@@ -123,7 +123,7 @@
         display: list-item !important;
         margin-bottom: 0.25rem !important;
     }
-    /* --- REPLACE WITH THIS (START) --- */
+    
     [contenteditable="true"] {
         white-space: normal !important; /* Prevents code newlines from creating extra blank lines */
         word-break: break-word !important;
@@ -1673,7 +1673,7 @@
             }
         });
 
-      /* --- REPLACE WITH THIS (START) --- */
+      
 function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
     if (!isEditMode) return;
     
@@ -1866,7 +1866,7 @@ function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
             return getHighlight(topicId, blockKey) || fallback;
         }
 
-       [/* --- REPLACE WITH THIS (START) --- */
+     
         ['mouseup', 'touchend'].forEach(evt => {
             document.addEventListener(evt, function(e) {
                 if (!isEditMode || activeTab === 'classic') return;
@@ -2996,7 +2996,7 @@ function toggleSidebarTab(tab) {
             handleSelectionChange();
         }
 
-      /* --- REPLACE WITH THIS (START) --- */
+      
 // Helper to clean leading/trailing empty lines & whitespace from HTML strings
 function cleanEditableHTML(html) {
     if (!html) return '';
@@ -3309,7 +3309,7 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                 ? "bg-sky-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
                 : "bg-[var(--accent)]";
 
-           /* --- REPLACE WITH THIS (START) --- */
+           
     const contentToDisplay = cleanEditableHTML(currentEditMode ? deVal : applyConnectorsHighlight(deVal));
 
     return `
@@ -4416,7 +4416,7 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                 const fallbackContent = topic.content ? topic.content.replace(/\n\n/g, '<br><br>') : "";
                 const savedContent = getSavedText(topic.id, contentBlockKey, fallbackContent, isClassic);
 
-               /* --- REPLACE WITH THIS (START) --- */
+               
 const contentDisplay = cleanEditableHTML(currentEditMode ? savedContent : applyConnectorsHighlight(savedContent));
 const contentHtml = `
     <div class="p-1">
@@ -4465,7 +4465,7 @@ const contentHtml = `
             const einlDe = "einleitung_de"; 
             const savedEinl = getSavedText(topic.id, einlDe, topic[einlDe], isClassic);
 
-           /* --- REPLACE WITH THIS (START) --- */
+           
 const einleitungDisplay = cleanEditableHTML(currentEditMode ? savedEinl : applyConnectorsHighlight(savedEinl));
 const einleitungHtml = `
     <div class="p-1">
@@ -4611,7 +4611,7 @@ const einleitungHtml = `
                     const statementSpeechText = encodeURIComponent(stripHtml(deValChat));
                     const isA = chat.role && chat.role.includes('A');
                     
-            /* --- REPLACE WITH THIS (START) --- */
+            
 const dialogDisplay = cleanEditableHTML(currentEditMode ? deValChat : applyConnectorsHighlight(deValChat));
 dialogHtml += `
     <div class="p-4 rounded-xl border border-[var(--border)] transition-all max-w-[95%] relative ${isA ? 'bg-[var(--accent-light)] mr-auto' : 'bg-[var(--bg-card)] ml-auto'}">
@@ -5639,7 +5639,7 @@ async function repairAllVocabImmediately() {
             touchStartNode = e.target;
         }, { passive: true });
 
-        /* --- REPLACE WITH THIS (START) --- */
+        
         // CLEAN, UNIFIED SWIPE GESTURE LOGIC
         document.addEventListener('touchend', e => {
             if (isEditMode) return;
