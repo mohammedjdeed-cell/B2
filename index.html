@@ -1313,7 +1313,15 @@
         <button onmousedown="event.preventDefault()" onclick="convertActiveBlockToBulletList()" class="px-2.5 py-1 text-xs font-bold bg-[var(--accent)] text-white hover:opacity-90 rounded border border-transparent cursor-pointer" title="In Bullet-Liste umwandeln">• Liste</button>
         <button onmousedown="event.preventDefault()" onclick="hideListHelper()" class="px-2 py-1 text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-app)] rounded border border-[var(--border)] cursor-pointer">Ignorieren</button>
     </div>
+<!-- Firebase scripts must come BEFORE the main script -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3kDSd9nOxT_j9hgi8Z1kgegbrwGnWTfY",
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -5927,10 +5935,6 @@ function positionToolbarAboveKeyboard() {
             });
         });
     }
-         <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script>
 </script>
 </body>
 </html>
