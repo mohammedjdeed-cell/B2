@@ -831,7 +831,7 @@
             </div>
         </aside>
 
-        <!-- Right-Hand Dashboard Container (Holds Header & Workspace stacked next to Sidebar) -->
+      <!-- Right-Hand Dashboard Container (Holds Header & Workspace stacked next to Sidebar) -->
         <div class="flex-1 flex flex-col overflow-hidden relative">
             
             <!-- Header (Sits to the right of the sidebar on desktop) -->
@@ -871,12 +871,92 @@
                     </button>
                 </div>
             </header>
-<!-- Main Workspace Container -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
 
-<!-- Docked Document-Editor Toolbar (Sticky Top, Zero Keyboard Glitch) -->
-<div id="studio-command-bar" class="hidden sticky top-0 z-[80] w-full bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] rounded-2xl p-2 shadow-lg mb-4 transition-all">
-    <div class="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar w-full">
+            <!-- FIXED DOCKED TOP WORKSPACE TOOLBAR (Permanently fixed beneath header, zero-swipe layout) -->
+            <div id="studio-command-bar" class="hidden bg-[var(--bg-card)] border-b border-[var(--border)] px-4 py-2.5 z-30 shadow-sm flex-shrink-0 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 max-w-7xl mx-auto w-full">
+                    
+                    <!-- Row 1 (Mobile & Desktop): Typography & Block Actions -->
+                    <div class="flex items-center justify-between sm:justify-start gap-1 sm:gap-2">
+                        <div class="flex items-center gap-1">
+                            <div id="studio-save-status" class="flex items-center justify-center p-1.5" title="Status">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 studio-pulse"></span>
+                            </div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-[var(--accent)] select-none hidden md:inline">Editor</span>
+                        </div>
+
+                        <div class="h-4 w-px bg-[var(--border)] hidden sm:block"></div>
+
+                        <div class="flex items-center gap-1">
+                            <button onpointerdown="event.preventDefault();" onclick="selectActiveBlockText();" class="h-9 px-2.5 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--accent-light)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer text-xs font-bold" title="Ganzen Block markieren">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
+                                <span>Block</span>
+                            </button>
+
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('bold')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] font-black text-sm transition-all active:scale-95 cursor-pointer" title="Fett">B</button>
+                            
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('underline')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] border border-[var(--border)] font-bold text-sm transition-all active:scale-95 cursor-pointer" title="Unterstreichen"><u>U</u></button>
+
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('bullet')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Aufzählung">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- On mobile, finish button placed on top-right row for immediate reach -->
+                        <div class="sm:hidden flex items-center gap-1.5 ml-auto">
+                            <button onpointerdown="event.preventDefault();" onclick="toggleEditMode()" class="h-9 px-3 flex items-center gap-1 bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm cursor-pointer">
+                                <span>Fertig</span> ✓
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 (Mobile) / Right Side (Desktop): Palette, Clear, Undo/Redo & Finish -->
+                    <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 pt-1 sm:pt-0 border-t border-[var(--border)]/40 sm:border-0">
+                        <div class="flex items-center gap-1.5">
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400 ring-2 ring-yellow-400/40 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Gelb markieren"></button>
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400 ring-2 ring-blue-400/40 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Blau markieren"></button>
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'red')" class="w-6 h-6 rounded-full bg-red-400 ring-2 ring-red-400/40 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Rot markieren"></button>
+                            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'green')" class="w-6 h-6 rounded-full bg-green-400 ring-2 ring-green-400/40 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Grün markieren"></button>
+                        </div>
+
+                        <div class="h-4 w-px bg-[var(--border)]"></div>
+
+                        <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('clear')" class="w-8 h-8 flex items-center justify-center rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all active:scale-95 cursor-pointer" title="Formatierung löschen">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+
+                        <div class="h-4 w-px bg-[var(--border)]"></div>
+
+                        <div class="flex items-center gap-1">
+                            <button onpointerdown="event.preventDefault();" onclick="smartUndo()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Rückgängig (Ctrl+Z)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                            </button>
+                            <button onpointerdown="event.preventDefault();" onclick="smartRedo()" class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Wiederholen (Ctrl+Y)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Desktop Finish Button -->
+                        <button onpointerdown="event.preventDefault();" onclick="toggleEditMode()" class="hidden sm:flex h-9 px-3.5 items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer ml-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span>Fertig</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- DEDICATED NORMAL-SIZE FLOATING ADD-VOCAB BUTTON (Triggered on word selection) -->
+            <div id="quick-vocab-pill" class="hidden fixed bottom-24 lg:bottom-10 left-1/2 -translate-x-1/2 z-[100] transition-all duration-200">
+                <button onpointerdown="event.preventDefault();" onclick="addSelectedToVocab();" class="flex items-center gap-2.5 px-5 py-3.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white rounded-full shadow-[0_12px_32px_rgba(2,132,199,0.45)] border-2 border-white/30 active:scale-95 transition-transform cursor-pointer">
+                    <span class="text-base">🧠</span>
+                    <span class="font-black text-xs uppercase tracking-wider">Als Vokabel speichern</span>
+                    <span id="quick-vocab-preview" class="max-w-[140px] truncate text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full border border-white/20"></span>
+                </button>
+            </div>
+
+<!-- Main Workspace Container -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">    <div class="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar w-full">
         <div class="flex items-center gap-1 shrink-0">
             <!-- Save Status Indicator -->
             <div id="studio-save-status" class="flex items-center justify-center px-2 py-1" title="Status">
@@ -953,8 +1033,11 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons (Desktop) -->
+                   <!-- Action Buttons (Desktop) -->
                     <div class="hidden xl:flex items-center gap-2 shrink-0">
+                        <button onclick="openNewDiskussionModal()" class="h-10 px-3.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="Neue Diskussion anlegen">
+                            <span>➕</span> <span>Neue Diskussion</span>
+                        </button>
                         <button id="save-progress-btn" onclick="saveEditsManual()" class="edit-only-control h-10 px-4 text-xs bg-[var(--accent)] hover:opacity-90 text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">Sichern</button>
                         <button onclick="printCurrentTopic()" class="h-10 px-4 text-xs bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">PDF Export</button>
                         <button id="reset-edits-btn" onclick="resetCurrentTopic()" class="edit-only-control h-10 px-3 flex items-center justify-center text-xs font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-lg transition-all shadow-sm cursor-pointer">Reset</button>
@@ -968,11 +1051,12 @@
                     <button onclick="switchTab('wortschatz')" id="subtab-wortschatz" class="w-full min-h-[44px] md:min-h-0 py-2.5 text-[13px] md:text-xs font-black rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-all truncate">🧠 Vokabeln</button>
                 </div>
 
-                <!-- 3. Bottom Row: Action Buttons (Mobile Only) -->
+               <!-- 3. Bottom Row: Action Buttons (Mobile Only) -->
                 <div class="flex xl:hidden flex-wrap sm:flex-nowrap items-center justify-between gap-2 w-full mt-1">
-                    <button id="save-progress-btn-mobile" onclick="saveEditsManual()" class="edit-only-control flex-1 min-h-[44px] text-[13px] bg-[var(--accent)] text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">Sichern</button>
-                    <button onclick="printCurrentTopic()" class="flex-1 min-h-[44px] text-[13px] bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">PDF Export</button>
-                    <button id="reset-edits-btn-mobile" onclick="resetCurrentTopic()" class="edit-only-control min-h-[44px] px-4 flex items-center justify-center text-[13px] font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-xl transition-all shadow-sm cursor-pointer">Reset</button>
+                    <button onclick="openNewDiskussionModal()" class="min-h-[44px] px-3 text-[12px] bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-1 cursor-pointer">➕ Diskussion</button>
+                    <button id="save-progress-btn-mobile" onclick="saveEditsManual()" class="edit-only-control flex-1 min-h-[44px] text-[12px] bg-[var(--accent)] text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">Sichern</button>
+                    <button onclick="printCurrentTopic()" class="flex-1 min-h-[44px] text-[12px] bg-slate-800 dark:bg-slate-200 dark:text-black text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-1 cursor-pointer">PDF Export</button>
+                    <button id="reset-edits-btn-mobile" onclick="resetCurrentTopic()" class="edit-only-control min-h-[44px] px-3 flex items-center justify-center text-[12px] font-bold bg-rose-50 dark:bg-rose-950/30 text-rose-600 border border-rose-200 dark:border-rose-900 rounded-xl transition-all shadow-sm cursor-pointer">Reset</button>
                 </div>
             </div>
             <!-- Content Container -->
@@ -1202,6 +1286,54 @@
             </div>
         </div>
     </div>
+<!-- Modal: Neue Diskussion anlegen -->
+    <div id="new-diskussion-modal" class="hidden fixed inset-0 z-[205] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-lg p-6 space-y-4 shadow-2xl relative">
+            <button onclick="closeNewDiskussionModal()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-2 rounded-full hover:bg-[var(--bg-app)] transition-all flex items-center justify-center w-8 h-8 z-50 cursor-pointer">✕</button>
+            
+            <div class="border-b border-[var(--border)] pb-3">
+                <h3 class="text-base font-black text-[var(--text-primary)] flex items-center gap-2">
+                    <span>💬 Neue B2 Diskussion erstellen</span>
+                </h3>
+                <p class="text-xs text-[var(--text-muted)] mt-1">Legen Sie ein neues Prüfungsthema oder eine individuelle Übungsdiskussion an.</p>
+            </div>
+            
+            <div class="space-y-3.5">
+                <div>
+                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Titel der Diskussion (Deutsch)</label>
+                    <input type="text" id="new-disk-title" class="w-full text-sm font-bold p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" placeholder="z. B. Homeoffice oder Büroarbeit?">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Kategorie</label>
+                        <select id="new-disk-category" class="w-full text-xs font-bold p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] outline-none">
+                            <option value="Arbeit & Karriere">Arbeit & Karriere</option>
+                            <option value="Gesellschaft & Politik">Gesellschaft & Politik</option>
+                            <option value="Bildung & Technologie">Bildung & Technologie</option>
+                            <option value="Freizeit & Gesundheit">Freizeit & Gesundheit</option>
+                            <option value="Umwelt & Mobilität">Umwelt & Mobilität</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Symbol / Emoji</label>
+                        <input type="text" id="new-disk-emoji" maxlength="4" class="w-full text-center text-sm font-bold p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-xl text-[var(--text-primary)]" value="💡">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Diskussionsinhalt / Text</label>
+                    <textarea id="new-disk-content" rows="4" class="w-full text-xs p-3 bg-[var(--bg-app)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" placeholder="Schreiben Sie hier den vollständigen Text oder die Dialoggrundlage..."></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-3">
+                <button onclick="closeNewDiskussionModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] cursor-pointer">Abbrechen</button>
+                <button onclick="createNewDiskussionSubmit()" class="px-5 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md cursor-pointer transition-transform active:scale-95">Diskussion anlegen</button>
+            </div>
+        </div>
+    </div>
+
 <!-- Wortschatz Editor Modal (With Smart Dictionary Engine) -->
     <div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] w-full max-w-md p-6 space-y-4 shadow-2xl relative">
@@ -3050,57 +3182,37 @@ function applySelectionFormat(type, value) {
             });
             activeContainer.normalize();
         }
-       function handleSelectionChange() {
-            if (!isEditMode || activeTab === 'classic') { 
-                hideToolbar(); 
-                return; 
-            }
-
-            const isTouchScreen = window.innerWidth < 1024;
-            const activeEl = document.activeElement;
-            const isEditableFocused = activeEl && activeEl.hasAttribute && activeEl.hasAttribute('contenteditable');
+     function handleSelectionChange() {
             const selection = window.getSelection();
-            const hasHighlightedText = selection && !selection.isCollapsed;
+            const rawText = selection ? selection.toString().trim() : "";
+            const quickPill = document.getElementById('quick-vocab-pill');
+            const previewEl = document.getElementById('quick-vocab-preview');
 
-            let parent = selection ? selection.anchorNode : null;
-            let isInsideEditable = false;
-            while (parent) {
-                if (parent.nodeType === Node.ELEMENT_NODE && parent.hasAttribute('contenteditable')) {
-                    isInsideEditable = true; 
-                    break;
-                }
-                parent = parent.parentNode;
-            }
-
-            // On touch screens (<1024px): Show unified bottom toolbar and hide right-hand FABs
-            if (isTouchScreen) {
-                if (isEditableFocused || (isInsideEditable && hasHighlightedText)) {
-                    saveCurrentSelection();
-                    const toolbar = document.getElementById('formatting-toolbar');
-                    const fabContainer = document.getElementById('floating-action-buttons');
-                    
-                    if (toolbar) {
-                        toolbar.classList.remove('hidden');
-                        positionToolbarAboveKeyboard();
-                    }
-                    if (fabContainer) {
-                        fabContainer.classList.add('toolbar-active'); // Smoothly hides right buttons
-                    }
-                } else {
-                    hideToolbar();
+            // Show dedicated Vocab button outside the toolbar on any text selection
+            if (rawText && rawText.length > 1 && !rawText.includes('\n')) {
+                saveCurrentSelection();
+                if (quickPill) {
+                    if (previewEl) previewEl.textContent = `"${rawText.slice(0, 18)}${rawText.length > 18 ? '…' : ''}"`;
+                    quickPill.classList.remove('hidden');
                 }
             } else {
-                hideToolbar();
+                if (quickPill) quickPill.classList.add('hidden');
             }
         }
 
         function hideToolbar() {
-            const toolbar = document.getElementById('formatting-toolbar');
-            const fabContainer = document.getElementById('floating-action-buttons');
-            
-            if (toolbar) toolbar.classList.add('hidden');
-            if (fabContainer) fabContainer.classList.remove('toolbar-active'); // Restores right button when done
+            const quickPill = document.getElementById('quick-vocab-pill');
+            if (quickPill) quickPill.classList.add('hidden');
         }
+
+        // Hide floating vocab button when clicking blank canvas
+        document.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('#quick-vocab-pill') || e.target.closest('#studio-command-bar')) return;
+            const quickPill = document.getElementById('quick-vocab-pill');
+            if (quickPill && !window.getSelection().toString().trim()) {
+                quickPill.classList.add('hidden');
+            }
+        });
         function renderSidebar() {
             const listContainer = document.getElementById('topic-list');
             if (!listContainer) return;
@@ -3306,6 +3418,7 @@ function updateProgress() {
             `;
         }
 
+        // ORGANIZED MIND RASTER (Crystal-Clear Mental Catalog by Category)
         function renderSimplisticBoxGrid() {
             const gridContainer = document.getElementById('box-grid-container');
             if (!gridContainer) return;
@@ -3313,96 +3426,95 @@ function updateProgress() {
 
             const searchVal = document.getElementById('grid-search').value.toLowerCase();
             const categoryFilter = document.getElementById('grid-category-filter').value;
-            const dataset = activeTab === 'classic' ? TOPICS_DATA : TEMPLATE_DATA;
+            const dataset = TEMPLATE_DATA || [];
 
-            dataset.forEach((topic, index) => {
-                const isLearned = learnedList.includes(topic.id);
-                const isStarred = STARRED_TOPICS.includes(topic.id);
-                const isActive = index === activeIdx;
+            // Group topics logically by category
+            const categories = [
+                'Freizeit & Gesundheit',
+                'Arbeit & Karriere',
+                'Umwelt & Mobilität',
+                'Gesellschaft & Politik',
+                'Bildung & Technologie'
+            ];
 
-                if (categoryFilter !== 'all' && topic.category !== categoryFilter) return;
-                if (searchVal && !topic.title_de.toLowerCase().includes(searchVal)) return;
+            categories.forEach(cat => {
+                if (categoryFilter !== 'all' && categoryFilter !== cat) return;
 
-                const style = CATEGORY_STYLES[topic.category] || CATEGORY_STYLES['Gesellschaft & Politik'];
+                const catTopics = dataset.map((topic, index) => ({ topic, index }))
+                    .filter(({ topic }) => {
+                        const matchCategory = (topic.category || 'Gesellschaft & Politik') === cat;
+                        const matchSearch = !searchVal || (topic.title_de && topic.title_de.toLowerCase().includes(searchVal));
+                        return matchCategory && matchSearch;
+                    });
 
-                const card = document.createElement('div');
-                
-                card.className = `group p-4 rounded-2xl border cursor-pointer flex flex-col justify-between min-h-[210px] h-full relative select-none transition-all duration-300 bg-[var(--bg-card)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-lg ${
-                    isActive 
-                    ? `ring-2 ring-[var(--accent)] ring-offset-2 dark:ring-offset-neutral-900 shadow-md` 
-                    : 'shadow-sm'
-                } ${isLearned ? 'bg-sky-500/5 border-sky-500/30' : ''}`;
+                if (catTopics.length === 0) return;
 
-               // 2026 Modern Bento-Box Design for Raster
-                card.innerHTML = `
-                    <!-- Huge Background Watermark Emoji -->
-                    <span class="absolute -right-4 -bottom-4 text-[100px] opacity-[0.04] dark:opacity-[0.08] pointer-events-none select-none z-0 transform rotate-[-15deg] grayscale mix-blend-luminosity">${TOPIC_ICONS[topic.id] || "📌"}</span>
-                    
-                    <div class="relative z-10 flex flex-col h-full w-full">
-                        <!-- Top Row: Badge & Icon -->
-                        <div class="flex items-start justify-between w-full mb-4">
-                            <span class="text-[10px] font-black uppercase tracking-widest ${style.badgeBg} px-2.5 py-1 rounded-lg border border-black/5 dark:border-white/5 truncate max-w-[140px] whitespace-nowrap shadow-sm">
-                                ${topic.category || 'Allgemein'}
-                            </span>
-                            <div class="emoji-circle flex items-center justify-center bg-white dark:bg-zinc-800 rounded-2xl w-12 h-12 flex-shrink-0 shadow-sm border border-[var(--border)]">
-                                <span class="text-2xl filter drop-shadow-sm">${TOPIC_ICONS[topic.id] || "📌"}</span>
-                            </div>
+                const section = document.createElement('div');
+                section.className = "col-span-full space-y-3 mb-4";
+
+                const learnedInCat = catTopics.filter(({ topic }) => learnedList.includes(topic.id)).length;
+
+                // Category Section Header
+                section.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-[var(--border)] pb-2 pt-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[var(--accent)]"></span>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-[var(--text-primary)]">${cat}</h4>
+                            <span class="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border)] px-2 py-0.5 rounded-md">${catTopics.length}</span>
                         </div>
-                        
-                        <!-- Middle: Title & Number -->
-                        <div class="flex-1 flex flex-col justify-center mb-4">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 text-[11px] font-mono font-black bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-md border border-black/5 dark:border-white/5 shadow-inner">#${topic.id}</span>
-                                ${isStarred ? `<span class="bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md border border-amber-200/50 shadow-sm flex items-center gap-1">★ Prüfung</span>` : ''}
-                            </div>
-                            <h4 class="text-base sm:text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-snug line-clamp-3">
-                                ${topic.title_de}
-                            </h4>
-                        </div>
-                        
-                        <!-- Bottom: Status -->
-                        <div class="flex items-center justify-between border-t border-[var(--border)]/50 pt-3 mt-auto">
-                            ${isLearned 
-                                ? `<span class="text-[11px] font-extrabold uppercase tracking-widest text-sky-600 dark:text-sky-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse"></span> Gelernt</span>` 
-                                : `<span class="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-muted)] flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700"></span> Offen</span>`
-                            }
-                            <span class="text-[var(--text-faint)] group-hover:text-[var(--accent)] transition-colors">➔</span>
-                        </div>
+                        <span class="text-[10px] font-bold text-[var(--text-muted)]">${learnedInCat} / ${catTopics.length} gelernt</span>
                     </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5" id="cat-grid-${cat.replace(/[^a-zA-Z]/g, '')}"></div>
                 `;
 
-                let touchTimer;
-                let isLongPress = false;
+                gridContainer.appendChild(section);
+                const subGrid = section.querySelector(`#cat-grid-${cat.replace(/[^a-zA-Z]/g, '')}`);
 
-               card.addEventListener('touchstart', (e) => {
-                    isLongPress = false;
-                    touchTimer = setTimeout(() => {
-                        isLongPress = true;
-                        showThemaPreview(topic);
-                    }, 600);
-                }, { passive: true });
+                catTopics.forEach(({ topic, index }) => {
+                    const isLearned = learnedList.includes(topic.id);
+                    const isStarred = STARRED_TOPICS.includes(topic.id);
+                    const isActive = index === activeIdx;
 
-                card.addEventListener('touchend', (e) => {
-                    clearTimeout(touchTimer);
+                    const card = document.createElement('div');
+                    card.className = `group bg-[var(--bg-card)] border ${
+                        isActive 
+                            ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]/30' 
+                            : (isLearned ? 'border-sky-300 dark:border-sky-900 bg-sky-50/10' : 'border-[var(--border)]')
+                    } hover:border-[var(--accent)] rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between min-h-[120px] select-none`;
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-base">${TOPIC_ICONS[topic.id] || "📌"}</span>
+                                    <span class="text-[10px] font-mono font-black text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border)] px-1.5 py-0.5 rounded">#${topic.id}</span>
+                                </div>
+                                ${isStarred ? `<span class="text-amber-500 text-xs font-bold" title="Prüfungsfokus">★</span>` : ''}
+                            </div>
+                            <h5 class="text-[13px] font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] leading-snug line-clamp-2 transition-colors">
+                                ${topic.title_de || topic.title}
+                            </h5>
+                        </div>
+                        
+                        <div class="flex items-center justify-between border-t border-[var(--border)]/40 pt-2 mt-3">
+                            <span class="text-[10px] font-bold ${isLearned ? 'text-sky-600 dark:text-sky-400' : 'text-[var(--text-muted)]'} flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full ${isLearned ? 'bg-sky-500' : 'bg-zinc-300 dark:bg-zinc-600'}"></span>
+                                ${isLearned ? 'Gelernt' : 'Offen'}
+                            </span>
+                            <span class="text-[10px] text-[var(--text-faint)] group-hover:text-[var(--accent)] font-bold transition-colors">Öffnen ➔</span>
+                        </div>
+                    `;
+
+                    card.onclick = () => {
+                        activeIdx = index;
+                        localStorage.setItem('b2_active_idx', activeIdx);
+                        renderSidebar();
+                        renderActiveTopic();
+                        switchTab('template');
+                    };
+
+                    subGrid.appendChild(card);
                 });
-
-                card.addEventListener('touchmove', () => {
-                    clearTimeout(touchTimer);
-                }, { passive: true });
-
-                card.onclick = (e) => {
-                    if (isLongPress) {
-                        isLongPress = false;
-                        return;
-                    }
-                    activeIdx = index;
-                    localStorage.setItem('b2_active_idx', activeIdx);
-                    renderSidebar();
-                    renderActiveTopic();
-                    switchTab(activeTab === 'classic' ? 'classic' : 'template');
-                };
-
-                gridContainer.appendChild(card);
             });
         }
 
@@ -5370,7 +5482,7 @@ let navigationBar = `
             renderActiveTopic();
         }
 
-        function deleteVocab(index) {
+       function deleteVocab(index) {
             if (!confirm("Vokabel wirklich löschen?")) return;
             const tId = TEMPLATE_DATA[activeIdx].id;
             VOCAB_DATA[tId].splice(index, 1);
@@ -5378,6 +5490,103 @@ let navigationBar = `
             renderActiveTopic();
         }
 
+        // ==========================================
+        // NEUE DISKUSSION ANLEGEN & SPEICHERN
+        // ==========================================
+        function openNewDiskussionModal() {
+            document.getElementById('new-disk-title').value = '';
+            document.getElementById('new-disk-content').value = '';
+            document.getElementById('new-disk-emoji').value = '💡';
+            document.getElementById('new-diskussion-modal').classList.remove('hidden');
+        }
+
+        function closeNewDiskussionModal() {
+            document.getElementById('new-diskussion-modal').classList.add('hidden');
+        }
+
+        async function createNewDiskussionSubmit() {
+            const title = document.getElementById('new-disk-title').value.trim();
+            const category = document.getElementById('new-disk-category').value;
+            const emoji = document.getElementById('new-disk-emoji').value.trim() || '💡';
+            const content = document.getElementById('new-disk-content').value.trim() || 'Hier beginnt die Diskussion...';
+
+            if (!title) {
+                alert('Bitte geben Sie einen Titel für die Diskussion ein.');
+                return;
+            }
+
+            pushToHistory();
+
+            // Calculate next sequential topic ID
+            const existingIds = [
+                ...TEMPLATE_DATA.map(t => parseInt(t.id) || 0),
+                ...DISKUSSIONEN_DATA.map(d => parseInt(d.id) || 0)
+            ];
+            const newId = Math.max(0, ...existingIds) + 1;
+
+            TOPIC_ICONS[newId] = emoji;
+            TOPIC_CATEGORIES_LOOKUP[newId] = category;
+
+            // 1. Create Discussion Model
+            const newDiskussion = {
+                id: newId,
+                title: title,
+                title_de: title,
+                category: category,
+                content: content,
+                dialog: [
+                    { role: "Sprecher A", phase: 1, de: `Ich finde, dass ${title} ein wichtiges Thema ist.`, en: `I think that ${title} is an important topic.` },
+                    { role: "Sprecher B", phase: 2, de: "Da stimme ich dir zu, allerdings muss man auch die andere Seite sehen.", en: "I agree with you, however one must also consider the other side." }
+                ]
+            };
+
+            // 2. Create Matching Template Model so it functions across all tabs
+            const newTemplate = {
+                id: newId,
+                title_de: title,
+                category: category,
+                einleitung_de: content.length > 250 ? content.slice(0, 250) + "..." : content,
+                pro_de: ["Es bietet neue Möglichkeiten und Chancen."],
+                contra_de: ["Es sind Herausforderungen und Risiken zu beachten."],
+                pers_erfahrung_de: "In meinem Heimatland und persönlichem Alltag habe ich dazu positive Erfahrungen gemacht.",
+                schluss_de: "Zusammenfassend lässt sich sagen, dass ein ausgewogener Mittelweg die beste Lösung darstellt.",
+                dialog: newDiskussion.dialog
+            };
+
+            DISKUSSIONEN_DATA.push(newDiskussion);
+            TEMPLATE_DATA.push(newTemplate);
+
+            const suffix = getSelectedUserSuffix();
+
+            // 3. Save into LocalStorage
+            localStorage.setItem(`edited_diskussionen_${suffix}`, JSON.stringify(DISKUSSIONEN_DATA));
+            localStorage.setItem(`edited_template_data_${suffix}`, JSON.stringify(TEMPLATE_DATA));
+
+            // 4. Save into Firebase Firestore (if logged in)
+            if (currentUser && db) {
+                try {
+                    await Promise.all([
+                        db.collection('users').doc(currentUser.uid).collection('edited_diskussionen').doc(newId.toString()).set(newDiskussion),
+                        db.collection('users').doc(currentUser.uid).collection('edited_templates').doc(newId.toString()).set(newTemplate)
+                    ]);
+                } catch (e) {
+                    console.error("Cloud-Sync Fehler bei neuer Diskussion:", e);
+                }
+            }
+
+            closeNewDiskussionModal();
+
+            // Set active index to newly created topic and open discussion view
+            activeIdx = DISKUSSIONEN_DATA.length - 1;
+            localStorage.setItem('b2_active_idx', activeIdx);
+
+            switchTab('diskussion');
+            updateProgress();
+            renderSidebar();
+            renderActiveTopic();
+
+            showToast(`✨ Neue Diskussion #${newId} hinzugefügt!`);
+        }
         function toggleVocabLearned(index, event) {
             event.stopPropagation();
             const tId = TEMPLATE_DATA[activeIdx].id;
