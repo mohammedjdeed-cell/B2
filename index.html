@@ -956,68 +956,10 @@
             </div>
 
 <!-- Main Workspace Container -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">    <div class="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar w-full">
-        <div class="flex items-center gap-1 shrink-0">
-            <!-- Save Status Indicator -->
-            <div id="studio-save-status" class="flex items-center justify-center px-2 py-1" title="Status">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 studio-pulse"></span>
-            </div>
-
-            <div class="h-5 w-px bg-[var(--border)] mx-0.5"></div>
-
-            <!-- Block Select -->
-            <button onpointerdown="event.preventDefault();" onclick="selectActiveBlockText();" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--accent-light)] transition-all active:scale-95 cursor-pointer" title="Ganzen Block markieren">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
-            </button>
-
-            <!-- Bold & Underline -->
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('bold')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] font-black text-sm transition-all active:scale-95 cursor-pointer" title="Fett">B</button>
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('underline')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] font-bold text-sm transition-all active:scale-95 cursor-pointer" title="Unterstreichen"><u>U</u></button>
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('bullet')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] transition-all active:scale-95 cursor-pointer" title="Aufzählung">• List</button>
-
-            <div class="h-5 w-px bg-[var(--border)] mx-0.5"></div>
-
-            <!-- Highlighter Palette -->
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400 ring-2 ring-yellow-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Gelb markieren"></button>
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400 ring-2 ring-blue-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Blau markieren"></button>
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'red')" class="w-6 h-6 rounded-full bg-red-400 ring-2 ring-red-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Rot markieren"></button>
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'green')" class="w-6 h-6 rounded-full bg-green-400 ring-2 ring-green-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Grün markieren"></button>
-
-            <div class="h-5 w-px bg-[var(--border)] mx-0.5"></div>
-
-            <!-- Clear formatting & Save to Vocab -->
-            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('clear')" class="w-9 h-9 flex items-center justify-center rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all active:scale-95 cursor-pointer" title="Formatierung löschen">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-
-            <button onpointerdown="event.preventDefault();" onclick="addSelectedToVocab()" class="h-9 px-2.5 flex items-center gap-1 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 font-bold text-xs transition-all active:scale-95 cursor-pointer" title="Als Vokabel speichern">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                <span>Vokabel</span>
-            </button>
-        </div>
-
-        <div class="flex items-center gap-1 shrink-0 ml-auto">
-            <!-- Dedicated Undo / Redo -->
-            <button onpointerdown="event.preventDefault();" onclick="smartUndo()" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Rückgängig (Ctrl+Z)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-            </button>
-
-            <button onpointerdown="event.preventDefault();" onclick="smartRedo()" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Wiederholen (Ctrl+Y)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
-            </button>
-
-            <!-- Done / Exit Edit Mode Button -->
-            <button onpointerdown="event.preventDefault();" onclick="toggleEditMode()" class="h-9 px-3 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer" title="Bearbeitung beenden">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                <span>Fertig</span>
-            </button>
-        </div>
-    </div>
-</div>
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
 
     <!-- Dashboard Controls (Always locked at top of content) -->
-    <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">
-                
+    <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 md:p-5 rounded-2xl md:shadow-[var(--shadow-sm)] flex flex-col gap-4 relative transition-colors duration-200 z-30">                
                 <!-- 1. Top Row: Emoji, Title & Action Buttons -->
                 <div class="flex items-start justify-between gap-4 w-full">
                     <div class="flex items-center gap-3 md:gap-4 flex-1 overflow-hidden">
@@ -2751,7 +2693,7 @@ function toggleSidebarTab(tab) {
             activeListElement.blur();
         }
 
- // Automatic Backward-Compatible Storage Migration
+// Automatic Backward-Compatible Storage Migration
         function migrateLegacyStorage() {
             const suffix = getSelectedUserSuffix();
             const legacyKeys = [
@@ -2760,8 +2702,10 @@ function toggleSidebarTab(tab) {
                 { oldK: `learned_topics_1_52_${suffix}`, newK: `learned_topics_${suffix}` }
             ];
             legacyKeys.forEach(pair => {
-                if (localStorage.getItem(pair.oldK) && !localStorage.getItem(pair.newK)) {
-                    localStorage.setItem(pair.newK, localStorage.getItem(pair.oldK));
+                const oldVal = localStorage.getItem(pair.oldK);
+                const newVal = localStorage.getItem(pair.newK);
+                if (oldVal && !newVal) {
+                    localStorage.setItem(pair.newK, oldVal);
                 }
             });
         }
@@ -2770,12 +2714,16 @@ function toggleSidebarTab(tab) {
             try {
                 migrateLegacyStorage();
 
-                // Copyright compliance: topics.json is permanently removed.
-                // App uses template.json as canonical exam template engine.
+                // Multi-Source Loader: Checks Template.json, template.json, Topics.json, and topics.json
                 let [resTemplate, resGrammatik, resDisk] = await Promise.all([
-                    safeFetchJson('./Template.json').then(r => r && r.length ? r : safeFetchJson('./template.json')),
-                    safeFetchJson('./Grammatik.json').then(r => r && r.length ? r : safeFetchJson('./grammatik.json')),
+                    safeFetchJson('./Template.json')
+                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./template.json'))
+                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./Topics.json'))
+                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./topics.json')),
+                    safeFetchJson('./Grammatik.json')
+                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./grammatik.json')),
                     safeFetchJson('./diskussionen.json')
+                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./Diskussionen.json'))
                 ]);
 
                 let baseTemplate = Array.isArray(resTemplate) ? resTemplate : (resTemplate && typeof resTemplate === 'object' ? Object.values(resTemplate) : []);
@@ -2792,10 +2740,9 @@ function toggleSidebarTab(tab) {
                 }
 
                 if (baseDisk.length === 0) {
-                    baseDisk = baseTemplate.map(t => ({ id: t.id, title: t.title_de, content: "Kein Text verfügbar." }));
+                    baseDisk = baseTemplate.map(t => ({ id: t.id, title: t.title_de || t.title, content: t.einleitung_de || "Kein Text verfügbar." }));
                 }
 
-                // Safety alias: TOPICS_DATA points to TEMPLATE_DATA ensuring no runtime undefined references occur
                 let baseTopics = baseTemplate;
                 baseGrammatik.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
@@ -2821,39 +2768,54 @@ function toggleSidebarTab(tab) {
                 REDEMITTEL_DATA = null;
 
                 function applyLocalFallback() {
-                    const localTemplateEdits = localStorage.getItem(`edited_template_data_1_52_${suffix}`);
-                    if (localTemplateEdits) {
-                        const parsed = JSON.parse(localTemplateEdits);
-                        parsed.forEach(localTemplate => {
-                            const idx = TEMPLATE_DATA.findIndex(t => t.id === localTemplate.id);
-                            if (idx !== -1) {
-                                TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localTemplate };
-                                if (!editedTemplateIds.includes(localTemplate.id)) editedTemplateIds.push(localTemplate.id);
+                    const localTemplateStr = localStorage.getItem(`edited_template_data_${suffix}`) || localStorage.getItem(`edited_template_data_1_52_${suffix}`);
+                    if (localTemplateStr) {
+                        try {
+                            const parsed = JSON.parse(localTemplateStr);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                parsed.forEach(localTemplate => {
+                                    const idx = TEMPLATE_DATA.findIndex(t => t.id === localTemplate.id);
+                                    if (idx !== -1) {
+                                        TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localTemplate };
+                                    } else {
+                                        TEMPLATE_DATA.push(localTemplate);
+                                    }
+                                    if (!editedTemplateIds.includes(localTemplate.id)) editedTemplateIds.push(localTemplate.id);
+                                });
                             }
-                        });
+                        } catch(e) { console.warn("Local template parse error:", e); }
                     }
 
-                    const localDiskEdits = localStorage.getItem(`edited_diskussionen_data_1_52_${suffix}`);
-                    if (localDiskEdits) {
-                        const parsed = JSON.parse(localDiskEdits);
-                        parsed.forEach(localDisk => {
-                            const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === localDisk.id);
-                            if (idx !== -1) {
-                                DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...localDisk };
-                                if (!editedDiskussionenIds.includes(localDisk.id)) editedDiskussionenIds.push(localDisk.id);
+                    const localDiskStr = localStorage.getItem(`edited_diskussionen_${suffix}`) || localStorage.getItem(`edited_diskussionen_data_1_52_${suffix}`);
+                    if (localDiskStr) {
+                        try {
+                            const parsedDisk = JSON.parse(localDiskStr);
+                            if (Array.isArray(parsedDisk) && parsedDisk.length > 0) {
+                                parsedDisk.forEach(localDisk => {
+                                    const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === localDisk.id);
+                                    if (idx !== -1) {
+                                        DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...localDisk };
+                                    } else {
+                                        DISKUSSIONEN_DATA.push(localDisk);
+                                    }
+                                    if (!editedDiskussionenIds.includes(localDisk.id)) editedDiskussionenIds.push(localDisk.id);
+                                });
                             }
-                        });
+                        } catch(e) { console.warn("Local disk parse error:", e); }
                     }
 
-                    learnedList = JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
+                    learnedList = JSON.parse(localStorage.getItem(`learned_topics_${suffix}`)) || JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
                     highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
                     
                     const localRede = localStorage.getItem(`b2_redemittel_${suffix}`);
-                    if (localRede) REDEMITTEL_DATA = JSON.parse(localRede);
+                    if (localRede) {
+                        try { REDEMITTEL_DATA = JSON.parse(localRede); } catch(e){}
+                    }
                     const localVocab = localStorage.getItem(`b2_vocab_${suffix}`);
-                    if (localVocab) VOCAB_DATA = JSON.parse(localVocab);
+                    if (localVocab) {
+                        try { VOCAB_DATA = JSON.parse(localVocab); } catch(e){}
+                    }
                 }
-
                 if (currentUser && db) {
                     try {
                         const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
@@ -4173,16 +4135,25 @@ function updateProgress() {
                 }
             }
         }
-        function renderActiveTopic() {
+      function renderActiveTopic() {
             const isClassic = activeTab === 'classic';
             const isDiskussion = activeTab === 'diskussion';
-            const isWortschatz = activeTab === 'wortschatz';   /* <--- ADD THIS LINE! */
-            let topic;
-            if (isClassic) topic = TOPICS_DATA[activeIdx];
-            else if (isDiskussion) topic = DISKUSSIONEN_DATA[activeIdx];
-            else topic = TEMPLATE_DATA[activeIdx];
+            const isWortschatz = activeTab === 'wortschatz';
             
-            if (!topic) return;
+            let dataset = isClassic ? TOPICS_DATA : (isDiskussion ? DISKUSSIONEN_DATA : TEMPLATE_DATA);
+            if (!dataset || dataset.length === 0) {
+                dataset = TEMPLATE_DATA;
+            }
+
+            if (activeIdx < 0 || activeIdx >= dataset.length) {
+                activeIdx = 0;
+            }
+
+            let topic = dataset[activeIdx];
+            if (!topic) {
+                document.getElementById('active-topic-title-de').textContent = "Kein Thema geladen";
+                return;
+            }
 
             const currentEditMode = isClassic ? false : isEditMode;
 
