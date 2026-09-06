@@ -18,7 +18,7 @@
   
     <link rel="stylesheet" href="css/app.css">
 
-    <!-- Firebase SDKs (Optional / Offline Graceful Degrade) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -27,12 +27,10 @@
 </head>
 <body class="h-full flex flex-col lg:flex-row overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] select-none">
 
-    <!-- Drawer Overlay -->
+    <!-- Backdrop Overlay -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[85] hidden transition-opacity duration-300"></div>
 
-    <!-- ========================================== -->
-    <!-- 1. SIDEBAR (DRAWER / DESKTOP PANEL) -->
-    <!-- ========================================== -->
+    <!-- 1. SIDEBAR -->
     <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)] transition-all duration-300">
         <div id="sidebar-drag-handle" class="w-full flex flex-col items-center pt-3 pb-2 lg:hidden shrink-0 cursor-pointer bg-[var(--bg-card)] rounded-t-[28px]">
             <div class="w-14 h-1 bg-[var(--text-faint)] rounded-full opacity-40 mb-1.5"></div>
@@ -86,9 +84,7 @@
         </div>
     </aside>
 
-    <!-- ========================================== -->
-    <!-- 2. MAIN VIEWPORT (HEADER + WORKSPACE) -->
-    <!-- ========================================== -->
+    <!-- 2. MAIN APP VIEWPORT -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
         <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 lg:px-6 py-3.5 flex items-center justify-between gap-4 z-40 shadow-sm shrink-0 relative pt-4">
             <div class="absolute top-0 left-0 w-full h-1 flex">
@@ -114,8 +110,8 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button id="header-profile-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Profil & Cloud">👤</button>
-                <button id="header-reload-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Neu laden">🔄</button>
+                <button id="header-profile-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Profil & Cloud">👤</button>
+                <button id="header-reload-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm cursor-pointer" title="Neu laden">🔄</button>
             </div>
         </header>
 
@@ -210,9 +206,7 @@
         </main>
     </div>
 
-    <!-- ========================================== -->
     <!-- 3. FLOATING ACTION BUTTONS & TOOLBARS -->
-    <!-- ========================================== -->
     <div id="floating-action-buttons" class="fixed right-4 bottom-20 lg:bottom-6 flex flex-col gap-2.5 z-40 transition-all">
         <button id="fab-undo" class="hidden fab-btn" title="Rückgängig">↩</button>
         <button id="fab-redo" class="hidden fab-btn" title="Wiederholen">↪</button>
@@ -221,6 +215,7 @@
         </button>
     </div>
 
+    <!-- Mobile Virtual Keyboard Toolbar -->
     <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-2.5 py-1.5 rounded-2xl shadow-2xl overflow-x-auto no-scrollbar">
         <button class="mob-tool-btn" data-action="bold"><b>B</b></button>
         <button class="mob-tool-btn" data-action="underline"><u>U</u></button>
@@ -259,33 +254,33 @@
     </nav>
 
     <!-- ========================================== -->
-    <!-- 5. ALL REQUIRED MODALS (PRESERVED) -->
+    <!-- 5. MODALS -->
     <!-- ========================================== -->
     
-    <!-- Modal: Profile & Cloud -->
+    <!-- Profile / Firebase Modal -->
     <div id="profile-settings-modal" class="hidden fixed inset-0 z-[210] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative">
-            <button onclick="document.getElementById('profile-settings-modal').classList.add('hidden')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-1 cursor-pointer">✕</button>
+            <button id="btn-close-profile" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-1 cursor-pointer">✕</button>
             <h3 class="text-base font-black border-b border-[var(--border)] pb-2">👤 Profil & Cloud-Konto</h3>
             <div id="modal-auth-logged-out" class="space-y-3">
                 <input type="email" id="auth-email" placeholder="E-Mail" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" />
                 <input type="password" id="auth-pwd" placeholder="Passwort" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" />
                 <div class="flex gap-2 pt-1">
-                    <button id="btn-login-submit" class="flex-1 py-2 text-xs font-bold bg-[var(--accent)] text-white rounded-lg shadow-sm">Einloggen</button>
-                    <button id="btn-reg-submit" class="flex-1 py-2 text-xs font-bold bg-zinc-700 text-white rounded-lg shadow-sm">Registrieren</button>
+                    <button id="btn-login-submit" class="flex-1 py-2 text-xs font-bold bg-[var(--accent)] text-white rounded-lg shadow-sm cursor-pointer">Einloggen</button>
+                    <button id="btn-reg-submit" class="flex-1 py-2 text-xs font-bold bg-zinc-700 text-white rounded-lg shadow-sm cursor-pointer">Registrieren</button>
                 </div>
             </div>
             <div id="modal-auth-logged-in" class="space-y-3 hidden">
                 <p class="text-xs text-[var(--text-muted)]" id="profile-display-email">email@example.com</p>
-                <button id="btn-modal-logout" class="w-full py-2 text-xs font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-lg">Ausloggen</button>
+                <button id="btn-modal-logout" class="w-full py-2 text-xs font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-lg cursor-pointer">Ausloggen</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Quick Preview -->
+    <!-- Quick Preview Modal -->
     <div id="quick-preview-modal" class="hidden fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-lg p-5 space-y-3 shadow-2xl relative">
-            <button onclick="document.getElementById('quick-preview-modal').classList.add('hidden')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm cursor-pointer">✕</button>
+            <button id="btn-close-preview" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm cursor-pointer">✕</button>
             <div class="flex items-center gap-3 border-b border-[var(--border)] pb-2.5">
                 <span id="preview-emoji" class="text-2xl">📌</span>
                 <div>
@@ -297,15 +292,15 @@
                 <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg select-text"></p>
             </div>
             <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-2.5">
-                <button id="preview-nav-btn" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white hover:opacity-90">Lernen ➔</button>
+                <button id="preview-nav-btn" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white hover:opacity-90 cursor-pointer">Lernen ➔</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Vocabulary Editor -->
+    <!-- Vocabulary Editor Modal -->
     <div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-md p-5 space-y-3 shadow-2xl relative">
-            <button onclick="document.getElementById('wortschatz-editor-modal').classList.add('hidden')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm cursor-pointer">✕</button>
+            <button id="btn-close-vocab" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm cursor-pointer">✕</button>
             <h3 class="text-xs font-black border-b border-[var(--border)] pb-2">🧠 Vokabel hinzufügen</h3>
             <div class="space-y-3">
                 <input type="text" id="modal-vocab-de" class="w-full text-xs font-bold p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" placeholder="Deutsches Wort (z.B. der Anspruch)">
@@ -322,12 +317,11 @@
                 <input type="text" id="modal-vocab-ar" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none font-arabic select-text" placeholder="العربية">
             </div>
             <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-2.5">
-                <button id="btn-save-vocab-modal" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white">Speichern</button>
+                <button id="btn-save-vocab-modal" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white cursor-pointer">Speichern</button>
             </div>
         </div>
     </div>
 
-    <!-- Hidden file input for backup import -->
     <input type="file" id="import-backup-input" class="hidden" accept=".json">
 </body>
 </html>
