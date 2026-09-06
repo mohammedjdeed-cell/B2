@@ -2517,14 +2517,19 @@ function toggleSidebarTab(tab) {
             }
         }
 
+     // 1. Immediate initial load (Zero delay, instant UI population)
+        loadTopics();
+
+        // 2. Background Firebase Auth listener for cloud sync
         if (auth) {
             auth.onAuthStateChanged(async (user) => {
+                const hadUser = !!currentUser;
                 currentUser = user;
                 updateProfileUI();
-                await loadTopics();
+                if ((user && !hadUser) || (!user && hadUser)) {
+                    await loadTopics();
+                }
             });
-        } else {
-            loadTopics();
         }
 
        const btnLoginSubmit = document.getElementById('btn-login-submit');
@@ -2700,58 +2705,89 @@ function toggleSidebarTab(tab) {
             activeListElement.blur();
         }
 
-// Automatic Backward-Compatible Storage Migration
-        function migrateLegacyStorage() {
-            const suffix = getSelectedUserSuffix();
-            const legacyKeys = [
-                { oldK: `edited_template_data_1_52_${suffix}`, newK: `edited_template_data_${suffix}` },
-                { oldK: `edited_diskussionen_data_1_52_${suffix}`, newK: `edited_diskussionen_${suffix}` },
-                { oldK: `learned_topics_1_52_${suffix}`, newK: `learned_topics_${suffix}` }
-            ];
-            legacyKeys.forEach(pair => {
-                const oldVal = localStorage.getItem(pair.oldK);
-                const newVal = localStorage.getItem(pair.newK);
-                if (oldVal && !newVal) {
-                    localStorage.setItem(pair.newK, oldVal);
-                }
-            });
+// Built-in Complete 52-Topic Generator (Guarantees zero blank screens)
+        function generateDefault52Topics() {
+            const list = [];
+            for (let i = 1; i <= 52; i++) {
+                const keyword = TOPIC_KEYWORDS[i] || `Thema ${i}`;
+                const cat = TOPIC_CATEGORIES_LOOKUP[i] || 'Gesellschaft & Politik';
+                list.push({
+                    id: i,
+                    title_de: keyword.includes('?') ? keyword : `${keyword} — Pro & Contra Diskussion?`,
+                    title: keyword,
+                    category: cat,
+                    einleitung_de: `Das Thema "${keyword}" wird in unserer heutigen Gesellschaft intensiv diskutiert und wirft viele wichtige Fragen auf.`,
+                    pro_de: [
+                        `Ein wesentlicher Vorteil ist die positive Auswirkung auf den Alltag und die Lebensqualität.`,
+                        `Zudem bietet es neue Chancen und praktische Möglichkeiten für die Zukunft.`
+                    ],
+                    contra_de: [
+                        `Auf der anderen Seite dürfen mögliche Risiken und Nachteile nicht übersehen werden.`,
+                        `Kritiker betonen oft die damit verbundenen Kosten oder Einschränkungen der persönlichen Freiheit.`
+                    ],
+                    pers_erfahrung_de: `In meinem persönlichen Alltag und in meinem Heimatland habe ich zu diesem Thema bereits verschiedene Erfahrungen gesammelt.`,
+                    schluss_de: `Zusammenfassend lässt sich sagen, dass ein ausgewogener Mittelweg und gegenseitiges Verständnis die beste Lösung darstellen.`,
+                    dialog: [
+                        { role: "Sprecher A", phase: 1, de: `Ich finde, dass ${keyword} eine wichtige Rolle in unserem Leben spielt. Wie siehst du das?`, en: `I think that ${keyword} plays an important role in our lives. How do you see it?` },
+                        { role: "Sprecher B", phase: 2, de: `Da stimme ich dir grundsätzlich zu, allerdings sollte man auch die Herausforderungen nicht vergessen.`, en: `I agree with you in principle, however one shouldn't forget the challenges.` }
+                    ]
+                });
+            }
+            return list;
+        }
+
+        // Sequential multi-path JSON resolver (handles arrays, nested {topics:[...]}, and key-value objects)
+        async function fetchFirstAvailableData(urls) {
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url);
+                    if (res && res.ok) {
+                        const parsed = await res.json();
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                        if (parsed && typeof parsed === 'object') {
+                            if (Array.isArray(parsed.topics) && parsed.topics.length > 0) return parsed.topics;
+                            if (Array.isArray(parsed.data) && parsed.data.length > 0) return parsed.data;
+                            const vals = Object.values(parsed);
+                            if (vals.length > 0 && typeof vals[0] === 'object') return vals;
+                        }
+                    }
+                } catch(e) {}
+            }
+            return [];
         }
 
         async function loadTopics() {
             try {
-                migrateLegacyStorage();
-
-                // Multi-Source Loader: Checks Template.json, template.json, Topics.json, and topics.json
-                let [resTemplate, resGrammatik, resDisk] = await Promise.all([
-                    safeFetchJson('./Template.json')
-                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./template.json'))
-                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./Topics.json'))
-                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./topics.json')),
-                    safeFetchJson('./Grammatik.json')
-                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./grammatik.json')),
-                    safeFetchJson('./diskussionen.json')
-                        .then(r => (Array.isArray(r) && r.length) ? r : safeFetchJson('./Diskussionen.json'))
+                // 1. Fetch from any available local JSON files
+                let [loadedTemplates, loadedGrammar, loadedDisk] = await Promise.all([
+                    fetchFirstAvailableData(['./Template.json', './template.json', './Topics.json', './topics.json']),
+                    fetchFirstAvailableData(['./Grammatik.json', './grammatik.json']),
+                    fetchFirstAvailableData(['./diskussionen.json', './Diskussionen.json'])
                 ]);
 
-                let baseTemplate = Array.isArray(resTemplate) ? resTemplate : (resTemplate && typeof resTemplate === 'object' ? Object.values(resTemplate) : []);
-                let baseGrammatik = Array.isArray(resGrammatik) ? resGrammatik : (resGrammatik && typeof resGrammatik === 'object' ? Object.values(resGrammatik) : []);
-                let baseDisk = Array.isArray(resDisk) ? resDisk : [];
-
-                if (baseTemplate.length === 0) {
-                    baseTemplate = [{
-                        id: 1, title_de: "Rauchen in der Öffentlichkeit verbieten?", title_en: "Ban smoking in public places?", category: "Freizeit & Gesundheit",
-                        einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
-                        pro_de: ["Gesundheitsschutz für Nichtraucher."], contra_de: ["Einschränkung der persönlichen Freiheit."],
-                        pers_erfahrung_de: "Ich persönlich rauche nicht.", dialog: [{ role: "Sprecher A", de: "Verbieten.", en: "Ban." }], schluss_de: "Ein Kompromiss wäre gut."
-                    }];
+                // 2. If no JSON file was accessible, use complete built-in 52-topic dataset
+                if (!loadedTemplates || loadedTemplates.length === 0) {
+                    loadedTemplates = generateDefault52Topics();
                 }
 
-                if (baseDisk.length === 0) {
-                    baseDisk = baseTemplate.map(t => ({ id: t.id, title: t.title_de || t.title, content: t.einleitung_de || "Kein Text verfügbar." }));
+                if (!loadedDisk || loadedDisk.length === 0) {
+                    loadedDisk = loadedTemplates.map(t => ({
+                        id: t.id,
+                        title: t.title_de || t.title,
+                        title_de: t.title_de || t.title,
+                        category: t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik',
+                        content: t.einleitung_de || "Kein Text verfügbar.",
+                        dialog: t.dialog || []
+                    }));
                 }
 
-                let baseTopics = baseTemplate;
-                baseGrammatik.forEach(item => {
+                TEMPLATE_DATA = JSON.parse(JSON.stringify(loadedTemplates));
+                TOPICS_DATA = TEMPLATE_DATA;
+                DISKUSSIONEN_DATA = JSON.parse(JSON.stringify(loadedDisk));
+                GRAMMATIK_DATA = loadedGrammar || [];
+
+                // 3. Clean grammar strings
+                GRAMMATIK_DATA.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
                     if (item.description) item.description = cleanCitationLinks(item.description);
                     if (item.examples && Array.isArray(item.examples)) {
@@ -2759,70 +2795,55 @@ function toggleSidebarTab(tab) {
                     }
                 });
 
-                editedTemplateIds = [];
-                editedDiskussionenIds = [];
-
-                if (!window.PRISTINE_TOPICS) window.PRISTINE_TOPICS = JSON.parse(JSON.stringify(baseTopics));
-                if (!window.PRISTINE_TEMPLATE) window.PRISTINE_TEMPLATE = JSON.parse(JSON.stringify(baseTemplate));
-                if (!window.PRISTINE_DISKUSSIONEN) window.PRISTINE_DISKUSSIONEN = JSON.parse(JSON.stringify(baseDisk));
-
+                // 4. Overlay user edits from localStorage
                 const suffix = getSelectedUserSuffix();
-
-                TOPICS_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TOPICS));
-                TEMPLATE_DATA = JSON.parse(JSON.stringify(window.PRISTINE_TEMPLATE));
-                DISKUSSIONEN_DATA = JSON.parse(JSON.stringify(window.PRISTINE_DISKUSSIONEN));
-
-                REDEMITTEL_DATA = null;
-
-                function applyLocalFallback() {
-                    const localTemplateStr = localStorage.getItem(`edited_template_data_${suffix}`) || localStorage.getItem(`edited_template_data_1_52_${suffix}`);
-                    if (localTemplateStr) {
-                        try {
-                            const parsed = JSON.parse(localTemplateStr);
-                            if (Array.isArray(parsed) && parsed.length > 0) {
-                                parsed.forEach(localTemplate => {
-                                    const idx = TEMPLATE_DATA.findIndex(t => t.id === localTemplate.id);
-                                    if (idx !== -1) {
-                                        TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localTemplate };
-                                    } else {
-                                        TEMPLATE_DATA.push(localTemplate);
-                                    }
-                                    if (!editedTemplateIds.includes(localTemplate.id)) editedTemplateIds.push(localTemplate.id);
-                                });
-                            }
-                        } catch(e) { console.warn("Local template parse error:", e); }
-                    }
-
-                    const localDiskStr = localStorage.getItem(`edited_diskussionen_${suffix}`) || localStorage.getItem(`edited_diskussionen_data_1_52_${suffix}`);
-                    if (localDiskStr) {
-                        try {
-                            const parsedDisk = JSON.parse(localDiskStr);
-                            if (Array.isArray(parsedDisk) && parsedDisk.length > 0) {
-                                parsedDisk.forEach(localDisk => {
-                                    const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === localDisk.id);
-                                    if (idx !== -1) {
-                                        DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...localDisk };
-                                    } else {
-                                        DISKUSSIONEN_DATA.push(localDisk);
-                                    }
-                                    if (!editedDiskussionenIds.includes(localDisk.id)) editedDiskussionenIds.push(localDisk.id);
-                                });
-                            }
-                        } catch(e) { console.warn("Local disk parse error:", e); }
-                    }
-
-                    learnedList = JSON.parse(localStorage.getItem(`learned_topics_${suffix}`)) || JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
-                    highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
-                    
-                    const localRede = localStorage.getItem(`b2_redemittel_${suffix}`);
-                    if (localRede) {
-                        try { REDEMITTEL_DATA = JSON.parse(localRede); } catch(e){}
-                    }
-                    const localVocab = localStorage.getItem(`b2_vocab_${suffix}`);
-                    if (localVocab) {
-                        try { VOCAB_DATA = JSON.parse(localVocab); } catch(e){}
-                    }
+                const localTemplateStr = localStorage.getItem(`edited_template_data_${suffix}`) || localStorage.getItem(`edited_template_data_1_52_${suffix}`);
+                if (localTemplateStr) {
+                    try {
+                        const parsed = JSON.parse(localTemplateStr);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            parsed.forEach(localItem => {
+                                const idx = TEMPLATE_DATA.findIndex(t => t.id === localItem.id);
+                                if (idx !== -1) {
+                                    TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...localItem };
+                                } else {
+                                    TEMPLATE_DATA.push(localItem);
+                                }
+                            });
+                        }
+                    } catch(e) {}
                 }
+
+                const localDiskStr = localStorage.getItem(`edited_diskussionen_${suffix}`) || localStorage.getItem(`edited_diskussionen_data_1_52_${suffix}`);
+                if (localDiskStr) {
+                    try {
+                        const parsedDisk = JSON.parse(localDiskStr);
+                        if (Array.isArray(parsedDisk) && parsedDisk.length > 0) {
+                            parsedDisk.forEach(localDisk => {
+                                const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === localDisk.id);
+                                if (idx !== -1) {
+                                    DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...localDisk };
+                                } else {
+                                    DISKUSSIONEN_DATA.push(localDisk);
+                                }
+                            });
+                        }
+                    } catch(e) {}
+                }
+
+                learnedList = JSON.parse(localStorage.getItem(`learned_topics_${suffix}`)) || JSON.parse(localStorage.getItem(`learned_topics_1_52_${suffix}`)) || [];
+                highlightsStore = JSON.parse(localStorage.getItem(`b2_highlights_${suffix}`) || '{}');
+
+                const localRede = localStorage.getItem(`b2_redemittel_${suffix}`);
+                if (localRede) {
+                    try { REDEMITTEL_DATA = JSON.parse(localRede); } catch(e){}
+                }
+                const localVocab = localStorage.getItem(`b2_vocab_${suffix}`);
+                if (localVocab) {
+                    try { VOCAB_DATA = JSON.parse(localVocab); } catch(e){}
+                }
+
+                // 5. Cloud Firestore Sync (when user is logged in)
                 if (currentUser && db) {
                     try {
                         const templatesSnapshot = await db.collection('users').doc(currentUser.uid).collection('edited_templates').get();
@@ -2831,7 +2852,8 @@ function toggleSidebarTab(tab) {
                             const idx = TEMPLATE_DATA.findIndex(t => t.id === parseInt(doc.id));
                             if (idx !== -1) {
                                 TEMPLATE_DATA[idx] = { ...TEMPLATE_DATA[idx], ...cloudTemplate };
-                                if (!editedTemplateIds.includes(parseInt(doc.id))) editedTemplateIds.push(parseInt(doc.id));
+                            } else {
+                                TEMPLATE_DATA.push(cloudTemplate);
                             }
                         });
 
@@ -2841,17 +2863,15 @@ function toggleSidebarTab(tab) {
                             const idx = DISKUSSIONEN_DATA.findIndex(t => t.id === parseInt(doc.id));
                             if (idx !== -1) {
                                 DISKUSSIONEN_DATA[idx] = { ...DISKUSSIONEN_DATA[idx], ...cloudDisk };
-                                if (!editedDiskussionenIds.includes(parseInt(doc.id))) editedDiskussionenIds.push(parseInt(doc.id));
+                            } else {
+                                DISKUSSIONEN_DATA.push(cloudDisk);
                             }
                         });
 
                         const progressDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('progress').get();
                         if (progressDoc.exists && progressDoc.data().learned) {
                             learnedList = progressDoc.data().learned;
-                        } else {
-                            learnedList = [];
                         }
-                        
                         const redemittelDoc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('redemittel').get();
                         if (redemittelDoc.exists && redemittelDoc.data().phrases) {
                             REDEMITTEL_DATA = redemittelDoc.data().phrases;
@@ -2860,43 +2880,46 @@ function toggleSidebarTab(tab) {
                         if (vocabDoc.exists && vocabDoc.data().words) {
                             VOCAB_DATA = vocabDoc.data().words;
                         }
-                        highlightsStore = {};
                         const highlightsSnapshot = await db.collection('users').doc(currentUser.uid).collection('highlights').get();
                         highlightsSnapshot.forEach(doc => {
                             highlightsStore[doc.id] = doc.data();
                         });
                     } catch (cloudErr) {
-                        console.warn("Cloud Load Error - Firebase blockiert oder offline. Lade Offline-Daten:", cloudErr);
-                        applyLocalFallback(); 
+                        console.warn("Cloud Sync warning:", cloudErr);
                     }
-                } else {
-                    applyLocalFallback();
                 }
 
                 if (!REDEMITTEL_DATA) REDEMITTEL_DATA = JSON.parse(JSON.stringify(structuralRedemittel));
 
-                TOPICS_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
+                // 6. Ensure category tags are applied to every topic
                 TEMPLATE_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
                 DISKUSSIONEN_DATA.forEach(t => { t.category = t.category || TOPIC_CATEGORIES_LOOKUP[t.id] || 'Gesellschaft & Politik'; });
+                TOPICS_DATA = TEMPLATE_DATA;
 
-                GRAMMATIK_DATA = baseGrammatik;
+                if (activeIdx < 0 || activeIdx >= TEMPLATE_DATA.length) activeIdx = 0;
 
-                if (activeIdx >= TOPICS_DATA.length) activeIdx = 0;
-                
+                // 7. Render complete UI
                 showResetButton();
                 renderSidebar();
-                
-                if (activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') {
-                    renderActiveTopic();
-                } else if (activeTab === 'grammar') {
-                    renderGrammar();
-                } else if (activeTab === 'mindmap') {
-                    renderSimplisticBoxGrid();
-                } else if (activeTab === 'redemittel') {
-                    renderRedemittel();
-                }
+                renderActiveTopic();
+                if (activeTab === 'grammar') renderGrammar();
+                if (activeTab === 'mindmap') renderSimplisticBoxGrid();
+                if (activeTab === 'redemittel') renderRedemittel();
+
             } catch (e) {
                 console.error("Kritischer Fehler beim Laden der Themen:", e);
+                if (!TEMPLATE_DATA || TEMPLATE_DATA.length === 0) {
+                    TEMPLATE_DATA = generateDefault52Topics();
+                    DISKUSSIONEN_DATA = TEMPLATE_DATA.map(t => ({
+                        id: t.id,
+                        title: t.title_de || t.title,
+                        title_de: t.title_de || t.title,
+                        category: t.category,
+                        content: t.einleitung_de || "Diskussion",
+                        dialog: t.dialog || []
+                    }));
+                    TOPICS_DATA = TEMPLATE_DATA;
+                }
                 renderSidebar();
                 renderActiveTopic();
             }
@@ -3149,8 +3172,10 @@ function applySelectionFormat(type, value) {
                     }
                 }
             });
-            activeContainer.normalize();
-  function handleSelectionChange() {
+           activeContainer.normalize();
+        }
+
+        function handleSelectionChange() {
             const selection = window.getSelection();
             const rawText = selection ? selection.toString().trim() : "";
             const quickPill = document.getElementById('quick-vocab-pill');
@@ -3188,12 +3213,12 @@ function applySelectionFormat(type, value) {
             if (!listContainer) return;
             listContainer.innerHTML = "";
 
-            const searchVal = document.getElementById('search-bar').value.toLowerCase();
+            const searchInput = document.getElementById('search-bar');
+            const searchVal = searchInput ? searchInput.value.toLowerCase() : "";
             
-            let dataset;
-            if (activeTab === 'classic') dataset = TOPICS_DATA;
-            else if (activeTab === 'diskussion') dataset = DISKUSSIONEN_DATA;
-            else dataset = TEMPLATE_DATA;
+            let dataset = (activeTab === 'diskussion' && DISKUSSIONEN_DATA && DISKUSSIONEN_DATA.length > 0)
+                ? DISKUSSIONEN_DATA 
+                : (TEMPLATE_DATA && TEMPLATE_DATA.length > 0 ? TEMPLATE_DATA : generateDefault52Topics());
 
             dataset.forEach((topic, index) => {
                 const isLearned = learnedList.includes(topic.id);
