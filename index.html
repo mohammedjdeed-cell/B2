@@ -2,7 +2,7 @@
 <html lang="de" class="h-full bg-[var(--bg-app)] transition-colors duration-200">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
    <title>B2 Trainer — TELC B2 Diskussionstrainer</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,10 +81,33 @@
     .animate-fade-in {
         animation: fadeInTab 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
+   html, body {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
+
     body {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        overscroll-behavior-y: none;
-        overscroll-behavior-x: none;
+    }
+
+    /* Horizontal / Landscape Mode on Tablets & Phones: Keep Bars Compact & Visible */
+    @media (orientation: landscape) and (max-height: 650px) {
+        header {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        #studio-command-bar {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
+        }
+        #dashboard-controls {
+            padding: 0.6rem 0.8rem !important;
+            gap: 0.4rem !important;
+        }
     }
 
     body, header, aside, main, .card-transition, #dashboard-controls, .topic-list-item {
@@ -5928,19 +5951,28 @@ async function repairAllVocabImmediately() {
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-// VisualViewport Auto-Scroll Handler: Ensures active typing lines stay comfortably visible above virtual keyboards
+// Horizontal & Virtual Keyboard Shield: Keeps Header & Toolbar anchored at top
         function ensureActiveBlockVisible(el) {
             if (!el) return;
-            if (window.visualViewport) {
-                const rect = el.getBoundingClientRect();
-                const vv = window.visualViewport;
-                if (rect.bottom > vv.height) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            } else {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            const isLandscape = window.innerWidth > window.innerHeight;
+            const alignBlock = isLandscape ? 'nearest' : 'center';
+
+            // Scroll strictly within <main> without shifting window scroll
+            el.scrollIntoView({ behavior: 'smooth', block: alignBlock, inline: 'nearest' });
+
+            // Force window to stay at root origin (prevents headers from being pushed away)
+            if (window.scrollY !== 0 || window.scrollX !== 0) {
+                window.scrollTo(0, 0);
             }
         }
+
+        // Lock root window scroll on keyboard opening
+        window.addEventListener('scroll', () => {
+            if (window.scrollY !== 0 || window.scrollX !== 0) {
+                window.scrollTo(0, 0);
+            }
+        }, { passive: false });
 
         document.addEventListener('focusin', (e) => {
             if (e.target && e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
@@ -5948,7 +5980,7 @@ async function repairAllVocabImmediately() {
                 saveCurrentSelection();
                 setTimeout(() => {
                     ensureActiveBlockVisible(e.target);
-                }, 280);
+                }, 150);
             }
         });
         // --- MODERN TOAST NOTIFICATION ---
