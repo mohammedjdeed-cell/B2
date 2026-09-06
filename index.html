@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>B2 Trainer — TELC B2 Diskussionstrainer | Themen 1-52</title>
+   <title>B2 Trainer — TELC B2 Diskussionstrainer</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -776,11 +776,10 @@
                 <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-2">Schließen</span>
             </div>
 
-            <!-- Desktop Sidebar Header with Minimize Button -->
+          <!-- Desktop Sidebar Header with Minimize Button -->
             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] items-center justify-between sidebar-header-flex shrink-0 hidden lg:flex">
-                <h2 class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen (1-52)</h2>
-                <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">
-                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                <h2 id="sidebar-header-title" class="font-bold text-sm hide-on-collapse text-[var(--text-primary)]">Themen</h2>
+                <button id="sidebar-toggle-btn" class="hidden lg:block p-1.5 rounded hover:bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar einklappen">                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </div>
 
@@ -793,9 +792,9 @@
             <!-- TAB 1: THEMEN CONTENT -->
             <div id="sidebar-themen-content" class="flex-1 flex flex-col overflow-hidden">
                 <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-3 shrink-0 hide-on-collapse">
-                    <div class="flex items-center justify-between text-xs font-bold">
+                   <div class="flex items-center justify-between text-xs font-bold">
                         <span class="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">🧠 Fortschritt</span>
-                        <span id="progress-text" class="text-[var(--text-primary)]">0 / 52</span>
+                        <span id="progress-text" class="text-[var(--text-primary)]">0 / 0</span>
                     </div>
                     <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
                         <div id="progress-bar" class="bg-[var(--accent)] h-full transition-all duration-300" style="width: 0%"></div>
@@ -875,67 +874,64 @@
 <!-- Main Workspace Container -->
         <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-6 bg-[var(--bg-app)] relative">
 
-<!-- Studio Workspace Floating Icon Island (Ultra-Sleek 2026 Vector UI) -->
-<div id="studio-command-bar" class="hidden sticky top-3 z-[80] w-max mx-auto bg-[var(--bg-card)]/90 backdrop-blur-xl border border-[var(--border)] rounded-2xl p-1.5 shadow-2xl transition-all">
-    <div class="flex items-center gap-1">
-        
-        <!-- Status Indicator Dot -->
-        <div id="studio-save-status" class="flex items-center justify-center px-2 py-1.5 rounded-xl" title="Automatisch gespeichert">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 studio-pulse"></span>
+<!-- Docked Document-Editor Toolbar (Sticky Top, Zero Keyboard Glitch) -->
+<div id="studio-command-bar" class="hidden sticky top-0 z-[80] w-full bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] rounded-2xl p-2 shadow-lg mb-4 transition-all">
+    <div class="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar w-full">
+        <div class="flex items-center gap-1 shrink-0">
+            <!-- Save Status Indicator -->
+            <div id="studio-save-status" class="flex items-center justify-center px-2 py-1" title="Status">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 studio-pulse"></span>
+            </div>
+
+            <div class="h-5 w-px bg-[var(--border)] mx-0.5"></div>
+
+            <!-- Block Select -->
+            <button onpointerdown="event.preventDefault();" onclick="selectActiveBlockText();" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--accent-light)] transition-all active:scale-95 cursor-pointer" title="Ganzen Block markieren">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
+            </button>
+
+            <!-- Bold & Underline -->
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('bold')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] font-black text-sm transition-all active:scale-95 cursor-pointer" title="Fett">B</button>
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('underline')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] font-bold text-sm transition-all active:scale-95 cursor-pointer" title="Unterstreichen"><u>U</u></button>
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('bullet')" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] transition-all active:scale-95 cursor-pointer" title="Aufzählung">• List</button>
+
+            <div class="h-5 w-px bg-[var(--border)] mx-0.5"></div>
+
+            <!-- Highlighter Palette -->
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'yellow')" class="w-6 h-6 rounded-full bg-yellow-400 ring-2 ring-yellow-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Gelb markieren"></button>
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'blue')" class="w-6 h-6 rounded-full bg-blue-400 ring-2 ring-blue-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Blau markieren"></button>
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'red')" class="w-6 h-6 rounded-full bg-red-400 ring-2 ring-red-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Rot markieren"></button>
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('highlight', 'green')" class="w-6 h-6 rounded-full bg-green-400 ring-2 ring-green-400/30 hover:scale-110 active:scale-95 transition-all cursor-pointer" title="Grün markieren"></button>
+
+            <div class="h-5 w-px bg-[var(--border)] mx-0.5"></div>
+
+            <!-- Clear formatting & Save to Vocab -->
+            <button onpointerdown="event.preventDefault();" onclick="applySelectionFormat('clear')" class="w-9 h-9 flex items-center justify-center rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all active:scale-95 cursor-pointer" title="Formatierung löschen">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+
+            <button onpointerdown="event.preventDefault();" onclick="addSelectedToVocab()" class="h-9 px-2.5 flex items-center gap-1 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 font-bold text-xs transition-all active:scale-95 cursor-pointer" title="Als Vokabel speichern">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>Vokabel</span>
+            </button>
         </div>
 
-        <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
+        <div class="flex items-center gap-1 shrink-0 ml-auto">
+            <!-- Dedicated Undo / Redo -->
+            <button onpointerdown="event.preventDefault();" onclick="smartUndo()" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Rückgängig (Ctrl+Z)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+            </button>
 
-        <!-- Formatting Tools (2026 SVGs) -->
-        <button onclick="triggerHaptic(); selectActiveBlockText();" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--accent-light)] transition-all active:scale-90 cursor-pointer" title="Ganzen Block markieren">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
-        </button>
+            <button onpointerdown="event.preventDefault();" onclick="smartRedo()" class="w-9 h-9 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] border border-[var(--border)] transition-all active:scale-95 cursor-pointer" title="Wiederholen (Ctrl+Y)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
+            </button>
 
-        <button onclick="applySelectionFormat('bold')" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] font-black text-sm transition-all active:scale-90 cursor-pointer" title="Fett">B</button>
-        
-        <button onclick="applySelectionFormat('underline')" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] font-bold text-sm transition-all active:scale-90 cursor-pointer" title="Unterstreichen"><u>U</u></button>
-
-        <button onclick="applySelectionFormat('bullet')" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--accent)] hover:bg-[var(--bg-app)] transition-all active:scale-90 cursor-pointer" title="Aufzählungsliste">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-        
-        <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
-
-        <!-- Color Palette Rings -->
-        <button onclick="applySelectionFormat('highlight', 'yellow')" class="w-5 h-5 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20 hover:scale-110 transition-all cursor-pointer" title="Gelb"></button>
-        <button onclick="applySelectionFormat('highlight', 'blue')" class="w-5 h-5 rounded-full bg-blue-400 ring-2 ring-blue-400/20 hover:scale-110 transition-all cursor-pointer" title="Blau"></button>
-        <button onclick="applySelectionFormat('highlight', 'red')" class="w-5 h-5 rounded-full bg-red-400 ring-2 ring-red-400/20 hover:scale-110 transition-all cursor-pointer" title="Rot"></button>
-        <button onclick="applySelectionFormat('highlight', 'green')" class="w-5 h-5 rounded-full bg-green-400 ring-2 ring-green-400/20 hover:scale-110 transition-all cursor-pointer" title="Grün"></button>
-        
-        <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
-
-        <!-- Clear & Add Vocab -->
-        <button onclick="applySelectionFormat('clear')" class="w-8 h-8 flex items-center justify-center rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all active:scale-90 cursor-pointer" title="Formatierung radieren">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-        </button>
-
-        <button onclick="addSelectedToVocab()" class="w-8 h-8 flex items-center justify-center rounded-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all active:scale-90 cursor-pointer" title="Als Vokabel speichern">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-        </button>
-
-        <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
-
-        <!-- Undo / Redo -->
-        <button onclick="smartUndo()" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all active:scale-90 cursor-pointer" title="Rückgängig (Ctrl+Z)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-        </button>
-
-        <button onclick="smartRedo()" class="w-8 h-8 flex items-center justify-center rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-all active:scale-90 cursor-pointer" title="Wiederholen (Ctrl+Y)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
-        </button>
-
-        <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
-
-        <!-- Exit Studio Button -->
-        <button onclick="toggleEditMode()" class="w-8 h-8 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all active:scale-90 cursor-pointer" title="Studio Beenden">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-        </button>
-
+            <!-- Done / Exit Edit Mode Button -->
+            <button onpointerdown="event.preventDefault();" onclick="toggleEditMode()" class="h-9 px-3 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer" title="Bearbeitung beenden">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <span>Fertig</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -1067,9 +1063,7 @@
                     <!-- Account & Advanced -->
                     <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-[var(--radius-card)] p-5 shadow-sm flex flex-col">
                         <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 border-b border-[var(--border)] pb-2">Konto & System</h4>
-                        <button onclick="openProfileSettings()" class="w-full py-3 mb-4 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-black font-bold text-xs rounded-lg cursor-pointer shadow-sm transition-transform active:scale-95">👤 Cloud-Konto verwalten</button>
-                        <div class="h-px bg-[var(--border)] w-full mb-4 mt-auto"></div>
-                        <button onclick="switchTab('classic');" class="w-full py-2.5 text-xs font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 rounded-lg border border-amber-200 cursor-pointer">🏛️ Klassisches Archiv (Schreibgeschützt)</button>
+                      <button onclick="openProfileSettings()" class="w-full py-3 mb-4 bg-zinc-800 dark:bg-zinc-200 text-white dark:text-black font-bold text-xs rounded-lg cursor-pointer shadow-sm transition-transform active:scale-95">👤 Cloud-Konto verwalten</button>
                     </div>
                 </div>
             </section>
@@ -1254,63 +1248,7 @@
         </div>
     </div>
 </div>
-<div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-2.5 py-1.5 rounded-[22px] shadow-2xl overflow-x-auto no-scrollbar">
-    <!-- Block Select -->
-    <button onmousedown="event.preventDefault()" onclick="selectActiveBlockText();" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--accent)] bg-[var(--accent-light)] rounded-xl border border-[var(--accent)]/30 active:scale-90 transition-transform cursor-pointer" title="Ganzen Block markieren">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 14h2a2 2 0 002-2v-2M9 12h6"/></svg>
-    </button>
-
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-
-    <!-- Bold -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bold')" class="shrink-0 w-10 h-10 flex items-center justify-center font-black text-sm text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Fett">B</button>
-
-    <!-- Underline -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('underline')" class="shrink-0 w-10 h-10 flex items-center justify-center font-bold text-sm text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Unterstreichen"><u>U</u></button>
-
-    <!-- Bullet List -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('bullet')" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--accent)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Aufzählungsliste">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-
-    <!-- Color Palette -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'yellow')" class="shrink-0 w-7 h-7 rounded-full bg-yellow-400 ring-2 ring-yellow-400/30 active:scale-110 transition-transform cursor-pointer" title="Gelb"></button>
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'blue')" class="shrink-0 w-7 h-7 rounded-full bg-blue-400 ring-2 ring-blue-400/30 active:scale-110 transition-transform cursor-pointer" title="Blau"></button>
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'red')" class="shrink-0 w-7 h-7 rounded-full bg-red-400 ring-2 ring-red-400/30 active:scale-110 transition-transform cursor-pointer" title="Rot"></button>
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('highlight', 'green')" class="shrink-0 w-7 h-7 rounded-full bg-green-400 ring-2 ring-green-400/30 active:scale-110 transition-transform cursor-pointer" title="Grün"></button>
-
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-
-    <!-- Clear & Vocab -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('clear')" class="shrink-0 w-10 h-10 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Formatierung löschen">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-    </button>
-
-    <button onmousedown="event.preventDefault()" onclick="addSelectedToVocab()" class="shrink-0 w-10 h-10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Als Vokabel speichern">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-    </button>
-
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-
-    <!-- Undo -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('undo')" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Rückgängig">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-    </button>
-
-    <!-- Redo -->
-    <button onmousedown="event.preventDefault()" onclick="applySelectionFormat('redo')" class="shrink-0 w-10 h-10 flex items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-app)] rounded-xl border border-[var(--border)] active:scale-90 transition-transform cursor-pointer" title="Wiederholen">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/></svg>
-    </button>
-
-    <div class="h-5 w-px bg-[var(--border)] shrink-0 mx-0.5"></div>
-
-    <!-- Exit Edit Mode -->
-    <button onmousedown="event.preventDefault()" onclick="toggleEditMode()" class="shrink-0 w-10 h-10 flex items-center justify-center bg-emerald-600 text-white rounded-xl active:scale-90 transition-transform cursor-pointer shadow-md" title="Fertig">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-    </button>
-</div>
+<!-- Toolbar unified in #studio-command-bar -->
     <!-- Bullet List Auto-Format Toolbar Helper -->
     <div id="list-helper-toolbar" class="hidden fixed z-50 flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-xl shadow-2xl transition-all duration-150 ring-1 ring-black/5">
         <span class="text-xs font-bold text-[var(--accent)] select-none">📝 Liste?</span>
@@ -1498,6 +1436,11 @@
             return cleaned.trim();
         }
 
+        // P0 Bug Fix: Escapes single quotes so passing text into onclick attributes never causes a JS SyntaxError
+        function safeEncodeForAttr(str) {
+            if (!str) return "";
+            return encodeURIComponent(String(str)).replace(/'/g, "%27");
+        }
         async function safeFetchJson(url) {
             try {
                 const response = await fetch(url);
@@ -1626,42 +1569,40 @@
             }
         }
 
-        // FIXED MEMORY LEAK: Now only caches the active topic, drastically saving memory
-        function pushToHistory() {
-            if (undoStack.length > 50) undoStack.shift();
+        
+        // DEDICATED HISTORY STACK ENGINE (RELIABLE UNDO / REDO ACROSS ALL NODES)
+        function captureHistoryState() {
+            const activeTopic = activeTab === 'diskussion' 
+                ? (DISKUSSIONEN_DATA[activeIdx] || {}) 
+                : (TEMPLATE_DATA[activeIdx] || {});
             
-            let activeSnapshot = null;
-            if (activeTab === 'diskussion') {
-                activeSnapshot = JSON.parse(JSON.stringify(DISKUSSIONEN_DATA[activeIdx] || {}));
-            } else {
-                activeSnapshot = JSON.parse(JSON.stringify(TEMPLATE_DATA[activeIdx] || {}));
-            }
-
-            const stateSnapshot = {
+            const tid = activeTopic.id || 0;
+            return {
                 activeIdx: activeIdx,
                 activeTab: activeTab,
-                topicData: activeSnapshot,
-                highlights: JSON.parse(JSON.stringify(highlightsStore[activeSnapshot.id] || {})),
+                topicData: JSON.parse(JSON.stringify(activeTopic)),
+                highlights: JSON.parse(JSON.stringify(highlightsStore[tid] || {})),
                 redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
             };
-            undoStack.push(JSON.stringify(stateSnapshot));
+        }
+
+        function pushToHistory() {
+            if (undoStack.length >= 60) undoStack.shift();
+            undoStack.push(JSON.stringify(captureHistoryState()));
             redoStack = []; 
         }
 
- let globalSaveTimeout;
-   // FIX: Force raw plain text on paste EVERYWHERE inside the editor
+        let globalSaveTimeout;
+        let typingPauseTimer = null;
+
+        // Force clean text on paste
         document.addEventListener('paste', function(e) {
-            // Check if the target or any of its parent elements is the editable box
             const targetElement = e.target.nodeType === 3 ? e.target.parentNode : e.target;
             const isInsideEditor = targetElement.closest('[contenteditable="true"]');
-            
             if (isInsideEditor) {
-                e.preventDefault(); // Stop the normal rich-text paste
-                
-                // Get the pure, raw text without any background colors or fonts
+                e.preventDefault();
+                pushToHistory();
                 const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-                
-                // Insert the clean text
                 document.execCommand('insertText', false, text);
             }
         });
@@ -1671,17 +1612,21 @@
                 const el = e.target;
                 const blockKey = el.getAttribute('data-block-key');
                 if (!blockKey) return;
+
+                // Debounced history snapshot on natural typing pauses
+                clearTimeout(typingPauseTimer);
+                typingPauseTimer = setTimeout(() => {
+                    pushToHistory();
+                }, 850);
                 
-                let topicId, topic;
+                let topic;
                 if (activeTab === 'diskussion') {
                     topic = DISKUSSIONEN_DATA[activeIdx];
-                } else if (activeTab === 'template') {
-                    topic = TEMPLATE_DATA[activeIdx];
                 } else {
-                    return;
+                    topic = TEMPLATE_DATA[activeIdx];
                 }
                 if (!topic) return;
-                topicId = topic.id;
+                const topicId = topic.id;
                 
                 const htmlVal = el.innerHTML;
                 const textVal = el.innerText.trim();
@@ -1699,7 +1644,7 @@
                 const saveStatusEl = document.getElementById('studio-save-status');
                 if (saveStatusEl) {
                     saveStatusEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>`;
-                    saveStatusEl.title = "Speichere...";
+                    saveStatusEl.title = "Wird gespeichert...";
                 }
 
                 globalSaveTimeout = setTimeout(() => {
@@ -1709,29 +1654,18 @@
                         saveStatusEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 studio-pulse"></span>`;
                         saveStatusEl.title = "Automatisch gespeichert";
                     }
-                }, 1200);
+                }, 1000);
             }
         });
 
-      
-function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
-    if (!isEditMode) return;
-    
-    hideToolbar();
-    clearTimeout(globalSaveTimeout);
+        function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
+            if (!isEditMode) return;
+            clearTimeout(globalSaveTimeout);
 
-    const htmlVal = cleanEditableHTML(element.innerHTML);
-    const textVal = element.innerText.trim();
-
+            const htmlVal = cleanEditableHTML(element.innerHTML);
+            const textVal = element.innerText.trim();
             
-            let topic;
-            if (activeTab === 'diskussion') {
-                topic = DISKUSSIONEN_DATA[activeIdx];
-            } else if (activeTab === 'template') {
-                topic = TEMPLATE_DATA[activeIdx];
-            }
-            
-            // Update the topic object memory so we don't lose the text!
+            let topic = activeTab === 'diskussion' ? DISKUSSIONEN_DATA[activeIdx] : TEMPLATE_DATA[activeIdx];
             if (topic) {
                 if (blockKey === 'content') {
                     topic.content = htmlVal;
@@ -1740,110 +1674,62 @@ function handleInlineBlur(element, topicId, lang, blockKey, tabName) {
                 }
             }
 
-            // Immediately push the highlights & text to the cloud without waiting
             saveHighlight(topicId, blockKey, htmlVal);
             saveEditsSilent();
         }
 
-        function smartUndo() {
-            const success = document.execCommand('undo');
-            if (!success) {
-                undo();
+        function smartUndo() { undo(); }
+        function smartRedo() { redo(); }
+
+        function undo() {
+            if (undoStack.length === 0) {
+                showToast("Keine weiteren Änderungen zum Rückgängig machen.", true);
+                return;
             }
+            triggerHaptic(10);
+            redoStack.push(JSON.stringify(captureHistoryState()));
+            
+            const prevState = JSON.parse(undoStack.pop());
+            applyHistoricalState(prevState);
+            showToast("Rückgängig ausgeführt");
         }
 
-        function smartRedo() {
-            const success = document.execCommand('redo');
-            if (!success) {
-                redo();
-            }
-        }
-
-        // FIXED MEMORY LEAK: Undo logic optimized
-       function undo() {
-    if (undoStack.length === 0) {
-        showToast("Keine weiteren Änderungen zum Rückgängig machen.", true);
-        return;
-    }
-            
-            let currentSnapshot = null;
-            if (activeTab === 'diskussion') {
-                currentSnapshot = JSON.parse(JSON.stringify(DISKUSSIONEN_DATA[activeIdx] || {}));
-            } else {
-                currentSnapshot = JSON.parse(JSON.stringify(TEMPLATE_DATA[activeIdx] || {}));
-            }
-            
-            const currentStateSnapshot = {
-                activeIdx: activeIdx,
-                activeTab: activeTab,
-                topicData: currentSnapshot,
-                highlights: JSON.parse(JSON.stringify(highlightsStore[currentSnapshot.id] || {})),
-                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
-            };
-            redoStack.push(JSON.stringify(currentStateSnapshot));
-            
-            const prevStateSnapshot = JSON.parse(undoStack.pop());
-            
-            if (prevStateSnapshot.activeTab === 'diskussion') {
-                DISKUSSIONEN_DATA[prevStateSnapshot.activeIdx] = prevStateSnapshot.topicData;
-            } else {
-                TEMPLATE_DATA[prevStateSnapshot.activeIdx] = prevStateSnapshot.topicData;
-            }
-            
-            highlightsStore[prevStateSnapshot.topicData.id] = prevStateSnapshot.highlights;
-            
-            if(prevStateSnapshot.redemittel) REDEMITTEL_DATA = prevStateSnapshot.redemittel;
-            localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
-            
-            saveEditsSilent();
-            if(activeTab === 'redemittel') { saveRedemittelData(); renderRedemittel(); }
-            renderSidebar();
-            if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
-            if(activeTab === 'mindmap') renderSimplisticBoxGrid();
-        }
-
-        // FIXED MEMORY LEAK: Redo logic optimized
         function redo() {
-    if (redoStack.length === 0) {
-        showToast("Keine Änderungen zum Wiederholen.", true);
-        return;
-    }
-            
-            let currentSnapshot = null;
-            if (activeTab === 'diskussion') {
-                currentSnapshot = JSON.parse(JSON.stringify(DISKUSSIONEN_DATA[activeIdx] || {}));
-            } else {
-                currentSnapshot = JSON.parse(JSON.stringify(TEMPLATE_DATA[activeIdx] || {}));
+            if (redoStack.length === 0) {
+                showToast("Keine weiteren Änderungen zum Wiederholen.", true);
+                return;
             }
-            const currentStateSnapshot = {
-                activeIdx: activeIdx,
-                activeTab: activeTab,
-                topicData: currentSnapshot,
-                highlights: JSON.parse(JSON.stringify(highlightsStore[currentSnapshot.id] || {})),
-                redemittel: REDEMITTEL_DATA ? JSON.parse(JSON.stringify(REDEMITTEL_DATA)) : null
-            };
-            undoStack.push(JSON.stringify(currentStateSnapshot));
-            
-            const nextStateSnapshot = JSON.parse(redoStack.pop());
-            
-            if (nextStateSnapshot.activeTab === 'diskussion') {
-                DISKUSSIONEN_DATA[nextStateSnapshot.activeIdx] = nextStateSnapshot.topicData;
-            } else {
-                TEMPLATE_DATA[nextStateSnapshot.activeIdx] = nextStateSnapshot.topicData;
-            }
-            
-            highlightsStore[nextStateSnapshot.topicData.id] = nextStateSnapshot.highlights;
-            
-            if(nextStateSnapshot.redemittel) REDEMITTEL_DATA = nextStateSnapshot.redemittel;
-            localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
-            
-            saveEditsSilent();
-            if(activeTab === 'redemittel') { saveRedemittelData(); renderRedemittel(); }
-            renderSidebar();
-            if(activeTab === 'template' || activeTab === 'classic' || activeTab === 'diskussion') renderActiveTopic();
-            if(activeTab === 'mindmap') renderSimplisticBoxGrid();
+            triggerHaptic(10);
+            undoStack.push(JSON.stringify(captureHistoryState()));
+
+            const nextState = JSON.parse(redoStack.pop());
+            applyHistoricalState(nextState);
+            showToast("Wiederholen ausgeführt");
         }
 
+        function applyHistoricalState(state) {
+            activeIdx = state.activeIdx;
+            const tid = state.topicData.id;
+            
+            if (state.activeTab === 'diskussion') {
+                DISKUSSIONEN_DATA[activeIdx] = state.topicData;
+            } else {
+                TEMPLATE_DATA[activeIdx] = state.topicData;
+            }
+
+            highlightsStore[tid] = state.highlights || {};
+            if (state.redemittel) REDEMITTEL_DATA = state.redemittel;
+
+            localStorage.setItem(`b2_highlights_${getSelectedUserSuffix()}`, JSON.stringify(highlightsStore));
+            saveEditsSilent();
+
+            if (activeTab === 'redemittel') {
+                renderRedemittel();
+            } else {
+                renderActiveTopic();
+            }
+            renderSidebar();
+        }
         async function saveEditsSilent() {
             const suffix = getSelectedUserSuffix();
             if (activeTab === 'diskussion') {
@@ -2733,22 +2619,39 @@ function toggleSidebarTab(tab) {
             activeListElement.blur();
         }
 
+ // Automatic Backward-Compatible Storage Migration
+        function migrateLegacyStorage() {
+            const suffix = getSelectedUserSuffix();
+            const legacyKeys = [
+                { oldK: `edited_template_data_1_52_${suffix}`, newK: `edited_template_data_${suffix}` },
+                { oldK: `edited_diskussionen_data_1_52_${suffix}`, newK: `edited_diskussionen_${suffix}` },
+                { oldK: `learned_topics_1_52_${suffix}`, newK: `learned_topics_${suffix}` }
+            ];
+            legacyKeys.forEach(pair => {
+                if (localStorage.getItem(pair.oldK) && !localStorage.getItem(pair.newK)) {
+                    localStorage.setItem(pair.newK, localStorage.getItem(pair.oldK));
+                }
+            });
+        }
+
         async function loadTopics() {
             try {
-                let [resTopics, resTemplate, resGrammatik, resDisk] = await Promise.all([
-                    safeFetchJson('./Topics.json').then(r => r && r.length ? r : safeFetchJson('./topics.json')),
+                migrateLegacyStorage();
+
+                // Copyright compliance: topics.json is permanently removed.
+                // App uses template.json as canonical exam template engine.
+                let [resTemplate, resGrammatik, resDisk] = await Promise.all([
                     safeFetchJson('./Template.json').then(r => r && r.length ? r : safeFetchJson('./template.json')),
                     safeFetchJson('./Grammatik.json').then(r => r && r.length ? r : safeFetchJson('./grammatik.json')),
                     safeFetchJson('./diskussionen.json')
                 ]);
 
-                let baseTopics = Array.isArray(resTopics) ? resTopics : (resTopics && typeof resTopics === 'object' ? Object.values(resTopics) : []);
                 let baseTemplate = Array.isArray(resTemplate) ? resTemplate : (resTemplate && typeof resTemplate === 'object' ? Object.values(resTemplate) : []);
                 let baseGrammatik = Array.isArray(resGrammatik) ? resGrammatik : (resGrammatik && typeof resGrammatik === 'object' ? Object.values(resGrammatik) : []);
                 let baseDisk = Array.isArray(resDisk) ? resDisk : [];
 
-                if (baseTopics.length === 0) {
-                    baseTopics = [{
+                if (baseTemplate.length === 0) {
+                    baseTemplate = [{
                         id: 1, title_de: "Rauchen in der Öffentlichkeit verbieten?", title_en: "Ban smoking in public places?", category: "Freizeit & Gesundheit",
                         einleitung_de: "Das Thema Rauchen in der Öffentlichkeit wird seit Jahren kontrovers diskutiert.",
                         pro_de: ["Gesundheitsschutz für Nichtraucher."], contra_de: ["Einschränkung der persönlichen Freiheit."],
@@ -2756,9 +2659,12 @@ function toggleSidebarTab(tab) {
                     }];
                 }
 
-                if (baseTemplate.length === 0) baseTemplate = JSON.parse(JSON.stringify(baseTopics));
-                if (baseDisk.length === 0) baseDisk = baseTopics.map(t => ({ id: t.id, title: t.title_de, content: "Kein Text verfügbar." }));
+                if (baseDisk.length === 0) {
+                    baseDisk = baseTemplate.map(t => ({ id: t.id, title: t.title_de, content: "Kein Text verfügbar." }));
+                }
 
+                // Safety alias: TOPICS_DATA points to TEMPLATE_DATA ensuring no runtime undefined references occur
+                let baseTopics = baseTemplate;
                 baseGrammatik.forEach(item => {
                     if (item.title) item.title = cleanCitationLinks(item.title);
                     if (item.description) item.description = cleanCitationLinks(item.description);
@@ -3074,28 +2980,13 @@ document.addEventListener('focusin', (e) => {
 function applySelectionFormat(type, value) {
     triggerHaptic(12);
 
-    // 1. Explicitly focus the active text block before running formatting commands
-    if (savedActiveElement && savedActiveElement.hasAttribute('contenteditable')) {
-        savedActiveElement.focus();
-    }
+    if (type === 'undo') { smartUndo(); return; }
+    if (type === 'redo') { smartRedo(); return; }
 
-    // 2. Restore saved range
     restoreCurrentSelection();
-
     const selection = window.getSelection();
 
-    // Dedicated Undo & Redo Handlers
-    if (type === 'undo') {
-        smartUndo();
-        return;
-    }
-    if (type === 'redo') {
-        smartRedo();
-        return;
-    }
-
     if (!selection || selection.rangeCount === 0) return;
-    if (type !== 'bullet' && selection.isCollapsed) return;
 
     let activeContainer = selection.anchorNode;
     while (activeContainer && (!activeContainer.hasAttribute || !activeContainer.hasAttribute('contenteditable'))) {
@@ -3138,12 +3029,10 @@ function applySelectionFormat(type, value) {
     }
 
     if (activeContainer) {
-        activeContainer.focus();
         activeContainer.dispatchEvent(new Event('input', { bubbles: true }));
     }
-    handleSelectionChange();
+    saveCurrentSelection();
 }
-
         function unwrapSelection(activeContainer) {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
@@ -3278,20 +3167,22 @@ item.className = `w-full text-left p-4 md:p-3 rounded-xl flex items-center justi
 
             updateProgress();
         }
-
-        function updateProgress() {
-            const dataset = TOPICS_DATA; 
+function updateProgress() {
+            const dataset = TEMPLATE_DATA && TEMPLATE_DATA.length ? TEMPLATE_DATA : [];
             if (dataset.length === 0) return;
 
             const total = dataset.length;
             const learnedCount = dataset.filter(t => learnedList.includes(t.id)).length;
             
-           const progressText = document.getElementById('progress-text');
-if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
+            const progressText = document.getElementById('progress-text');
+            if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
             
+            const sidebarHeader = document.getElementById('sidebar-header-title');
+            if (sidebarHeader) sidebarHeader.textContent = `Themen (1-${total})`;
+
             const progressBar = document.getElementById('progress-bar');
             if (progressBar) {
-                const percent = (learnedCount / total) * 100;
+                const percent = Math.min(100, (learnedCount / total) * 100);
                 progressBar.style.width = `${percent}%`;
             }
         }
@@ -3318,8 +3209,8 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
             });
         }
 
-        function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
-            const encodedText = encodeURIComponent(stripHtml(textForAudio));
+       function buildCardWrapper(title, content, blockKey, textForAudio, dbField, showAudio = true, index = 0, lang = 'de') {
+            const encodedText = safeEncodeForAttr(stripHtml(textForAudio));
             const isAlwaysOpen = blockKey === 'einleitung_de' || blockKey === 'content';
             
             return `
@@ -3330,8 +3221,7 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                         </div>
                         <div class="flex items-center gap-3" onclick="event.stopPropagation();">
                             ${showAudio && textForAudio ? `
-                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Anhören">
-                                <span class="soundwave-bar"></span>
+                            <button onclick="playBlockAudio(decodeURIComponent('${encodedText}'), this)" class="audio-btn text-[var(--text-muted)] hover:text-[var(--accent)] transition-all flex items-center justify-center p-1 rounded-lg hover:bg-[var(--bg-app)] gap-0.5 h-8 w-10 flex-shrink-0" title="Anhören">                                <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
                                 <span class="soundwave-bar"></span>
@@ -3364,9 +3254,9 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
             }
         }
 
-        function buildTemplateBlockHTML(title, deVal, blockKey, dbField, topicId, currentEditMode, isClassic) {
+    function buildTemplateBlockHTML(title, deVal, blockKey, dbField, topicId, currentEditMode, isClassic) {
             const cleanDeText = stripHtml(deVal);
-            const statementSpeechText = encodeURIComponent(cleanDeText);
+            const statementSpeechText = safeEncodeForAttr(cleanDeText);
             
             let topic;
             if (activeTab === 'classic') topic = TOPICS_DATA[activeIdx];
@@ -4184,8 +4074,9 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
 
             const currentEditMode = isClassic ? false : isEditMode;
 
-           document.getElementById('active-topic-num').innerHTML = `
-                <span class="whitespace-nowrap inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / 52 ${isClassic ? '(Klassisch)' : (isDiskussion ? '(Diskussion)' : '')}</span>
+          const totalCount = (TEMPLATE_DATA && TEMPLATE_DATA.length) || 52;
+            document.getElementById('active-topic-num').innerHTML = `
+                <span class="whitespace-nowrap inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded uppercase tracking-wider">Thema ${topic.id} / ${totalCount} ${isDiskussion ? '(Diskussion)' : ''}</span>
             `;
             
             const deStar = STARRED_TOPICS.includes(topic.id) ? `<span class="text-amber-500 text-lg select-none animate-pulse">★</span>` : '';
@@ -4322,7 +4213,7 @@ if (progressText) progressText.textContent = `${learnedCount} / ${total}`;
                                     ${vocabPracticeMode ? '🃏 Übungsmodus: AN' : '📋 Listen-Ansicht'}
                                 </button>
                                 <button onclick="toggleVocabShowAll()" class="px-3 py-2 text-[11px] font-bold rounded-xl border transition-colors ${vocabShowAll ? 'bg-teal-600 text-white border-teal-600 shadow-md' : 'bg-[var(--bg-app)] text-[var(--text-primary)] border-[var(--border)] hover:bg-teal-50'}">
-                                    ${vocabShowAll ? '🌍 Alle 52 Themen' : '📌 Nur Thema ' + tId}
+                                    ${vocabShowAll ? `🌍 Alle ${TEMPLATE_DATA.length} Themen` : '📌 Nur Thema ' + tId}
                                 </button>
                                 ${!vocabShowAll ? `
                                 <button onclick="openVocabEditor()" class="px-3 py-2 bg-[var(--accent)] text-white text-[11px] font-bold rounded-xl shadow-md hover:scale-105 transition-transform flex items-center justify-center gap-1.5">
@@ -5012,12 +4903,7 @@ let navigationBar = `
             });
         }
 
-      function toggleEditMode() {
-            if (activeTab === 'classic') {
-                showToast("Der Klassisch-Modus ist schreibgeschützt.", true);
-                return;
-            }
-            
+     function toggleEditMode() {
             isEditMode = !isEditMode;
             triggerHaptic(15);
             
@@ -5028,35 +4914,23 @@ let navigationBar = `
             
             if (isEditMode) {
                 body.classList.add('studio-mode-active');
-                
-                // Show top Studio bar ONLY on Desktop (>= 1024px)
-                if (window.innerWidth >= 1024 && studioBar && (activeTab === 'template' || activeTab === 'diskussion')) {
+                if (studioBar && (activeTab === 'template' || activeTab === 'diskussion')) {
                     studioBar.classList.remove('hidden');
-                } else if (studioBar) {
-                    studioBar.classList.add('hidden'); // Strictly hide top bar on mobile/tablet
                 }
-
                 if (tipBanner) tipBanner.classList.remove('hidden');
-
-                if (window.innerWidth < 1024) {
-                    const toolbar = document.getElementById('formatting-toolbar');
-                    if (toolbar) {
-                        toolbar.classList.remove('hidden');
-                        positionToolbarAboveKeyboard();
-                    }
+                if (fab) {
+                    fab.classList.add('bg-emerald-600', 'text-white', 'ring-4', 'ring-emerald-500/30');
+                    fab.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                 }
             } else {
                 body.classList.remove('studio-mode-active');
                 if (studioBar) studioBar.classList.add('hidden');
                 if (tipBanner) tipBanner.classList.add('hidden');
-                hideToolbar();
-
                 if (fab) {
                     fab.classList.remove('bg-emerald-600', 'text-white', 'ring-4', 'ring-emerald-500/30');
                     fab.classList.add('bg-white', 'dark:bg-zinc-800', 'text-[var(--accent)]');
                     document.getElementById('edit-fab-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>';
                 }
-
                 saveEditsSilent();
             }
             
@@ -5068,9 +4942,8 @@ let navigationBar = `
         }
   function exportTotalBackup() {
             const backupObj = {
-                version: "B2Trainer_Unified_Backup_v6",
+                version: "B2Trainer_Unified_Backup_v7",
                 timestamp: new Date().toISOString(),
-                topics: TOPICS_DATA,
                 template: TEMPLATE_DATA,
                 diskussion: DISKUSSIONEN_DATA,
                 redemittel: REDEMITTEL_DATA,
@@ -5083,12 +4956,19 @@ let navigationBar = `
                     activeTab: activeTab
                 }
             };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+            
+            // Safe native Blob download (works cleanly on iOS Safari & Android Chrome)
+            const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
             const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `B2Trainer_GesamtBackup_${new Date().toISOString().slice(0,10)}.json`);
+            downloadAnchor.href = url;
+            downloadAnchor.download = `B2Trainer_Backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
-            downloadAnchor.remove();
+            setTimeout(() => {
+                document.body.removeChild(downloadAnchor);
+                URL.revokeObjectURL(url);
+            }, 200);
         }
 
         function downloadFile(content, fileName, contentType) {
@@ -5721,12 +5601,12 @@ async function repairAllVocabImmediately() {
             const deltaY = touchEndY - touchStartY;
             const duration = Date.now() - touchStartTime;
             
+           // Ignore swipe only if interacting with active input fields or actively selecting text
             if (e.target.closest('button') || 
                 e.target.closest('input') || 
+                e.target.closest('select') || 
                 e.target.closest('textarea') || 
-                e.target.closest('[contenteditable="true"]') ||
-                e.target.closest('.selectable-text') ||
-                e.target.closest('#active-topic-container')) {
+                e.target.closest('[contenteditable="true"]')) {
                 return; 
             }
 
@@ -5835,50 +5715,27 @@ async function repairAllVocabImmediately() {
                 if (activeTab === 'mindmap') renderSimplisticBoxGrid();
             };
         }
-// Fixed Keyboard Offset Positioner for Mobile & Tablet
-function positionToolbarAboveKeyboard() {
-    const toolbar = document.getElementById('formatting-toolbar');
-    if (!toolbar || toolbar.classList.contains('hidden')) return;
-
-    if (window.visualViewport) {
-        const vv = window.visualViewport;
-        const layoutHeight = document.documentElement.clientHeight || window.innerHeight;
-        
-        // Accurate distance from layout bottom to the visual top of the virtual keyboard
-        const distFromBottom = layoutHeight - (vv.offsetTop + vv.height);
-        const bottomOffset = Math.max(16, distFromBottom + 12);
-
-        toolbar.style.top = 'auto';
-        toolbar.style.bottom = `${bottomOffset}px`;
-        toolbar.style.left = '50%';
-        toolbar.style.transform = 'translateX(-50%)';
-    } else {
-        toolbar.style.top = 'auto';
-        toolbar.style.bottom = '16px';
-        toolbar.style.left = '50%';
-        toolbar.style.transform = 'translateX(-50%)';
-    }
-}
-
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', positionToolbarAboveKeyboard);
-            window.visualViewport.addEventListener('scroll', positionToolbarAboveKeyboard);
+// VisualViewport Auto-Scroll Handler: Ensures active typing lines stay comfortably visible above virtual keyboards
+        function ensureActiveBlockVisible(el) {
+            if (!el) return;
+            if (window.visualViewport) {
+                const rect = el.getBoundingClientRect();
+                const vv = window.visualViewport;
+                if (rect.bottom > vv.height) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
-        // Auto-center focused text block and pin toolbar immediately above soft keyboard
         document.addEventListener('focusin', (e) => {
             if (e.target && e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
-                triggerHaptic(8);
-                handleSelectionChange();
-                
-                // Reposition toolbar instantly & smoothly scroll active box into view
+                savedActiveElement = e.target;
+                saveCurrentSelection();
                 setTimeout(() => {
-                    positionToolbarAboveKeyboard();
-                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 150);
-                setTimeout(() => {
-                    positionToolbarAboveKeyboard();
-                }, 350);
+                    ensureActiveBlockVisible(e.target);
+                }, 280);
             }
         });
         // --- MODERN TOAST NOTIFICATION ---
