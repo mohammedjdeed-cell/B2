@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TELC B2 Diskussionstrainer — Debate Studio</title>
+    <title>TELC B2 Trainer — Debate Studio & Strategie</title>
     
     <!-- Fonts & PWA Metadata -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&family=Outfit:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="apple-touch-icon" href="./icons_improved/icon-512.png">
+    <link rel="apple-touch-icon" href="./icon-512.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0284c7">
 
@@ -20,26 +20,31 @@
         tailwind.config = { darkMode: 'class' };
     </script>    
   
-    <!-- Modular App Stylesheet -->
+    <!-- Custom CSS Variables & Animations -->
     <link rel="stylesheet" href="css/app.css">
+
+    <!-- Firebase SDKs (Gracefully bypassed if offline or unavailable) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Pragmatic Engine Script (Standard script, works locally and online) -->
+    <script defer src="js/app.js"></script>
 </head>
 <body class="h-full flex flex-col lg:flex-row overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] select-none">
 
-    <!-- Slide-out Drawer Overlay for Mobile & Modals -->
+    <!-- Drawer Overlay -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[85] hidden transition-opacity duration-300"></div>
 
-    <!-- ========================================== -->
-    <!-- 1. LEFT SIDEBAR (DRAWER ON MOBILE / PANEL ON DESKTOP) -->
-    <!-- ========================================== -->
+    <!-- 1. SIDEBAR -->
     <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)] transition-all duration-300">
-        
         <!-- Mobile Drag Handle -->
         <div id="sidebar-drag-handle" class="w-full flex flex-col items-center pt-3 pb-2 lg:hidden shrink-0 cursor-pointer bg-[var(--bg-card)] rounded-t-[28px]">
             <div class="w-14 h-1 bg-[var(--text-faint)] rounded-full opacity-40 mb-1.5"></div>
             <span class="text-[10px] font-extrabold text-[var(--text-muted)] uppercase tracking-widest">Schließen</span>
         </div>
 
-        <!-- Desktop Sidebar Header -->
+        <!-- Desktop Header -->
         <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] items-center justify-between sidebar-header-flex shrink-0 hidden lg:flex">
             <h2 class="font-extrabold text-sm hide-on-collapse text-[var(--text-primary)]">Themenpool</h2>
             <button id="sidebar-toggle-btn" class="p-1.5 rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar minimieren">
@@ -47,13 +52,13 @@
             </button>
         </div>
 
-        <!-- Tab Switcher (Themen vs Mini-Ansicht) -->
+        <!-- Tab Toggle -->
         <div class="flex gap-2 p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0 hide-on-collapse">
             <button id="sbar-tab-list" class="flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-[var(--accent)] rounded-lg shadow-sm border border-[var(--border)] transition-all">📚 Themen</button>
             <button id="sbar-tab-mini" class="flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-all">🗂️ Mini-Ansicht</button>
         </div>
 
-        <!-- Sidebar Panel 1: Topics List -->
+        <!-- Sidebar Topics List -->
         <div id="sidebar-themen-content" class="flex-1 flex flex-col overflow-hidden">
             <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-2.5 shrink-0 hide-on-collapse">
                 <div class="flex items-center justify-between text-xs font-bold">
@@ -76,7 +81,7 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-2 space-y-1 bg-[var(--bg-sidebar)] no-scrollbar"></nav>
         </div>
 
-        <!-- Sidebar Panel 2: Mini-View Quick Vocabulary & Redemittel -->
+        <!-- Sidebar Mini-View -->
         <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
             <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)] shrink-0">
                 <div class="flex gap-1.5 p-1 bg-[var(--bg-app)] rounded-lg border border-[var(--border)] text-xs font-bold">
@@ -88,21 +93,15 @@
         </div>
     </aside>
 
-    <!-- ========================================== -->
-    <!-- 2. MAIN APP VIEWPORT (HEADER + WORKSPACE) -->
-    <!-- ========================================== -->
+    <!-- 2. MAIN APP VIEWPORT -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
-        
-        <!-- App Top Header -->
         <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 lg:px-6 py-3.5 flex items-center justify-between gap-4 z-40 shadow-sm shrink-0 relative pt-4">
-            <!-- German Flag Bar -->
             <div class="absolute top-0 left-0 w-full h-1 flex">
                 <div class="flex-1 bg-zinc-900"></div>
                 <div class="flex-1 bg-red-600"></div>
                 <div class="flex-1 bg-amber-400"></div>
             </div>
 
-            <!-- Brand Logo & Title -->
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 flex-shrink-0 bg-[var(--accent)] rounded-xl flex items-center justify-center text-white font-black text-sm tracking-tighter shadow-md">B2</div>
                 <div>
@@ -111,7 +110,7 @@
                 </div>
             </div>
 
-            <!-- Desktop Navigation Tabs -->
+            <!-- Desktop Nav -->
             <div class="hidden lg:flex bg-[var(--bg-app)] p-1 rounded-xl border border-[var(--border)] gap-1 shadow-inner">
                 <button id="nav-themen-desk" class="px-3.5 py-1.5 text-xs font-black rounded-lg bg-[var(--accent)] text-white shadow-md transition-all">📚 Studio</button>
                 <button id="nav-raster-desk" class="px-3.5 py-1.5 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
@@ -120,17 +119,16 @@
                 <button id="nav-settings-desk" class="px-3.5 py-1.5 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">⚙️ Setup</button>
             </div>
 
-            <!-- Quick Actions -->
             <div class="flex items-center gap-2">
                 <button id="header-profile-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Profil & Cloud-Konto">👤</button>
                 <button id="header-reload-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="App aktualisieren">🔄</button>
             </div>
         </header>
 
-        <!-- Main Dynamic Workspace Scroll Container -->
+        <!-- Main Dynamic Workspace -->
         <main id="main-scroll-container" class="flex-1 overflow-y-auto p-4 md:p-6 pb-28 lg:pb-8 space-y-6 bg-[var(--bg-app)] relative no-scrollbar">
 
-            <!-- Desktop Studio Command Bar (Active during edit mode) -->
+            <!-- Desktop Studio Command Bar -->
             <div id="studio-command-bar" class="hidden sticky top-2 z-[80] w-max mx-auto bg-[var(--bg-card)]/95 backdrop-blur-xl border border-[var(--border)] rounded-2xl p-1.5 shadow-2xl transition-all">
                 <div class="flex items-center gap-1">
                     <div id="studio-save-status" class="flex items-center px-2 py-1" title="Automatisch gespeichert">
@@ -156,10 +154,8 @@
                 </div>
             </div>
 
-            <!-- TAB SECTION 1: TOPIC DISCUSSION WORKSPACE -->
+            <!-- SECTION 1: WORKSPACE -->
             <div id="section-workspace" class="space-y-5 animate-fade-in">
-                
-                <!-- Topic Control Card -->
                 <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 rounded-2xl shadow-sm flex flex-col gap-3">
                     <div class="flex items-start justify-between gap-3 w-full">
                         <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -175,7 +171,6 @@
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="hidden xl:flex items-center gap-2 shrink-0">
                             <button id="btn-save-manual" class="btn-action bg-[var(--accent)] text-white">Sichern</button>
                             <button id="btn-pdf-export" class="btn-action bg-slate-800 dark:bg-slate-200 text-white dark:text-black">PDF</button>
@@ -183,18 +178,17 @@
                         </div>
                     </div>
 
-                    <!-- Subtabs (Template vs Wortschatz) -->
+                    <!-- Subtabs -->
                     <div class="grid grid-cols-2 bg-[var(--bg-app)] p-1 rounded-xl border border-[var(--border)] w-full gap-1">
                         <button id="subtab-template" class="py-2 text-xs font-black rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm">📝 Template & Dialog</button>
                         <button id="subtab-wortschatz" class="py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Vokabelkarten</button>
                     </div>
                 </div>
 
-                <!-- Active Topic Content Injector -->
                 <div id="active-topic-container" class="space-y-4"></div>
             </div>
 
-            <!-- TAB SECTION 2: BENTO BOX GRID / MINDMAP (55+ Topics) -->
+            <!-- SECTION 2: BENTO GRID / MINDMAP (Dynamic 55+ Topics) -->
             <section id="section-mindmap" class="hidden space-y-5 animate-fade-in">
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -211,29 +205,19 @@
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5"></div>
             </section>
 
-            <!-- TAB SECTION 3: REDEMITTEL -->
+            <!-- SECTION 3: REDEMITTEL -->
             <section id="section-redemittel" class="hidden space-y-5 animate-fade-in"></section>
 
-            <!-- TAB SECTION 4: GRAMMATIK -->
+            <!-- SECTION 4: GRAMMATIK -->
             <section id="section-grammar" class="hidden space-y-5 animate-fade-in"></section>
 
-            <!-- TAB SECTION 5: SETUP & EINSTELLUNGEN -->
-            <section id="section-settings" class="hidden space-y-5 animate-fade-in max-w-4xl mx-auto">
-                <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm text-center">
-                    <h2 class="text-xl font-black text-[var(--text-primary)]">⚙️ Einstellungen & Daten</h2>
-                    <p class="text-xs text-[var(--text-muted)] mt-0.5">Konfiguration, Audio-Ausgabe und Cloud-Sicherung.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="settings-grid-container">
-                    <!-- Loaded dynamically via settingsView.js -->
-                </div>
-            </section>
+            <!-- SECTION 5: SETUP & BACKUP -->
+            <section id="section-settings" class="hidden space-y-5 animate-fade-in max-w-4xl mx-auto"></section>
 
         </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 3. FLOATING EDIT ACTION BUTTONS (MOBILE/DESKTOP) -->
-    <!-- ========================================== -->
+    <!-- 3. FLOATING ACTION BUTTONS -->
     <div id="floating-action-buttons" class="fixed right-4 bottom-20 lg:bottom-6 flex flex-col gap-2.5 z-40 transition-all">
         <button id="fab-undo" class="hidden fab-btn" title="Rückgängig">↩</button>
         <button id="fab-redo" class="hidden fab-btn" title="Wiederholen">↪</button>
@@ -242,7 +226,7 @@
         </button>
     </div>
 
-    <!-- Mobile Touch Formatting Toolbar (Docked above virtual keyboard) -->
+    <!-- Mobile Toolbar -->
     <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-2.5 py-1.5 rounded-2xl shadow-2xl overflow-x-auto no-scrollbar">
         <button class="mob-tool-btn" data-action="bold"><b>B</b></button>
         <button class="mob-tool-btn" data-action="underline"><u>U</u></button>
@@ -257,9 +241,7 @@
         <button class="mob-tool-btn text-emerald-600" data-action="close">✓</button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 4. MOBILE BOTTOM NAVIGATION (2026 FLAT BAR) -->
-    <!-- ========================================== -->
+    <!-- 4. MOBILE BOTTOM NAVIGATION -->
     <nav id="mobile-bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-xl border-t border-[var(--border)] pb-safe pt-1.5 pb-2 px-3 flex justify-around items-end z-[70] shadow-lg">
         <button id="nav-themen-mob" class="mob-nav-btn text-[var(--accent)]">
             <span>📚</span><span class="text-[10px] font-bold">Themen</span>
@@ -268,7 +250,7 @@
             <span>📦</span><span class="text-[10px] font-bold">Raster</span>
         </button>
         
-        <!-- Center Floating Action Button (Opens Sidebar Drawer) -->
+        <!-- Center Floating Action Button (Opens Sidebar) -->
         <div class="relative -top-4 w-12 h-12 shrink-0">
             <button id="mob-center-drawer-btn" class="absolute inset-0 bg-gradient-to-tr from-sky-600 to-sky-400 text-white rounded-full shadow-md border-4 border-[var(--bg-app)] flex items-center justify-center active:scale-90 transition-transform">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -283,15 +265,7 @@
         </button>
     </nav>
 
-    <!-- Modals Container (Populated via JS) -->
+    <!-- Modals Container -->
     <div id="modal-container"></div>
-
-    <!-- Firebase SDKs (Optional / Offline Graceful Degrade) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- App Orchestrator Module -->
-    <script type="module" src="js/app.js"></script>
 </body>
 </html>
