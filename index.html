@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TELC B2 Trainer — Debate Studio & Strategie</title>
     
-    <!-- Fonts & PWA Metadata -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&family=Outfit:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -14,21 +13,16 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0284c7">
 
-    <!-- Tailwind CDN with Dark Mode -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class' };
-    </script>    
+    <script>tailwind.config = { darkMode: 'class' };</script>    
   
-    <!-- Custom CSS Variables & Animations -->
     <link rel="stylesheet" href="css/app.css">
 
-    <!-- Firebase SDKs (Gracefully bypassed if offline or unavailable) -->
+    <!-- Firebase SDKs (Optional / Offline Graceful Degrade) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    <!-- Pragmatic Engine Script (Standard script, works locally and online) -->
     <script defer src="js/app.js"></script>
 </head>
 <body class="h-full flex flex-col lg:flex-row overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] select-none">
@@ -36,15 +30,15 @@
     <!-- Drawer Overlay -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[85] hidden transition-opacity duration-300"></div>
 
-    <!-- 1. SIDEBAR -->
+    <!-- ========================================== -->
+    <!-- 1. SIDEBAR (DRAWER / DESKTOP PANEL) -->
+    <!-- ========================================== -->
     <aside id="sidebar" class="bg-[var(--bg-card)] lg:bg-[var(--bg-sidebar)] flex flex-col overflow-hidden border-t lg:border-t-0 lg:border-r border-[var(--border)] transition-all duration-300">
-        <!-- Mobile Drag Handle -->
         <div id="sidebar-drag-handle" class="w-full flex flex-col items-center pt-3 pb-2 lg:hidden shrink-0 cursor-pointer bg-[var(--bg-card)] rounded-t-[28px]">
             <div class="w-14 h-1 bg-[var(--text-faint)] rounded-full opacity-40 mb-1.5"></div>
             <span class="text-[10px] font-extrabold text-[var(--text-muted)] uppercase tracking-widest">Schließen</span>
         </div>
 
-        <!-- Desktop Header -->
         <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-card)] items-center justify-between sidebar-header-flex shrink-0 hidden lg:flex">
             <h2 class="font-extrabold text-sm hide-on-collapse text-[var(--text-primary)]">Themenpool</h2>
             <button id="sidebar-toggle-btn" class="p-1.5 rounded-lg hover:bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors cursor-pointer" title="Sidebar minimieren">
@@ -52,13 +46,12 @@
             </button>
         </div>
 
-        <!-- Tab Toggle -->
         <div class="flex gap-2 p-3 bg-[var(--bg-app)] border-b border-[var(--border)] shrink-0 hide-on-collapse">
             <button id="sbar-tab-list" class="flex-1 py-2 text-xs font-black bg-[var(--bg-card)] text-[var(--accent)] rounded-lg shadow-sm border border-[var(--border)] transition-all">📚 Themen</button>
             <button id="sbar-tab-mini" class="flex-1 py-2 text-xs font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-all">🗂️ Mini-Ansicht</button>
         </div>
 
-        <!-- Sidebar Topics List -->
+        <!-- Panel 1: Topics List -->
         <div id="sidebar-themen-content" class="flex-1 flex flex-col overflow-hidden">
             <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-app)] space-y-2.5 shrink-0 hide-on-collapse">
                 <div class="flex items-center justify-between text-xs font-bold">
@@ -81,19 +74,21 @@
             <nav id="topic-list" class="flex-1 overflow-y-auto p-2 space-y-1 bg-[var(--bg-sidebar)] no-scrollbar"></nav>
         </div>
 
-        <!-- Sidebar Mini-View -->
+        <!-- Panel 2: Mini View -->
         <div id="sidebar-mini-content" class="flex-1 hidden flex-col overflow-hidden bg-[var(--bg-sidebar)] hide-on-collapse">
             <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-card)] shrink-0">
                 <div class="flex gap-1.5 p-1 bg-[var(--bg-app)] rounded-lg border border-[var(--border)] text-xs font-bold">
-                    <button id="mini-toggle-vocab" class="flex-1 py-1 text-center rounded bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">🧠 Vokabeln</button>
-                    <button id="mini-toggle-rede" class="flex-1 py-1 text-center rounded text-[var(--text-muted)]">💬 Redemittel</button>
+                    <button id="mini-toggle-vocab" class="flex-1 py-1.5 text-center rounded bg-[var(--bg-card)] text-[var(--accent)] shadow-sm">🧠 Vokabeln</button>
+                    <button id="mini-toggle-rede" class="flex-1 py-1.5 text-center rounded text-[var(--text-muted)]">💬 Redemittel</button>
                 </div>
             </div>
             <div id="right-panel-content" class="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar"></div>
         </div>
     </aside>
 
-    <!-- 2. MAIN APP VIEWPORT -->
+    <!-- ========================================== -->
+    <!-- 2. MAIN VIEWPORT (HEADER + WORKSPACE) -->
+    <!-- ========================================== -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
         <header class="bg-[var(--bg-card)] border-b border-[var(--border)] px-4 lg:px-6 py-3.5 flex items-center justify-between gap-4 z-40 shadow-sm shrink-0 relative pt-4">
             <div class="absolute top-0 left-0 w-full h-1 flex">
@@ -110,7 +105,6 @@
                 </div>
             </div>
 
-            <!-- Desktop Nav -->
             <div class="hidden lg:flex bg-[var(--bg-app)] p-1 rounded-xl border border-[var(--border)] gap-1 shadow-inner">
                 <button id="nav-themen-desk" class="px-3.5 py-1.5 text-xs font-black rounded-lg bg-[var(--accent)] text-white shadow-md transition-all">📚 Studio</button>
                 <button id="nav-raster-desk" class="px-3.5 py-1.5 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">📦 Raster</button>
@@ -120,12 +114,11 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button id="header-profile-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Profil & Cloud-Konto">👤</button>
-                <button id="header-reload-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="App aktualisieren">🔄</button>
+                <button id="header-profile-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Profil & Cloud">👤</button>
+                <button id="header-reload-btn" class="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:bg-[var(--bg-app)] transition-colors shadow-sm" title="Neu laden">🔄</button>
             </div>
         </header>
 
-        <!-- Main Dynamic Workspace -->
         <main id="main-scroll-container" class="flex-1 overflow-y-auto p-4 md:p-6 pb-28 lg:pb-8 space-y-6 bg-[var(--bg-app)] relative no-scrollbar">
 
             <!-- Desktop Studio Command Bar -->
@@ -140,21 +133,21 @@
                     <button id="cmd-underline" class="toolbar-btn font-bold" title="Unterstreichen"><u>U</u></button>
                     <button id="cmd-bullet" class="toolbar-btn" title="Aufzählungsliste">•≡</button>
                     <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
-                    <button class="hl-dot bg-yellow-400" data-color="yellow" title="Gelb markieren"></button>
-                    <button class="hl-dot bg-blue-400" data-color="blue" title="Blau markieren"></button>
-                    <button class="hl-dot bg-red-400" data-color="red" title="Rot markieren"></button>
-                    <button class="hl-dot bg-green-400" data-color="green" title="Grün markieren"></button>
+                    <button class="hl-dot bg-yellow-400" data-color="yellow" title="Gelb"></button>
+                    <button class="hl-dot bg-blue-400" data-color="blue" title="Blau"></button>
+                    <button class="hl-dot bg-red-400" data-color="red" title="Rot"></button>
+                    <button class="hl-dot bg-green-400" data-color="green" title="Grün"></button>
                     <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
                     <button id="cmd-clear" class="toolbar-btn text-rose-500" title="Formatierung löschen">🧹</button>
                     <button id="cmd-add-vocab" class="toolbar-btn text-indigo-600" title="Als Vokabel speichern">🧠+</button>
                     <div class="h-4 w-px bg-[var(--border)] mx-0.5"></div>
                     <button id="cmd-undo" class="toolbar-btn" title="Rückgängig (Strg+Z)">↩</button>
                     <button id="cmd-redo" class="toolbar-btn" title="Wiederholen (Strg+Y)">↪</button>
-                    <button id="cmd-done" class="w-7 h-7 flex items-center justify-center bg-emerald-600 text-white rounded-lg shadow font-bold text-xs" title="Fertig">✓</button>
+                    <button id="cmd-done" class="w-7 h-7 flex items-center justify-center bg-emerald-600 text-white rounded-lg shadow font-bold text-xs cursor-pointer" title="Fertig">✓</button>
                 </div>
             </div>
 
-            <!-- SECTION 1: WORKSPACE -->
+            <!-- TAB 1: WORKSPACE -->
             <div id="section-workspace" class="space-y-5 animate-fade-in">
                 <div id="dashboard-controls" class="bg-[var(--bg-card)] border border-[var(--border)] p-4 rounded-2xl shadow-sm flex flex-col gap-3">
                     <div class="flex items-start justify-between gap-3 w-full">
@@ -165,7 +158,7 @@
                             <div class="flex flex-col min-w-0 flex-1">
                                 <div class="flex items-center gap-2">
                                     <span id="active-topic-badge" class="px-2 py-0.5 text-[10px] font-mono font-bold bg-neutral-200 dark:bg-neutral-800 rounded uppercase">Thema --</span>
-                                    <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2.5 transition-all border border-[var(--border)] bg-[var(--bg-card)] flex items-center gap-1"></button>
+                                    <button id="learned-toggle" class="h-6 text-[10px] font-bold rounded-md px-2.5 transition-all border border-[var(--border)] bg-[var(--bg-card)] flex items-center gap-1 cursor-pointer"></button>
                                 </div>
                                 <h2 id="active-topic-title" class="text-base md:text-lg font-black text-[var(--text-primary)] truncate mt-0.5">Lade Thema...</h2>
                             </div>
@@ -178,17 +171,17 @@
                         </div>
                     </div>
 
-                    <!-- Subtabs -->
-                    <div class="grid grid-cols-2 bg-[var(--bg-app)] p-1 rounded-xl border border-[var(--border)] w-full gap-1">
-                        <button id="subtab-template" class="py-2 text-xs font-black rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm">📝 Template & Dialog</button>
-                        <button id="subtab-wortschatz" class="py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Vokabelkarten</button>
+                    <div class="grid grid-cols-3 bg-[var(--bg-app)] p-1 rounded-xl border border-[var(--border)] w-full gap-1">
+                        <button id="subtab-template" class="py-2 text-xs font-black rounded-lg bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm">📝 Template</button>
+                        <button id="subtab-diskussion" class="py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]">💬 Diskussion</button>
+                        <button id="subtab-wortschatz" class="py-2 text-xs font-black rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]">🧠 Vokabeln</button>
                     </div>
                 </div>
 
                 <div id="active-topic-container" class="space-y-4"></div>
             </div>
 
-            <!-- SECTION 2: BENTO GRID / MINDMAP (Dynamic 55+ Topics) -->
+            <!-- TAB 2: BENTO GRID / MINDMAP (Dynamic 55+ Topics) -->
             <section id="section-mindmap" class="hidden space-y-5 animate-fade-in">
                 <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -205,19 +198,21 @@
                 <div id="box-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5"></div>
             </section>
 
-            <!-- SECTION 3: REDEMITTEL -->
+            <!-- TAB 3: REDEMITTEL -->
             <section id="section-redemittel" class="hidden space-y-5 animate-fade-in"></section>
 
-            <!-- SECTION 4: GRAMMATIK -->
+            <!-- TAB 4: GRAMMATIK -->
             <section id="section-grammar" class="hidden space-y-5 animate-fade-in"></section>
 
-            <!-- SECTION 5: SETUP & BACKUP -->
+            <!-- TAB 5: SETUP & BACKUP -->
             <section id="section-settings" class="hidden space-y-5 animate-fade-in max-w-4xl mx-auto"></section>
 
         </main>
     </div>
 
-    <!-- 3. FLOATING ACTION BUTTONS -->
+    <!-- ========================================== -->
+    <!-- 3. FLOATING ACTION BUTTONS & TOOLBARS -->
+    <!-- ========================================== -->
     <div id="floating-action-buttons" class="fixed right-4 bottom-20 lg:bottom-6 flex flex-col gap-2.5 z-40 transition-all">
         <button id="fab-undo" class="hidden fab-btn" title="Rückgängig">↩</button>
         <button id="fab-redo" class="hidden fab-btn" title="Wiederholen">↪</button>
@@ -226,7 +221,6 @@
         </button>
     </div>
 
-    <!-- Mobile Toolbar -->
     <div id="formatting-toolbar" class="hidden fixed z-[9999] flex items-center gap-1.5 bg-[var(--bg-card)]/95 backdrop-blur-2xl border border-[var(--border)] px-2.5 py-1.5 rounded-2xl shadow-2xl overflow-x-auto no-scrollbar">
         <button class="mob-tool-btn" data-action="bold"><b>B</b></button>
         <button class="mob-tool-btn" data-action="underline"><u>U</u></button>
@@ -250,7 +244,6 @@
             <span>📦</span><span class="text-[10px] font-bold">Raster</span>
         </button>
         
-        <!-- Center Floating Action Button (Opens Sidebar) -->
         <div class="relative -top-4 w-12 h-12 shrink-0">
             <button id="mob-center-drawer-btn" class="absolute inset-0 bg-gradient-to-tr from-sky-600 to-sky-400 text-white rounded-full shadow-md border-4 border-[var(--bg-app)] flex items-center justify-center active:scale-90 transition-transform">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -265,7 +258,76 @@
         </button>
     </nav>
 
-    <!-- Modals Container -->
-    <div id="modal-container"></div>
+    <!-- ========================================== -->
+    <!-- 5. ALL REQUIRED MODALS (PRESERVED) -->
+    <!-- ========================================== -->
+    
+    <!-- Modal: Profile & Cloud -->
+    <div id="profile-settings-modal" class="hidden fixed inset-0 z-[210] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative">
+            <button onclick="document.getElementById('profile-settings-modal').classList.add('hidden')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm p-1 cursor-pointer">✕</button>
+            <h3 class="text-base font-black border-b border-[var(--border)] pb-2">👤 Profil & Cloud-Konto</h3>
+            <div id="modal-auth-logged-out" class="space-y-3">
+                <input type="email" id="auth-email" placeholder="E-Mail" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" />
+                <input type="password" id="auth-pwd" placeholder="Passwort" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" />
+                <div class="flex gap-2 pt-1">
+                    <button id="btn-login-submit" class="flex-1 py-2 text-xs font-bold bg-[var(--accent)] text-white rounded-lg shadow-sm">Einloggen</button>
+                    <button id="btn-reg-submit" class="flex-1 py-2 text-xs font-bold bg-zinc-700 text-white rounded-lg shadow-sm">Registrieren</button>
+                </div>
+            </div>
+            <div id="modal-auth-logged-in" class="space-y-3 hidden">
+                <p class="text-xs text-[var(--text-muted)]" id="profile-display-email">email@example.com</p>
+                <button id="btn-modal-logout" class="w-full py-2 text-xs font-bold bg-rose-50 text-rose-600 border border-rose-200 rounded-lg">Ausloggen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Quick Preview -->
+    <div id="quick-preview-modal" class="hidden fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-lg p-5 space-y-3 shadow-2xl relative">
+            <button onclick="document.getElementById('quick-preview-modal').classList.add('hidden')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm cursor-pointer">✕</button>
+            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-2.5">
+                <span id="preview-emoji" class="text-2xl">📌</span>
+                <div>
+                    <span id="preview-category" class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Kategorie</span>
+                    <h3 id="preview-title" class="text-xs font-black text-[var(--text-primary)]">Thema</h3>
+                </div>
+            </div>
+            <div class="max-h-[50vh] overflow-y-auto no-scrollbar">
+                <p id="preview-einleitung-de" class="text-xs text-[var(--text-primary)] leading-relaxed bg-[var(--bg-app)] p-3 rounded-lg select-text"></p>
+            </div>
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-2.5">
+                <button id="preview-nav-btn" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white hover:opacity-90">Lernen ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Vocabulary Editor -->
+    <div id="wortschatz-editor-modal" class="hidden fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-md p-5 space-y-3 shadow-2xl relative">
+            <button onclick="document.getElementById('wortschatz-editor-modal').classList.add('hidden')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm cursor-pointer">✕</button>
+            <h3 class="text-xs font-black border-b border-[var(--border)] pb-2">🧠 Vokabel hinzufügen</h3>
+            <div class="space-y-3">
+                <input type="text" id="modal-vocab-de" class="w-full text-xs font-bold p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" placeholder="Deutsches Wort (z.B. der Anspruch)">
+                <div class="flex gap-2">
+                    <select id="modal-vocab-type" class="flex-1 text-xs font-bold p-2 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none">
+                        <option value="Nomen">Nomen</option>
+                        <option value="Verb">Verb</option>
+                        <option value="Adjektiv">Adjektiv</option>
+                        <option value="Adverb">Adverb</option>
+                        <option value="Redewendung">Redewendung</option>
+                    </select>
+                </div>
+                <input type="text" id="modal-vocab-en" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none select-text" placeholder="Englisch">
+                <input type="text" id="modal-vocab-ar" dir="rtl" class="w-full text-xs p-2.5 bg-[var(--bg-app)] border border-[var(--border)] rounded-lg outline-none font-arabic select-text" placeholder="العربية">
+            </div>
+            <div class="flex justify-end gap-2 border-t border-[var(--border)] pt-2.5">
+                <button id="btn-save-vocab-modal" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-[var(--accent)] text-white">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for backup import -->
+    <input type="file" id="import-backup-input" class="hidden" accept=".json">
 </body>
 </html>
